@@ -1,0 +1,393 @@
+{
+  "title": "Poling Survey",
+  "isProgressVisible": true,
+  "screens": [
+    {
+      "title": "Poling Survey",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isWayleaveRequired",
+          "repeatId": "fluidityTasksSection",
+          "title": "Wayleave Required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "wayleaveRequiredComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Permission To Dig Details",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Wayleave required",
+              "photoSize": 20,
+              "photoRequired": 5,
+              "photoId": "94"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "isTreeCuttingRequired",
+          "repeatId": "fluidityTasksSection",
+          "title": "Tree Cutting Required",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "treeCuttingRequiredComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Tree Cutting",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "88"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 1,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isTreeSurgeryRequired",
+          "repeatId": "fluidityTasksSection",
+          "title": "Tree Surgery Required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "treeSurgeryComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Tree Surgery",
+              "photoSize": 100,
+              "photoRequired": 1,
+              "photoId": "95"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "hasFootwayClosure",
+          "repeatId": "fluidityTasksSection",
+          "title": "Footway Closure",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "footwayClosureComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Footway Closure Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Footway Closure",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "101"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 2,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "hasRoadClosure",
+          "repeatId": "fluidityTasksSection",
+          "title": "Road Closure",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "roadClosureComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Road Closure Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Road Closure",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "102"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "hasBusStopSuspension",
+          "repeatId": "fluidityTasksSection",
+          "title": "Bus Stop Suspension",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "busStopSuspensionComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Bus Stop Suspension Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Bus Stop Suspension",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "103"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 3,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isHighwayTrafficSensitive",
+          "repeatId": "fluidityTasksSection",
+          "title": "Highway Traffic Sensitive",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "highwayTrafficSensitiveComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Highway Traffic Sensitive Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Highway Traffic Sensitive",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "104"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "isSitePrivatePEU",
+          "repeatId": "fluidityTasksSection",
+          "title": "Site in private but PEU will restrict public cv and/or FW",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "sitePrivatePEUComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Site in private Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Site in private",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "105"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 4,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "hasTrafficManagement",
+          "repeatId": "fluidityTasksSection",
+          "title": "Traffic Management",
+          "optional": false,
+          "enables": [
+            {
+              "type": "dropdown",
+              "uploadId": "tmType",
+              "key": "trafficManagementTypes",
+              "repeatId": "fluidityTasksSection",
+              "title": "Traffic Management",
+              "optional": false
+            },
+            {
+              "type": "yes_no",
+              "uploadId": "tmMeetingRequired",
+              "repeatId": "fluidityTasksSection",
+              "title": "TM Meeting Required?",
+              "optional": false
+            },
+            {
+              "type": "et_long_text",
+              "uploadId": "trafficManagementComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "TM Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "TM",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "89"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "hasParkingBaySuspension",
+          "repeatId": "fluidityTasksSection",
+          "title": "Parking Bay Suspension",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "parkingBaySuspensionComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Parking Bay Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Parking Bay",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "106"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 5,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isHighLoadRoute",
+          "repeatId": "fluidityTasksSection",
+          "title": "High Load Route(HLR)",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "repeatId": "fluidityTasksSection",
+              "uploadId": "highLoadRouteComment",
+              "title": "HLR Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "HLR",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "97"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "hasPoleBeforeDuct",
+          "repeatId": "fluidityTasksSection",
+          "title": "Pole Before Duct?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "repeatId": "fluidityTasksSection",
+              "uploadId": "poleBeforeDuctComment",
+              "title": "Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Before Duct",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "82"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 6,
+      "upload": true,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "hasParkedCarsPreConing",
+          "repeatId": "fluidityTasksSection",
+          "title": "Parked Cars, pre-coning required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "parkedCarsPreConingComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Parked cars comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Parked cars",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "92"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "hasSpecialEngineeringDifficulties",
+          "repeatId": "fluidityTasksSection",
+          "title": "Special Engineering Difficulties",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "specialEngineeringDifficultiesComment",
+              "repeatId": "fluidityTasksSection",
+              "title": "Special Engineering Difficulties Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Special Engineering Difficulties",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "107"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

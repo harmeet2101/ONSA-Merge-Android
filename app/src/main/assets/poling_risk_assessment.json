@@ -1,0 +1,167 @@
+{
+  "title": "Poling Planning Risk Assessment",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Poling Planning Risk Assessment",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "landOwnerNameAndNumber",
+          "repeatId": "riskAssessmentSection",
+          "title": "Land owner name and number",
+          "optional": false
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "hasLandownerAccess",
+          "repeatId": "riskAssessmentSection",
+          "title": "Has land owner agreed to access routes?",
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "landownerAccessRoute",
+          "repeatId": "riskAssessmentSection",
+          "title": "Details of agreed access routes to working area?",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Poling Planning Risk Assessment",
+      "index": 1,
+      "upload": false,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "landownerConsentContact",
+          "repeatId": "riskAssessmentSection",
+          "title": "Additional details of agreement, landowner consent and attempted contact with landowner?",
+          "optional": false
+        },
+        {
+          "type": "txt_bold",
+          "title": "Supervisor to confirm permission for deviation to WaH controls",
+          "optional": true
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "supervisorConfirmationFreeTextName",
+          "repeatId": "riskAssessmentSection",
+          "title": "Print Name",
+          "optional": false
+        },
+        {
+          "type": "signature",
+          "signatureUrl": "app/jobs/{jobId}/upload-signature",
+          "uploadId": "supervisorSignatureId",
+          "title": "Signature",
+          "photoId": "26",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Poling Planning Risk Assessment",
+      "index": 2,
+      "upload": false,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "additionalInformation",
+          "repeatId": "riskAssessmentSection",
+          "title": "Additional Information",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "dontWalkBy",
+          "repeatId": "riskAssessmentSection",
+          "title": "Don't walk by",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Poling Planning Risk Assessment",
+      "index": 3,
+      "upload": false,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "existingLandPropertyDamage",
+          "repeatId": "riskAssessmentSection",
+          "title": "Existing land/property damage",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "Damage Photo",
+          "photoSize": 25,
+          "photoRequired": 0,
+          "photoId": "90"
+        }
+      ]
+    },
+    {
+      "title": "Poling Planning Risk Assessment",
+      "index": 4,
+      "upload": false,
+      "items": [
+        {
+          "type": "card_fork",
+          "uploadId": "",
+          "repeatId": "riskElements",
+          "title": "Add Another Risk Element",
+          "listItemType": "risk_element",
+          "fields": [
+            "type"
+          ],
+          "optional": false,
+          "dialogItems": [
+            {
+              "type": "dropdown",
+              "uploadId": "type",
+              "repeatId": "riskElements",
+              "key": "riskAssessmentRiskElementTypes",
+              "title": "Risk Element",
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Poling Planning Risk Assessment",
+      "index": 5,
+      "upload": true,
+      "items": [
+        {
+          "type": "et_short_text",
+          "repeatId": "riskAssessmentSection",
+          "uploadId": "completedByFreeTextName",
+          "title": "Completed by",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "repeatId": "riskAssessmentSection",
+          "uploadId": "telephoneNo",
+          "title": "Telephone",
+          "optional": false
+        },
+        {
+          "type": "signature",
+          "signatureUrl": "app/jobs/{jobId}/upload-signature",
+          "uploadId": "SignatureId",
+          "title": "Signature",
+          "photoId": "26",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

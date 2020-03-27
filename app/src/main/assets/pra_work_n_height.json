@@ -1,0 +1,22 @@
+[
+  {
+    "type": "txt_bold_head",
+    "title": "CONSIDERATIONS:"
+  },
+  {
+    "type": "txt_description",
+    "title": "No. of aerial cables on pole"
+  },
+  {
+    "type": "yes_no",
+    "uploadId": "isPoleScheduleCompleted",
+    "repeatId": "riskElements",
+    "title": "Has a Pole Schedule been completed and attached?",
+    "optional": false
+  }
+]
+
+
+
+
+

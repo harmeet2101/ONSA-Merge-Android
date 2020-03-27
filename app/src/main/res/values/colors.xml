@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="depotnet_color">#4bb488</color>
+    <color name="orange">#F5B63C</color>
+    <color name="colorPrimary">@color/depotnet_color</color>
+    <color name="colorPrimaryDark">@color/depotnet_color</color>
+    <color name="colorAccent">@color/depotnet_color</color>
+    <color name="white">#FFFFFF</color>
+    <color name="fire">#F54700</color>
+    <color name="item_bg_light_gray">#F1F1F1</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="et_border">#ECECEC</color>
+    <color name="bg_white">#F1F1F1</color>
+    <color name="black">#000000</color>
+    <color name="txt_color_dark">#232324</color>
+    <color name="txt_color_light_grey">#929292</color>
+
+    <color name="btn_pressed">#8848AD83</color>
+    <color name="btn_unpressed">#48AD83</color>
+    <color name="btn_gray">#B5B5B5</color>
+    <color name="red">#FF0000</color>
+    <color name="holo_red_dark">#ffcc0000</color>
+    <color name="red_disclaimer">#FF5733</color>
+    <color name="yellow">#FFC300</color>
+    <color name="transparent_overlay">#11000000</color>
+    <color name="bg_filter">#1C232C</color>
+
+    <color name="blue">#FFFFFF</color>
+</resources>

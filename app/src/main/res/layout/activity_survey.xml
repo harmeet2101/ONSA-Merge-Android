@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_white"
+    android:orientation="vertical"
+    tools:context=".activities.SurveyActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:titleTextColor="@android:color/white">
+
+
+        <TextView
+            android:id="@+id/txt_toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="@dimen/_12sdp"
+            android:text="@string/survey"
+            android:textColor="@color/white" />
+
+
+        <ImageView
+            android:id="@+id/btn_img_cancel"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_gravity="right|end"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:layout_marginRight="@dimen/_12sdp"
+            android:tint="@color/white"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_close" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/_24sdp"
+        android:layout_marginBottom="@dimen/_24sdp"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:id="@+id/btn_pre_site_survey"
+            android:background="@color/white"
+            android:padding="@dimen/_8sdp">
+
+            <ImageView
+                android:id="@+id/img_icon"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:padding="@dimen/_2sdp"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/presite_survey_icon" />
+
+
+            <ImageView
+                android:id="@+id/img_arrow"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:tint="@color/txt_color_light_grey"
+                app:srcCompat="@drawable/ic_chevron_right" />
+
+            <TextView
+                android:id="@+id/txt_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:layout_marginLeft="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_marginRight="@dimen/_8sdp"
+                android:layout_toStartOf="@id/img_arrow"
+                android:layout_toLeftOf="@id/img_arrow"
+                android:layout_toEndOf="@id/img_icon"
+                android:layout_toRightOf="@id/img_icon"
+                android:layout_centerVertical="true"
+                android:text="@string/pre_site_survey"
+                android:textColor="@color/txt_color_dark"
+                android:textSize="@dimen/_10sdp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/btn_poling_survey"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_below="@id/btn_pre_site_survey"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:background="@color/white"
+            android:padding="@dimen/_8sdp">
+
+            <ImageView
+                android:id="@+id/img_icon_pol"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:padding="@dimen/_2sdp"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/poling_survey_icon" />
+
+
+            <ImageView
+                android:id="@+id/img_arrow_pol"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:tint="@color/txt_color_light_grey"
+                app:srcCompat="@drawable/ic_chevron_right" />
+
+            <TextView
+                android:id="@+id/txt_title_pol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:layout_marginLeft="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_marginRight="@dimen/_8sdp"
+                android:layout_toStartOf="@id/img_arrow_pol"
+                android:layout_toLeftOf="@id/img_arrow_pol"
+                android:layout_toEndOf="@id/img_icon_pol"
+                android:layout_toRightOf="@id/img_icon_pol"
+                android:layout_centerVertical="true"
+                android:text="@string/polling_survey"
+                android:textColor="@color/txt_color_dark"
+                android:textSize="@dimen/_10sdp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+
+</LinearLayout>

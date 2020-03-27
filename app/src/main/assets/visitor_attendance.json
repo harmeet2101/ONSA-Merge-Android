@@ -1,0 +1,38 @@
+{
+  "title": "Visitor Attendance",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Visitor Attendance",
+      "index": 0,
+      "upload": true,
+      "url":"app/jobs/{jobId}/log-visitor-attendance",
+      "items": [
+        {
+          "type": "et_short_text",
+          "uploadId":"visitorName",
+          "repeatID":"visitorName",
+          "title": "Visitor Name",
+          "hint": "Visitor Name",
+          "optional": false
+        },
+        {
+          "type": "signature",
+          "uploadId": "SignatureId",
+          "repeatID":"visitorName",
+          "signatureUrl":"app/jobs/{jobId}/upload-signature",
+          "photoId": "26",
+          "title": "Signature",
+          "optional": false
+        },
+        {
+          "type": "fork",
+          "repeatID":"visitorName",
+          "fields":["visitorName" , "Signature"],
+          "title": "Add Another",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

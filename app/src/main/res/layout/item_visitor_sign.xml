@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/white"
+    app:cardElevation="@dimen/_2sdp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingLeft="@dimen/_4sdp"
+        android:paddingStart="@dimen/_4sdp"
+        android:paddingEnd="@dimen/_4sdp"
+        android:paddingRight="@dimen/_4sdp"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingBottom="@dimen/_8sdp">
+
+
+        <ImageView
+            android:id="@+id/img_delete"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:padding="@dimen/_2sdp"
+            app:srcCompat="@drawable/ic_close" />
+
+        <ImageView
+            android:id="@+id/img_signature"
+            android:layout_width="@dimen/_36sdp"
+            android:layout_height="@dimen/_36sdp"
+            android:layout_toLeftOf="@id/img_delete"
+            android:layout_toStartOf="@id/img_delete"
+            android:padding="@dimen/_2sdp"
+            app:srcCompat="@drawable/ic_chevron_right" />
+
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_toLeftOf="@id/img_signature"
+            android:layout_toStartOf="@id/img_signature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Operative Name Operative Name Operative Name Operative Name Operative NameOperative Name"
+            android:layout_marginRight="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:layout_centerVertical="true"
+            android:textColor="@color/txt_color_dark"
+            android:textSize="@dimen/_9sdp" />
+
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

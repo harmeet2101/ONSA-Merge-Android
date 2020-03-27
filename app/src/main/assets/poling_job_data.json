@@ -1,0 +1,76 @@
+{
+  "title": "Poling Survey",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Job Data",
+      "index": 0,
+      "upload": true,
+      "items": [
+        {
+          "type": "location",
+          "uploadId": "Location",
+          "repeatId": "jobDataSection",
+          "title": "Locate Me",
+          "optional": false
+        },
+        {
+          "type": "number",
+          "uploadId": "noOfAerialCablesOnPole",
+          "repeatId": "jobDataSection",
+          "title": "No. of aerial cables on pole",
+          "hint": "Qty",
+          "optional": false
+        },
+        {
+          "type": "number",
+          "repeatId": "jobDataSection",
+          "uploadId": "lowestWire",
+          "title": "Lowest Wire",
+          "optional": false
+        },
+        {
+          "type": "number",
+          "uploadId": "noOfDropCablesOnPole",
+          "repeatId": "jobDataSection",
+          "title": "No Of Drop Wire On Pole",
+          "hint": "Qty",
+          "optional": false
+        },
+        {
+          "type": "number",
+          "uploadId": "noOfLowAerialCablesOnPole",
+          "repeatId": "jobDataSection",
+          "title": "No. Of Low Aerial Cable On Pole",
+          "hint": "Qty",
+          "optional": false
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "hasChimneyFixes",
+          "repeatId": "jobDataSection",
+          "title": "Chimney Fixes",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "repeatId": "jobDataSection",
+              "uploadId": "chimneyFixComment",
+              "title": "Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "repeatId": "jobDataSection",
+              "title": "Chimney Fixes",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "100"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

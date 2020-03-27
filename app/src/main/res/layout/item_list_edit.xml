@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/btn_gray">
+
+    <TextView
+        android:id="@+id/txt_item_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/accept"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginLeft="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginBottom="@dimen/_12sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        android:layout_centerVertical="true"
+        android:textStyle="normal" />
+
+    <ImageView
+        android:id="@+id/img_selected"
+        android:layout_width="@dimen/_24sdp"
+        android:layout_height="@dimen/_24sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginRight="@dimen/_12sdp"
+        app:srcCompat="@drawable/btn_chek_circle"
+        android:visibility="visible"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/txt_item_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/txt_item_id"
+        android:layout_toEndOf="@id/txt_item_id"
+        android:layout_toLeftOf="@id/et_number"
+        android:layout_toStartOf="@id/et_number"
+        android:text="@string/accept"
+        android:maxLines="1"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginLeft="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        android:layout_marginRight="@dimen/_12sdp"
+        android:layout_marginBottom="@dimen/_12sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        android:layout_centerVertical="true"
+        android:textStyle="normal" />
+
+    <EditText
+        android:id="@+id/et_number"
+        android:visibility="gone"
+        android:layout_width="@dimen/_72sdp"
+        android:layout_height="@dimen/_28sdp"
+        android:layout_marginRight="@dimen/_4sdp"
+        android:layout_marginEnd="@dimen/_4sdp"
+        android:layout_toLeftOf="@id/img_selected"
+        android:layout_toStartOf="@id/img_selected"
+        android:background="@color/white"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:inputType="numberDecimal"
+        android:imeOptions="actionDone"
+        android:textColor="@color/txt_color_dark"
+        android:textColorHint="@color/txt_color_light_grey"
+        android:textSize="@dimen/_10sdp" />
+
+
+
+
+</RelativeLayout>

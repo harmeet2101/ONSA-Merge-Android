@@ -1,0 +1,30 @@
+{
+  "title": "Estimate",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Estimate",
+      "index": 0,
+      "url":"appstores/logtojob",
+      "photoUrl":"app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "JobId",
+          "key": "Job",
+          "isMultiSelection": false,
+          "isConcatDisplayText": false,
+          "title": "Estimate",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "Comments",
+          "title": "Comment:",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

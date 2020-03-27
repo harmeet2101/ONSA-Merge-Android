@@ -1,0 +1,23 @@
+{
+  "title": "Transfer",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Transfer",
+      "index": 0,
+      "url":"appstores/logtransfer",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "ToUserId",
+          "key": "operatives",
+          "isMultiSelection": false,
+          "isConcatDisplayText": false,
+          "title": "Operative",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

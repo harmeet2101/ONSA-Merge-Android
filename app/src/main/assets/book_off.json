@@ -1,0 +1,48 @@
+{
+  "title": "Book Off",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Book Off",
+      "index": 0,
+      "url":"app/jobs/{jobId}/book-off",
+      "photoUrl":"app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+
+        {
+          "type": "txt_bold_head",
+          "title": "Book off for the day to say you are finishing",
+          "optional": true
+        },
+        {
+          "type": "location",
+          "uploadId": "Location",
+          "title": "Locate Me",
+          "optional": false
+        },
+
+        {
+          "type": "txt_bold_head",
+          "title": "Log who have been working with today?",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "userIds",
+          "key": "bookOperatives",
+          "isMultiSelection": true,
+          "title": "Pick Your Crew",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "Book Off",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "75"
+        }
+      ]
+    }
+  ]
+}

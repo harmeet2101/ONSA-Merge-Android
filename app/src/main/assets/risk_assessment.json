@@ -1,0 +1,1430 @@
+{
+  "title": "Risk Assessment",
+  "isProgressVisible": true,
+  "screens": [
+    {
+      "title": "Risk Assessment",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "weatherConditions",
+          "key": "weatherConditions",
+          "title": "Weather Conditions",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 1,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Hot Job Check"
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "hotJobCheck",
+          "stopWork": 1,
+          "title": "Has the location been identified as a hot job?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hotJobComment",
+              "title": "Hot Job Comment",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "Hot Job",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "53"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hotJobComment",
+              "title": "Hot Job Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Hot Job",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "53"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "hazardousMarker",
+          "stopWork": 1,
+          "title": "Has any Hazardous Pipeline Markers/Posts been identified on site?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hazardousMarkerComment",
+              "title": "Hazardous Marker Comment",
+              "optional": false
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hazardousMarkerComment",
+              "title": "Hazardous Marker Comment",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 2,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Utility Print checks"
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "lineSearchOutOfDate",
+          "stopWork": 1,
+          "title": "Is the Line search (Safe Dig Prints) older than 28 days?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "lineSearchOutofDateComment",
+              "title": "Line Search Out of Date Comment",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "Line Search Out Of Date",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "67"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "lineSearchOutofDateComment",
+              "title": "Line Search Out of Date Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Line Search Out Of Date",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "67"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "outsideSafeDigs",
+          "stopWork": 1,
+          "title": "Is the work positioned outside of the Safe Dig Prints work area?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "outsideSafeDigsComment",
+              "title": "Outside Safe Digs Comment",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "Outside Safe Digs",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "13"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "outsideSafeDigsComment",
+              "title": "Outside Safe Digs Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Outside Safe Digs",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "13"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 3,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Documentation"
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "ramsBriefed",
+          "title": "RA & MS briefed face-to-face with all gang members and fully  understood?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "ramsBriefedComment",
+              "title": "Ra and Ms Briefed Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Ra and Ms Briefed",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "22"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "ramsBriefedComment",
+              "title": "Ra and Ms Briefed Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Ra and Ms Briefed",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "22"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "workStreamCraftManual",
+          "title": "Is the relevant work stream craft manual and safety file on site?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "workStreamCraftManualComment",
+              "title": "Work Stream Craft Manual Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Workstream Craft Manual",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "61"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "controlMeasuresInPlaceComment",
+              "title": "Workstream Craft Manual Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Workstream Craft Manual",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "61"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "controlMeasuresInPlace",
+          "title": "Are all control measures in place as detailed in the generic task risk assessment?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "controlMeasuresInPlaceComment",
+              "title": "Control Measures In Place Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Control Measures In Place",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "15"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "controlMeasuresInPlaceComment",
+              "title": "Control Measures In Place Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Control Measures In Place",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "15"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 4,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Street Works"
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "nrswa",
+          "title": "At least one operative holds the required NRSWA units for the work activity?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "nrswaComment",
+              "title": "NRSWA Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "NRSWA",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "70"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "controlMeasuresInPlaceComment",
+              "title": "NRSWA Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "NRSWA",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "70"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "signingLightingGuard",
+          "title": "All signing, lighting and guarding to code of practice?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "copPageNo",
+              "title": "C.O.P Page number",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "Signing, Lighting & Guards",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "63"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "signingLightingGuardComment",
+              "title": "Reasons",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Signing, Lighting & Guards",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "63"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 5,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Safe Digging"
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "guardedExcavation",
+          "title": "Are any open excavations guarded effectively including spoil?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "guardedExcavationComment",
+              "title": "Guarded Excavation Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Guarded Excavation",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "19"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "guardedExcavationComment",
+              "title": "Guarded Excavation Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Guarded Excavation",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "19"
+            }
+          ]
+        },
+        {
+          "type": "txt_bold_head",
+          "title": "Competency"
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "gpFreeRisk",
+          "stopWork": 2,
+          "title": "Is this area free from risk for the general public?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "gpFreeRiskComment",
+              "title": "General Public Free of Risk Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "General Public Free of Risk",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "8"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "gpFreeRiskComment",
+              "title": "General Public Free of Risk Comment",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "General Public Free of Risk",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 6,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Safe Digging"
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "hsG47",
+          "title": "Have all utilities been identified and marked up on site as per HSG47?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hsG47Comment",
+              "title": "HSG47 Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "HSG47",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "17"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hsG47Comment",
+              "title": "HSG47 Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "HSG47",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "17"
+            }
+          ]
+        },
+        {
+          "type": "txt_bold_head",
+          "title": "Competency"
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "plantAccredation",
+          "stopWork": 2,
+          "title": "Do operatives on site have the appropriate Plant accreditations ?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "plantAccredationComment",
+              "title": "Plant Accredation Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Plant Accredation",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "73"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "plantAccredationComment",
+              "title": "Plant Accredation Comment",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "Plant Accredation",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "73"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 7,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Plant"
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "dailyChecks",
+          "title": "Have daily pre use checks taken place on all plant that is to be used?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "dailyChecksComment",
+              "title": "Daily Checks Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Daily Checks",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "79"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "dailyChecksComment",
+              "title": "Daily Checks Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Daily Checks",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "79"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "overheadCables",
+          "title": "Do existing overhead cables impact on safe working or use of plant?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "overheadCablesComment",
+              "title": "Overhead Cables Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Overhead Cables",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "50"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "overheadCablesComment",
+              "title": "Overhead Cables Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Overhead Cables",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "50"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 8,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "liftSafetyZone",
+          "title": "Is there any adequate safety zone in place for any lifting operations?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "liftSafetyZoneComment",
+              "title": "Lift Safety Zone Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Lift Safety Zone",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "23"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "liftSafetyZoneComment",
+              "title": "Lift Safety Zone Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Lift Safety Zone",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "23"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "plantStabilised",
+          "title": "Is all Plant being used for excavating or lifting appropriate for use and stabilised as per manufacture's instructions?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "plantStabilisedComment",
+              "title": "Plant Stabilised Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Plant Stabilised",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "33"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "plantStabilisedComment",
+              "title": "Plant Stabilised Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Plant Stabilised",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "33"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 9,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Overhead Power"
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "cableHeightCorrect",
+          "title": "Are all drop wires/ Aerial cables at correct height with adequate separation for On power?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "cableHeightCorrectComment",
+              "title": "Cable Height Correct Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Cable Height Correct",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "18"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "cableHeightCorrectComment",
+              "title": "Cable Height Correct Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Cable Height Correct",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "18"
+            }
+          ]
+        },
+        {
+          "type": "txt_bold_head",
+          "title": "Equipment & PPE"
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "catCalibration",
+          "title": "CAT & Genny Calibration in date and available in good working order?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "catCalibrationComment",
+              "title": "Cat Calibration Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Cat Calibration",
+              "photoSize": 20,
+              "photoRequired": 2,
+              "photoId": "11"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "catCalibrationComment",
+              "title": "Cat Calibration Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Cat Calibration",
+              "photoSize": 20,
+              "photoRequired": 2,
+              "photoId": "11"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 10,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "relevantPPE",
+          "title": "is all the relevant PPE/Equipment available for use in good condition?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "relevantPPEComment",
+              "title": "Relevant PPE Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Relevant PPE",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "4"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "relevantPPEComment",
+              "title": "Relevant PPE Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Relevant PPE",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "4"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "specialistPPE",
+          "title": "Is specialist PPE required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "specialistPPEComment",
+              "title": "Specialist PPE Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Specialist PPE",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "66"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "specialistPPEComment",
+              "title": "Specialist PPE Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Specialist PPE",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "66"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 11,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "protectiveClothing",
+          "title": "Insulated tools & flame retardant clothing/PPE worn while excavating?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "protectiveClothingComment",
+              "title": "Protective Clothing Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Protective Clothing",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "44"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "protectiveClothingComment",
+              "title": "Protective Clothing Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Protective Clothing",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "44"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "waterSupressionFFP3",
+          "title": "Water suppression equipment and FFP3 dust mask available?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "waterSupressionFFP3Comment",
+              "title": "Water Suppression FFP3 Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Water Suppression FFP3",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "85"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "waterSupressionFFP3Comment",
+              "title": "Water Suppression FFP3 Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Water Suppression FFP3",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "85"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "headGDUCalibration",
+          "title": "4 head GDU Calibration in date and available in good working order?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "headGDUCalibrationComment",
+              "title": "Head GDU Calibration Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Head GDU Calibration",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "52"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "headGDUCalibrationComment",
+              "title": "Head GDU Calibration Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Head GDU Calibration",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "52"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 12,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "vibratingRisk",
+          "title": "Are all operatives aware of the risk assessment and the controls for vibrating equipment?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "vibratingRiskComment",
+              "title": "Vibrating Disk Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Vibrating Disk",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "39"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "vibratingRiskComment",
+              "title": "Vibrating Disk Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Vibrating Disk",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "39"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "temporaryWorks",
+          "title": "Are temporary works designs in place and has a Temporary works Supervisor been informed?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "temporaryWorksComment",
+              "title": "Temporary Works Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Temporary Works",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "30"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "temporaryWorksComment",
+              "title": "Temporary Works Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Temporary Works",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "30"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 13,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Manhole Entry"
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "manholePermit",
+          "title": "Has the Manhole Entry Permit been completed?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "manholePermitComment",
+              "title": "Manhole Permit Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Manhole Permit",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "10"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "manholePermitComment",
+              "title": "Manhole Permit Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Manhole Permit",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "10"
+            }
+          ]
+        },
+        {
+          "type": "txt_bold_head",
+          "title": "Welfare "
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "welfareWater",
+          "title": "Is there a means for washing, and enough fresh drinking water?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "welfareWaterComment",
+              "title": "Welfare Water Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Welfare Water",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "48"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "welfareWaterComment",
+              "title": "Welfare Water Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Welfare Water",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "48"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 14,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Environment "
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "waterTest",
+          "title": "Is a water test available and is any water to be locally pumped out of a chamber clear?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "waterTestComment",
+              "title": "Water Test Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Water Test",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "34"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "waterTestComment",
+              "title": "Water Test Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Water Test",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "34"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "spillKit",
+          "title": "Are spill kits and instructed operative available on site?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "spillKitComment",
+              "title": "Spill Kit Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Spill Kit",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "32"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "spillKitComment",
+              "title": "Spill Kit Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Spill Kit",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "32"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "environmentalIssues",
+          "title": "Are there any other environment issues?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "environmentalIssuesComment",
+              "title": "Environmental Issues Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Environmental Issues",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "54"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "environmentalIssuesComment",
+              "title": "Environmental Issues Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Environmental Issues",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "54"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 15,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Other Risks"
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "additionalRisks",
+          "title": "Any additional risks?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "additionalRisksComment",
+              "title": "Additional Risks Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Additional Risks",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "68"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "additionalRisksComment",
+              "title": "Additional Risks Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Additional Risks",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "68"
+            }
+          ]
+        },
+        {
+          "type": "txt_bold_head",
+          "title": "Site closure"
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "leftTidy",
+          "title": "Has site been left tidy and free from hazards including slips/trips/fails?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "leftTidyComment",
+              "title": "Left Tidy Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Left Tidy",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "36"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "leftTidyComment",
+              "title": "Left Tidy Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Left Tidy",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "36"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 16,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Chamber Gas Test results"
+        },
+        {
+          "type": "number",
+          "uploadId": "noOfChambers",
+          "title": "Number of chamber openings on site:",
+          "optional": false
+        },
+        {
+          "type": "txt_bold_head",
+          "title": "Complete one page for all chamber openning on site."
+        }
+      ]
+    },
+    {
+      "title": "Risk Assessment",
+      "index": 17,
+      "upload": true,
+      "url": "app/jobs/{jobId}/risk-assessment",
+      "photoUrl": "app/jobs/{jobId}/photos",
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Sign below to acknowledge that you have fully read, understood and assume all responsibility for all the conditions of this Point of Work risk Assessment (POWRA)"
+        },
+        {
+          "type": "signature",
+          "uploadId": "SignatureId",
+          "signatureUrl": "app/jobs/{jobId}/upload-signature",
+          "title": "Signature:",
+          "photoId": "26",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "submittedByName",
+          "title": "Name:",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "cssid",
+          "title": "CSS Id:",
+          "optional": false
+        },
+        {
+          "type": "calender",
+          "uploadId": "dateTaken",
+          "title": "Date",
+          "hint": "Date",
+          "optional": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="co.uk.depotnet.onsa">
+
+    <application
+        android:name=".OnsaApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".activities.CurrentStoreActivity"></activity>
+        <activity
+            android:name=".activities.AssetDataActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.VideoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.VariationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.EditImageActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activities.UserProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.SplashActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ForgotPasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.DisclaimerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.KeywordListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.FormActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.SignatureActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.WorkLogActivity"
+            android:screenOrientation="portrait"
+           />
+        <activity
+            android:name=".activities.CameraActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activities.SurveyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ListEditActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.PollingSurveyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.RiskAssessmentActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.PoleSurveyListActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".barcode.ScannedBarcodeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.ListStoreItemActivity" />
+        <activity android:name=".fragments.store.FragmentStoreDetail" />
+        <activity android:name=".activities.ListStockItemActivity" />
+
+
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyCtGrtvhw3fQ7-PQuE-EUDCRnDl8dErW94" />
+
+
+        <meta-data
+            android:name="com.google.android.gms.vision.DEPENDENCIES"
+            android:value="barcode" />
+
+        <provider
+            android:name=".utils.GenericFileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+
+
+        <service
+            android:name=".DownloadService"
+            android:exported="false" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+    </application>
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission." />
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+</manifest>

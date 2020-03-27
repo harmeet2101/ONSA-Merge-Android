@@ -1,0 +1,46 @@
+{
+  "title": "Goods Out",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Goods Out",
+      "index": 0,
+      "url":"appstores/loggoodsout",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "StaId",
+          "repeatId": "Items",
+          "key": "stas",
+          "isMultiSelection": false,
+          "isConcatDisplayText": false,
+          "title": "STA (Warehouse)",
+          "optional": false,
+          "enables": [
+            {
+              "type": "bar_code",
+              "uploadId": "",
+              "title": "Scan an item to check out or search an item or batch",
+              "optional": true
+            },
+            {
+              "type": "add_store_item",
+              "uploadId": "",
+              "repeatId": "Items",
+              "fields": ["StaStockItemId" , "StaId" , "Quantity"],
+              "listItemType": "stock_item",
+              "isStoackLevelCheck": true,
+              "isMultiSelection": true,
+              "isConcatDisplayText": false,
+              "title": "Store Item",
+              "optional": false
+            }
+          ]
+
+        }
+
+      ]
+    }
+  ]
+}

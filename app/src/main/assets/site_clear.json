@@ -1,0 +1,35 @@
+{
+  "title": "Site Clear",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Site Clear",
+      "index": 0,
+      "url": "app/jobs/{jobId}/site-clear",
+      "photoUrl": "app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "reinstatementTypeId",
+          "key": "reinstatementTypes",
+          "title": "Reinstatement Type",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Site Clear",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "87"
+        }
+      ]
+    }
+  ]
+}

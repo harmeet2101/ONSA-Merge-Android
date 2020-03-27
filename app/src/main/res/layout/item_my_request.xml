@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/white"
+    android:padding="@dimen/_4sdp"
+    app:cardElevation="@dimen/_4sdp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_8sdp">
+
+        <ImageView
+            android:id="@+id/btn_img_cancel"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:layout_marginRight="@dimen/_12sdp"
+            android:visibility="visible"
+            android:padding="@dimen/_4sdp"
+            android:background="@drawable/badge_background"
+            android:tint="@color/white"
+            android:backgroundTint="@color/depotnet_color"
+            app:srcCompat="@drawable/ic_close" />
+
+
+        <LinearLayout
+            android:layout_toLeftOf="@id/btn_img_cancel"
+            android:layout_toStartOf="@id/btn_img_cancel"
+            android:id="@+id/ll_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp">
+
+            <TextView
+                android:id="@+id/txt_request_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Request Date: Harriet Abbott"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp" />
+
+
+            <TextView
+                android:id="@+id/txt_time_sent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Time Sent: 17:05"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp" />
+
+            <TextView
+                android:id="@+id/txt_number_of_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Number of Items: 2"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp" />
+
+            <TextView
+                android:id="@+id/txt_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Comment: Portrack STA"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp" />
+
+            <TextView
+                android:id="@+id/txt_request_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Request Status: 45646761"
+                android:textColor="@color/red"
+                android:textSize="@dimen/_12sdp" />
+
+
+            <LinearLayout
+                android:id="@+id/ll_check_your_receipt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    app:srcCompat="@drawable/ic_warning"
+                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:tint="@color/yellow"
+                    android:layout_marginRight="@dimen/_8sdp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/check_your_receipt"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12sdp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_view"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_below="@id/ll_detail"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_24sdp"
+            android:background="@drawable/btn_backgorund"
+            android:paddingStart="@dimen/_24sdp"
+            android:paddingLeft="@dimen/_24sdp"
+            android:paddingTop="@dimen/_2sdp"
+            android:paddingEnd="@dimen/_24sdp"
+            android:paddingRight="@dimen/_24sdp"
+            android:paddingBottom="@dimen/_2sdp"
+            android:text="@string/view"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_11sdp" />
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

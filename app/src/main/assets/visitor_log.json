@@ -1,0 +1,89 @@
+{
+  "title": "Visitor Attendance",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Visitor Attendance",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Visitors- Sign below to say that you have read this POWRA and understood the risk associated with this site."
+        },
+        {
+          "type": "signature",
+          "uploadId": "SignatureId",
+          "signatureUrl": "app/jobs/{jobId}/upload-signature",
+          "title": "Signature",
+          "photoId": "26",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "visitorName",
+          "title": "Name:",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "cssidLicenceNumber",
+          "title": "CSSID Licence Number:",
+          "optional": false
+        },
+        {
+          "type": "stopWatch",
+          "uploadId": "timeTaken",
+          "title": "Record Time",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Visitor Attendance",
+      "index": 1,
+      "upload": false,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "cssidLicenceNumber",
+          "title": "Observations to be captured on CT Mobile App:",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "cssidLicenceNumber",
+          "title": "Additional information/comments:",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "cssidLicenceNumber",
+          "title": "Don't Walk By :",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Visitor Log",
+      "index": 2,
+      "upload": true,
+      "url": "app/jobs/{jobId}/log-visitor-attendance",
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "Comments:",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "Visitor Log",
+          "photoSize": 5,
+          "photoRequired": 20,
+          "photoId": "19e47b67-82eb-4f74-8496-e50a7ae37132"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.MainActivity">
+
+    <item
+        android:id="@+id/action_my_work"
+        android:icon="@drawable/ic_my_work"
+        android:title="@string/login"
+        app:showAsAction="always"
+        android:orderInCategory="100"
+        />
+
+    <item
+        android:id="@+id/action_kit_bag"
+        android:icon="@drawable/ic_kit_bag_01"
+        android:title="@string/login"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_vehicle_check"
+        android:icon="@drawable/ic_vehicle_check_01"
+        android:title="@string/login"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_online_queue"
+        android:icon="@drawable/ic_offline_queue_01"
+        android:title="@string/login"
+        android:orderInCategory="100"
+        app:showAsAction="always" />
+</menu>

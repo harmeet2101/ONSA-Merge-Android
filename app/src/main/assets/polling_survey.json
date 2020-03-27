@@ -1,0 +1,357 @@
+{
+  "title": "Poling Survey",
+  "isProgressVisible": true,
+  "screens": [
+    {
+      "title": "Poling Survey",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "location",
+          "uploadId": "Location",
+          "title": "Locate Me",
+          "optional": false
+        },
+
+        {
+          "type": "dropdown",
+          "uploadId": "tmType",
+          "key": "trafficManagementTypes",
+          "title": "Traffic Management",
+          "optional": false
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "isTMMeetingRequired",
+          "title": "TM Meeting Required?",
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "tmComments",
+          "title": "TM Comment",
+          "optional": true
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "isPublicPrivate",
+          "title": "Public/Private",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 1,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isWayleaveRequired",
+          "title": "Wayleave Required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "wayleaveComment",
+              "title": "Permission To Dig Details",
+              "optional": true
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "isTreeCuttingRequired",
+          "title": "Tree Cutting Required",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "treeCuttingRequiredComment",
+              "title": "Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Tree Cutting",
+              "photoSize": 20,
+              "photoRequired": 5,
+              "photoId": "55a83c37-f8d7-4cd6-8828-fb446f2b2629"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 2,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isTreeSurgeryRequired",
+          "title": "Tree Surgery Required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "treeSurgeryRequiredComment",
+              "title": "Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Tree Surgery",
+              "photoSize": 20,
+              "photoRequired": 5,
+              "photoId": "7d12a9d3-8f7a-4f7c-b7b0-7818fa8fb794"
+            }
+          ]
+        },
+        {
+          "type": "number",
+          "uploadId": "noAerialCables",
+          "title": "No. of aerial cables on pole",
+          "hint": "Qty",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "lowestWireCategory",
+          "key": "lowestWireTypes",
+          "title": "Lowest Wire Category",
+          "optional": false
+        },
+        {
+          "type": "number",
+          "uploadId": "noDropDownWires",
+          "title": "No Of Drop Wire On Pole",
+          "hint": "Qty",
+          "optional": false
+        },
+        {
+          "type": "number",
+          "uploadId": "noLowAerialCables",
+          "title": "No. Of Low Aerial Cable On Pole",
+          "hint": "Qty",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 3,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isChimneyFix",
+          "title": "Chimney Fixes",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "chimneyFixComment",
+              "title": "Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Chimney Fixes",
+              "photoSize": 20,
+              "photoRequired": 5,
+              "photoId": "afad8c9d-2f90-4767-a68e-078830ec3a3f"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "isHighLoadRoute",
+          "title": "High Load Route(HLR)",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "highLoadRouteComment",
+              "title": "HLR Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "HLR",
+              "photoSize": 20,
+              "photoRequired": 5,
+              "photoId": "a45f6c67-2451-4998-8d8c-25e90d751b73"
+            }
+          ]
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "isPoleBeforeDuct",
+          "title": "Pole Before Duct?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleBeforeDuctComment",
+              "title": "Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Before Duct",
+              "photoSize": 20,
+              "photoRequired": 5,
+              "photoId": "ed04a768-8473-48de-b4e9-eff68412a58c"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 4,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Major Stores Items"
+        },
+        {
+          "type": "store-item",
+          "uploadId": "",
+          "assetType": "pole",
+          "key": "poleTypes",
+          "repeatId": "majorStoreItems",
+          "title": "Pole",
+          "optional": true
+        },
+        {
+          "type": "store-item",
+          "uploadId": "",
+          "assetType": "blockTerminal",
+          "key": "blockTerminalTypes",
+          "repeatId": "majorStoreItems",
+          "title": "Block Terminal",
+          "optional": true
+        },
+        {
+          "type": "store-item",
+          "uploadId": "",
+          "assetType": "anchor",
+          "key": "anchorTypes",
+          "repeatId": "majorStoreItems",
+          "title": "Anchor",
+          "optional": true
+        },
+        {
+          "type": "store-item",
+          "uploadId": "",
+          "assetType": "jointClosure",
+          "key": "jointClosureTypes",
+          "repeatId": "majorStoreItems",
+          "title": "Joint Closure",
+          "optional": true
+        },
+        {
+          "type": "store-item",
+          "uploadId": "",
+          "assetType": "aerialCable",
+          "key": "aerialCables",
+          "repeatId": "majorStoreItems",
+          "title": "Aerial Cable",
+          "optional": true
+        },
+        {
+          "type": "store-item",
+          "uploadId": "",
+          "assetType": "ugCable",
+          "key": "ugCableTypes",
+          "repeatId": "majorStoreItems",
+          "title": "UG Cable",
+          "optional": true
+        },
+        {
+          "type": "number",
+          "uploadId": "",
+          "assetType": "dropWire",
+          "repeatId": "majorStoreItems",
+          "title": "Drop wire",
+          "optional": true
+        },
+        {
+          "type": "store-item",
+          "uploadId": "",
+          "assetType": "reinstatement",
+          "key": "reinstatementTypes",
+          "repeatId": "majorStoreItems",
+          "title": "Reinstatement",
+          "optional": true
+        },
+        {
+          "type": "store-item",
+          "uploadId": "",
+          "assetType": "dacs",
+          "key": "dacTypes",
+          "repeatId": "majorStoreItems",
+          "title": "Dacs",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 5,
+      "url": "app/jobs/{jobId}/submit-poling-survey",
+      "photoUrl": "app/jobs/{jobId}/photos",
+      "upload": false,
+      "items": [
+        {
+          "type": "dialog_screen",
+          "uploadId": "LogDFE",
+          "title": "Log DFE",
+          "optional": true,
+          "dialogItems": [
+            {
+              "type": "card_fork",
+              "uploadId": "",
+              "repeatId": "dfeItems",
+              "title": "Click to add a DFE Item",
+              "fields": [
+                "itemCode",
+                "quantity"
+              ],
+              "optional": true,
+              "dialogItems": [
+                {
+                  "type": "dropdown",
+                  "uploadId": "itemCode",
+                  "repeatId": "dfeItems",
+                  "key": "dfeWorkItems",
+                  "title": "DFE Item",
+                  "optional": false
+                },
+                {
+                  "type": "number",
+                  "uploadId": "quantity",
+                  "repeatId": "dfeItems",
+                  "hint": "Qty",
+                  "optional": false
+                }
+              ]
+            },
+            {
+              "type": "photo",
+              "title": "DFE Photo",
+              "photoSize": 20,
+              "photoRequired": 5,
+              "photoId": "b88dc507-5e82-4775-93ba-236c74c46617"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

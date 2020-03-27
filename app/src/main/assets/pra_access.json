@@ -1,0 +1,19 @@
+[
+  {
+    "type": "txt_bold_head",
+    "title": "CONSIDERATIONS:"
+  },
+  {
+    "type": "txt_description",
+    "title": "No. of aerial cables on pole"
+  },
+  {
+    "type": "et_long_text",
+    "uploadId": "actionRequired",
+    "repeatId": "riskElements",
+    "title": "Action required",
+    "optional": false
+  }
+]
+
+

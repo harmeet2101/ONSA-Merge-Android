@@ -1,0 +1,43 @@
+{
+  "title": "Log DCR",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log DCR",
+      "index": 0,
+      "url":"app/jobs/{jobId}/raise-dcr",
+      "photoUrl":"app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "dcrReasonCode",
+          "title": "Select Reason Code",
+          "key": "dcrReasonCodes",
+          "optional": false
+        },
+        {
+          "type": "calender",
+          "uploadId": "newRequiredByDate",
+          "title": "Date",
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "Comments",
+          "hint": "Please enter any comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Log DCR",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "43"
+        }
+
+      ]
+    }
+  ]
+}

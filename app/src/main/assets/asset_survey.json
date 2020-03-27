@@ -1,0 +1,194 @@
+{
+  "title": "Poling Survey",
+  "isProgressVisible": true,
+  "screens": [
+    {
+      "title": "Poling Survey",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "location",
+          "uploadId": "Location",
+          "repeatId": "assets",
+          "title": "Locate Me",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "newReplacedRecycledType",
+          "key": "newReplacedRecycledTypes",
+          "repeatId": "assets",
+          "title": "Replacement/New/Recovery:",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "reference",
+          "repeatId": "assets",
+          "title": "Reference No:",
+          "optional": false
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "hasDistributionPole",
+          "repeatId": "assets",
+          "title": "Distribution Pole",
+          "optional": true,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "distributionPoleComment",
+              "repeatId": "assets",
+              "title": "Distribution Pole Comment",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "Distribution Pole",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "98"
+            }
+          ]
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "hasSubPole",
+          "repeatId": "assets",
+          "title": "Sub Pole",
+          "optional": true,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "subPoleComment",
+              "repeatId": "assets",
+              "title": "Sub Pole Comment",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "Sub Pole",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "99"
+            }
+          ]
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "isPrivate",
+          "repeatId": "assets",
+          "title": "Private:",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Poling Survey",
+      "index": 1,
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "poles",
+          "assetType": "pole",
+          "key": "poleTypes",
+          "isMultiSelection": true,
+          "repeatId": "assets",
+          "title": "Pole",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "blockTerminals",
+          "assetType": "blockTerminal",
+          "key": "blockTerminalTypes",
+          "isMultiSelection": true,
+          "repeatId": "assets",
+          "title": "Block Terminal",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "anchors",
+          "assetType": "anchor",
+          "key": "anchorTypes",
+          "isMultiSelection": true,
+          "repeatId": "assets",
+          "title": "Anchor",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "jointClosures",
+          "assetType": "jointClosure",
+          "key": "jointClosureTypes",
+          "isMultiSelection": true,
+          "repeatId": "assets",
+          "title": "Joint Closure",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "aerialCables",
+          "assetType": "aerialCable",
+          "key": "aerialCables",
+          "isMultiSelection": true,
+          "repeatId": "assets",
+          "title": "Aerial Cable",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "ugCables",
+          "assetType": "ugCable",
+          "key": "ugCableTypes",
+          "isMultiSelection": true,
+          "repeatId": "assets",
+          "title": "UG Cable",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "surfaceTypes",
+          "assetType": "surfaceTypes",
+          "key": "surfaceTypes",
+          "isMultiSelection": true,
+          "repeatId": "assets",
+          "title": "Surface Types",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "materialTypes",
+          "assetType": "materialTypes",
+          "key": "materialTypes",
+          "isMultiSelection": true,
+          "repeatId": "assets",
+          "title": "Material Types",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "dacs",
+          "assetType": "dacs",
+          "key": "dacTypes",
+          "isMultiSelection": true,
+          "repeatId": "assets",
+          "title": "Dacs",
+          "optional": true
+        },
+        {
+          "type": "number",
+          "uploadId": "dropWire",
+          "assetType": "dropWire",
+          "repeatId": "assets",
+          "title": "No. of Drop wire",
+          "optional": true
+        }
+      ]
+    }
+  ]
+}
+

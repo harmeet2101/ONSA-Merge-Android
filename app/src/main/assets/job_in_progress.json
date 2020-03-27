@@ -1,0 +1,30 @@
+{
+  "title": "In Progress",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "In Progress",
+      "index": 0,
+      "url":"app/jobs/{jobId}/in-progress-update",
+      "photoUrl":"app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "Comments",
+          "hint": "Please enter any comment",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "In Progress",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "78"
+        }
+
+      ]
+    }
+  ]
+}

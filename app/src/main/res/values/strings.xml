@@ -1,0 +1,236 @@
+<resources>
+
+
+    <!--login screen-->
+
+    <string name="fa_unlock">&#xf023;</string>
+    <string name="user_name">Username</string>
+    <string name="password">Password</string>
+    <string name="login">LOGIN</string>
+    <string name="sign_in">SIGN IN</string>
+    <string name="sign_out">SIGN OUT</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="reset_your_password">Reset your Password</string>
+    <string name="reset_message">Please enter your email address you had like your email password information sent to</string>
+
+    <string name="email_address">Email address</string>
+    <string name="go_back_to_login">Go back to login</string>
+    <string name="disclaimer">Disclaimer</string>
+    <string name="tnc"> \"I am familiar with the processes and procedures I need to follow for civils work....\"</string>
+
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+
+    <!--home screen-->
+    <string name="my_work">MY WORK</string>
+    <string name="kit_bag">KIT BAG</string>
+    <string name="vehicle_check">VEHICLE CHECK</string>
+    <string name="onsa_store">ONSA STORE</string>
+    <string name="offline_queue">QUEUE</string>
+    <string name="mic_location"><i class="material-icons">location_on</i></string>
+    <string name="view_jobs">View Jobs</string>
+    <string name="job_details">Job Details</string>
+    <string name="work_log">Work Log</string>
+
+
+    <string name="log_dcr">Log DCR</string>
+    <string name="log_dfe">Log DFE</string>
+    <string name="log_tdfs">Log TDFS</string>
+
+    <string name="job_pck">Job Pack</string>
+    <string name="pre_site_survey">Pre-Site Survey</string>
+    <string name="polling_survey">Poling Survey</string>
+    <string name="risk_assessment">Risk Assessment</string>
+    <string name="visitor_attendance">Visitor on Site</string>
+    <string name="survey">Survey</string>
+    <string name="take_photo">Take Photo/Video</string>
+    <string name="variation">Variation</string>
+    <string name="view_gang_measures">View Gang Measures</string>
+    <string name="create_task">Create / Request Task</string>
+    <string name="hot_job">Hot Job</string>
+    <string name="emergency_job">Emergency Job</string>
+
+    <!--fragment job deatils-->
+    <string name="job_detail">Job Detail</string>
+    <string name="work_item">Work Item</string>
+    <string name="notice">Notice</string>
+
+    <!--fragment child job deatil-->
+    <string name="job_number">Job Number</string>
+    <string name="contract">Contract</string>
+    <string name="job_description">Job Description</string>
+    <string name="work_type">Work Type</string>
+    <string name="address">Address</string>
+    <string name="post_code">Post Code</string>
+    <string name="area">Area</string>
+    <string name="job_status">Job Status</string>
+    <string name="agent">Agent</string>
+    <string name="tm_type">TM Type</string>
+    <string name="bus_stop_suspension">Bus Stop Suspension</string>
+    <string name="parking_bay_suspension">Parking Bay suspension</string>
+    <string name="switch_out">Switch out</string>
+    <string name="ttro">TTRO</string>
+    <string name="tm_survey_comment">TM Survey comment</string>
+    <string name="scheduled_time">Scheduled Time</string>
+
+    <string name="notice_ref">Reference</string>
+    <string name="notice_start_date">Start Date</string>
+    <string name="notice_end_date">End Date</string>
+    <string name="notice_street">Street</string>
+    <string name="notice_comment">Comments</string>
+
+    <!--fragment settings-->
+    <string name="scan_title">Scan me for competencies!</string>
+    <string name="contact_support">Contact Support</string>
+    <string name="user_profile">User Profile</string>
+    <string name="password_reset">Password Reset</string>
+    <string name="logout">Logout</string>
+    <string name="search">Search</string>
+    <string name="ok">OK</string>
+    <string name="error">Error</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="pass">Pass</string>
+    <string name="fail">Fail</string>
+    <string name="not_applicable">N/A</string>
+
+
+    <string name="add">ADD</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="submit">Submit</string>
+    <string name="delete">Delete</string>
+    <string name="add_another_item">Add Another Item</string>
+    <string name="view">View</string>
+    <string name="retry">Retry</string>
+    <string name="resume">Resume</string>
+    <string name="pause">Pause</string>
+    <string name="download">Download</string>
+    <string name="done">Done</string>
+    <string name="txt_take_photo">Take Photo</string>
+    <string name="txt_hours">Hours</string>
+    <string name="txt_minutes">Minutes</string>
+    <string name="photo_upload">User can take up to %1$d photos, %2$d being mandatory</string>
+    <string name="photo_upload_unlimited">User can take unlimited photos, %1$d being mandatory</string>
+    <string name="photo_upload_damage">Take up to %1$d photographs of damage</string>
+
+    <string name="go_to_risk_assessment">Go To Risk Assessment</string>
+    <string name="wraning_risk_assessment">You can not go into the work log before completing your risk assessment!</string>
+    <string name="asset_survey_message">You have entered an asset. Please complete the asset survey Information</string>
+    <string name="go_to_asset_Survey">Go to asset survey</string>
+    <string name="signature">Signature</string>
+    <string name="settings">Settings</string>
+    <string name="underline_depth"><u>Depth</u></string>
+    <string name="length">Length :</string>
+    <string name="width">Width :</string>
+    <string name="base">Base :</string>
+    <string name="topping">Topping :</string>
+    <string name="txt_comments">Comments :</string>
+    <string name="material_type">Material Type</string>
+    <string name="comment">Comment</string>
+    <string name="question_done">Done?</string>
+    <string name="view_dig_measure">View Dig Measures</string>
+    <string name="view_backfill_measure">View Backfill Measures</string>
+    <string name="view_reinstatement_measure">View Reinstatement Measures</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="job_id">Job ID :</string>
+    <string name="odo_reading">Odo Reading</string>
+
+    <!--User Profile-->
+    <string name="share_project">Share what you\'re up to</string>
+    <string name="manage">MANAGE</string>
+    <string name="my_qr_code">MY QR code</string>
+    <string name="mobile_no">My mobile no</string>
+    <string name="my_email_address">My email address</string>
+    <string name="my_deponent_name">My Depotnet Name</string>
+    <!--Edit image-->
+    <string name="pen">Pen</string>
+    <string name="text">Text</string>
+    <string name="select">Select</string>
+    <string name="eclipse">Eclipse</string>
+    <string name="line">Line</string>
+    <string name="square">Square</string>
+    <string name="arrow">Arrow</string>
+    <string name="btn_filter">FILTER</string>
+    <string name="location_default_permission_rationale">Onsa would like to access your location.</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="permissions_location_failure">Unfortunately, we cannot continue because you         have denied a required permission.\\n\\nTo enable, please allow permission         to Storage in the settings to continue.</string>
+    <string name="permissions_settings">Settings</string>
+    <string name="generic_cancel">generic_cancel</string>
+    <string name="permission_request_title">Permission Required</string>
+    <string name="permission_continue">Continue</string>
+    <string name="quantity">QTY.</string>
+    <string name="item">ITEM</string>
+    <string name="uploading_photos">Uploading Photos</string>
+    <string name="start_new">Start new</string>
+    <string name="stop_work">Stop work and contact a supervisor immediately  for advice before proceeding.</string>
+    <string name="reset">Reset</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="visitor_log">Visitor Log</string>
+    <string name="quality_check">Quality Check</string>
+    <string name="add_new_survey">ADD_NEW_SURVEY</string>
+    <string name="unsubmitted_survey">Unsubmitted Surveys</string>
+    <string name="job_data">Job data</string>
+    <string name="fluidity_task">Fluidity Task</string>
+    <string name="solution">Solution (INC DFE)</string>
+    <string name="asset_data">Asset Data</string>
+    <string name="poling_ra">Poling Risk Assessment</string>
+    <string name="save">save</string>
+    <string name="disclaimer_warning">Warning: YOU ARE ABOUT TO WORK ON A JOB IN THE AREA OF A HAZARDOUS PIPELINE.</string>
+    <string name="you_must">You must before you start any work:-</string>
+    <string name="disc_line1">&#8226; Read and understand the requirements in the SSR form.</string>
+    <string name="disc_line2">&#8226; Check the safe dig prints are relevant to the work and in date</string>
+    <string name="disc_line3">&#8226; Work safely in accordance with guidance in HSG47</string>
+    <string name="fetch_address">Fetch Address</string>
+    <string name="edit">Edit</string>
+    <string name="add_comment">Add Comment</string>
+    <string name="photo_comment">Photo Comment</string>
+    <string name="my_current_store">My Current Stores</string>
+    <string name="current_stores">Current Stores</string>
+    <string name="goods_out">Goods Out</string>
+    <string name="reciepts">Reciepts</string>
+    <string name="my_requests">My Requests</string>
+
+
+<!--    store-->
+    <string name="alt_name">Alt Name:</string>
+    <string name="description">Description:</string>
+    <string name="barcode">Barcode:</string>
+    <string name="map_id">Map ID:</string>
+    <string name="packaging">Packaging:</string>
+    <string name="unit">Unit:</string>
+    <string name="unit_type">Unit Type:</string>
+    <string name="supplier">Supplier:</string>
+    <string name="department">Department:</string>
+    <string name="warehouse">Warehouse:</string>
+    <string name="serialised">Serialised:</string>
+    <string name="store_quantity">Quantity:</string>
+    <string name="favourite">Favourite</string>
+    <string name="request">Request</string>
+    <string name="transfer">Transfer</string>
+    <string name="site_cleared">Site Cleared</string>
+    <string name="a75">A75</string>
+    <string name="log_store">Log Stores</string>
+    <string name="action_requests">Requests</string>
+    <string name="action_goods_in">Goods In</string>
+    <string name="action_issue">Issue</string>
+    <string name="action_transfer">Transfer</string>
+    <string name="action_goods_out">Goods Out</string>
+    <string name="action_estimate">Estimate</string>
+    <string name="reject">Reject</string>
+    <string name="select_all">Select All</string>
+    <string name="current_stores_detail">Store Detail</string>
+    <string name="open_camera">Oper Camera</string>
+    <string name="filter_by_batch">Filter by batch</string>
+    <string name="filter_by_fav">Filter by favorite</string>
+    <string name="check_your_receipt">Check your receipt</string>
+    <string name="stock_level">Stock level</string>
+    <string name="filter_by_sta">Filter by STAs</string>
+    <string name="filter_by">Filter by:</string>
+    <string name="store_items">Store Items</string>
+    <string name="version">Version</string>
+</resources>

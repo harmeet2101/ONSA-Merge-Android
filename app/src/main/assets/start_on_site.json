@@ -1,0 +1,46 @@
+{
+  "title": "Start on Site",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Start On Site",
+      "index": 0,
+      "url":"app/jobs/{jobId}/start-on-site",
+      "photoUrl":"app/jobs/{jobId}/photos",
+
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "noticeId",
+          "key":"noticeId",
+          "title": "Select Notice",
+          "optional": true
+        },
+
+        {
+          "type": "yes_no",
+          "uploadId": "canJobStart",
+          "title": "Can this job be started?",
+          "optional": false
+
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "canCompleteUnderGivenNotice",
+          "title": "Can this work be completed under current permit conditions?",
+          "optional": false
+
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "Comments",
+          "hint": "Please enter any comment",
+          "optional": true
+        }
+
+      ]
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/white"
+    android:padding="@dimen/_4sdp"
+    app:cardElevation="@dimen/_4sdp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_8sdp">
+
+
+        <ImageView
+            android:id="@+id/img_icon"
+            android:layout_width="@dimen/_32sdp"
+            android:layout_height="@dimen/_32sdp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@id/ll_detail"
+            android:layout_alignTop="@id/ll_detail"
+            android:layout_alignParentRight="true"
+            app:srcCompat="@drawable/ic_receipt"
+            android:tint="@color/depotnet_color"/>
+
+        <LinearLayout
+            android:id="@+id/ll_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_toStartOf="@+id/img_icon"
+            android:layout_toLeftOf="@+id/img_icon">
+
+            <TextView
+                android:id="@+id/txt_sent_by"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sent By: Harriet Abbott"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp" />
+
+            <TextView
+                android:id="@+id/txt_date_sent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Date Sent: 17/10/2019"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp" />
+
+            <TextView
+                android:id="@+id/txt_time_sent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Time Sent: 17:05"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp" />
+
+            <TextView
+                android:id="@+id/txt_number_of_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Number of Items: 2"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp" />
+
+            <TextView
+                android:id="@+id/txt_from"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="From: Portrack STA"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp" />
+
+            <TextView
+                android:id="@+id/txt_batch_ref"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Batch ref: 45646761"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_view"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_below="@id/ll_detail"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_24sdp"
+            android:background="@drawable/btn_backgorund"
+            android:paddingStart="@dimen/_24sdp"
+            android:paddingLeft="@dimen/_24sdp"
+            android:paddingTop="@dimen/_2sdp"
+            android:paddingEnd="@dimen/_24sdp"
+            android:paddingRight="@dimen/_24sdp"
+            android:paddingBottom="@dimen/_2sdp"
+            android:text="@string/view"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_11sdp" />
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:padding="@dimen/_4sdp">
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/btn_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:checked="false">
+    </androidx.appcompat.widget.SwitchCompat>
+
+    <TextView
+        android:layout_marginTop="@dimen/_6sdp"
+        android:layout_marginBottom="@dimen/_6sdp"
+        android:id="@+id/txt_title"
+        android:layout_toLeftOf="@id/checkbox"
+        android:layout_toStartOf="@id/checkbox"
+        android:layout_width="match_parent"
+        android:text="@string/back"
+        android:layout_height="wrap_content"
+        android:textColor="@color/txt_color_dark"
+        android:textSize="@dimen/_10sdp" />
+
+</RelativeLayout>

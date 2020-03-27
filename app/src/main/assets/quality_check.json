@@ -1,0 +1,903 @@
+{
+  "title": "Quality Check",
+  "isProgressVisible": true,
+  "screens": [
+    {
+      "title": "Quality Check",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "workLocation",
+          "title": "1. The POI/Work location supplied is correct.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "workLocationComment",
+              "title": "Work Location Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Work Location",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "71"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "workLocationComment",
+              "title": "Work Location Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Work Location",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "71"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "sizeAndType",
+          "title": "2. Planned size and type of pole provided.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "sizeAndTypeComment",
+              "title": "Size & Type Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Size & Type",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "58"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "sizeAndTypeComment",
+              "title": "Size & Type Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Size & Type",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "58"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 1,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "inPlannedPos",
+          "title": "3. Pole erected mechanically/manually in planned position at the correct depth and aligned correctly.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "inPlannedPosComment",
+              "title": "In Planned Pos Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "In Planned Pos",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "2"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "inPlannedPosComment",
+              "title": "In Planned Pos Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "In Planned Pos",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "2"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "variationsRecordedAgreed",
+          "title": "4. Any departure from estimate correctly agreed and recorded at planning.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "variationsRecordedAgreedComment",
+              "title": "Variations Recorded Agreed Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Variations Recorded Agreed",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "59"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "variationsRecordedAgreedComment",
+              "title": "Variations Recorded Agreed",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Variations Recorded Agreed",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "59"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 2,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "poleCorrectlyNumbered",
+          "title": "5. Pole correctly numbered.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleCorrectlyNumberedComment",
+              "title": "Pole Correctly Numbered Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Correctly Numbered",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "72"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "poleCorrectlyNumberedComment",
+              "title": "Pole Correctly Numbered Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Correctly Numbered",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "72"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "poleLoadOk",
+          "title": "6. Pole load not exceeded.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleLoadOkComment",
+              "title": "Pole Load Ok Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Load Ok",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "40"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "poleLoadOkComment",
+              "title": "Pole Load Ok Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Load Ok",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "40"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 3,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "poleBleedingProtected",
+          "title": "7. If pole bleeding has it been properly protected?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleBleedingProtectedComment",
+              "title": "Pole Bleeding Protected Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Bleeding Protected",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "51"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "poleBleedingProtectedComment",
+              "title": "Pole Bleeding Protected Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Bleeding Protected",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "51"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "itemsFullyRecovered",
+          "title": "8. Pole/Pole related items fully recovered?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "itemsFullyRecoveredComment",
+              "title": "Items Fully Recovered Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Items Fully Recovered",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "7"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "itemsFullyRecoveredComment",
+              "title": "Items Fully Recovered Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Items Fully Recovered",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "7"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 4,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "reinstatementComplies",
+          "title": "9. All surface reinstatement complies with the specification.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "reinstatementCompliesComment",
+              "title": "Reinstatement Complies Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Reinstatement Complies",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "76"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "reinstatementCompliesComment",
+              "title": "Reinstatement Complies Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Reinstatement Complies",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "76"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "growthReplantingSeeding",
+          "title": "10. Reasonable growth of seeding/replanting/returfing.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "growthReplantingSeedingComment",
+              "title": "Growth Replanting Seeding Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Growth Replanting Seeding",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "3"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "growthReplantingSeedingComment",
+              "title": "Growth Replanting Seeding Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Growth Replanting Seeding",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 5,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "poleDressedSafety",
+          "title": "11. Has the pole been dressed correctly-safety items.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleDressedSafetyComment",
+              "title": "Pole Dressed Safety Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Dressed Safety",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "80"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "poleDressedSafetyComment",
+              "title": "Pole Dressed Safety Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Dressed Safety",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "80"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "poleDressedNonSafety",
+          "title": "12. Has the pole been dressed correctly-none safety items.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleDressedNonSafetyComment",
+              "title": "Pole Dressed NonSafety Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Dressed NonSafety",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "21"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "poleDressedNonSafetyComment",
+              "title": "Pole Dressed NonSafety Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Line Search Out Of Date",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "21"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 6,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "earthingCorrectProvided",
+          "title": "13. Earthing correctly provided(visual inspection) if the pole is DP.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "earthingCorrectProvidedComment",
+              "title": "Earthing Correct Provided Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Earthing Correct Provided",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "46"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "earthingCorrectProvidedComment",
+              "title": "Earthing Correct Provided Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Earthing Correct Provided",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "46"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "poleStaysFitted",
+          "title": "14. Pole stays fitted correctly.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleStaysFittedComment",
+              "title": "Pole Stays Fitted Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Stays Fitted",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "35"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "poleStaysFittedComment",
+              "title": "Pole Stays Fitted Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Stays Fitted",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "35"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 7,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "furnitureHolesPlugged",
+          "title": "15. Redundant pole furniture recovered, holes plugged correctly.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "furnitureHolesPluggedComment",
+              "title": "Furniture Holes Plugged Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Furniture Holes Plugged",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "9"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "furnitureHolesPluggedComment",
+              "title": "Furniture Holes Plugged Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Furniture Holes Plugged",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "9"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "assessedCorrectlyRepair",
+          "title": "16. Pole assessed correctly for repair, including size & location of the damaged area. Repair resin patch completed correctly, bars fitted correctly with coach screws and tooth plate connectors.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "assessedCorrectlyRepairComment",
+              "title": "Assessed Correctly Repair Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Assessed Correctly Repair",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "20"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "assessedCorrectlyRepairComment",
+              "title": "Assessed Correctly Repair Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Assessed Correctly Repair",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "20"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 8,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "recordsLegible",
+          "title": "17. All records prints and A154 legible clean, updated, certified and forwarded.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "recordsLegibleComment",
+              "title": "Records Legible Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Records Legible",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "1"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "recordsLegibleComment",
+              "title": "Records Legible Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Records Legible",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "1"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "siteTidy",
+          "title": "18. Worksite left tidy. OR Contractor rubbish removed.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "siteTidyComment",
+              "title": "Site Tidy Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Site Tidy",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "81"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "siteTidyComment",
+              "title": "Site Tidy Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Site Tidy",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "81"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 9,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "bookPraticeCorrect",
+          "title": "19. Booking practices correct.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "bookPraticeCorrectComment",
+              "title": "Book Pratice Correct Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Book Pratice Correct",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "16"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "bookPraticeCorrectComment",
+              "title": "Book Pratice Correct Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Book Pratice Correct",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "16"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "defectsReportedA1024",
+          "title": "20. Defects on-site reported via A1024",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "defectsReportedA1024Comment",
+              "title": "Defects Reported A1024 Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Defects Reported A1024",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "38"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "defectsReportedA1024Comment",
+              "title": "Defects Reported A1024 Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Defects Reported A1024",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "38"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 10,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "itemElsewhereProductCheck",
+          "title": "21. Product item not covered elsewhere in product checks.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "itemElsewhereProductCheckComment",
+              "title": "Item Else where Product Check Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Item Else where Product Check",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "14"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "itemElsewhereProductCheckComment",
+              "title": "Item Else where Product Check Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Item Else where Product Check",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "14"
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "operativeOpenreachAccredited",
+          "title": "22. Contractor check only-Operative is shown as accredited on Openreach CCDB system for work completed.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "operativeOpenreachAccreditedComment",
+              "title": "Operative Openreach Accredited Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Operative Openreach Accredited",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "31"
+            }
+          ],
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "operativeOpenreachAccreditedComment",
+              "title": "Operative Openreach Accredited Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Operative Openreach Accredited",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "31"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quality Check",
+      "index": 11,
+      "url":"app/jobs/{jobId}/quality-check",
+      "photoUrl":"app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "et_short_text",
+          "uploadId": "itemCode",
+          "title": "Item Code",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "defectComment",
+          "title": "Defect Comment",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "actionTaken",
+          "title": "Action Taken",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}
+

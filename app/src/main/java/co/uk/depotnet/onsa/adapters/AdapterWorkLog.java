@@ -1,0 +1,108 @@
+package co.uk.depotnet.onsa.adapters;
+
+import android.content.Context;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import co.uk.depotnet.onsa.R;
+import co.uk.depotnet.onsa.listeners.OnItemClickListener;
+import co.uk.depotnet.onsa.modals.WorkLog;
+
+import java.util.ArrayList;
+
+public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHolder> {
+
+    private Context context;
+    private ArrayList<WorkLog> items;
+    private OnItemClickListener<WorkLog> listener;
+    private String jobID;
+    private boolean isBookOn;
+
+    public AdapterWorkLog(Context context, ArrayList<WorkLog> items, OnItemClickListener<WorkLog> listener,String jobID) {
+        this.context = context;
+        this.items = items;
+        this.listener = listener;
+        this.jobID=jobID;
+    }
+
+
+
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int type) {
+        return new ViewHolder(LayoutInflater.from(context).
+                inflate(R.layout.item_work_log, viewGroup,
+                        false));
+    }
+
+    public void setBookOn(boolean isBookOn){
+        this.isBookOn = isBookOn;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        final WorkLog workLog = items.get(position);
+
+
+
+        if(position == 0 ){
+            holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
+        }else if(isBookOn){
+            holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
+        }else{
+            holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
+        }
+
+        if(!isBookOn ){
+            holder.imgIcon.setImageResource(R.drawable.ic_offline_queue_01);
+            holder.imgIcon.setBackgroundResource(R.drawable.img_bg_cirlcle_orange);
+        }else if(position == 0){
+            holder.imgIcon.setImageResource(R.drawable.ic_check);
+            holder.imgIcon.setBackgroundResource(R.drawable.img_bg_circle);
+        }else{
+            holder.imgIcon.setImageResource(workLog.isStatus() ?
+                    R.drawable.ic_check : R.drawable.ic_offline_queue_01);
+            holder.imgIcon.setBackgroundResource(workLog.isStatus() ?
+                    R.drawable.img_bg_circle : R.drawable.img_bg_cirlcle_orange);
+        }
+
+        holder.txtTitle.setText(workLog.getTitle());
+
+        holder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onItemClick(workLog, holder.getAdapterPosition());
+            }
+        });
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+
+        View view;
+        TextView txtTitle;
+        ImageView imgIcon;
+        RelativeLayout rlParent;
+
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            this.view = itemView;
+            this.txtTitle = itemView.findViewById(R.id.txt_title);
+            this.imgIcon = itemView.findViewById(R.id.img_icon);
+            this.rlParent=itemView.findViewById(R.id.rlParent);
+        }
+    }
+}

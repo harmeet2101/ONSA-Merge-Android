@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_home_bottom_bar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_48sdp"
+    android:layout_alignParentBottom="true"
+    android:background="@color/white"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/ll_btn_my_work"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/img_my_work"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:tint="@color/txt_color_light_grey"
+            app:srcCompat="@drawable/ic_my_work" />
+
+        <TextView
+            android:id="@+id/txt_my_work"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:maxLines="1"
+            android:text="@string/my_work"
+            android:textColor="@color/txt_color_light_grey"
+            android:textSize="@dimen/_8sdp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_btn_kit_bag"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/img_kit_bag"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:tint="@color/txt_color_light_grey"
+            app:srcCompat="@drawable/ic_kit_bag_01" />
+
+        <TextView
+            android:id="@+id/txt_kit_bag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:maxLines="1"
+            android:text="@string/kit_bag"
+            android:textColor="@color/txt_color_light_grey"
+            android:textSize="@dimen/_8sdp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_btn_onsa_store"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+
+        android:visibility="visible">
+
+        <RelativeLayout
+            android:layout_width="@dimen/_28sdp"
+            android:gravity="center_vertical"
+            android:layout_height="@dimen/_28sdp">
+
+            <ImageView
+                android:layout_alignParentBottom="true"
+                android:id="@+id/img_vehicle_check"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:layout_gravity="center_horizontal"
+                android:tint="@color/txt_color_light_grey"
+                app:srcCompat="@drawable/ic_my_current_store" />
+
+            <TextView
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/txt_store_notification"
+                android:layout_width="@dimen/_12sdp"
+                android:layout_height="@dimen/_12sdp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginTop="0dp"
+                android:background="@drawable/badge_background"
+                android:gravity="center"
+                android:padding="@dimen/_2sdp"
+                android:textColor="@android:color/white"
+                android:text="0"
+                android:textSize="@dimen/_6sdp"/>
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/txt_onsa_store"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_8sdp"
+            android:maxLines="1"
+            android:text="@string/onsa_store"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_btn_offline_queue"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/img_offline_queue"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:tint="@color/txt_color_light_grey"
+            app:srcCompat="@drawable/ic_offline_queue_01" />
+
+        <TextView
+            android:id="@+id/txt_offline_queue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:maxLines="1"
+            android:text="@string/offline_queue"
+            android:textColor="@color/txt_color_light_grey"
+            android:textSize="@dimen/_8sdp" />
+    </LinearLayout>
+
+
+</LinearLayout>

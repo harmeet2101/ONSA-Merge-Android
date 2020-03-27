@@ -1,0 +1,42 @@
+{
+  "title": "Risk Assessment",
+  "index": 17,
+  "upload": false,
+  "items": [
+    {
+      "type": "number",
+      "title": "1st chamber number",
+      "uploadId": "chamberNo",
+      "repeatId": "gasTest",
+      "optional": "false"
+    },
+    {
+      "type": "location",
+      "uploadId": "Location",
+      "repeatId": "gasTest",
+      "title": "Location",
+      "optional": false
+    },
+    {
+      "type": "stopWatch",
+      "uploadId": "timeTaken",
+      "repeatId": "gasTest",
+      "title": "Record Time",
+      "optional": false
+    },
+    {
+      "type": "yes_no",
+      "uploadId": "outcome",
+      "repeatId": "gasTest",
+      "title": "Outcome",
+      "optional": false
+    },
+    {
+      "type": "et_long_text",
+      "uploadId": "comment",
+      "repeatId": "gasTest",
+      "title": "Comment",
+      "optional": true
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "title": "Transfer",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Transfer",
+      "index": 0,
+      "url":"appstores/logtransfer",
+      "upload": true,
+      "items": [
+        {
+          "type": "number",
+          "uploadId": "RequestComments",
+          "repeatId": "Quantity",
+          "title": "Quantity",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "ToUserId",
+          "key": "operatives",
+          "isMultiSelection": false,
+          "isConcatDisplayText": false,
+          "title": "Operative",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

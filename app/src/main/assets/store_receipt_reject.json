@@ -1,0 +1,28 @@
+{
+  "title": "Accept",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Accept",
+      "index": 0,
+      "url":"appstores/rejectreceipt",
+      "upload": true,
+      "items": [
+        {
+          "type": "signature",
+          "uploadId": "SignatureId",
+          "signatureUrl": "app/jobs/{jobId}/upload-signature",
+          "title": "Signature",
+          "photoId": "26",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "Comments",
+          "title": "Comment:",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

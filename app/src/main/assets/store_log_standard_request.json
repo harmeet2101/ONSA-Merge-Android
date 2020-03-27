@@ -1,0 +1,45 @@
+{
+  "title": "Request",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Request",
+      "index": 0,
+      "url":"appstores/logrequest",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "StaId",
+          "repeatId": "Items",
+          "key": "stas",
+          "isMultiSelection": false,
+          "isConcatDisplayText": false,
+          "title": "Request from STA (Warehouse)",
+          "optional": false,
+          "enables": [
+            {
+              "type": "add_store_item",
+              "uploadId": "",
+              "repeatId": "Items",
+              "fields": ["StaStockItemId" , "StaId" , "Quantity"],
+              "listItemType": "stock_item",
+              "isStoackLevelCheck": false,
+              "isMultiSelection": true,
+              "isConcatDisplayText": false,
+              "title": "Store Item",
+              "optional": false
+            },
+            {
+              "type": "et_long_text",
+              "uploadId": "RequestComments",
+              "title": "Request Comment:",
+              "optional": false
+            }
+          ]
+        }
+
+      ]
+    }
+  ]
+}

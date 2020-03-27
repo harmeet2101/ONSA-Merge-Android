@@ -1,0 +1,42 @@
+[
+  {
+    "title": "Book On",
+    "json": "book_on.json",
+    "status": false
+  },
+  {
+    "title": "Start on Site",
+    "json": "start_on_site.json",
+    "status": false
+  },
+  {
+    "title": "In Progress",
+    "json": "job_in_progress.json",
+    "status": false
+  },
+  {
+    "title": "Raise Variation",
+    "json": "raise_variation.json",
+    "status": false
+  },
+  {
+    "title": "Finish On Site",
+    "json": "finish_on_site.json",
+    "status": false
+  },
+  {
+    "title": "Eng Comp",
+    "json": "eng_comp.json",
+    "status": false
+  },
+  {
+    "title": "Site Clear",
+    "json": "site_clear.json",
+    "status": false
+  },
+  {
+    "title": "Abandon",
+    "json": "abandon.json",
+    "status": false
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "title": "Issue",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Issue",
+      "index": 0,
+      "url":"appstores/logissue",
+      "photoUrl":"appstores/{issueId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "IssueTypeId",
+          "key": "issueTypes",
+          "isMultiSelection": false,
+          "isConcatDisplayText": false,
+          "title": "Issue reason",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "Comments",
+          "title": "Comment:",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

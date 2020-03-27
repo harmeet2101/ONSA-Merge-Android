@@ -1,0 +1,419 @@
+{
+  "title": "Pre-Site Survey",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Pre-Site Survey",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "switch_layout",
+          "isChecked": true,
+          "uploadId": "locationDetailsCorrect",
+          "title": "Are location detail correct?",
+          "falseEnables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "locationDetails",
+              "title": "Enter Correct Location",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Location Details Photo",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "41"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "haMeetingRequired",
+          "title": "HA Meeting required?",
+          "enables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "haMeetingDetails",
+              "title": "Meeting Details:",
+              "optional": true
+            },
+            {
+              "type": "calender",
+              "uploadId": "haMeetingDate",
+              "title": "HA Meeting Date",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "HA Meeting Photo",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "49"
+            }
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Pre-Site Survey",
+      "index": 1,
+      "upload": false,
+      "items": [
+        {
+          "type": "switch_layout",
+          "uploadId": "trafficManagementRequired",
+          "title": "Traffic Management?",
+          "enables":[
+            {
+              "type": "dropdown",
+              "uploadId": "trafficManagementSpeedLimitId",
+              "key":"speedLimits",
+              "title": "Speed Limit",
+              "optional": false
+            },
+            {
+              "type": "dropdown",
+              "uploadId": "trafficManagementTmId",
+              "key":"trafficManagementTypes",
+              "title": "Select TM",
+              "optional": false
+            },
+            {
+              "type": "switch_layout",
+              "uploadId": "tmMeetingRequired",
+              "title": "TM Meeting Required?",
+              "optional": true
+            },
+            {
+              "type": "et_long_text",
+              "uploadId": "tmMeetingDetails",
+              "title": "TM Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "TM Meeting photo",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "6"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "wayLeavePTDRequired",
+          "title": "Wayleave?",
+          "enables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "wayLeavePTDDetails",
+              "title": "Way Leave comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Wayleave Required photo",
+              "photoSize": 100,
+              "photoRequired": 1,
+              "photoId": "28"
+            }
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Pre-Site Survey",
+      "index": 2,
+      "upload": false,
+      "items": [
+        {
+          "type": "switch_layout",
+          "uploadId": "restrictions",
+          "title": "Restrictions?",
+          "enables":[
+            {
+              "type": "switch_layout",
+              "uploadId": "dateConstraints",
+              "title": "Date Constraints?",
+              "optional": true
+            },
+            {
+              "type": "switch_layout",
+              "uploadId": "workingTimeRestrictions",
+              "title": "Working time restrictions?",
+              "optional": true
+            },
+            {
+              "type": "switch_layout",
+              "uploadId": "outOfHoursApprovalRequired",
+              "title": "Out of hours approval required?",
+              "optional": true
+            },
+            {
+              "type": "switch_layout",
+              "uploadId": "workingApproval24HrRequired",
+              "title": "24hr working approval required?",
+              "optional": true
+            },
+            {
+              "type": "et_long_text",
+              "uploadId": "restrictionComments",
+              "title": "Restriction comments",
+              "optional": true
+            },
+            {
+              "type": "number",
+              "uploadId":"fwWidth",
+              "title": "F/W Width(meters)",
+              "optional": false
+            },
+            {
+              "type": "txt_bold_head",
+              "title": "F/W Occupation Dim(meters)"
+            },
+            {
+              "type": "number",
+              "uploadId":"fwDimLength",
+              "title": "Length(meters)",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId":"fwDimWidth",
+              "title": "Width(meters)",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId":"fwDimDepth",
+              "title": "Height(meters)",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId":"cwWidth",
+              "title": "C/W Width(meters)",
+              "optional": false
+            },
+            {
+              "type": "txt_bold_head",
+              "title": "C/W Occupation Dim(meters)"
+            },
+            {
+              "type": "number",
+              "uploadId":"cwDimLength",
+              "title": "Length(meters)",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId":"cwDimWidth",
+              "title": "Width(meters)",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId":"cwDimDepth",
+              "title": "Height(meters)",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "Restrictions photo",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "110"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "parkingBaySuspensions",
+          "title": "Parking bay suspensions?",
+          "enables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "parkingBayComments",
+              "title": "Parking bay comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Parking Bay Photo",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "37"
+            }
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Pre-Site Survey",
+      "index": 3,
+      "upload": false,
+      "items": [
+        {
+          "type": "switch_layout",
+          "uploadId": "busStopSuspensions",
+          "title": "Bus Stop suspensions?",
+          "enables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "busStopComments",
+              "title": "Bus Stop comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Bus Stop Photo",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "62"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "jobCantStart",
+          "title": "Cancel job/job can't start?",
+          "enables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "jobCantStartComments",
+              "title": "Job can't start reasons",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Job can't start Photo",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "86"
+            }
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Pre-Site Survey",
+      "index": 4,
+      "upload": false,
+      "items": [
+        {
+          "type": "switch_layout",
+          "uploadId": "materialsRequired",
+          "title": "Materials required?",
+          "enables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "materialsRequiredComments",
+              "title": "Materials required comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Materials required",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "64"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "pedestrianManagementRequired",
+          "title": "Pedestrian Management?",
+          "enables":[
+            {
+              "type": "dropdown",
+              "uploadId": "pedestrianManagementTypeId",
+              "key":"pedestrianManagementTypes",
+              "title": "Select Pedestrian Management",
+              "optional": true
+            },
+            {
+              "type": "et_long_text",
+              "uploadId": "pedestrianManagementComments",
+              "title": "Pedestrian Management Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pedestrian Management Photo",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "57"
+            }
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Pre-Site Survey",
+      "index": 5,
+      "url": "app/jobs/{jobId}/submit-presite-survey",
+      "photoUrl": "app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "switch_layout",
+          "uploadId": "proposedDateToCommenceAvailable",
+          "title": "Proposed date to commence?",
+          "enables":[
+            {
+              "type": "et_long_text",
+              "uploadId": "proposedDateToCommenceDetails",
+              "title": "Proposed date to commence comments",
+              "optional": true
+            },
+            {
+              "type": "date_time",
+              "uploadId": "proposedDateToCommenceStartDate",
+              "title": "Set Start Date & Time",
+              "optional": true
+            },
+            {
+              "type": "number",
+              "uploadId": "proposedDateToCommenceDuration",
+              "title": "Estimated duration for permit/notice",
+              "optional": true
+            },
+            {
+              "type": "date_time",
+              "uploadId": "proposedDateToCommenceFinishDate",
+              "title": "Set End Date & Time",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Proposed date to commence photo",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "111"
+            }
+          ],
+          "optional": true
+        },
+        {
+          "type": "calender",
+          "uploadId": "completedDate",
+          "title": "Completed Date",
+          "optional": true
+        }
+      ]
+    }
+  ]
+}

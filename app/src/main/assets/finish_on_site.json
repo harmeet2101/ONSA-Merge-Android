@@ -1,0 +1,36 @@
+{
+  "title": "Finish On Site",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Finish On Site",
+      "index": 0,
+      "url":"app/jobs/{jobId}/finish-on-site",
+      "photoUrl":"app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isJobCompleted",
+          "title": "Job Completed?",
+          "optional": false
+
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Finish On Site",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "55"
+        }
+
+      ]
+    }
+  ]
+}

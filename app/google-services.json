@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "590919131615",
+    "firebase_url": "https://onsa-250306.firebaseio.com",
+    "project_id": "onsa-250306",
+    "storage_bucket": "onsa-250306.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590919131615:android:a09a65560cad2fc8",
+        "android_client_info": {
+          "package_name": "co.uk.depotnet.onsa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "590919131615-9n5m2g2duinqaconvleag4hv1jau31cs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDViFuFOCZaW6Ti-rfjo2anZwmOHxxIAE4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "590919131615-9n5m2g2duinqaconvleag4hv1jau31cs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

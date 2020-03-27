@@ -1,0 +1,21 @@
+{
+  "title": "Poling Survey",
+  "isProgressVisible": true,
+  "screens": [
+    {
+      "title": "Poling Survey",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "number",
+          "uploadId": "NoOfPoles",
+          "repeatId": "majorStoreItems",
+          "title": "No. of Poles",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}
+

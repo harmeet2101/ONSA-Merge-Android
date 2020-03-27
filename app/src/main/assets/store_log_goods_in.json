@@ -1,0 +1,14 @@
+{
+  "title": "Goods In",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Goods In",
+      "index": 0,
+      "url":"appstores/loggoodsin",
+      "upload": true,
+      "items": [
+      ]
+    }
+  ]
+}

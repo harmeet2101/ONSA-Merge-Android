@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="YesNoTextView">
+        <attr name="selected_background_color" format="color"/>
+        <attr name="unselected_background_color" format="color"/>
+        <attr name="selected_txt_color" format="color"/>
+        <attr name="unselected_txt_color" format="color"/>
+        <attr name="stroke_size" format="dimension"/>
+    </declare-styleable>
+</resources>

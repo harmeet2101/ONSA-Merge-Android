@@ -1,0 +1,34 @@
+{
+  "title": "Log Stores",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log Stores",
+      "index": 0,
+      "url":"appstores/logtojob",
+      "photoUrl":"app/jobs/{jobId}/photos",
+
+      "upload": true,
+      "items": [
+        {
+          "type": "add_store_item",
+          "uploadId": "",
+          "repeatId": "Items",
+          "fields": ["StaStockItemId" , "StaId" , "Quantity"],
+          "listItemType": "stock_item",
+          "isStoackLevelCheck": false,
+          "isMultiSelection": false,
+          "isConcatDisplayText": false,
+          "title": "Store Item",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "Comments",
+          "title": "Comment:",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "title": "Request",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Request",
+      "index": 0,
+      "url":"appstores/logrequest",
+      "upload": true,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "RequestComments",
+          "title": "Request Comment:",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "title": "Eng Comp",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Eng Comp",
+      "index": 0,
+      "url":"app/jobs/{jobId}/eng-comp",
+      "photoUrl":"app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "outcome",
+          "key": "engCompOutcomes",
+          "title": "Eng Comp Outcome",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "recordReturn",
+          "key": "recordReturn",
+          "title": "Record Return",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Eng Comp",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "25"
+        }
+
+      ]
+    }
+  ]
+}

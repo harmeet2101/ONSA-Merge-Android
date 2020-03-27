@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/_12sdp">
+
+    <TextView
+        android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/txt_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Excavate only (LV) joint hole in footway"
+        android:textColor="@color/txt_color_dark"
+        android:textStyle="bold"
+        android:textSize="@dimen/_14sdp"/>
+
+    <TextView
+        android:id="@+id/txt_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:text="UNIT: Item"
+        android:textColor="@color/txt_color_dark"
+        android:textStyle="bold"
+        android:textSize="@dimen/_12sdp"/>
+
+    <TextView
+        android:id="@+id/txt_quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="QTY: 2"
+        android:textColor="@color/txt_color_light_grey"
+        android:textSize="@dimen/_12sdp"
+        android:layout_marginBottom="@dimen/_10sdp"/>
+
+</LinearLayout>

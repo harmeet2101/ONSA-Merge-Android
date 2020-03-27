@@ -1,0 +1,24 @@
+[
+  {
+    "type": "txt_bold_head",
+    "title": "CONSIDERATIONS:"
+  },
+  {
+    "type": "txt_description",
+    "title": "No. of aerial cables on pole"
+  },
+  {
+    "type": "number",
+    "uploadId": "dPoleNo",
+    "repeatId": "riskElements",
+    "title": "Indicate 'D' Pole No's",
+    "optional": false
+  },
+  {
+    "type": "number",
+    "uploadId": "sPoleNo",
+    "repeatId": "riskElements",
+    "title": "Indicate 'S' Pole No's",
+    "optional": false
+  }
+]
