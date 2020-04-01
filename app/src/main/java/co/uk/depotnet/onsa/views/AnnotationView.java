@@ -148,6 +148,7 @@ public class AnnotationView extends View implements TextWatcher {
     public void clear() {
         backgroundColor = DEFAULT_BG_COLOR;
         paths.clear();
+        backPaths.clear();
         normal();
         invalidate();
     }
@@ -184,13 +185,13 @@ public class AnnotationView extends View implements TextWatcher {
         }
     }
 
-    public void saveSignature(Photo photo) {
+    public void saveSignature(String photo) {
 
         Bitmap bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         this.draw(canvas);
 
-        File file = new File(photo.getUrl());
+        File file = new File(photo);
 
         try {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
@@ -507,6 +508,8 @@ public class AnnotationView extends View implements TextWatcher {
         paths.add(backPaths.remove(backPaths.size() - 1));
         invalidate();
     }
+
+
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {

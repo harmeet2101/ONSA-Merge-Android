@@ -91,6 +91,8 @@
         <activity android:name=".activities.ListStoreItemActivity" />
         <activity android:name=".fragments.store.FragmentStoreDetail" />
         <activity android:name=".activities.ListStockItemActivity" />
+        <activity android:name=".activities.ImageAnnotationActivity"
+            android:screenOrientation="portrait"/>
 
 
         <meta-data

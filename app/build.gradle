@@ -52,8 +52,8 @@ android {
 
         storedev {
             initWith debug
-            android.defaultConfig.versionName "1.1.0"
-            android.defaultConfig.versionCode 11
+            android.defaultConfig.versionName "1.6.2"
+            android.defaultConfig.versionCode 27
             applicationIdSuffix ".store.dev"
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
             buildConfigField("boolean", "isStoreEnabled", 'true')

@@ -79,7 +79,7 @@ import co.uk.depotnet.onsa.views.CameraView;
 
 public class CameraActivity extends AppCompatActivity implements
         ActivityCompat.OnRequestPermissionsResultCallback,
-        View.OnClickListener, AdapterCameraPhoto.OnRemoveClick,
+        View.OnClickListener, AdapterCameraPhoto.OnImageChange,
         LocationPermissionListener {
 
     public static final String BACK_STACK_TAG = CameraActivity.class.getName();
@@ -232,7 +232,7 @@ public class CameraActivity extends AppCompatActivity implements
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
         if (photos != null && photos.size() > 0)
-            adapter = new AdapterCameraPhoto(this, answers);
+            adapter = new AdapterCameraPhoto(this, answers , this);
         recyclerView.setAdapter(adapter);
         pictureCallback = (data, camera) -> {
             File pictureFile = null;
@@ -318,6 +318,14 @@ public class CameraActivity extends AppCompatActivity implements
                         R.drawable.ic_baseline_camera_alt);
                 break;
         }
+    }
+
+    @Override
+    public void notifyImage(Answer photo, int position) {
+        Intent intent = new Intent(this , ImageAnnotationActivity.class);
+        intent.putExtra("photos" , photo);
+        intent.putExtra("POSITION" , position);
+        startActivityForResult(intent , PICK_MODIFY_IMAGE);
     }
 
     private void startVideoCapturing() {
@@ -708,6 +716,9 @@ public class CameraActivity extends AppCompatActivity implements
                 setPicture(path);
             }
         } else if (resultCode == Activity.RESULT_OK && requestCode == PICK_MODIFY_IMAGE) {
+            Answer photo = data.getParcelableExtra("photo");
+            int position = data.getIntExtra("position" , 0);
+            answers.set(position , photo);
             adapter.notifyDataSetChanged();
         }
     }
@@ -917,11 +928,6 @@ public class CameraActivity extends AppCompatActivity implements
         }
 
         camera.setDisplayOrientation(result);
-    }
-
-    @Override
-    public void onRemove(Answer photo) {
-
     }
 
     private class CameraOpenTask extends AsyncTask<Void, Void, Camera> {

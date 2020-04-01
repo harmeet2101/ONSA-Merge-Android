@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16sdp"
             android:textColor="@color/txt_color_dark"
-            android:textSize="@dimen/_20sdp"
+            android:textSize="@dimen/_12sdp"
             android:textStyle="bold"
             android:textAlignment="center" />
 

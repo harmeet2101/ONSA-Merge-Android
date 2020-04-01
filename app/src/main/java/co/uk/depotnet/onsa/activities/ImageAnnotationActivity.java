@@ -3,7 +3,6 @@ package co.uk.depotnet.onsa.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -13,22 +12,26 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.listeners.ColorListener;
 import co.uk.depotnet.onsa.modals.Color;
-import co.uk.depotnet.onsa.modals.forms.Photo;
+import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.views.AnnotationView;
 import co.uk.depotnet.onsa.views.FilterBottomSheet;
 
-public class EditImageActivity extends AppCompatActivity implements View.OnClickListener,
+public class ImageAnnotationActivity extends AppCompatActivity implements View.OnClickListener,
         FilterBottomSheet.FilterListener, ColorListener {
 
     private LinearLayout bottomBar, llAddColorSize, llPickColor, llPointSize, llBtnPen, llBtnText, llBtnSelect, llBtnEclipse,
             llBtnLine, llBtnSquare, llBtnArrow;
-    private ImageView imgClose, imgBack, imgRemoveChange, imgAddChange, colorImage;
+    private LinearLayout llShapes;
+    private LinearLayout llBtnShapes;
+    private ImageView imgBack, imgRemoveChange, imgAddChange, colorImage;
     private TextView textPointSize, txtSave;
     private int pointSizeCount = 2;
     private AnnotationView annotationView;
@@ -36,13 +39,14 @@ public class EditImageActivity extends AppCompatActivity implements View.OnClick
     private List<Integer> filterColor;
     private EditText editText;
 //    private Bitmap bitmap;
-    private Photo photo;
+    private Answer photo;
     private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_image);
+        setContentView(R.layout.activity_image_annotation
+        );
         editText = findViewById(R.id.editText);
          photo=getIntent().getParcelableExtra("photos");
          position=getIntent().getIntExtra("POSITION",0);
@@ -59,7 +63,7 @@ public class EditImageActivity extends AppCompatActivity implements View.OnClick
         llPickColor = findViewById(R.id.ll_pick_color);
         llPointSize = findViewById(R.id.ll_point_size);
 
-
+        llShapes = findViewById(R.id.ll_shapes);
         llBtnPen = findViewById(R.id.ll_btn_pen);
         llBtnText = findViewById(R.id.ll_btn_text);
         llBtnSelect = findViewById(R.id.ll_btn_select);
@@ -67,8 +71,9 @@ public class EditImageActivity extends AppCompatActivity implements View.OnClick
         llBtnLine = findViewById(R.id.ll_btn_line);
         llBtnSquare = findViewById(R.id.ll_btn_square);
         llBtnArrow = findViewById(R.id.ll_btn_arrow);
+        llBtnShapes = findViewById(R.id.ll_btn_shapes);
 
-        imgClose = findViewById(R.id.img_close);
+//        imgClose = findViewById(R.id.img_close);
         imgBack = findViewById(R.id.btn_img_back);
         imgRemoveChange = findViewById(R.id.btn_img_remove_change);
         imgAddChange = findViewById(R.id.btn_img_add_change);
@@ -87,8 +92,9 @@ public class EditImageActivity extends AppCompatActivity implements View.OnClick
         llBtnArrow.setOnClickListener(this);
         llPointSize.setOnClickListener(this);
         llPickColor.setOnClickListener(this);
+        llBtnShapes.setOnClickListener(this);
 
-        imgClose.setOnClickListener(this);
+//        imgClose.setOnClickListener(this);
         imgBack.setOnClickListener(this);
         imgRemoveChange.setOnClickListener(this);
         imgAddChange.setOnClickListener(this);
@@ -100,7 +106,7 @@ public class EditImageActivity extends AppCompatActivity implements View.OnClick
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         annotationView.init(metrics);
 
-        annotationView.setImageUrl(photo.getUrl());
+        annotationView.setImageUrl(photo.getAnswer());
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
         editText.addTextChangedListener(annotationView);
@@ -121,43 +127,53 @@ public class EditImageActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         });
-
-
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ll_btn_pen:
-                llAddColorSize.setVisibility(View.VISIBLE);
+//                llAddColorSize.setVisibility(View.VISIBLE);
                 annotationView.setMode(AnnotationView.MODE_PEN);
                 break;
             case R.id.ll_btn_text:
-                llAddColorSize.setVisibility(View.VISIBLE);
+//                llAddColorSize.setVisibility(View.VISIBLE);
                 annotationView.setMode(AnnotationView.MODE_TEXT);
                 break;
             case R.id.ll_btn_select:
-                llAddColorSize.setVisibility(View.GONE);
+//                llAddColorSize.setVisibility(View.GONE);
                 annotationView.setMode(AnnotationView.MODE_SELECTION);
                 break;
+            case R.id.ll_btn_shapes:
+//                llAddColorSize.setVisibility(View.VISIBLE);
+                if(llShapes.getVisibility() == View.VISIBLE){
+                    llShapes.setVisibility(View.GONE);
+                }else {
+                    llShapes.setVisibility(View.VISIBLE);
+                }
+                break;
             case R.id.ll_btn_eclipse:
-                llAddColorSize.setVisibility(View.VISIBLE);
+//                llAddColorSize.setVisibility(View.VISIBLE);
+                llShapes.setVisibility(View.GONE);
                 annotationView.setMode(AnnotationView.MODE_ECLIPSE);
                 break;
             case R.id.ll_btn_line:
-                llAddColorSize.setVisibility(View.VISIBLE);
+                llShapes.setVisibility(View.GONE);
+//                llAddColorSize.setVisibility(View.VISIBLE);
                 annotationView.setMode(AnnotationView.MODE_LINE);
                 break;
             case R.id.ll_btn_square:
-                llAddColorSize.setVisibility(View.VISIBLE);
+                llShapes.setVisibility(View.GONE);
+//                llAddColorSize.setVisibility(View.VISIBLE);
                 annotationView.setMode(AnnotationView.MODE_SQUARE);
                 break;
             case R.id.ll_btn_arrow:
-                llAddColorSize.setVisibility(View.VISIBLE);
+                llShapes.setVisibility(View.GONE);
+//                llAddColorSize.setVisibility(View.VISIBLE);
                 annotationView.setMode(AnnotationView.MODE_ARROW);
                 break;
             case R.id.img_close:
-                llAddColorSize.setVisibility(View.GONE);
+//                llAddColorSize.setVisibility(View.GONE);
                 break;
             case R.id.ll_point_size:
                 pointSizeCount = pointSizeCount + 2;
@@ -176,11 +192,16 @@ public class EditImageActivity extends AppCompatActivity implements View.OnClick
             case R.id.btn_img_add_change:
                 annotationView.goForward();
                 break;
+            case R.id.btn_clear:
+                annotationView.clear();
+                break;
             case R.id.btn_save:
-//                annotationView.saveSignature(photo);
-//                Intent intent=new Intent();
-//                setResult(RESULT_OK,intent);
-//                finish();
+                annotationView.saveSignature(photo.getAnswer());
+                Intent intent=new Intent();
+                intent.putExtra("position" , position);
+                intent.putExtra("photo" , photo);
+                setResult(RESULT_OK,intent);
+                finish();
                 break;
 
 
@@ -219,31 +240,23 @@ public class EditImageActivity extends AppCompatActivity implements View.OnClick
         color.setSelected(false);
         colors.add(color);
         color = new Color();
-        color.setRgb_code("#F54700");
-        color.setName("Orange");
+        color.setRgb_code("#FF0000");
+        color.setName("Red");
         color.setId(2);
         color.setSelected(false);
         colors.add(color);
         color = new Color();
-        color.setRgb_code("#F5B63C");
-        color.setName("Yellow");
+        color.setRgb_code("#00FF00");
+        color.setName("Green");
         color.setId(3);
         color.setSelected(false);
         colors.add(color);
         color = new Color();
-        color.setRgb_code("#48AD83");
-        color.setName("Light green");
+        color.setRgb_code("#16cdf5");
+        color.setName("Sky Blue");
         color.setId(4);
         color.setSelected(false);
         colors.add(color);
-        color = new Color();
-        color.setRgb_code("#FF0000");
-        color.setName("Red");
-        color.setId(5);
-        color.setSelected(false);
-        colors.add(color);
-
-
     }
 
     @Override

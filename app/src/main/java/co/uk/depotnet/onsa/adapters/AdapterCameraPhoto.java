@@ -1,6 +1,7 @@
 package co.uk.depotnet.onsa.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.CameraActivity;
+import co.uk.depotnet.onsa.activities.ImageAnnotationActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.views.MaterialAlertDialog;
@@ -27,14 +29,16 @@ public class AdapterCameraPhoto extends RecyclerView.Adapter<AdapterCameraPhoto.
     private Context context;
     private List<Answer> photos;
     private RequestOptions myOptions;
+    private OnImageChange onImageChange;
 
-    public interface OnRemoveClick{
-        void onRemove(Answer photo);
+    public interface OnImageChange{
+        void notifyImage(Answer photo , int position);
     }
 
-    public AdapterCameraPhoto(Context context, List<Answer> photos) {
+    public AdapterCameraPhoto(Context context, List<Answer> photos , OnImageChange onImageChange) {
         this.context = context;
         this.photos = photos;
+        this.onImageChange = onImageChange;
         myOptions = new RequestOptions()
                 .fitCenter()
                 .override(100, 100);
@@ -76,6 +80,13 @@ public class AdapterCameraPhoto extends RecyclerView.Adapter<AdapterCameraPhoto.
                     .setNegative(context.getString(android.R.string.cancel), (dialog12, which) -> dialog12.dismiss())
                     .build();
             dialog.show(((CameraActivity)context).getSupportFragmentManager(), "_CONFIRM_DIALOG");
+        });
+
+        holder.imgPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onImageChange.notifyImage(photo , holder.getAdapterPosition());
+            }
         });
     }
 
