@@ -14,6 +14,7 @@ public class WorkItem implements Parcelable , DropDownItem {
 	private String itemCode;
 	private String description;
 	private int revisionNo;
+	private String contractNumber;
 
 
 
@@ -64,6 +65,7 @@ public class WorkItem implements Parcelable , DropDownItem {
 		revisionNo = in.readInt();
 		id = in.readInt();
 		type = in.readString();
+		contractNumber = in.readString();
 
 	}
 	public static final Creator<WorkItem> CREATOR = new Creator<WorkItem>() {
@@ -102,36 +104,35 @@ public class WorkItem implements Parcelable , DropDownItem {
 		public static final String revisionNo = "revisionNo";
 		public static final String id = "id";
 		public static final String type = "type";
+		public static final String contractNumber = "contractNumber";
 
 	}
 	@Override
 	public void writeToParcel(Parcel parcel, int i) {
-	parcel.writeString(itemCode);
-	parcel.writeString(description);
-	parcel.writeInt(revisionNo);
-	parcel.writeInt(id);
-	parcel.writeString(type);
-
+		parcel.writeString(itemCode);
+		parcel.writeString(description);
+		parcel.writeInt(revisionNo);
+		parcel.writeInt(id);
+		parcel.writeString(type);
+		parcel.writeString(contractNumber);
 	}
+
 	public WorkItem(Cursor cursor) {
 		itemCode = cursor.getString(cursor.getColumnIndex(DBTable.itemCode));
 		description = cursor.getString(cursor.getColumnIndex(DBTable.description));
 		revisionNo = cursor.getInt(cursor.getColumnIndex(DBTable.revisionNo));
 		id = cursor.getInt(cursor.getColumnIndex(DBTable.id));
 		type = cursor.getString(cursor.getColumnIndex(DBTable.type));
+		contractNumber = cursor.getString(cursor.getColumnIndex(DBTable.contractNumber));
 
 	}
 	public ContentValues toContentValues(){
-
 		ContentValues cv = new ContentValues();
-
 		cv.put(DBTable.itemCode , this.itemCode);
-
 		cv.put(DBTable.description , this.description);
-
 		cv.put(DBTable.revisionNo , this.revisionNo);
-
 		cv.put(DBTable.type , this.type);
+		cv.put(DBTable.contractNumber , this.contractNumber);
 
 		 return cv;	}
 }

@@ -18,6 +18,7 @@ import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.listeners.HomeJobListListener;
 import co.uk.depotnet.onsa.modals.Job;
+import co.uk.depotnet.onsa.networking.Constants;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
@@ -78,7 +79,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         });
 
 
-        if(BuildConfig.isStoreEnabled) {
+        if(Constants.isStoreEnabled) {
             holder.llBtnLogStores.setVisibility(View.VISIBLE);
             holder.llBtnLogStores.setOnClickListener(view -> listener.onLogStores(holder.job));
         }else{
@@ -97,6 +98,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         holder.llBtnRiskAssessment.setOnClickListener(view -> listener.openRiskAssessment(holder.job));
 
         holder.llBtnVisitorAttendance.setOnClickListener(view -> listener.openVisitorAttendance(holder.job));
+        holder.llBtnPhotoGallery.setOnClickListener(view -> listener.openPhotoGallery(holder.job));
 
         holder.llBtnSurvey.setOnClickListener(view -> listener.openSurvey(holder.job));
         holder.llTakePhotoAndVideo.setOnClickListener(view -> listener.openTakePhotoAndVideo(holder.job));
@@ -137,6 +139,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         private final LinearLayout llBtnQualityCheck;
         private final LinearLayout llBtnLogStores;
         private final LinearLayout llBtnVisitorAttendance;
+        private final LinearLayout llBtnPhotoGallery;
         private final LinearLayout llBtnSurvey;
         private final LinearLayout llTakePhotoAndVideo;
         public Job job;
@@ -155,6 +158,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             llBtnQualityCheck = view.findViewById(R.id.ll_btn_quality_check);
             llBtnLogStores = view.findViewById(R.id.ll_btn_log_stores);
             llBtnVisitorAttendance = view.findViewById(R.id.ll_btn_visitor_attendance);
+            llBtnPhotoGallery = view.findViewById(R.id.ll_btn_photo_gallery);
             llTakePhotoAndVideo = view.findViewById(R.id.ll_btn_take_photo_video);
             imgJob = view.findViewById(R.id.img_job);
             imgHotJob = view.findViewById(R.id.img_hot_job);

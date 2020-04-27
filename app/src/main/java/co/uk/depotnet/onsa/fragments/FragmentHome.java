@@ -50,6 +50,7 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.activities.KeywordListActivity;
 import co.uk.depotnet.onsa.activities.MainActivity;
+import co.uk.depotnet.onsa.activities.PhotoActivity;
 import co.uk.depotnet.onsa.activities.RiskAssessmentActivity;
 import co.uk.depotnet.onsa.activities.SettingsActivity;
 import co.uk.depotnet.onsa.activities.SurveyActivity;
@@ -507,8 +508,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         return (!jobNumber.isEmpty() && jobNumber.contains(keyword)) ||
                 (!exchange.isEmpty() && exchange.contains(keyword)) ||
                 (!address.isEmpty() && address.contains(keyword));
-
-
     }
 
     @Override
@@ -631,7 +630,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             @Override
             public void onResponse(@NonNull Call<JobResponse> call, @NonNull Response<JobResponse> response) {
 
-
                 if (response.isSuccessful()) {
                     DBHandler.getInstance().resetJobs();
                     JobResponse jobResponse = response.body();
@@ -645,10 +643,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                     }
                 }
                 getJobsFromDb();
-                /*isRefreshing = false;
-                refreshLayout.setRefreshing(false);
-                listener.hideProgressBar();*/
-                if(BuildConfig.isStoreEnabled) {
+                if(Constants.isStoreEnabled) {
                     getMyRequests();
                 }else{
                     isRefreshing = false;
@@ -706,7 +701,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                     if(dataMyRequests != null){
                         DBHandler.getInstance().resetMyRequest();
                         dataMyRequests.toContentValues();
-
                     }
                 }
                 getReceipts();
@@ -715,6 +709,8 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
             @Override
             public void onFailure(Call<DataMyRequests> call, Throwable t) {
+                isRefreshing = false;
+                refreshLayout.setRefreshing(false);
                 listener.hideProgressBar();
             }
         });
@@ -725,7 +721,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         List<Job> jobs = DBHandler.getInstance().getJobs();
         FragmentHome.this.originalJobs.clear();
         FragmentHome.this.jobs.clear();
-
         if (!jobs.isEmpty()) {
             FragmentHome.this.originalJobs.addAll(jobs);
         }
@@ -947,5 +942,12 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
         dialog.setCancelable(false);
         dialog.show(getChildFragmentManager(), "_ERROR_DIALOG");
+    }
+
+    @Override
+    public void openPhotoGallery(Job job) {
+        Intent intent = new Intent(context , PhotoActivity.class);
+        intent.putExtra("Job" , job);
+        startActivity(intent);
     }
 }

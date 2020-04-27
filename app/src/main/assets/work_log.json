@@ -25,6 +25,11 @@
     "status": false
   },
   {
+    "title": "Ready For Next Activity",
+    "json": "rfna.json",
+    "status": false
+  },
+  {
     "title": "Eng Comp",
     "json": "eng_comp.json",
     "status": false

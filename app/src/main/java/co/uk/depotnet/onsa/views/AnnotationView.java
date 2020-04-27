@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.EmbossMaskFilter;
 import android.graphics.MaskFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -23,8 +24,6 @@ import android.view.View;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-
-import co.uk.depotnet.onsa.modals.forms.Photo;
 
 
 public class AnnotationView extends View implements TextWatcher {
@@ -64,6 +63,7 @@ public class AnnotationView extends View implements TextWatcher {
     private FingerPath fp;
     private Bitmap bitmap;
     private Context context;
+    private int degree;
 
     //    private InputMethodManager imm;
     private boolean isTextDrawing;
@@ -100,10 +100,6 @@ public class AnnotationView extends View implements TextWatcher {
 
         mEmboss = new EmbossMaskFilter(new float[]{1, 1, 1}, 0.4f, 6, 3.5f);
         mBlur = new BlurMaskFilter(5, BlurMaskFilter.Blur.NORMAL);
-
-//        imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-
-
     }
 
     public void setImageUrl(String url) {
@@ -115,8 +111,6 @@ public class AnnotationView extends View implements TextWatcher {
         if (bitmap != null) {
             bitmap = getScaledBitMapBaseOnScreenSize(bitmap);
         }
-
-
     }
 
     public void init(DisplayMetrics metrics) {
@@ -170,15 +164,8 @@ public class AnnotationView extends View implements TextWatcher {
 
 
         try {
-            // create a matrix for the manipulation
-//            Matrix matrix = new Matrix();
-//            // resize the bit map
-//            matrix.postScale(scaleWidth, scaleHeight);
 
             return Bitmap.createScaledBitmap(bitmapOriginal, scaleWidth, scaleHeight, false);
-
-            // recreate the new Bitmap
-//            return Bitmap.createBitmap(bitmapOriginal, 0, 0, width, height, matrix, true);
         } catch (Exception e) {
             e.printStackTrace();
             return bitmapOriginal;
@@ -203,6 +190,8 @@ public class AnnotationView extends View implements TextWatcher {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
+        canvas.rotate(degree , getWidth()/2 , getHeight()/2);
+        super.onDraw(canvas);
         mCanvas.drawColor(backgroundColor);
 
         mCanvas.drawBitmap(bitmap, getMatrix(), mPaint);
@@ -227,9 +216,6 @@ public class AnnotationView extends View implements TextWatcher {
                 mCanvas.drawOval(fp.getRect(), mPaint);
 
             } else if (fp.mode == MODE_ARROW) {
-
-//                mCanvas.drawLine(fp.startLineX, fp.startLineY, fp.endLineX,
-//                        fp.endLineY, mPaint);
                 mPaint.setStyle(Paint.Style.FILL);
                 mCanvas.drawPath(fp.path, mPaint);
             } else if (fp.mode == MODE_TEXT) {
@@ -238,16 +224,17 @@ public class AnnotationView extends View implements TextWatcher {
                 mCanvas.drawText(fp.getText(), fp.getRect().left + 10,
                         fp.getRect().bottom - 10, mPaint);
             }
-
-
         }
 
 
-        canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
+
+        canvas.drawBitmap(mBitmap, 0,0, mBitmapPaint);
         canvas.restore();
     }
 
     private void touchStart(float x, float y) {
+        x = rotatex(x,y);
+        y = rotatey(x,y);
         switch (mode) {
             case MODE_PEN:
                 touchStartPen(x, y);
@@ -317,9 +304,49 @@ public class AnnotationView extends View implements TextWatcher {
         mY = y;
     }
 
+    private float rotatex(float x, float y){
+//        if(degree == 0){
+//            return x;
+//        }
+//
+//        if(degree == 90){
+//            return y;
+//        }
+//
+//        if(degree == 180){
+//            return getWidth()-x;
+//        }
+//
+//        if(degree == 270){
+//            return getHeight()-y;
+//        }
+
+        return x;
+    }
+
+    private float rotatey(float x, float y){
+//        if(degree == 0){
+//            return y;
+//        }
+//
+//        if(degree == 90){
+//            return x;
+//        }
+//
+//        if(degree == 180){
+//            return getHeight()-y;
+//        }
+//
+//        if(degree == 270){
+//            return getWidth()-x;
+//        }
+
+        return y;
+    }
+
     private void touchMove(float x, float y) {
-
-
+        x = rotatex(x,y);
+        y = rotatey(x,y);
         switch (mode) {
             case MODE_PEN:
                 touchMovePen(x, y);
@@ -563,5 +590,15 @@ public class AnnotationView extends View implements TextWatcher {
         void onTextModeEnabled(boolean enabled);
     }
 
+    public void setDegree(int degree) {
+        this.degree = degree;
+        if(this.degree == -360){
+            this.degree = 0;
+        }
+        invalidate();
+    }
 
+    public int getDegree() {
+        return degree;
+    }
 }

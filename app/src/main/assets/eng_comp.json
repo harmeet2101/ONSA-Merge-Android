@@ -5,7 +5,7 @@
     {
       "title": "Eng Comp",
       "index": 0,
-      "url":"app/jobs/{jobId}/eng-comp",
+      "url":"app/jobs/{jobId}/eng-comp-record-returns",
       "photoUrl":"app/jobs/{jobId}/photos",
       "upload": true,
       "items": [
@@ -18,7 +18,7 @@
         },
         {
           "type": "dropdown",
-          "uploadId": "recordReturn",
+          "uploadId": "recordReturnsType",
           "key": "recordReturn",
           "title": "Record Return",
           "optional": false

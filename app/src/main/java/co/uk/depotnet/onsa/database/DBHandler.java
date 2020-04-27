@@ -16,6 +16,7 @@ import java.util.List;
 import co.uk.depotnet.onsa.listeners.DropDownItem;
 import co.uk.depotnet.onsa.modals.A75Groups;
 import co.uk.depotnet.onsa.modals.Document;
+import co.uk.depotnet.onsa.modals.Feature;
 import co.uk.depotnet.onsa.modals.ItemType;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobModuleStatus;
@@ -53,7 +54,9 @@ public class DBHandler {
                     dbHandler = new DBHandler();
                 }
             }
-        } else if (dbHandler.db == null) {
+        }
+
+        if (dbHandler.db == null) {
             dbHandler.openDatabase();
         }
 
@@ -67,6 +70,9 @@ public class DBHandler {
     }
 
     private void openDatabase() {
+        if(dbHelper == null){
+            return;
+        }
         try {
             dbHelper.openDatabase();
             db = dbHelper.getWritableDatabase();
@@ -531,10 +537,48 @@ public class DBHandler {
         return workItems;
     }
 
+    public JobWorkItem getJobWorkItem(String jobId , String code) {
+
+        String selection = JobWorkItem.DBTable.jobId + " = ? AND "+JobWorkItem.DBTable.itemCode+" = ?";
+        String[] selectionArgs = new String[]{String.valueOf(jobId) , code};
+JobWorkItem workItem = null;
+        Cursor cursor = db.query(JobWorkItem.DBTable.NAME,
+                null, selection, selectionArgs,
+                null, null,
+                JobWorkItem.DBTable.itemCode + " ASC");
+
+
+        if (cursor.moveToFirst()) {
+            workItem = new JobWorkItem(cursor);
+
+        }
+        cursor.close();
+        return workItem;
+    }
+
     public ArrayList<WorkItem> getWorkItem(String type, String orderBy) {
 
         String selection = WorkItem.DBTable.type + " = ?";
         String[] selectionArgs = new String[]{String.valueOf(type)};
+
+        Cursor cursor = db.query(WorkItem.DBTable.NAME,
+                null, selection, selectionArgs,
+                null, null, orderBy + " ASC");
+        ArrayList<WorkItem> workItems = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                workItems.add(new WorkItem(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return workItems;
+    }
+
+    public ArrayList<WorkItem> getWorkItem(String type, String contractNumber ,String orderBy) {
+
+        String selection = WorkItem.DBTable.type + " = ? AND "+WorkItem.DBTable.contractNumber+" = ?";
+        String[] selectionArgs = new String[]{String.valueOf(type) , contractNumber};
 
         Cursor cursor = db.query(WorkItem.DBTable.NAME,
                 null, selection, selectionArgs,
@@ -593,11 +637,13 @@ public class DBHandler {
     public boolean removeAnswers(Submission submission) {
         String whereClause = Submission.DBTable.id + " = ?";
         String[] whereArgs = {String.valueOf(submission.getID())};
-        int affectedRows = db.delete(Submission.DBTable.NAME, whereClause, whereArgs);
+        submission.setQueued(0);
+        replaceData(Submission.DBTable.NAME , submission.toContentValues());
+//        int affectedRows = db.delete(Submission.DBTable.NAME, whereClause, whereArgs);
 
-        whereClause = Answer.DBTable.submissionID + " = ?";
-        whereArgs = new String[]{String.valueOf(submission.getID())};
-        affectedRows = db.delete(Answer.DBTable.NAME, whereClause, whereArgs);
+        whereClause = Answer.DBTable.submissionID + " = ? AND "+Answer.DBTable.isPhoto+" = ?";
+        whereArgs = new String[]{String.valueOf(submission.getID()) , String.valueOf(0)};
+        int affectedRows = db.delete(Answer.DBTable.NAME, whereClause, whereArgs);
         return affectedRows > 0;
     }
 
@@ -671,6 +717,25 @@ public class DBHandler {
             cursor.close();
         }
         return submission;
+    }
+
+    @NonNull
+    public boolean isFeatureActive(String featureName) {
+
+        boolean isActive = false;
+        String whereClause = Feature.DBTable.featureName + " = ? ";
+        String[] whereArgs = new String[]{featureName};
+
+        Cursor cursor = db.query(Feature.DBTable.NAME, null, whereClause, whereArgs, null, null, Feature.DBTable.featureName + " ASC");
+        if (cursor != null && cursor.moveToFirst()) {
+            Feature feature = new Feature(cursor);
+            isActive = feature.isActive();
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        return isActive;
     }
 
 
@@ -1063,5 +1128,51 @@ public class DBHandler {
     }
 
 
+    public ArrayList<Submission> getSubmissionsByJobId(String jobId){
+        String whereClause = Submission.DBTable.jobID + " = ?";
+        String[] whereArgs = new String[]{jobId};
 
+        Cursor cursor = db.query(Submission.DBTable.NAME, null, whereClause, whereArgs, null, null, Submission.DBTable.id + " DESC");
+        ArrayList<Submission> submissions = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                submissions.add(new Submission(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return submissions;
+
+    }
+    public ArrayList<Answer> getRecentPhotos(String jobId) {
+
+        ArrayList<Submission> submissions = getSubmissionsByJobId(jobId);
+        ArrayList<Answer> answers = new ArrayList<>();
+        int coount = 0;
+        for (Submission s :
+                submissions) {
+            String whereClause = Answer.DBTable.isPhoto + " = ? AND "+Answer.DBTable.submissionID+" = ?";
+            String[] whereArgs = new String[]{String.valueOf(1) , String.valueOf(s.getID())};
+
+
+            Cursor cursor = db.query(Answer.DBTable.NAME, null, whereClause, whereArgs, null, null, Answer.DBTable.repeatCounter + " DESC" , "5");
+
+            if (cursor.moveToFirst()) {
+                do {
+                    Answer answer = new Answer(cursor);
+                    if(answer.getUploadID() != null && !answer.getUploadID().equalsIgnoreCase("SignatureId")) {
+                        answers.add(new Answer(cursor));
+                        coount++;
+                        if (coount == 5) {
+                            break;
+                        }
+                    }
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+
+
+        return answers;
+    }
 }

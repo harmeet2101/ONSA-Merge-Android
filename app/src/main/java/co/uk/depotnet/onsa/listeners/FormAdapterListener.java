@@ -22,5 +22,5 @@ public interface FormAdapterListener extends LocationPermissionListener {
 
     void startActivityForResultFromAdapter(Intent intent, int requestCode);
 
-
+    void showValidationDialog(String title, String message);
 }

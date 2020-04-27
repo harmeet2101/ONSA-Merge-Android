@@ -49,6 +49,7 @@ public class Job implements Parcelable, DropDownItem {
     private boolean isHotJob;
     private boolean isSiteClear;
     private ArrayList<A75Groups> a75Groups;
+    private boolean hasRFNA;
 
     protected Job(Parcel in) {
         notes = in.createTypedArrayList(Note.CREATOR);
@@ -78,6 +79,7 @@ public class Job implements Parcelable, DropDownItem {
         isHotJob = in.readInt()==1;
         isSiteClear = in.readInt()==1;
         a75Groups = in.createTypedArrayList(A75Groups.CREATOR);
+        hasRFNA = in.readInt()==1;
     }
 
     public Job() {
@@ -85,7 +87,7 @@ public class Job implements Parcelable, DropDownItem {
     }
 
     public Job(Cursor cursor) {
-
+        jobId = cursor.getString(cursor.getColumnIndex(DBTable.jobId));
         notes = DBHandler.getInstance().getNotes(jobId);
         documents = DBHandler.getInstance().getDocument(jobId);
         estimateNumber = cursor.getString(cursor.getColumnIndex(DBTable.estimateNumber));
@@ -98,7 +100,7 @@ public class Job implements Parcelable, DropDownItem {
         locationAddress = cursor.getString(cursor.getColumnIndex(DBTable.locationAddress));
         priority = cursor.getString(cursor.getColumnIndex(DBTable.priority));
         notices = DBHandler.getInstance().getNotices(jobId);
-        jobId = cursor.getString(cursor.getColumnIndex(DBTable.jobId));
+
         jobCatagory = cursor.getString(cursor.getColumnIndex(DBTable.jobCatagory));
         specialInstructions = cursor.getString(cursor.getColumnIndex(DBTable.specialInstructions));
         exchange = cursor.getString(cursor.getColumnIndex(DBTable.exchange));
@@ -113,6 +115,7 @@ public class Job implements Parcelable, DropDownItem {
         isHotJob = cursor.getInt(cursor.getColumnIndex(DBTable.isHotJob)) == 1;
         isSiteClear = cursor.getInt(cursor.getColumnIndex(DBTable.isSiteClear)) == 1;
         a75Groups = DBHandler.getInstance().getA75Groups(jobId);
+        hasRFNA = cursor.getInt(cursor.getColumnIndex(DBTable.hasRFNA)) == 1;
     }
 
     public void setnotes(ArrayList<Note> notes) {
@@ -319,6 +322,10 @@ public class Job implements Parcelable, DropDownItem {
         return a75Groups;
     }
 
+    public boolean hasRFNA() {
+        return hasRFNA;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -353,6 +360,7 @@ public class Job implements Parcelable, DropDownItem {
         dest.writeInt(isHotJob ? 1 : 0);
         dest.writeInt(isSiteClear ? 1 : 0);
         dest.writeTypedList(a75Groups);
+        dest.writeInt(hasRFNA ? 1: 0);
     }
 
     public ContentValues toContentValues() {
@@ -431,6 +439,7 @@ public class Job implements Parcelable, DropDownItem {
         cv.put(DBTable.icon, this.icon);
         cv.put(DBTable.isHotJob, this.isHotJob);
         cv.put(DBTable.isSiteClear, this.isSiteClear);
+        cv.put(DBTable.hasRFNA, this.hasRFNA);
 
         if (a75Groups != null && !a75Groups.isEmpty()) {
             for (A75Groups a : a75Groups) {
@@ -470,6 +479,7 @@ public class Job implements Parcelable, DropDownItem {
         public static final String isHotJob = "isHotJob";
         public static final String isSiteClear = "isSiteClear";
         public static final String a75Groups = "a75Groups";
+        public static final String hasRFNA = "hasRFNA";
 
     }
 
@@ -482,4 +492,6 @@ public class Job implements Parcelable, DropDownItem {
     public String getDisplayItem() {
         return estimateNumber;
     }
+
+
 }

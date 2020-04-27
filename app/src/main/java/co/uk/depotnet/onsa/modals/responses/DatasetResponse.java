@@ -245,7 +245,7 @@ public class DatasetResponse implements Parcelable {
 
         if (this.kitbagDocuments != null && !this.kitbagDocuments.isEmpty()) {
             for (KitBagDocument item : this.kitbagDocuments) {
-                dbHandler.insertData(KitBagDocument.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(KitBagDocument.DBTable.NAME, item.toContentValues());
             }
         }
 

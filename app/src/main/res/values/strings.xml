@@ -159,7 +159,7 @@
     <string name="permission_denied">Permission Denied</string>
     <string name="permissions_location_failure">Unfortunately, we cannot continue because you         have denied a required permission.\\n\\nTo enable, please allow permission         to Storage in the settings to continue.</string>
     <string name="permissions_settings">Settings</string>
-    <string name="generic_cancel">generic_cancel</string>
+    <string name="generic_cancel">Cancel</string>
     <string name="permission_request_title">Permission Required</string>
     <string name="permission_continue">Continue</string>
     <string name="quantity">QTY.</string>
@@ -196,7 +196,7 @@
     <string name="my_requests">My Requests</string>
 
 
-<!--    store-->
+    <!--    store-->
     <string name="alt_name">Alt Name:</string>
     <string name="description">Description:</string>
     <string name="barcode">Barcode:</string>
@@ -234,4 +234,6 @@
     <string name="store_items">Store Items</string>
     <string name="version">Version</string>
     <string name="shapes">Shapes</string>
+    <string name="photo_gallery">Photo Gallery</string>
+    <string name="rotate">Rotate</string>
 </resources>

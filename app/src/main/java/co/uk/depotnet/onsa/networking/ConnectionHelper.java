@@ -8,9 +8,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.SparseArray;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -36,6 +39,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -56,9 +60,9 @@ public class ConnectionHelper {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(120, TimeUnit.SECONDS)
-                .readTimeout(120, TimeUnit.SECONDS)
-                .writeTimeout(2, TimeUnit.MINUTES)
+                .connectTimeout(150, TimeUnit.SECONDS)
+                .readTimeout(150, TimeUnit.SECONDS)
+                .writeTimeout(150, TimeUnit.SECONDS)
                 .addInterceptor(logging)
                 .addInterceptor(new AuthInterceptor())
                 .build();
@@ -418,6 +422,13 @@ public class ConnectionHelper {
     }
 
 
+    public Response sendRfna(Submission submission){
+
+        String url = BuildConfig.BASE_URL+"app/jobs/"+submission.getJobID()+"/sendrfna";
+        return performJSONNetworking( RequestBody.create(JSON , "") , url);
+    }
+
+
     public Response submitForm(String endPoint, String photoEndPoint,
                                Submission submission, FragmentManager fm) {
 
@@ -455,9 +466,12 @@ public class ConnectionHelper {
             if (answer.shouldUpload()) {
                 if (answer.isPhoto() == 0) {
                     String repeatId = answer.getRepeatID();
+
                     String uploadId = answer.getUploadID();
                     if (!TextUtils.isEmpty(repeatId)) {  //INFO: repeat id not null
-
+                        if(repeatId.equalsIgnoreCase("negItems")){
+                            repeatId = "items";
+                        }
                         if (!requestMap.containsKey(repeatId)) {  // if parent not contains repeatId then create new object
                             requestMap.put(answer.getRepeatID(),
                                     new HashMap<String, Map<String, Object>>());
@@ -550,10 +564,15 @@ public class ConnectionHelper {
 
         if (!TextUtils.isEmpty(endPoint)) {
             String url = BuildConfig.BASE_URL + endPoint;
-            Response response = performJSONNetworking(body, url);
+            Response response ;
+            if((endPoint.contains("raise-dcr/v2") || endPoint.contains("raise-dfe/v2"))){
+                response = uploadMultipart(jsonSubmission, photosToUpload, url);
+            }else {
+                response = performJSONNetworking(body, url);
 
-            if (response == null || !response.isSuccessful()) {
-                return response;
+                if (response == null || !response.isSuccessful()) {
+                    return response;
+                }
             }
 
             if(photoEndPoint!= null && photoEndPoint.contains("issueId")){
@@ -566,8 +585,7 @@ public class ConnectionHelper {
                 }catch (Exception e){
 
                 }
-            }else
-            if (photoEndPoint != null) {
+            }else if (photoEndPoint != null) {
                 uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, "");
             }
 
@@ -584,8 +602,29 @@ public class ConnectionHelper {
             }
             uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, photoComment);
         }
-
         return null;
+    }
+
+    private Response uploadMultipart(String json, ArrayList<Answer> photosToUpload , String endpoint) {
+
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+        .setType(MultipartBody.FORM);
+
+
+        if(!photosToUpload.isEmpty()){
+            Answer answer = photosToUpload.get(0);
+            Bitmap bm = BitmapFactory.decodeFile(answer.getAnswer());
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+            byte[] byteArrayImage = baos.toByteArray();
+//            String encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+            String fileName = answer.getDisplayAnswer().replace(" ", "_");
+            RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpeg") , byteArrayImage);
+            builder = builder.addFormDataPart(fileName+".jpg" , fileName+".jpg" , requestBody);
+        }
+        builder = builder.addFormDataPart("request", json);
+        Response response = performImageNetworking(endpoint, builder.build());
+        return response;
     }
 
     Object parseObject(String val){
@@ -612,8 +651,6 @@ public class ConnectionHelper {
 
             }
         }
-
-
         return obj;
     }
 
@@ -769,6 +806,44 @@ public class ConnectionHelper {
 
     @Nullable
     private RespAndCall performNetworkingForCall(@NonNull String url, RequestBody requestBody) {
+        Request.Builder builder = new Request.Builder().url(url);
+
+        if (requestBody != null) {
+            builder.post(requestBody);
+        }
+
+        // Send up authentication token if we have it
+
+        User user = DBHandler.getInstance().getUser();
+        if (user != null) {
+            builder.addHeader("Authorization", "Bearer " + user.gettoken());
+        }
+
+        try {
+            Request request = builder.build();
+            Call call = okHttpClient.newCall(request);
+            Response response = call.execute();
+
+            return new RespAndCall(response, call);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    @Nullable
+    public Response performImageNetworking(@NonNull String url, RequestBody requestBody) {
+        RespAndCall rc = performImageNetworkingForCall(url, requestBody);
+        if (rc != null) {
+            return rc.response;
+        }
+        return null;
+    }
+
+    @Nullable
+    private RespAndCall performImageNetworkingForCall(@NonNull String url, RequestBody requestBody) {
         Request.Builder builder = new Request.Builder().url(url);
 
         if (requestBody != null) {

@@ -28,7 +28,7 @@ public class ImageAnnotationActivity extends AppCompatActivity implements View.O
         FilterBottomSheet.FilterListener, ColorListener {
 
     private LinearLayout bottomBar, llAddColorSize, llPickColor, llPointSize, llBtnPen, llBtnText, llBtnSelect, llBtnEclipse,
-            llBtnLine, llBtnSquare, llBtnArrow;
+            llBtnLine, llBtnSquare, llBtnArrow, llBtnRotate;
     private LinearLayout llShapes;
     private LinearLayout llBtnShapes;
     private ImageView imgBack, imgRemoveChange, imgAddChange, colorImage;
@@ -72,6 +72,7 @@ public class ImageAnnotationActivity extends AppCompatActivity implements View.O
         llBtnSquare = findViewById(R.id.ll_btn_square);
         llBtnArrow = findViewById(R.id.ll_btn_arrow);
         llBtnShapes = findViewById(R.id.ll_btn_shapes);
+        llBtnRotate = findViewById(R.id.ll_btn_rotate);
 
 //        imgClose = findViewById(R.id.img_close);
         imgBack = findViewById(R.id.btn_img_back);
@@ -93,6 +94,7 @@ public class ImageAnnotationActivity extends AppCompatActivity implements View.O
         llPointSize.setOnClickListener(this);
         llPickColor.setOnClickListener(this);
         llBtnShapes.setOnClickListener(this);
+        llBtnRotate.setOnClickListener(this);
 
 //        imgClose.setOnClickListener(this);
         imgBack.setOnClickListener(this);
@@ -202,6 +204,9 @@ public class ImageAnnotationActivity extends AppCompatActivity implements View.O
                 intent.putExtra("photo" , photo);
                 setResult(RESULT_OK,intent);
                 finish();
+                break;
+            case R.id.ll_btn_rotate:
+                annotationView.setDegree(annotationView.getDegree()-90);
                 break;
 
 

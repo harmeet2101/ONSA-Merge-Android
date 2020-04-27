@@ -18,9 +18,11 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
+import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
+import co.uk.depotnet.onsa.networking.Constants;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -48,6 +50,10 @@ public class SplashActivity extends AppCompatActivity {
             startMainActivity();
         }
     };
+
+
+
+
     private Callback<DatasetResponse> dataSetCallback = new Callback<DatasetResponse>() {
         @Override
         public void onResponse(@NonNull Call<DatasetResponse> call,
@@ -56,7 +62,9 @@ public class SplashActivity extends AppCompatActivity {
             if (response.body() != null) {
                 DBHandler.getInstance().resetDatasetTable();
                 response.body().toContentValues();
-                if(BuildConfig.isStoreEnabled) {
+                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
+
+                if(Constants.isStoreEnabled) {
                     APICalls.getStoreDataSet(user.gettoken()).enqueue(storeDataSetCallback);
                     return;
                 }
@@ -70,6 +78,26 @@ public class SplashActivity extends AppCompatActivity {
          startMainActivity();
         }
     };
+
+    private void getFeatures(){
+        APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
+            @Override
+            public void onResponse(Call<FeatureResult> call, Response<FeatureResult> response) {
+                if(response.isSuccessful()){
+                    FeatureResult featureResult = response.body();
+                    if(featureResult != null){
+                        featureResult.toContentValues();
+                        APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FeatureResult> call, Throwable t) {
+
+            }
+        });
+    }
 
     private void startMainActivity(){
         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
@@ -89,41 +117,39 @@ public class SplashActivity extends AppCompatActivity {
 
         TextView textView = findViewById(R.id.txt_version_code);
         textView.setText(BuildConfig.VERSION_NAME);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent;
+        new Handler().postDelayed(() -> {
+            Intent intent;
 
-                if (!isLogin()) {
-                    intent = new Intent(SplashActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                    return;
-                }
-
-                if (!user.isDisclaimerAccepted()) {
-                    intent = new Intent(SplashActivity.this, DisclaimerActivity.class);
-                    intent.putExtra("User", user);
-                    startActivity(intent);
-                    finish();
-                    return;
-                }
-
-
-                DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
-
-                if (!CommonUtils.isNetworkAvailable(SplashActivity.this)) {
-                    intent = new Intent(SplashActivity.this, MainActivity.class);
-                    intent.putExtra("User", user);
-                    startActivity(intent);
-                    finish();
-                    return;
-                }
-
-                APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
-
-
+            if (!isLogin()) {
+                intent = new Intent(SplashActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+                return;
             }
+
+            if (!user.isDisclaimerAccepted()) {
+                intent = new Intent(SplashActivity.this, DisclaimerActivity.class);
+                intent.putExtra("User", user);
+                startActivity(intent);
+                finish();
+                return;
+            }
+
+
+            DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
+
+            if (!CommonUtils.isNetworkAvailable(SplashActivity.this)) {
+                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
+                intent = new Intent(SplashActivity.this, MainActivity.class);
+                intent.putExtra("User", user);
+                startActivity(intent);
+                finish();
+                return;
+            }
+
+            getFeatures();
+
+
         }, 2000);
     }
 

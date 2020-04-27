@@ -22,6 +22,7 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.AdapterList;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.modals.ItemType;
+import co.uk.depotnet.onsa.modals.JobWorkItem;
 import co.uk.depotnet.onsa.modals.WorkItem;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
@@ -86,6 +87,8 @@ public class ListActivity extends AppCompatActivity
 
         if (keyItemType.equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)) {
             getDfeItems();
+        }else if(keyItemType.equalsIgnoreCase(JobWorkItem.DBTable.NAME)){
+            getJobWorkItem();
         } else {
             ArrayList<ItemType> itemTypes = DBHandler.getInstance().getItemTypes(keyItemType);
             for (ItemType w :
@@ -132,16 +135,28 @@ public class ListActivity extends AppCompatActivity
 
     private void getDfeItems() {
         items.clear();
-        ArrayList<WorkItem> itemTypes = DBHandler.getInstance().getWorkItem(keyItemType, WorkItem.DBTable.itemCode);
-        for (WorkItem w :
-                itemTypes) {
+        String contract = DBHandler.getInstance().getJob(DBHandler.getInstance().getSubmission(String.valueOf(submissionId)).getJobID()).getcontract();
+        ArrayList<WorkItem> itemTypes = DBHandler.getInstance().getWorkItem(keyItemType, contract ,WorkItem.DBTable.itemCode);
+        for (WorkItem w : itemTypes) {
             HashMap<String, String> map = new HashMap<>();
             map.put("text", w.getDisplayItem());
             map.put("value", w.getUploadValue());
             map.put("type", w.gettype());
             items.add(map);
         }
+    }
 
+    private void getJobWorkItem() {
+        items.clear();
+
+        ArrayList<JobWorkItem> itemTypes = DBHandler.getInstance().getJob(DBHandler.getInstance().getSubmission(String.valueOf(submissionId)).getJobID()).getworkItems();
+        for (JobWorkItem w : itemTypes) {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("text", w.getDisplayItem());
+            map.put("value", w.getUploadValue());
+            map.put("type", JobWorkItem.DBTable.NAME);
+            items.add(map);
+        }
     }
 
     @Override

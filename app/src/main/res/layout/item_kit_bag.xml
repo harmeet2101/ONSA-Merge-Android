@@ -4,15 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="@dimen/_12sdp">
+    android:layout_margin="@dimen/_8sdp"
+    android:background="@color/white"
+    android:padding="@dimen/_6sdp">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/img_icon"
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
             android:background="@drawable/img_bg_circle"
@@ -21,6 +23,8 @@
             app:srcCompat="@drawable/ic_job_details" />
 
         <TextView
+            android:layout_toEndOf="@id/img_icon"
+            android:layout_toRightOf="@id/img_icon"
             android:id="@+id/txt_doc_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,6 +34,19 @@
             android:layout_marginRight="@dimen/_10sdp"
             android:text="@string/job_details"
             android:textSize="@dimen/_12sdp" />
+
+        <TextView
+            android:layout_toEndOf="@id/img_icon"
+            android:layout_toRightOf="@id/img_icon"
+            android:layout_below="@id/txt_doc_title"
+            android:id="@+id/txt_doc_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:textSize="@dimen/_10sdp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -44,7 +61,7 @@
                 android:tint="@color/txt_color_light_grey"
                 app:srcCompat="@drawable/ic_chevron_right" />'
         </RelativeLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -90,8 +107,6 @@
                 android:textAllCaps="true"
                 android:textSize="@dimen/_8sdp"
                 android:textColor="@color/depotnet_color"/>
-
         </LinearLayout>
-
     </RelativeLayout>
 </LinearLayout>

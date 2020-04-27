@@ -434,6 +434,58 @@
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
+
+        <LinearLayout
+            android:id="@+id/ll_btn_photo_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:background="@drawable/img_bg_circle"
+                    android:padding="@dimen/_4sdp"
+                    android:tint="@color/white"
+                    app:srcCompat="@drawable/ic_camera" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="7dp"
+                    android:text="@string/photo_gallery"
+                    android:textSize="@dimen/_12sdp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:padding="@dimen/_4sdp"
+                        android:tint="@color/txt_color_light_grey"
+                        app:srcCompat="@drawable/ic_chevron_right" />'
+                </RelativeLayout>
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:background="@color/txt_color_light_grey" />
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/ll_btn_log_stores"
             android:layout_width="match_parent"

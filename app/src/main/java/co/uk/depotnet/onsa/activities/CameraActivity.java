@@ -264,6 +264,8 @@ public class CameraActivity extends AppCompatActivity implements
     private void initPhotos() {
         this.photos = formItem.getPhotos();
         answers = new ArrayList<>();
+
+
         answers.addAll(DBHandler.getInstance().getPhotos(submissionID, String.valueOf(formItem.getPhotoId()),
                 formItem.getTitle() , repeatCount));
         for (int i = 0 ; i < answers.size(); i++){
@@ -410,6 +412,10 @@ public class CameraActivity extends AppCompatActivity implements
         }
 
         answer.setAnswer(picturePath);
+        Date date = new Date();
+        SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String timeTaken = input.format(date);
+        answer.setTakenDateTime(timeTaken);
         answer.setRepeatCount(repeatCount);
         answer.setDisplayAnswer(photoTaken.getTitle());
         photoTaken.setUrl(picturePath);
@@ -484,9 +490,12 @@ public class CameraActivity extends AppCompatActivity implements
             //  startCameraPreview();
             checkAndStart();
         } else {
-            requestPermissions(
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    MY_PERMISSIONS_LOCATION);
+            if(!isLocationPermissionFirstTime) {
+                isLocationPermissionFirstTime = true;
+                requestPermissions(
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        MY_PERMISSIONS_LOCATION);
+            }
         }
 
     }
@@ -506,7 +515,6 @@ public class CameraActivity extends AppCompatActivity implements
                     new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO},
                     MY_PERMISSIONS_REQUEST_CAMERA);
         }
-
     }
 
     @Override
@@ -515,7 +523,7 @@ public class CameraActivity extends AppCompatActivity implements
 
         if (camera != null) {
             releaseCameraAndPreview();
-            releaseMediaRecorder();       // if you are using MediaRecorder, release it first
+            releaseMediaRecorder();
             releaseCamera();
         }
         if (frameLayoutCamera != null) {
@@ -698,6 +706,7 @@ public class CameraActivity extends AppCompatActivity implements
                             .setNegativeButton(getString(R.string.generic_cancel), (dialogInterface, i) -> dialogInterface.dismiss());
                     dialog.show();
                 }
+                startCameraPreview();
                 break;
 
         }
@@ -811,6 +820,8 @@ public class CameraActivity extends AppCompatActivity implements
         }
     }
 
+    boolean isLocationPermissionFirstTime;
+
     @Override
     public void getLocation(final LocationListener listener) {
         if (ContextCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -818,11 +829,15 @@ public class CameraActivity extends AppCompatActivity implements
                 ContextCompat.checkSelfPermission(CameraActivity.this,
                         Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
+
             //ask user to grant permission
             String permissionRationale = getString(R.string.location_default_permission_rationale);
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION},
-                    permissionRationale);
+            if(!isLocationPermissionFirstTime) {
+                isLocationPermissionFirstTime = true;
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION},
+                        permissionRationale);
+            }
         } else {
             FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(CameraActivity.this);
 

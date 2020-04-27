@@ -14,5 +14,6 @@ public interface HomeJobListListener {
     void openVisitorAttendance(Job job);
     void openTakePhotoAndVideo(Job job);
     void showHotJobDialog(HomeAdapter.ViewHolder holder);
+    void openPhotoGallery(Job job);
     void onLogStores(Job job);
 }

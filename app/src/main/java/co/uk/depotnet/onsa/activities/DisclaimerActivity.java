@@ -1,6 +1,5 @@
 package co.uk.depotnet.onsa.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,14 +19,15 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.io.InputStream;
 
-import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.modals.Disclaimer;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
+import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.Constants;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -53,7 +53,8 @@ public class DisclaimerActivity extends AppCompatActivity
                 response.body().toContentValues();
                 user.setDisclaimerAccepted(true);
                 DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
-                if(BuildConfig.isStoreEnabled) {
+                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
+                if(Constants.isStoreEnabled) {
                     APICalls.getStoreDataSet(user.gettoken()).enqueue(storeDataSetCallback);
                 }else{
                     startMainActivity();
@@ -229,7 +230,27 @@ public class DisclaimerActivity extends AppCompatActivity
     private void onAccept() {
         showProgressBar();
         DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
-        APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
+        getFeatures();
 
+    }
+
+    private void getFeatures(){
+        APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
+            @Override
+            public void onResponse(Call<FeatureResult> call, Response<FeatureResult> response) {
+                if(response.isSuccessful()){
+                    FeatureResult featureResult = response.body();
+                    if(featureResult != null){
+                        featureResult.toContentValues();
+                        APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FeatureResult> call, Throwable t) {
+
+            }
+        });
     }
 }

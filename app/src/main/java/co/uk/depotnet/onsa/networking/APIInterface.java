@@ -2,6 +2,7 @@ package co.uk.depotnet.onsa.networking;
 
 import co.uk.depotnet.onsa.modals.Disclaimer;
 import co.uk.depotnet.onsa.modals.Driver;
+import co.uk.depotnet.onsa.modals.Feature;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.httprequests.ResetPassword;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
@@ -19,6 +20,7 @@ import java.util.List;
 import co.uk.depotnet.onsa.modals.store.DataMyRequests;
 import co.uk.depotnet.onsa.modals.store.DataMyStores;
 import co.uk.depotnet.onsa.modals.store.DataReceipts;
+import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.StockItems;
 import co.uk.depotnet.onsa.modals.store.StockLevel;
@@ -69,4 +71,11 @@ public interface APIInterface {
 
     @PUT("/appstores/hiderequest/{requestId}")
     Call<Void> hideReequest(@Path("requestId") String requestId);
+
+    @POST("/app/jobs/{jobId}/sendrfna")
+    Call<Void> sendrfna(@Path("jobId") String jobId);
+
+    @GET("/app/features")
+    Call<FeatureResult> getFeatures();
+
 }

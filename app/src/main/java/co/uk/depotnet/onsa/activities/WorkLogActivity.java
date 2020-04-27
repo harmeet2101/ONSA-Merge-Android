@@ -1,5 +1,6 @@
 package co.uk.depotnet.onsa.activities;
 
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.text.ParseException;
@@ -20,14 +23,20 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.AdapterWorkLog;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.OnItemClickListener;
+import co.uk.depotnet.onsa.modals.JobModuleStatus;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.WorkLog;
 import co.uk.depotnet.onsa.modals.forms.Submission;
+import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import co.uk.depotnet.onsa.utils.JsonReader;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 import co.uk.depotnet.onsa.views.MaterialAlertDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class WorkLogActivity extends AppCompatActivity
         implements View.OnClickListener, OnItemClickListener<WorkLog> {
@@ -45,6 +54,7 @@ public class WorkLogActivity extends AppCompatActivity
     private RelativeLayout rlWarning;
     private RecyclerView recyclerView;
     private boolean isClickable = false;
+    private LinearLayout llUiBlocker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +66,7 @@ public class WorkLogActivity extends AppCompatActivity
         jobID = intent.getStringExtra(ARG_JOB_ID);
         jobReferenceNumber = intent.getStringExtra(ARG_JOB_REFERENCE_NUMBER);
 
+        llUiBlocker = findViewById(R.id.ll_ui_blocker);
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
         findViewById(R.id.btn_risk_assessment).setOnClickListener(this);
         recyclerView = findViewById(R.id.recycler_view);
@@ -115,6 +126,8 @@ public class WorkLogActivity extends AppCompatActivity
                 workLogs.get(0).setJson("book_on.json");
                 workLogs.get(0).setTitle("Book On");
             }
+
+
             adapter.setBookOn(isBookOn);
             adapter.notifyDataSetChanged();
         }else{
@@ -122,6 +135,9 @@ public class WorkLogActivity extends AppCompatActivity
             rlWarning.setVisibility(View.VISIBLE);
         }
     }
+
+
+
 
     @Override
     public void onClick(View view) {
@@ -146,6 +162,20 @@ public class WorkLogActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+
+    public void showProgressBar() {
+        llUiBlocker.setVisibility(View.VISIBLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+    }
+
+
+    public void hideProgressBar() {
+        llUiBlocker.setVisibility(View.GONE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
     @Override
     public void onItemClick(WorkLog workLog, int position) {
 
@@ -159,6 +189,18 @@ public class WorkLogActivity extends AppCompatActivity
         if (jsonName == null || jsonName.isEmpty()) {
             showErrorDialog(workLog.getTitle(), "Work in Progress");
             return;
+        }
+
+        if (jsonName.equalsIgnoreCase("rfna.json")) {
+
+
+
+                String title = "RFNA";
+                String message = "This Process is irreversible. Do you really want to submit  ";
+                showRFNAConfirmation(title, message);
+                return;
+
+
         }
 
         if (!isBookOn() && !jsonName.equalsIgnoreCase("book_on.json")) {
@@ -197,5 +239,70 @@ public class WorkLogActivity extends AppCompatActivity
 
         dialog.setCancelable(false);
         dialog.show(getSupportFragmentManager(), "_ERROR_DIALOG");
+    }
+
+    public void showRFNAConfirmation(String title, String message) {
+
+        final MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositive(getString(R.string.submit), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        sendRFNA();
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setNegative(getString(R.string.generic_cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .build();
+
+        dialog.setCancelable(false);
+        dialog.show(getSupportFragmentManager(), "_ERROR_DIALOG");
+    }
+
+    private void sendRFNA(){
+        if (!CommonUtils.isNetworkAvailable(this)) {
+            String title = "Submission Error";
+            String message = "Internet connection is not available. Please check your internet connection.";
+            showErrorDialog(title, message);
+            return;
+        }
+
+        showProgressBar();
+        String jsonFileName = "rfna.json";
+        Submission submission = new Submission(jsonFileName, "Ready For Next Activity", jobID);
+        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        submission.setId(submissionID);
+
+        APICalls.sendRfna(jobID , user.gettoken()).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(response.isSuccessful()){
+                    JobModuleStatus jobModuleStatus = new JobModuleStatus();
+                    jobModuleStatus.setStatus(true);
+                    jobModuleStatus.setJobId(jobID);
+                    jobModuleStatus.setModuleName("RFNA");
+                    jobModuleStatus.setSubmissionId(submission.getID());
+                    DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+                            jobModuleStatus.toContentValues());
+                    adapter.notifyDataSetChanged();
+                    showErrorDialog("Success", "Submission was successful");
+                }else{
+                    showErrorDialog("Submission Error", "Submission Error, your submission has not been succeed");
+                }
+                hideProgressBar();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                showErrorDialog("Submission Error", "Submission Error, your submission has not been succeed");
+                hideProgressBar();
+            }
+        });
     }
 }

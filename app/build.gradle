@@ -19,24 +19,24 @@ android {
     }
 
     buildTypes {
-        
+
         debug {
-            android.defaultConfig.versionName "1.5.8"
-            android.defaultConfig.versionCode 23
-            applicationIdSuffix ".dev"
-            resValue "string", "app_name", "ONSA-DEV"
+            android.defaultConfig.versionName "1.7.4"
+            android.defaultConfig.versionCode 39
+            applicationIdSuffix ".store.dev"
+            resValue "string", "app_name", "ONSA-STORE-DEV"
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
-            buildConfigField("boolean", "isStoreEnabled", 'false')
+
         }
 
-        release {
+        /*release {
             initWith debug
             resValue "string", "app_name", "ONSA"
             minifyEnabled false
             android.defaultConfig.versionName "1.0.2"
             android.defaultConfig.versionCode 2
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
-            buildConfigField("boolean", "isStoreEnabled", 'false')
+
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
@@ -46,41 +46,79 @@ android {
             android.defaultConfig.versionCode 23
             applicationIdSuffix ".dev"
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
-            buildConfigField("boolean", "isStoreEnabled", 'false')
             resValue "string", "app_name", "ONSA-DEV"
-        }
+        }*/
 
         storedev {
             initWith debug
-            android.defaultConfig.versionName "1.6.2"
-            android.defaultConfig.versionCode 27
+            android.defaultConfig.versionName "1.7.4"
+            android.defaultConfig.versionCode 39
             applicationIdSuffix ".store.dev"
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
-            buildConfigField("boolean", "isStoreEnabled", 'true')
             resValue "string", "app_name", "ONSA-STORE-DEV"
         }
 
-        storeuat {
+        /*storeuat {
             initWith debug
-            android.defaultConfig.versionName "1.1.0"
-            android.defaultConfig.versionCode 3
+            android.defaultConfig.versionName "1.1.8"
+            android.defaultConfig.versionCode 15
             applicationIdSuffix ".store.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-mapgroup-api.depotnet.co.uk/"')
-            buildConfigField("boolean", "isStoreEnabled", 'true')
+
             resValue "string", "app_name", "ONSA-STORE-UAT"
-        }
+        }*/
+
+        /*store_uat_kier {
+            initWith debug
+            android.defaultConfig.versionName "1.0.3"
+            android.defaultConfig.versionCode 3
+            applicationIdSuffix ".store.kier.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-onsa-kier-api.depotnet.co.uk/"')
+
+            resValue "string", "app_name", "KIER-ONSA-STORE-UAT"
+        }*/
+
+        /*store_live_kier {
+            initWith debug
+            android.defaultConfig.versionName "1.0.0"
+            android.defaultConfig.versionCode 1
+            applicationIdSuffix ".store.kier"
+            buildConfigField("String", "BASE_URL", '"https://onsa-kier-api.depotnet.co.uk/"')
+
+            resValue "string", "app_name", "KIER-ONSA-STORE"
+        }*/
+
+        /*store_uat_mjq {
+            initWith debug
+            android.defaultConfig.versionName "1.0.1"
+            android.defaultConfig.versionCode 2
+            applicationIdSuffix ".store.mjq.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-onsa-mjq-api.depotnet.co.uk/"')
+
+            resValue "string", "app_name", "MJQ-ONSA-STORE-UAT"
+        }*/
+
+        /*store_live_mjq {
+            initWith debug
+            android.defaultConfig.versionName "1.0.0"
+            android.defaultConfig.versionCode 1
+            applicationIdSuffix ".store.mjq"
+            buildConfigField("String", "BASE_URL", '"https://onsa-mjq-api.depotnet.co.uk/"')
+
+            resValue "string", "app_name", "MJQ-ONSA-STORE"
+        }*/
 
 
 
-        uat {
+        /*uat {
             initWith debug
             android.defaultConfig.versionName "1.1.6"
             android.defaultConfig.versionCode 12
             applicationIdSuffix ".uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-mapgroup-api.depotnet.co.uk/"')
-            buildConfigField("boolean", "isStoreEnabled", 'false')
+
             resValue "string", "app_name", "ONSA-UAT"
-        }
+        }*/
     }
 }
 

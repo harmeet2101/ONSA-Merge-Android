@@ -75,6 +75,7 @@ import co.uk.depotnet.onsa.listeners.LocationListener;
 import co.uk.depotnet.onsa.listeners.OnChangeChamberCount;
 import co.uk.depotnet.onsa.listeners.PhotoAdapterListener;
 import co.uk.depotnet.onsa.modals.Job;
+import co.uk.depotnet.onsa.modals.JobWorkItem;
 import co.uk.depotnet.onsa.modals.LogMeasureForkItem;
 import co.uk.depotnet.onsa.modals.WorkItem;
 import co.uk.depotnet.onsa.modals.forms.Answer;
@@ -198,14 +199,19 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private void addListItems(ArrayList<FormItem> inflatedItems) {
         formItems.clear();
         int forkPosition = 0;
+        boolean ifItemAdded = false;
+        boolean ifPosDFEAdded = false;
+        boolean ifNegDFEAdded = false;
         DBHandler dbHandler = DBHandler.getInstance();
         ArrayList<FormItem> listItems = new ArrayList<>();
         for (int c = 0; c < inflatedItems.size(); c++) {
             FormItem item = inflatedItems.get(c);
             formItems.add(item);
 
-            if (item.getFormType() == FormItem.TYPE_FORK_CARD) {
+            if (!ifItemAdded && item.getFormType() == FormItem.TYPE_FORK_CARD) {
                 forkPosition = c;
+                ifItemAdded = true;
+                listItems.clear();
                 ArrayList<String> fields = item.getFields();
                 if (fields != null && !fields.isEmpty()) {
                     ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
@@ -217,15 +223,50 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             qItem.setDialogItems(item.getDialogItems());
                             qItem.setRepeatCount(repeatCount);
                             listItems.add(qItem);
-
                         }
+                        formItems.addAll(forkPosition, listItems);
                     }
                 }
-
+            }else if (!ifPosDFEAdded && item.getFormType() == FormItem.TYPE_ADD_POS_DFE) {
+                forkPosition = formItems.size()-1;
+                ifPosDFEAdded = true;
+                listItems.clear();
+                ArrayList<String> fields = item.getFields();
+                if (fields != null && !fields.isEmpty()) {
+                    ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                    if (answers != null) {
+                        for (int i = 0; i < answers.size(); i++) {
+                            repeatCount = answers.get(i).getRepeatCount();
+                            FormItem qItem = new FormItem(item.getListItemType(), "", "", item.getRepeatId(), true);
+                            qItem.setFields(fields);
+                            qItem.setDialogItems(item.getDialogItems());
+                            qItem.setRepeatCount(repeatCount);
+                            listItems.add(qItem);
+                        }
+                        formItems.addAll(forkPosition, listItems);
+                    }
+                }
+            }else if (!ifNegDFEAdded && item.getFormType() == FormItem.TYPE_ADD_NEG_DFE) {
+                forkPosition = formItems.size()-1;;
+                ifNegDFEAdded = true;
+                listItems.clear();
+                ArrayList<String> fields = item.getFields();
+                if (fields != null && !fields.isEmpty()) {
+                    ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                    if (answers != null) {
+                        for (int i = 0; i < answers.size(); i++) {
+                            repeatCount = answers.get(i).getRepeatCount();
+                            FormItem qItem = new FormItem(item.getListItemType(), "", "", item.getRepeatId(), true);
+                            qItem.setFields(fields);
+                            qItem.setDialogItems(item.getDialogItems());
+                            qItem.setRepeatCount(repeatCount);
+                            listItems.add(qItem);
+                        }
+                        formItems.addAll(forkPosition, listItems);
+                    }
+                }
             }
         }
-
-        formItems.addAll(forkPosition, listItems);
         notifyDataSetChanged();
 
         if (!listItems.isEmpty()) {
@@ -322,6 +363,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_STORE_ITEM:
                 return new StoreHolder(LayoutInflater.from(context).inflate(R.layout.item_store, viewGroup, false));
             case FormItem.TYPE_FORK_CARD:
+            case FormItem.TYPE_ADD_NEG_DFE:
+            case FormItem.TYPE_ADD_POS_DFE:
                 return new ForkCardHolder(LayoutInflater.from(context).inflate(R.layout.item_fork_card, viewGroup, false));
             case FormItem.TYPE_CALENDER:
                 return new CalenderHolder(LayoutInflater.from(context).inflate(R.layout.item_calender, viewGroup, false));
@@ -410,6 +453,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 bindStoreItem((StoreHolder) holder, position);
                 break;
             case FormItem.TYPE_FORK_CARD:
+            case FormItem.TYPE_ADD_NEG_DFE:
+            case FormItem.TYPE_ADD_POS_DFE:
                 bindForkCard((ForkCardHolder) holder, position);
                 break;
             case FormItem.TYPE_CALENDER:
@@ -1555,6 +1600,21 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void bindPhotoHolder(PhotoHolder holder, int position) {
         FormItem formItem = formItems.get(position);
+
+        if(formItem.getTitle().equalsIgnoreCase("Take Photo/Video")){
+            Answer answer = DBHandler.getInstance().getAnswer(submissionID , "photoTypes" , null , 0);
+            if(answer != null){
+                formItem.setPhotoId(answer.getAnswer());
+                ArrayList<Photo> photos = formItem.getPhotos();
+                if(photos != null && !photos.isEmpty()){
+                    for (Photo photo :
+                            photos) {
+                        photo.setPhoto_id(formItem.getPhotoId());
+                    }
+                }
+            }
+        }
+
         if(holder.adapterPhoto == null){
             holder.adapterPhoto = new AdapterPhoto(context, submissionID, formItem, repeatCount, this);
             holder.recyclerView.setAdapter(holder.adapterPhoto);
@@ -1572,6 +1632,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.recyclerView.setVisibility(View.VISIBLE);
         }
 
+
+
         if (formItem.getTitle().equalsIgnoreCase("Damage Photo")) {
             holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload_damage), formItem.getPhotoSize()));
         } else {
@@ -1583,74 +1645,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-
-    /*private void bindPhotoHolder(PhotoHolder holder, int position) {
-        final FormItem formItem = formItems.get(position);
-        final ArrayList<Photo> photos = formItem.getPhotos();
-        int size = photos.size();
-        int required = 0;
-
-        ArrayList<Answer> answers = new ArrayList<>();
-
-        int photosTaken = 0;
-        for (int i = 0; i < size; i++) {
-            Photo photo = photos.get(i);
-            if (!photo.isOptional()) {
-                required++;
-            }
-            Answer answer = DBHandler.getInstance().getAnswer(submissionID,
-                    photo.getPhoto_id(),
-                    repeatCount, photo.getTitle());
-
-            if (answer != null) {
-                photo.setIsVideo(answer.isPhoto() == 2);
-                photo.setUrl(answer.getAnswer());
-                answers.add(answer);
-                photosTaken++;
-            }
-        }
-
-        if (missingAnswerMode && photosTaken < required) {
-            holder.view.setBackground(redBG);
-        } else {
-            holder.view.setBackgroundColor(context.getResources().getColor(R.color.white));
-        }
-        if (formItem.getTitle().equalsIgnoreCase("Damage Photo")) {
-            holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload_damage), size));
-        } else {
-            holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload), size, required));
-        }
-        if (photosTaken == 0) {
-            holder.recyclerView.setVisibility(View.GONE);
-            holder.imgBtnCamera.setVisibility(View.VISIBLE);
-
-            holder.imgBtnCamera.setOnClickListener(view -> {
-
-                if (submission.getJsonFileName().equalsIgnoreCase("take_photo.json")) {
-                    Answer photoId = DBHandler.getInstance().getAnswer(submissionID,
-                            "photoTypes",
-                            formItem.getRepeatId(), 0);
-
-                    for (int i = 0; i < photos.size(); i++) {
-                        Photo photo = photos.get(i);
-                        Answer answer = DBHandler.getInstance().getAnswer(submissionID,
-                                photo.getPhoto_id(),
-                                repeatCount, photo.getTitle());
-
-
-                        if (answer == null && photoId != null) {
-                            photo.setPhoto_id(photoId.getAnswer());
-                        }
-                    }
-                }
-                listener.openCamera(submissionID, formItem, repeatCount);
-            });
-        } else {
-            holder.imgBtnCamera.setVisibility(View.GONE);
-            holder.recyclerView.setVisibility(View.VISIBLE);
-            holder.recyclerView.setAdapter(new AdapterPhoto(context, answers, formItem.getTitle(), photos, repeatCount, this));
-        }
-    }*/
 
     private void bindTakePhotoHolder(TakePhotoHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
@@ -1744,6 +1738,20 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private void bindForkCard(ForkCardHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
+        int rC = 0;
+        ArrayList<String> fields = formItem.getFields();
+        ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "items");
+        answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "negItems"));
+
+        if (answers != null) {
+            for (int i = 0; i < answers.size() ; i++){
+                if(rC <= answers.get(i).getRepeatCount()){
+                    rC = answers.get(i).getRepeatCount();
+                }
+            }
+        }
+
+        final int repeatCount = rC+1;
         holder.view.setOnClickListener(v -> listener.openForkFragment(formItem, submissionID, repeatCount));
 
     }
@@ -1753,8 +1761,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.btnFork.setText(item.getTitle());
 
         holder.btnFork.setOnClickListener(view -> {
-
-
             if (focusedEditText != null) {
                 focusedEditText.clearFocus();
             }
@@ -1876,9 +1882,11 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if(formItem.getKey().equalsIgnoreCase(
                     Job.DBTable.NAME)) {
                 items.addAll(DBHandler.getInstance().getJobs());
-            }if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)) {
+            }else if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)) {
                 items.addAll(DBHandler.getInstance().getWorkItem(DatasetResponse.DBTable.dfeWorkItems,
                         WorkItem.DBTable.itemCode));
+            } else if (formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)) {
+                items.addAll(DBHandler.getInstance().getJobWorkItem(submission.getJobID()));
             } else {
                 items.addAll(DBHandler.getInstance().getItemTypes(formItem.getKey()));
             }
@@ -1888,6 +1896,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
 
             if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)
+                    || formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)
                     || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.bookOperatives)
 
             ) {
@@ -1925,6 +1934,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             dropdownMenu.setListener(new DropDownAdapter.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(int position1) {
+
+
                     holder.txtValue.setText(items.get(position1).getDisplayItem());
                     Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
                             formItem.getRepeatId(), repeatCount);
@@ -2133,13 +2144,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     private boolean needToBeNotified(FormItem formItem) {
+
         return (formItem.getEnables() != null && !formItem.getEnables().isEmpty())
                 || (formItem.getFalseEnables() != null && !formItem.getFalseEnables().isEmpty());
     }
 
     public void reInflateItems(boolean isNotified) {
-
-
 
         this.formItems.clear();
         for (int i = 0; i < originalItems.size(); i++) {
@@ -2376,17 +2386,21 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         missingAnswerMode = false;
         int missingCount = 0;
+        boolean isPhotoMissing = false;
+        boolean ifDFEAdded = false;
         for (int c = 0; c < formItems.size(); c++) {
             FormItem item = formItems.get(c);
             if (item.getFormType() == FormItem.TYPE_PHOTO) {
                 final ArrayList<Photo> photos = item.getPhotos();
                 int photosNeeded = photos.size();
-
                 for (int i = 0; i < photosNeeded; i++) {
                     Photo photo = photos.get(i);
                     Answer answer = DBHandler.getInstance().getAnswer(submissionID, String.valueOf(photo.getPhoto_id()), repeatCount, photo.getTitle());
-                    if (!photo.isOptional() && answer == null)
+                    if (!photo.isOptional() && answer == null) {
                         missingCount++;
+                        isPhotoMissing = true;
+                    }
+
                 }
             } else {
                 if ((item.getFormType() == FormItem.TYPE_FORK_CARD ||
@@ -2400,7 +2414,16 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     }
 
 
-                } else if (item.getFormType() == FormItem.TYPE_LOCATION) {
+                }else if ((item.getFormType() == FormItem.TYPE_ADD_POS_DFE) ||
+                        (item.getFormType() == FormItem.TYPE_ADD_NEG_DFE)) {
+                    ArrayList<String> fields = item.getFields();
+                    if (fields != null && !fields.isEmpty()) {
+                        ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                        if (answers!=null && !answers.isEmpty()) {
+                            ifDFEAdded = true;
+                        }
+                    }
+                }else if (item.getFormType() == FormItem.TYPE_LOCATION) {
                     Answer answer = DBHandler.getInstance().getAnswer(submissionID, "latitude", item.getRepeatId(), repeatCount);
                     if (answer == null || TextUtils.isEmpty(answer.getAnswer())) {
                         missingCount++;
@@ -2410,7 +2433,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         missingCount++;
                     }
                 } else {
-
                     if (!item.isOptional() && item.getUploadId() != null) {
                         Answer answer = DBHandler.getInstance().getAnswer(submissionID, item.getUploadId(), item.getRepeatId(), repeatCount);
                         if (answer == null) {
@@ -2419,9 +2441,13 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     }
                 }
             }
-
         }
-
+        if(submission.getJsonFileName().equalsIgnoreCase("log_dfe.json") && !ifDFEAdded){
+            missingCount++;
+            listener.showValidationDialog("Validation Error" , "Please add Positive or negative DFEs");
+        }else if(isPhotoMissing){
+            listener.showValidationDialog("Validation Error" , "Photos are missing");
+        }
         if (missingCount > 0) {
             missingAnswerMode = true;
             notifyDataSetChanged();

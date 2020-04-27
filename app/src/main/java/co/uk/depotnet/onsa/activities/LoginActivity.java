@@ -48,7 +48,6 @@ public class LoginActivity extends AppCompatActivity
                     finish();
                     return;
                 }
-
             }
 
            // ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "User name or Password not matching.","Wrong Password");
@@ -112,8 +111,10 @@ public class LoginActivity extends AppCompatActivity
     private void login() {
         showProgressBar();
 
-      etUserName.setText("harriet.abbott");
-      etPassword.setText("Testing2!");
+//      etUserName.setText("kimtest1");
+//      etPassword.setText("Whistle1!");
+//      etUserName.setText("harriet.abbott");
+//      etPassword.setText("Testing2!");
 
         if(!CommonUtils.isNetworkAvailable(LoginActivity.this)){
             hideProgressBar();

@@ -11,7 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import co.uk.depotnet.onsa.R;
+import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.OnItemClickListener;
+import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.WorkLog;
 
 import java.util.ArrayList;
@@ -23,16 +25,16 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
     private OnItemClickListener<WorkLog> listener;
     private String jobID;
     private boolean isBookOn;
+    private boolean hasRFNA;
 
     public AdapterWorkLog(Context context, ArrayList<WorkLog> items, OnItemClickListener<WorkLog> listener,String jobID) {
         this.context = context;
         this.items = items;
         this.listener = listener;
         this.jobID=jobID;
+        Job job = DBHandler.getInstance().getJob(jobID);
+        hasRFNA = job!=null && job.hasRFNA();
     }
-
-
-
 
     @NonNull
     @Override
@@ -72,16 +74,35 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
             holder.imgIcon.setBackgroundResource(workLog.isStatus() ?
                     R.drawable.img_bg_circle : R.drawable.img_bg_cirlcle_orange);
         }
+        if(position == 5 ) {
+            if (isRFNAEnable()) {
+                holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
+            } else {
+                holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
+            }
+        }
+
+        if(position == 6 ) {
+            if (isEngCompEnable()) {
+                holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
+            } else {
+                holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
+            }
+        }
 
         holder.txtTitle.setText(workLog.getTitle());
 
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onItemClick(workLog, holder.getAdapterPosition());
-            }
-        });
+        holder.view.setOnClickListener(view -> {
 
+            if(holder.getAdapterPosition() == 5 && !isRFNAEnable()) {
+                return;
+            }
+
+            if(holder.getAdapterPosition() == 6 && !isEngCompEnable()) {
+                return;
+            }
+            listener.onItemClick(workLog, holder.getAdapterPosition());
+        });
     }
 
     @Override
@@ -104,5 +125,21 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
             this.imgIcon = itemView.findViewById(R.id.img_icon);
             this.rlParent=itemView.findViewById(R.id.rlParent);
         }
+    }
+
+    private boolean isRFNAEnable(){
+        boolean status =
+                hasRFNA ||
+                DBHandler.getInstance().getJobModuleStatus(jobID , "Start on Site") &&
+                        !DBHandler.getInstance().getJobModuleStatus(jobID , "Eng Comp");
+
+        return status;
+    }
+
+    private boolean isEngCompEnable(){
+        boolean status =
+                hasRFNA || DBHandler.getInstance().getJobModuleStatus(jobID , "RFNA");
+
+        return status;
     }
 }

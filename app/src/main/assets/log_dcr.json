@@ -5,7 +5,7 @@
     {
       "title": "Log DCR",
       "index": 0,
-      "url":"app/jobs/{jobId}/raise-dcr",
+      "url":"app/jobs/{jobId}/raise-dcr/v2",
       "photoUrl":"app/jobs/{jobId}/photos",
       "upload": true,
       "items": [
@@ -20,14 +20,14 @@
           "type": "calender",
           "uploadId": "newRequiredByDate",
           "title": "Date",
-          "optional": true
+          "optional": false
         },
         {
           "type": "et_long_text",
           "uploadId": "comment",
           "title": "Comments",
           "hint": "Please enter any comments",
-          "optional": true
+          "optional": false
         },
         {
           "type": "photo",

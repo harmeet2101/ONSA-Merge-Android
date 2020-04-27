@@ -26,6 +26,7 @@ import co.uk.depotnet.onsa.modals.forms.FormItem;
 import co.uk.depotnet.onsa.modals.forms.Photo;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
+import co.uk.depotnet.onsa.views.MaterialAlertDialog;
 
 
 public class ForkFormFragment extends Fragment implements FormAdapterListener {
@@ -164,6 +165,20 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
     @Override
     public void openFragment(Fragment fragment) {
 
+    }
+
+    public void showValidationDialog(String title, String message) {
+        MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositive(getString(R.string.ok), (dialog1, i) -> {
+                    dialog1.dismiss();
+
+                })
+                .build();
+
+        dialog.setCancelable(false);
+        dialog.show(getChildFragmentManager(), "_ERROR_DIALOG");
     }
 
     @Override

@@ -13,6 +13,7 @@ public class PhotoRequest implements Parcelable {
     private String latitude;
     private String longitude;
     private String takenDateTime;
+    private String dateTime;
 
     public PhotoRequest() {
 
@@ -27,6 +28,7 @@ public class PhotoRequest implements Parcelable {
         latitude = in.readString();
         longitude = in.readString();
         takenDateTime = in.readString();
+        dateTime = in.readString();
     }
 
     public static final Creator<PhotoRequest> CREATOR = new Creator<PhotoRequest>() {
@@ -56,6 +58,7 @@ public class PhotoRequest implements Parcelable {
         dest.writeString(latitude);
         dest.writeString(longitude);
         dest.writeString(takenDateTime);
+        dest.writeString(dateTime);
     }
 
     public String getSubmissionID() {
@@ -120,6 +123,7 @@ public class PhotoRequest implements Parcelable {
 
     public void setTakenDateTime(String takenDateTime) {
         this.takenDateTime = takenDateTime;
+        this.dateTime = takenDateTime;
     }
 }
 

@@ -18,19 +18,12 @@ import co.uk.depotnet.onsa.activities.MainActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.DownloadActionListener;
 import co.uk.depotnet.onsa.modals.Document;
-import co.uk.depotnet.onsa.networking.Constants;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import co.uk.depotnet.onsa.utils.GenericFileProvider;
 import co.uk.depotnet.onsa.utils.Utils;
 import com.tonyodev.fetch2.Download;
-import com.tonyodev.fetch2.Error;
 import com.tonyodev.fetch2.Fetch;
 import com.tonyodev.fetch2.Request;
-import com.tonyodev.fetch2core.Func;
-import com.tonyodev.fetch2core.Func2;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.List;
@@ -61,7 +54,9 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final JobPackAdapter.ViewHolder holder, int position) {
         final Document jobPack = jobPacks.get(position);
-        holder.txtDocTitle.setText("JobPack "+position);
+
+        holder.txtDocTitle.setText(jobPack.getDocumentName());
+        holder.txtDocTime.setText(jobPack.getdateTime());
         final int id = AppPreferences.getInt("JobPack" + jobPack.getjobDocumentId(), -1);
 
 
@@ -70,145 +65,100 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
             holder.progressBar.setVisibility(View.GONE);
             holder.btnDownload.setVisibility(View.VISIBLE);
             holder.btnDownload.setText("Download");
-            holder.btnDownload.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    String fileDir = Utils.getSaveDir(context) + "JobPack/" + "JobPack_" + jobPack.getjobDocumentId() + ".pdf";// + jobPack.gettype().toLowerCase(Locale.ENGLISH);
-
-                    String url = BuildConfig.BASE_URL+"app/jobs/"+jobPack.getJobId()+
-                            "/documents/"+jobPack.getjobDocumentId()+"/download";
-
-
-                    Request request = new Request(url, fileDir);
-                    request.addHeader("Authorization", "Bearer "+DBHandler.getInstance().getUser().gettoken());
-
-                    fetch.enqueue(request, new Func<Request>() {
-                        @Override
-                        public void call(@NotNull Request result) {
-                            notifyDataSetChanged();
-                            AppPreferences.putInt("JobPack" + jobPack.getjobDocumentId(), result.getId());
-                        }
-                    }, new Func<Error>() {
-                        @Override
-                        public void call(@NotNull Error result) {
-                        }
-                    });
-                }
+            holder.btnDownload.setOnClickListener(view -> {
+                String fileDir = Utils.getSaveDir(context) + "JobPack/" + "JobPack_" + jobPack.getjobDocumentId() + ".pdf";// + jobPack.gettype().toLowerCase(Locale.ENGLISH);
+                String url = BuildConfig.BASE_URL+"app/jobs/"+jobPack.getJobId()+
+                        "/documents/"+jobPack.getjobDocumentId()+"/download";
+                Request request = new Request(url, fileDir);
+                request.addHeader("Authorization", "Bearer "+DBHandler.getInstance().getUser().gettoken());
+                fetch.enqueue(request, result -> {
+                    notifyDataSetChanged();
+                    AppPreferences.putInt("JobPack" + jobPack.getjobDocumentId(), result.getId());
+                }, result -> {
+                });
             });
 
         } else {
-            fetch.getDownload(id, new Func2<Download>() {
-                @Override
-                public void call(@Nullable final Download download) {
-                    if (download == null) {
-                        return;
+            fetch.getDownload(id, download -> {
+                if (download == null) {
+                    return;
+                }
+
+                int progress = download.getProgress();
+                if (progress == -1) {
+                    progress = 0;
+                }
+                holder.progressBar.setProgress(progress);
+                switch (download.getStatus()) {
+                    case COMPLETED: {
+                        holder.btnDownload.setText(R.string.view);
+                        holder.btnCancel.setVisibility(View.GONE);
+                        holder.progressBar.setVisibility(View.GONE);
+                        holder.btnDownload.setOnClickListener(view -> {
+                            String fileUrl = download.getFile();
+                            openDocument(fileUrl);
+                        });
+                        break;
                     }
-
-                    int progress = download.getProgress();
-                    if (progress == -1) {
-                        progress = 0;
+                    case FAILED: {
+                        holder.btnDownload.setText(R.string.retry);
+                        holder.btnCancel.setVisibility(View.GONE);
+                        holder.progressBar.setVisibility(View.GONE);
+                        holder.btnDownload.setOnClickListener(view -> {
+                            holder.btnDownload.setEnabled(false);
+                            fetch.retry(download.getId());
+                            notifyDataSetChanged();
+                        });
+                        break;
                     }
-                    holder.progressBar.setProgress(progress);
-                    switch (download.getStatus()) {
-                        case COMPLETED: {
-                            holder.btnDownload.setText(R.string.view);
-                            holder.btnCancel.setVisibility(View.GONE);
-                            holder.progressBar.setVisibility(View.GONE);
-                            holder.btnDownload.setOnClickListener(new View.OnClickListener() {
-
-                                @Override
-                                public void onClick(View view) {
-                                    String fileUrl = download.getFile();
-
-//                                    final File file = new File(Utils.getSaveDir() + "KitbagDoc/" + "KitbagDoc_" + kitBagItem.getKitbagDocumentID() + ".pdf");
-//                                    showPdf(file);
-                                    openDocument(fileUrl);
-                                }
-                            });
-                            break;
-                        }
-                        case FAILED: {
-                            holder.btnDownload.setText(R.string.retry);
-                            holder.btnCancel.setVisibility(View.GONE);
-                            holder.progressBar.setVisibility(View.GONE);
-                            holder.btnDownload.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    holder.btnDownload.setEnabled(false);
-                                    fetch.retry(download.getId());
-                                    notifyDataSetChanged();
-                                }
-                            });
-                            break;
-                        }
-                        case PAUSED: {
-                            holder.btnDownload.setText(R.string.resume);
-                            holder.btnCancel.setVisibility(View.VISIBLE);
-                            holder.progressBar.setVisibility(View.VISIBLE);
-                            holder.btnDownload.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    holder.btnDownload.setEnabled(false);
-                                    fetch.resume(download.getId());
-                                    notifyDataSetChanged();
-                                }
-                            });
-                            break;
-                        }
-                        case DOWNLOADING:
-                        case QUEUED: {
-                            holder.btnDownload.setText(R.string.pause);
-                            holder.btnCancel.setVisibility(View.VISIBLE);
-                            holder.progressBar.setVisibility(View.VISIBLE);
-                            holder.btnDownload.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    holder.btnDownload.setEnabled(false);
-                                    fetch.pause(download.getId());
-                                    notifyDataSetChanged();
-                                }
-                            });
-                            break;
-                        }
-                        case ADDED: {
-                            holder.btnDownload.setText(R.string.download);
-                            holder.btnCancel.setVisibility(View.GONE);
-                            holder.progressBar.setVisibility(View.GONE);
-                            holder.btnDownload.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    holder.btnDownload.setEnabled(false);
-                                    fetch.resume(download.getId());
-                                    notifyDataSetChanged();
-                                }
-                            });
-                            break;
-                        }
-                        default: {
-                            break;
-                        }
+                    case PAUSED: {
+                        holder.btnDownload.setText(R.string.resume);
+                        holder.btnCancel.setVisibility(View.VISIBLE);
+                        holder.progressBar.setVisibility(View.VISIBLE);
+                        holder.btnDownload.setOnClickListener(view -> {
+                            holder.btnDownload.setEnabled(false);
+                            fetch.resume(download.getId());
+                            notifyDataSetChanged();
+                        });
+                        break;
+                    }
+                    case DOWNLOADING:
+                    case QUEUED: {
+                        holder.btnDownload.setText(R.string.pause);
+                        holder.btnCancel.setVisibility(View.VISIBLE);
+                        holder.progressBar.setVisibility(View.VISIBLE);
+                        holder.btnDownload.setOnClickListener(view -> {
+                            holder.btnDownload.setEnabled(false);
+                            fetch.pause(download.getId());
+                            notifyDataSetChanged();
+                        });
+                        break;
+                    }
+                    case ADDED: {
+                        holder.btnDownload.setText(R.string.download);
+                        holder.btnCancel.setVisibility(View.GONE);
+                        holder.progressBar.setVisibility(View.GONE);
+                        holder.btnDownload.setOnClickListener(view -> {
+                            holder.btnDownload.setEnabled(false);
+                            fetch.resume(download.getId());
+                            notifyDataSetChanged();
+                        });
+                        break;
+                    }
+                    default: {
+                        break;
                     }
                 }
             });
         }
 
 
-        holder.btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fetch.getDownload(id, new Func2<Download>() {
-
-                    @Override
-                    public void call(@Nullable Download result) {
-                        if (result == null) {
-                            return;
-                        }
-                        fetch.remove(result.getId());
-                    }
-                });
+        holder.btnCancel.setOnClickListener(view -> fetch.getDownload(id, result -> {
+            if (result == null) {
+                return;
             }
-        });
+            fetch.remove(result.getId());
+        }));
     }
 
     public void showPdf(File file) {
@@ -266,19 +216,19 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
 
         final View view;
         final TextView txtDocTitle;
+        final TextView txtDocTime;
         final TextView btnDownload;
         final TextView btnCancel;
         final ProgressBar progressBar;
-
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.view = itemView;
             this.txtDocTitle = itemView.findViewById(R.id.txt_doc_title);
+            this.txtDocTime = itemView.findViewById(R.id.txt_doc_time);
             this.progressBar = itemView.findViewById(R.id.progress_bar);
             this.btnDownload = itemView.findViewById(R.id.btn_download);
             this.btnCancel = itemView.findViewById(R.id.btn_cancel);
-
         }
     }
 }

@@ -25,6 +25,8 @@ public class Constants {
 //    }
 
     public final static String IS_BOOK_ON = "is_book_on";
+    public static boolean isStoreEnabled;
+    public static final String FEATURE_NAME = "Stores";
 
 
 

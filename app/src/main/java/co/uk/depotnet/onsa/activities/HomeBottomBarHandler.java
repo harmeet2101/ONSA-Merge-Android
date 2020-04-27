@@ -12,6 +12,7 @@ import android.widget.TextView;
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.listeners.HomeBottomBarListener;
+import co.uk.depotnet.onsa.networking.Constants;
 
 public class HomeBottomBarHandler implements View.OnClickListener {
 
@@ -82,7 +83,7 @@ public class HomeBottomBarHandler implements View.OnClickListener {
                 ColorStateList.valueOf(colorSelected));
         txtLastSelected.setTextColor(colorSelected);
 
-        if(BuildConfig.isStoreEnabled){
+        if(Constants.isStoreEnabled){
             llBtnOnsaStore.setVisibility(View.VISIBLE);
         }else{
             llBtnOnsaStore.setVisibility(View.GONE);

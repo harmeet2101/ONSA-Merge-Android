@@ -15,21 +15,21 @@ public class Document implements Parcelable {
         @Override
         public Document[] newArray(int size) {
             return new Document[size];
-
         }
-
     };
+
     private String jobId;
     private String dateTime;
     private String jobDocumentId;
     private String type;
+    private String documentName;
 
     protected Document(Parcel in) {
         jobId = in.readString();
         dateTime = in.readString();
         jobDocumentId = in.readString();
         type = in.readString();
-
+        documentName = in.readString();
     }
 
     public Document(Cursor cursor) {
@@ -37,7 +37,7 @@ public class Document implements Parcelable {
         dateTime = cursor.getString(cursor.getColumnIndex(DBTable.dateTime));
         jobDocumentId = cursor.getString(cursor.getColumnIndex(DBTable.jobDocumentId));
         type = cursor.getString(cursor.getColumnIndex(DBTable.type));
-
+        documentName = cursor.getString(cursor.getColumnIndex(DBTable.documentName));
     }
 
     public void setdateTime(String dateTime) {
@@ -77,26 +77,26 @@ public class Document implements Parcelable {
         return 0;
     }
 
+    public String getDocumentName() {
+        return documentName;
+    }
+
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(jobId);
         parcel.writeString(dateTime);
         parcel.writeString(jobDocumentId);
         parcel.writeString(type);
-
+        parcel.writeString(documentName);
     }
 
     public ContentValues toContentValues() {
-
         ContentValues cv = new ContentValues();
-
         cv.put(DBTable.jobId, this.jobId);
         cv.put(DBTable.dateTime, this.dateTime);
-
         cv.put(DBTable.jobDocumentId, this.jobDocumentId);
-
         cv.put(DBTable.type, this.type);
-
+        cv.put(DBTable.documentName, this.documentName);
         return cv;
     }
 
@@ -106,6 +106,6 @@ public class Document implements Parcelable {
         public static final String dateTime = "dateTime";
         public static final String jobDocumentId = "jobDocumentId";
         public static final String type = "type";
-
+        public static final String documentName = "documentName";
     }
 }

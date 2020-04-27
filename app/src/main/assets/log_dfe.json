@@ -5,12 +5,12 @@
     {
       "title": "Log DFE",
       "index": 0,
-      "url": "app/jobs/{jobId}/raise-dfe",
+      "url": "app/jobs/{jobId}/raise-dfe/v2",
       "photoUrl": "app/jobs/{jobId}/photos",
       "upload": true,
       "items": [
         {
-          "type": "card_fork",
+          "type": "add_pos_dfe",
           "uploadId": "",
           "repeatId": "items",
           "title": "Click to add a DFE Item",
@@ -39,10 +39,39 @@
           ]
         },
         {
+          "type": "add_neg_dfe",
+          "uploadId": "",
+          "repeatId": "negItems",
+          "title": "Click to add a negative DFE Item",
+          "listItemType": "log_dfe_item",
+          "fields": [
+            "itemCode",
+            "quantity"
+          ],
+          "optional": false,
+          "dialogItems": [
+            {
+              "type": "dropdown",
+              "uploadId": "itemCode",
+              "repeatId": "negItems",
+              "key": "JobWorkItem",
+              "title": "DFE Item",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "quantity",
+              "repeatId": "negItems",
+              "title": "Qty",
+              "optional": false
+            }
+          ]
+        },
+        {
           "type": "et_long_text",
           "uploadId": "comment",
           "title": "Please enter any comments",
-          "optional": true
+          "optional": false
         },
         {
           "type": "photo",

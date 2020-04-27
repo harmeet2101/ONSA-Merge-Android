@@ -1,5 +1,7 @@
 package co.uk.depotnet.onsa.networking;
 
+import java.util.concurrent.TimeUnit;
+
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.modals.Disclaimer;
 import co.uk.depotnet.onsa.modals.httprequests.ResetPassword;
@@ -12,6 +14,7 @@ import co.uk.depotnet.onsa.modals.httprequests.UserRequest;
 import co.uk.depotnet.onsa.modals.store.DataMyRequests;
 import co.uk.depotnet.onsa.modals.store.DataMyStores;
 import co.uk.depotnet.onsa.modals.store.DataReceipts;
+import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.modals.store.StockItems;
 import co.uk.depotnet.onsa.modals.store.StockLevel;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
@@ -38,7 +41,10 @@ public class APICalls {
         return apiInterface.getDisclaimer();
     }
     public static void getDisclaimerLogo(String authToken , Callback callback){
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(150, TimeUnit.SECONDS)
+                .readTimeout(150, TimeUnit.SECONDS)
+                .writeTimeout(150, TimeUnit.SECONDS).build();
 
         Request request = new Request.Builder()
                 .url(BuildConfig.BASE_URL+"app/disclaimer/logo")
@@ -93,6 +99,16 @@ public class APICalls {
     public static Call<Void> hideReequest(String authToken,String requestId){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.hideReequest(requestId);
+    }
+
+    public static Call<Void> sendRfna(String jobId, String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.sendrfna(jobId);
+    }
+
+    public static Call<FeatureResult> featureResultCall(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.getFeatures();
     }
 
 }

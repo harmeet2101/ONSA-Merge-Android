@@ -45,6 +45,8 @@ public class FormItem implements Parcelable {
     public static final int TYPE_ADD_STORE_ITEM = 33;
     public static final int TYPE_STOCK_ITEM = 34;
     public static final int TYPE_BAR_CODE = 35;
+    public static final int TYPE_ADD_POS_DFE = 36;
+    public static final int TYPE_ADD_NEG_DFE = 37;
 
 
 
@@ -417,6 +419,10 @@ public class FormItem implements Parcelable {
             return TYPE_STOCK_ITEM;
         }else if (type.equalsIgnoreCase("bar_code")) {
             return TYPE_BAR_CODE;
+        }else if (type.equalsIgnoreCase("add_pos_dfe")) {
+            return TYPE_ADD_POS_DFE;
+        }else if (type.equalsIgnoreCase("add_neg_dfe")) {
+            return TYPE_ADD_NEG_DFE;
         }
 
 

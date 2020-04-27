@@ -5,7 +5,9 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class JobWorkItem implements Parcelable {
+import co.uk.depotnet.onsa.listeners.DropDownItem;
+
+public class JobWorkItem implements Parcelable , DropDownItem {
     public static final Creator<JobWorkItem> CREATOR = new Creator<JobWorkItem>() {
         @Override
         public JobWorkItem createFromParcel(Parcel in) {
@@ -112,6 +114,16 @@ public class JobWorkItem implements Parcelable {
         cv.put(DBTable.description, this.description);
 
         return cv;
+    }
+
+    @Override
+    public String getDisplayItem() {
+        return description+"("+quantity+")";
+    }
+
+    @Override
+    public String getUploadValue() {
+        return itemCode;
     }
 
     public static class DBTable {

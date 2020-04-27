@@ -1,26 +1,27 @@
 {
-  "title": "Finish On Site",
+  "title": "Ready For Next Activity",
   "isProgressVisible": false,
   "screens": [
     {
-      "title": "Finish On Site",
+      "title": "rfna",
       "index": 0,
-      "url":"app/jobs/{jobId}/finish-on-site",
+      "url":"app/jobs/{jobId}/eng-comp",
       "photoUrl":"app/jobs/{jobId}/photos",
       "upload": true,
       "items": [
         {
-          "type": "yes_no",
-          "uploadId": "isJobCompleted",
-          "title": "Job Completed?",
+          "type": "dropdown",
+          "uploadId": "outcome",
+          "key": "engCompOutcomes",
+          "title": "Eng Comp Outcome",
           "optional": false
-
         },
         {
-          "type": "switch_layout",
-          "uploadId": "rfna",
-          "title": "RFNA",
-          "optional": true
+          "type": "dropdown",
+          "uploadId": "recordReturn",
+          "key": "recordReturn",
+          "title": "Record Return",
+          "optional": false
         },
         {
           "type": "et_long_text",
@@ -30,10 +31,10 @@
         },
         {
           "type": "photo",
-          "title": "Finish On Site",
+          "title": "Eng Comp",
           "photoSize": 1,
           "photoRequired": 1,
-          "photoId": "55"
+          "photoId": "25"
         }
 
       ]

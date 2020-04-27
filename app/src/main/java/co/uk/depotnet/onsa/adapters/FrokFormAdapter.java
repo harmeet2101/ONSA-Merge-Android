@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,7 @@ import co.uk.depotnet.onsa.fragments.FragmentStopWork;
 import co.uk.depotnet.onsa.listeners.DropDownItem;
 import co.uk.depotnet.onsa.listeners.FormAdapterListener;
 import co.uk.depotnet.onsa.listeners.PhotoAdapterListener;
+import co.uk.depotnet.onsa.modals.JobWorkItem;
 import co.uk.depotnet.onsa.modals.RiskElementType;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
@@ -430,7 +433,12 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     }
 
                     EditText et = (EditText) view;
-                    answer.setAnswer(et.getText().toString());
+                    String text = et.getText().toString();
+                    if(!TextUtils.isEmpty(formItem.getRepeatId()) &&
+                            formItem.getRepeatId().equalsIgnoreCase("negItems")){
+                        text = "-"+text;
+                    }
+                    answer.setAnswer(text);
                     answer.setRepeatID(formItem.getRepeatId());
                     answer.setRepeatCount(repeatCount);
                     DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
@@ -468,6 +476,7 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 String uploadId = formItem.getUploadId();
 
                 if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)
+                        || formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)
                 ) {
                     Intent intent = new Intent(context, ListActivity.class);
                     intent.putExtra("submissionID", submissionID);
@@ -669,6 +678,33 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         item.getUploadId(), item.getRepeatId(), repeatCount);
                 if (answer == null || TextUtils.isEmpty(answer.getAnswer())) {
                     missingCount++;
+                }
+                if(!TextUtils.isEmpty(item.getRepeatId()) && item.getRepeatId().equalsIgnoreCase("negItems")){
+                    if(!TextUtils.isEmpty(item.getUploadId()) && item.getUploadId().equalsIgnoreCase("quantity")){
+                        if(!TextUtils.isEmpty(answer.getAnswer())) {
+                            try {
+                                int qty = Integer.parseInt(answer.getAnswer());
+                                if(qty < 0){
+                                    qty = -1*qty;
+                                }
+                                Answer code = DBHandler.getInstance().getAnswer(submissionID,
+                                        "itemCode", "negItems", repeatCount);
+                                if(code != null && !TextUtils.isEmpty(code.getAnswer())){
+                                    JobWorkItem workItem = DBHandler.getInstance().getJobWorkItem(submission.getJobID() , code.getAnswer());
+                                    if(workItem != null){
+                                        if(qty > workItem.getquantity()){
+                                            missingCount++;
+                                            listener.showValidationDialog("Validation Error" , "Please enter correct quantity");
+                                        }
+                                    }
+
+                                }
+
+                            }catch (Exception e){
+
+                            }
+                        }
+                    }
                 }
             }
         }
