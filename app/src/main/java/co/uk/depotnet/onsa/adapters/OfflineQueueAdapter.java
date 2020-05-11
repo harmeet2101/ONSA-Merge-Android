@@ -50,16 +50,11 @@ public class OfflineQueueAdapter extends RecyclerView.Adapter<OfflineQueueAdapte
         Job job = DBHandler.getInstance().getJob(submission.getJobID());
 
         if(job != null) {
-            holder.txtJobID.setText(job.getjobNumber());
+            holder.txtJobID.setText(job.getestimateNumber());
         }
         holder.txtSubmissionType.setText(submission.getTitle());
 
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onItemClick(submission , position);
-            }
-        });
+        holder.view.setOnClickListener(view -> listener.onItemClick(submission , position));
     }
 
     @Override

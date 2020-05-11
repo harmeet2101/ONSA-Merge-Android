@@ -360,37 +360,4 @@ public class ListStockItemActivity extends AppCompatActivity {
 
     }
 
-    private void updateStockLevel(final Set<String> keys) {
-        User user = DBHandler.getInstance().getUser();
-        if (user != null && !items.isEmpty()) {
-            for (String key : keys) {
-                for (int i = 0; i < items.size(); i++) {
-                    final StockItems si = items.get(i);
-                    if (si.getStaStockItemId().equalsIgnoreCase(key)) {
-                        String url = BuildConfig.BASE_URL + "appstores/getstocklevel?StaId=" + si.getStaId() +
-                                "&StockItemId=" + si.getstockItemId();
-
-                        okhttp3.Response response = new ConnectionHelper(ListStockItemActivity.this).performNetworking(url, null);
-                        if (response != null && response.isSuccessful()) {
-                            ResponseBody body = response.body();
-                            if (body != null) {
-                                try {
-                                    String data = body.string();
-                                    if (!TextUtils.isEmpty(data)) {
-                                        StockLevel stockLevel = new Gson().fromJson(data, StockLevel.class);
-                                        if (stockLevel != null) {
-//                                            si.setStockLevelUnit(stockLevel.getStockLevel());
-                                        }
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 }

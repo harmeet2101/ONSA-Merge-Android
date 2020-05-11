@@ -665,30 +665,6 @@ public class CameraActivity extends AppCompatActivity implements
                             ContextCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
                                     != PackageManager.PERMISSION_GRANTED) {
 
-                    } else {
-                        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(CameraActivity.this);
-                        mFusedLocationClient.getLastLocation()
-                                .addOnSuccessListener(location -> {
-                                    // GPS location can be null if GPS is switched off
-                                    if (location != null) {
-                                        try {
-                                            Geocoder geocoder = new Geocoder(CameraActivity.this, Locale.getDefault());
-                                            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                                            if (addresses != null && addresses.size() > 0) {
-                                                String addressLine = addresses.get(0).getAddressLine(0);
-//                                            etLocation.setText(addressLine);
-                                            }
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.d("ADD JOB", "Error trying to get last GPS location");
-                                    e.printStackTrace();
-                                });
-
-
                     }
                 } else {
                     android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(CameraActivity.this, R.style.DialogTheme)
@@ -847,9 +823,8 @@ public class CameraActivity extends AppCompatActivity implements
                         // GPS location can be null if GPS is switched off
                         if (location != null) {
                             listener.onSuccess(location);
-
                         } else {
-                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+//                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                             listener.onFailure();
                         }
                     })

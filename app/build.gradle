@@ -21,12 +21,11 @@ android {
     buildTypes {
 
         debug {
-            android.defaultConfig.versionName "1.7.4"
-            android.defaultConfig.versionCode 39
+            android.defaultConfig.versionName "1.8.3"
+            android.defaultConfig.versionCode 48
             applicationIdSuffix ".store.dev"
             resValue "string", "app_name", "ONSA-STORE-DEV"
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
-
         }
 
         /*release {
@@ -49,14 +48,14 @@ android {
             resValue "string", "app_name", "ONSA-DEV"
         }*/
 
-        storedev {
+        /*storedev {
             initWith debug
-            android.defaultConfig.versionName "1.7.4"
-            android.defaultConfig.versionCode 39
+            android.defaultConfig.versionName "1.8.3"
+            android.defaultConfig.versionCode 48
             applicationIdSuffix ".store.dev"
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
             resValue "string", "app_name", "ONSA-STORE-DEV"
-        }
+        }*/
 
         /*storeuat {
             initWith debug
@@ -70,8 +69,8 @@ android {
 
         /*store_uat_kier {
             initWith debug
-            android.defaultConfig.versionName "1.0.3"
-            android.defaultConfig.versionCode 3
+            android.defaultConfig.versionName "1.0.4"
+            android.defaultConfig.versionCode 4
             applicationIdSuffix ".store.kier.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-kier-api.depotnet.co.uk/"')
 
@@ -88,15 +87,15 @@ android {
             resValue "string", "app_name", "KIER-ONSA-STORE"
         }*/
 
-        /*store_uat_mjq {
+        store_uat_mjq {
             initWith debug
-            android.defaultConfig.versionName "1.0.1"
-            android.defaultConfig.versionCode 2
+            android.defaultConfig.versionName "1.0.2"
+            android.defaultConfig.versionCode 3
             applicationIdSuffix ".store.mjq.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-mjq-api.depotnet.co.uk/"')
 
             resValue "string", "app_name", "MJQ-ONSA-STORE-UAT"
-        }*/
+        }
 
         /*store_live_mjq {
             initWith debug
@@ -107,7 +106,6 @@ android {
 
             resValue "string", "app_name", "MJQ-ONSA-STORE"
         }*/
-
 
 
         /*uat {

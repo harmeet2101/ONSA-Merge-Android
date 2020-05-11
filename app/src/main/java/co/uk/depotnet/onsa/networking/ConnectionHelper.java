@@ -15,6 +15,7 @@ import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -141,7 +142,9 @@ public class ConnectionHelper {
 
 
                     if (!TextUtils.isEmpty(repeatId)) {  //INFO: repeat id not null
-
+                        if(repeatId.equalsIgnoreCase("negDfeItems")){
+                            repeatId = "dfeItems";
+                        }
                         if (repeatId.equalsIgnoreCase("jobDataSection")) {
 
                             if (uploadId.equalsIgnoreCase("address")) {

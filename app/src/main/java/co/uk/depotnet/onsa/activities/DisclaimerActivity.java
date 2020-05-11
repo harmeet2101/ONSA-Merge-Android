@@ -28,6 +28,7 @@ import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.Constants;
+import co.uk.depotnet.onsa.views.MaterialAlertDialog;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,26 +50,30 @@ public class DisclaimerActivity extends AppCompatActivity
         public void onResponse(@NonNull Call<DatasetResponse> call,
                                Response<DatasetResponse> response) {
 
-            if (response.body() != null) {
+            if (response.isSuccessful() && response.body() != null) {
                 response.body().toContentValues();
                 user.setDisclaimerAccepted(true);
                 DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
-                if(Constants.isStoreEnabled) {
-                    APICalls.getStoreDataSet(user.gettoken()).enqueue(storeDataSetCallback);
-                }else{
-                    startMainActivity();
-                }
-                return;
+
             }
-            hideProgressBar();
+            actionOnStoreStatus();
         }
 
         @Override
         public void onFailure(@NonNull Call<DatasetResponse> call, @NonNull Throwable t) {
-            hideProgressBar();
+            actionOnStoreStatus();
         }
     };
+
+    private void actionOnStoreStatus(){
+        Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
+        if(Constants.isStoreEnabled) {
+            APICalls.getStoreDataSet(user.gettoken()).enqueue(storeDataSetCallback);
+            return;
+        }
+        hideProgressBar();
+        startMainActivity();
+    }
 
     public void startMainActivity(){
                 hideProgressBar();
@@ -81,9 +86,9 @@ public class DisclaimerActivity extends AppCompatActivity
     private Callback<StoreDataset> storeDataSetCallback = new Callback<StoreDataset>() {
         @Override
         public void onResponse(@NonNull Call<StoreDataset> call,
-                               Response<StoreDataset> response) {
+                               @NonNull Response<StoreDataset> response) {
 
-            if (response.body() != null) {
+            if (response.isSuccessful() && response.body() != null) {
                 response.body().toContentValues();
                 user.setDisclaimerAccepted(true);
                 DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
@@ -103,20 +108,17 @@ public class DisclaimerActivity extends AppCompatActivity
 
     private okhttp3.Callback disclaimerCallbackLogo = new okhttp3.Callback() {
         @Override
-        public void onFailure(okhttp3.Call call, IOException e) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    hideProgressBar();
-                    btnAccept.setVisibility(View.VISIBLE);
-                    btnDecline.setVisibility(View.VISIBLE);
-                }
+        public void onFailure(@NonNull okhttp3.Call call, @NonNull IOException e) {
+            new Handler(Looper.getMainLooper()).post(() -> {
+                hideProgressBar();
+                btnAccept.setVisibility(View.VISIBLE);
+                btnDecline.setVisibility(View.VISIBLE);
             });
 
         }
 
         @Override
-        public void onResponse(okhttp3.Call call, @NonNull okhttp3.Response response) throws IOException {
+        public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws IOException {
             ResponseBody responseBody = response.body();
             if(responseBody != null){
                 InputStream is = responseBody.byteStream();
@@ -124,22 +126,16 @@ public class DisclaimerActivity extends AppCompatActivity
                 final Bitmap bitmap = BitmapFactory.decodeStream(is);
 
 
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (bitmap != null) {
-                                imgDisclaimer.setImageBitmap(bitmap);
-
-                            }
-                            hideProgressBar();
-                            btnAccept.setVisibility(View.VISIBLE);
-                            btnDecline.setVisibility(View.VISIBLE);
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        if (bitmap != null) {
+                            imgDisclaimer.setImageBitmap(bitmap);
 
                         }
+                        hideProgressBar();
+                        btnAccept.setVisibility(View.VISIBLE);
+                        btnDecline.setVisibility(View.VISIBLE);
+
                     });
-
-
-
             }
 
         }
@@ -157,6 +153,8 @@ public class DisclaimerActivity extends AppCompatActivity
                     APICalls.getDisclaimerLogo(user.gettoken(), disclaimerCallbackLogo);
                     return;
                 }
+            }else if(response.code() == 429){
+                showErrorDialog("Error" , "JWT Rewoked");
             }
 
             hideProgressBar();
@@ -237,20 +235,36 @@ public class DisclaimerActivity extends AppCompatActivity
     private void getFeatures(){
         APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
             @Override
-            public void onResponse(Call<FeatureResult> call, Response<FeatureResult> response) {
+            public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
                 if(response.isSuccessful()){
                     FeatureResult featureResult = response.body();
                     if(featureResult != null){
                         featureResult.toContentValues();
-                        APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
                     }
                 }
+                APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
             }
 
             @Override
-            public void onFailure(Call<FeatureResult> call, Throwable t) {
-
+            public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
+                APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
             }
         });
+    }
+
+    public void showErrorDialog(String title, String message) {
+
+        MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(DisclaimerActivity.this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositive(getString(R.string.ok), (dialog1, i) -> {dialog1.dismiss();
+                    Intent intent = new Intent(DisclaimerActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                })
+                .build();
+
+        dialog.setCancelable(false);
+        dialog.show(getSupportFragmentManager(), "_ERROR_DIALOG");
     }
 }

@@ -4,7 +4,10 @@ import co.uk.depotnet.onsa.modals.Disclaimer;
 import co.uk.depotnet.onsa.modals.Driver;
 import co.uk.depotnet.onsa.modals.Feature;
 import co.uk.depotnet.onsa.modals.Job;
+import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
 import co.uk.depotnet.onsa.modals.httprequests.ResetPassword;
+import co.uk.depotnet.onsa.modals.httprequests.VerificationRequest;
+import co.uk.depotnet.onsa.modals.httpresponses.VerificationResult;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.responses.JobResponse;
 import co.uk.depotnet.onsa.modals.KitBagDocument;
@@ -38,6 +41,15 @@ public interface APIInterface {
 
     @POST("/signin")
     Call<User> login(@Body UserRequest user);
+
+    @POST("/your-account/verifyCode")
+    Call<VerificationResult> verifyCode(@Body VerificationRequest verificationRequest);
+
+    @POST("/verify2FAChallenge")
+    Call<User> verify2FAChallenge(@Body VerificationRequest verificationRequest);
+
+    @PUT("/your-account/activate-mfa")
+    Call<ActiveMfa> activeMFA();
 
     @POST("/reset-password")
     Call<User> resetPassword(@Body ResetPassword resetPassword);

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,6 +86,9 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         ArrayList<FormItem> dialogItems = parentFormItem.getDialogItems();
         formItems.clear();
         int forkPosition = 0;
+        boolean ifItemAdded = false;
+        boolean ifPosDFEAdded = false;
+        boolean ifNegDFEAdded = false;
         DBHandler dbHandler = DBHandler.getInstance();
         ArrayList<FormItem> listItems = new ArrayList<>();
         for (int c = 0; c < dialogItems.size(); c++) {
@@ -107,11 +112,50 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         }
                     }
                 }
+                formItems.addAll(forkPosition, listItems);
 
+            }else if (!ifPosDFEAdded && item.getFormType() == FormItem.TYPE_ADD_POS_DFE) {
+                forkPosition = formItems.size()-1;
+                ifPosDFEAdded = true;
+                listItems.clear();
+                ArrayList<String> fields = item.getFields();
+                if (fields != null && !fields.isEmpty()) {
+                    ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                    if (answers != null) {
+                        for (int i = 0; i < answers.size(); i++) {
+                            repeatCount = answers.get(i).getRepeatCount();
+                            FormItem qItem = new FormItem(item.getListItemType(), "", "", item.getRepeatId(), true);
+                            qItem.setFields(fields);
+                            qItem.setDialogItems(item.getDialogItems());
+                            qItem.setRepeatCount(repeatCount);
+                            listItems.add(qItem);
+                        }
+                        formItems.addAll(forkPosition, listItems);
+                    }
+                }
+            }else if (!ifNegDFEAdded && item.getFormType() == FormItem.TYPE_ADD_NEG_DFE) {
+                forkPosition = formItems.size()-1;;
+                ifNegDFEAdded = true;
+                listItems.clear();
+                ArrayList<String> fields = item.getFields();
+                if (fields != null && !fields.isEmpty()) {
+                    ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                    if (answers != null) {
+                        for (int i = 0; i < answers.size(); i++) {
+                            repeatCount = answers.get(i).getRepeatCount();
+                            FormItem qItem = new FormItem(item.getListItemType(), "", "", item.getRepeatId(), true);
+                            qItem.setFields(fields);
+                            qItem.setDialogItems(item.getDialogItems());
+                            qItem.setRepeatCount(repeatCount);
+                            listItems.add(qItem);
+                        }
+                        formItems.addAll(forkPosition, listItems);
+                    }
+                }
             }
         }
 
-        formItems.addAll(forkPosition, listItems);
+
         notifyDataSetChanged();
 
         if (!listItems.isEmpty()) {
@@ -140,6 +184,8 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case FormItem.TYPE_NUMBER:
                 return new NumberHolder(LayoutInflater.from(context).inflate(R.layout.item_et_number, viewGroup, false));
             case FormItem.TYPE_FORK_CARD:
+            case FormItem.TYPE_ADD_NEG_DFE:
+            case FormItem.TYPE_ADD_POS_DFE:
                 return new ForkCardHolder(LayoutInflater.from(context).inflate(R.layout.item_fork_card, viewGroup, false));
             case FormItem.TYPE_PHOTO:
                 return new PhotoHolder(LayoutInflater.from(context).inflate(R.layout.item_form_photo, viewGroup, false));
@@ -176,6 +222,8 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 bindNumberHolder((NumberHolder) holder, position);
                 break;
             case FormItem.TYPE_FORK_CARD:
+            case FormItem.TYPE_ADD_NEG_DFE:
+            case FormItem.TYPE_ADD_POS_DFE:
                 bindForkCard((ForkCardHolder) holder, position);
                 break;
             case FormItem.TYPE_PHOTO:
@@ -434,9 +482,9 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                     EditText et = (EditText) view;
                     String text = et.getText().toString();
-                    if(!TextUtils.isEmpty(formItem.getRepeatId()) &&
-                            formItem.getRepeatId().equalsIgnoreCase("negItems")){
-                        text = "-"+text;
+                    if (!TextUtils.isEmpty(formItem.getRepeatId()) &&
+                            (formItem.getRepeatId().equalsIgnoreCase("negItems") || formItem.getRepeatId().equalsIgnoreCase("negDfeItems"))) {
+                        text = "-" + text;
                     }
                     answer.setAnswer(text);
                     answer.setRepeatID(formItem.getRepeatId());
@@ -572,7 +620,7 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void bindPhotoHolder(PhotoHolder holder, int position) {
         FormItem formItem = formItems.get(position);
-        if(holder.adapterPhoto == null){
+        if (holder.adapterPhoto == null) {
             holder.adapterPhoto = new AdapterPhoto(context, submissionID, formItem, repeatCount, this);
             holder.recyclerView.setAdapter(holder.adapterPhoto);
         }
@@ -592,9 +640,9 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (formItem.getTitle().equalsIgnoreCase("Damage Photo")) {
             holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload_damage), formItem.getPhotoSize()));
         } else {
-            if(formItem.getPhotoSize() >= 100){
+            if (formItem.getPhotoSize() >= 100) {
                 holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload_unlimited), formItem.getPhotoRequired()));
-            }else {
+            } else {
                 holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload), formItem.getPhotoSize(), formItem.getPhotoRequired()));
             }
         }
@@ -645,11 +693,31 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void bindForkCard(ForkCardHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.openForkFragment(formItem, submissionID, repeatCount);
+
+        holder.view.setOnClickListener(v -> {
+            int rC = 0;
+            ArrayList<String> fields = formItem.getFields();
+            ArrayList<Answer> answers = new ArrayList<>();
+            String repeatId = formItem.getRepeatId();
+            if (fields != null && !fields.isEmpty()) {
+                if (repeatId.equalsIgnoreCase("dfeItems") ||
+                        repeatId.equalsIgnoreCase("negDfeItems")) {
+                    answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "dfeItems"));
+                    answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "negDfeItems"));
+                } else {
+                    answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), repeatId));
+                }
+
+                for (int i = 0; i < answers.size(); i++) {
+                    if (rC <= answers.get(i).getRepeatCount()) {
+                        rC = answers.get(i).getRepeatCount();
+                    }
+                }
+
             }
+
+            rC = rC + 1;
+            listener.openForkFragment(formItem, submissionID, rC);
         });
 
     }
@@ -679,28 +747,28 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (answer == null || TextUtils.isEmpty(answer.getAnswer())) {
                     missingCount++;
                 }
-                if(!TextUtils.isEmpty(item.getRepeatId()) && item.getRepeatId().equalsIgnoreCase("negItems")){
-                    if(!TextUtils.isEmpty(item.getUploadId()) && item.getUploadId().equalsIgnoreCase("quantity")){
-                        if(!TextUtils.isEmpty(answer.getAnswer())) {
+                if (!TextUtils.isEmpty(item.getRepeatId()) && item.getRepeatId().equalsIgnoreCase("negItems")) {
+                    if (!TextUtils.isEmpty(item.getUploadId()) && item.getUploadId().equalsIgnoreCase("quantity")) {
+                        if (!TextUtils.isEmpty(answer.getAnswer())) {
                             try {
                                 int qty = Integer.parseInt(answer.getAnswer());
-                                if(qty < 0){
-                                    qty = -1*qty;
+                                if (qty < 0) {
+                                    qty = -1 * qty;
                                 }
                                 Answer code = DBHandler.getInstance().getAnswer(submissionID,
                                         "itemCode", "negItems", repeatCount);
-                                if(code != null && !TextUtils.isEmpty(code.getAnswer())){
-                                    JobWorkItem workItem = DBHandler.getInstance().getJobWorkItem(submission.getJobID() , code.getAnswer());
-                                    if(workItem != null){
-                                        if(qty > workItem.getquantity()){
+                                if (code != null && !TextUtils.isEmpty(code.getAnswer())) {
+                                    JobWorkItem workItem = DBHandler.getInstance().getJobWorkItem(submission.getJobID(), code.getAnswer());
+                                    if (workItem != null) {
+                                        if (qty > workItem.getquantity()) {
                                             missingCount++;
-                                            listener.showValidationDialog("Validation Error" , "Please enter correct quantity");
+                                            listener.showValidationDialog("Validation Error", "Please enter correct quantity");
                                         }
                                     }
 
                                 }
 
-                            }catch (Exception e){
+                            } catch (Exception e) {
 
                             }
                         }

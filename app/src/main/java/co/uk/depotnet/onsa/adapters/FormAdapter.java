@@ -9,9 +9,11 @@ import android.graphics.drawable.GradientDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SwitchCompat;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -198,7 +200,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void addListItems(ArrayList<FormItem> inflatedItems) {
         formItems.clear();
-        int forkPosition = 0;
+        int forkPosition;
         boolean ifItemAdded = false;
         boolean ifPosDFEAdded = false;
         boolean ifNegDFEAdded = false;
@@ -227,8 +229,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         formItems.addAll(forkPosition, listItems);
                     }
                 }
-            }else if (!ifPosDFEAdded && item.getFormType() == FormItem.TYPE_ADD_POS_DFE) {
-                forkPosition = formItems.size()-1;
+            } else if (!ifPosDFEAdded && item.getFormType() == FormItem.TYPE_ADD_POS_DFE) {
+                forkPosition = formItems.size() - 1;
                 ifPosDFEAdded = true;
                 listItems.clear();
                 ArrayList<String> fields = item.getFields();
@@ -246,8 +248,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         formItems.addAll(forkPosition, listItems);
                     }
                 }
-            }else if (!ifNegDFEAdded && item.getFormType() == FormItem.TYPE_ADD_NEG_DFE) {
-                forkPosition = formItems.size()-1;;
+            } else if (!ifNegDFEAdded && item.getFormType() == FormItem.TYPE_ADD_NEG_DFE) {
+                forkPosition = formItems.size() - 1;
                 ifNegDFEAdded = true;
                 listItems.clear();
                 ArrayList<String> fields = item.getFields();
@@ -499,10 +501,10 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private void bindBarCodeItem(DropDownHolder holder, int position) {
         holder.txtTitle.setText(formItems.get(position).getTitle());
         holder.view.setOnClickListener(v -> {
-            Answer answer = DBHandler.getInstance().getAnswer(submissionID , "StaId" , "Items" , 0);
-            if(answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
-                Intent intent = new Intent(context , ScannedBarcodeActivity.class);
-                intent.putExtra("StaId" , answer.getAnswer());
+            Answer answer = DBHandler.getInstance().getAnswer(submissionID, "StaId", "Items", 0);
+            if (answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
+                Intent intent = new Intent(context, ScannedBarcodeActivity.class);
+                intent.putExtra("StaId", answer.getAnswer());
                 listener.startActivityForResultFromAdapter(intent, ScannedBarcodeActivity.REQUEST_CODE);
             }
         });
@@ -530,9 +532,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.view.setOnClickListener(view -> {
             Intent intent;
-            if(submission.getJsonFileName().equalsIgnoreCase("log_store.json")){
+            if (submission.getJsonFileName().equalsIgnoreCase("log_store.json")) {
                 intent = new Intent(context, ListStoreItemActivity.class);
-            }else {
+            } else {
                 intent = new Intent(context, ListStockItemActivity.class);
             }
             intent.putExtra("submissionID", submissionID);
@@ -553,21 +555,20 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
 
         String description = "";
-        if(submission.getJsonFileName().equalsIgnoreCase("log_store.json")){
+        if (submission.getJsonFileName().equalsIgnoreCase("log_store.json")) {
             MyStore item = DBHandler.getInstance().getMyStores(answer.getAnswer());
-            if(item != null){
+            if (item != null) {
                 description = item.getdescription();
             }
-        }else{
+        } else {
             StockItems item = DBHandler.getInstance().getStockItems(answer.getAnswer());
-            if(item != null){
+            if (item != null) {
                 description = item.getdescription();
             }
         }
 
 
         holder.txtDescription.setText(description);
-
 
 
         final Answer Quantity = DBHandler.getInstance().getAnswer(submissionID, "Quantity",
@@ -783,7 +784,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                 try {
                     Date selectedDate = sdf.parse(value);
-                    if(selectedDate != null) {
+                    if (selectedDate != null) {
                         myCalendar.setTime(selectedDate);
                     }
                 } catch (ParseException e) {
@@ -833,7 +834,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                 try {
                     Date selectedDate = sdf.parse(value);
-                    if(selectedDate != null) {
+                    if (selectedDate != null) {
                         myCalendar.setTime(selectedDate);
                     }
                 } catch (ParseException e) {
@@ -1043,7 +1044,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                 try {
                     Date selectedDate = sdf.parse(value);
-                    if(selectedDate != null) {
+                    if (selectedDate != null) {
                         myCalendar.setTime(selectedDate);
                     }
                 } catch (ParseException e) {
@@ -1206,49 +1207,57 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                 try {
                     Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                    if (addresses != null && addresses.size() > 0) {
-                        String addressLine = addresses.get(0).getAddressLine(0);
-                        holder.txtLocation.setText(addressLine);
+                    List<Address> addresses = null;
+                     try {
+                         addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                     }catch (Exception e){
 
-                        Answer address = DBHandler.getInstance().getAnswer(submissionID, "address",
-                                formItem.getRepeatId(), repeatCount);
-                        if (address == null) {
-                            address = new Answer(submissionID, "address");
-                        }
-
-                        address.setAnswer(String.valueOf(addressLine));
-                        address.setDisplayAnswer(addressLine);
-                        address.setRepeatID(formItem.getRepeatId());
-                        address.setRepeatCount(repeatCount);
-                        DBHandler.getInstance().replaceData(Answer.DBTable.NAME, address.toContentValues());
-
-                        Answer latitude1 = DBHandler.getInstance().getAnswer(submissionID, "latitude",
-                                formItem.getRepeatId(), repeatCount);
-                        if (latitude1 == null) {
-                            latitude1 = new Answer(submissionID, "latitude");
-                        }
-
-                        latitude1.setAnswer(String.valueOf(location.getLatitude()));
-                        latitude1.setDisplayAnswer(addressLine);
-                        latitude1.setRepeatID(formItem.getRepeatId());
-                        latitude1.setRepeatCount(repeatCount);
-
-                        DBHandler.getInstance().replaceData(Answer.DBTable.NAME, latitude1.toContentValues());
-
-                        Answer longitude = DBHandler.getInstance().getAnswer(submissionID, "longitude",
-                                formItem.getRepeatId(), repeatCount);
-                        if (longitude == null) {
-                            longitude = new Answer(submissionID, "longitude");
-                        }
-
-                        longitude.setAnswer(String.valueOf(location.getLongitude()));
-                        longitude.setDisplayAnswer(addressLine);
-                        longitude.setRepeatID(formItem.getRepeatId());
-                        longitude.setRepeatCount(repeatCount);
-
-                        DBHandler.getInstance().replaceData(Answer.DBTable.NAME, longitude.toContentValues());
+                     }
+                     String addressLine = "Latitude: " + location.getLatitude() + ", Longitude: " + location.getLatitude();
+                    if (addresses != null && !addresses.isEmpty()) {
+                        addressLine = addresses.get(0).getAddressLine(0);
                     }
+
+                    holder.txtLocation.setText(addressLine);
+
+                    Answer address = DBHandler.getInstance().getAnswer(submissionID, "address",
+                            formItem.getRepeatId(), repeatCount);
+                    if (address == null) {
+                        address = new Answer(submissionID, "address");
+                    }
+
+                    address.setAnswer(String.valueOf(addressLine));
+                    address.setDisplayAnswer(addressLine);
+                    address.setRepeatID(formItem.getRepeatId());
+                    address.setRepeatCount(repeatCount);
+                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, address.toContentValues());
+
+                    Answer latitude1 = DBHandler.getInstance().getAnswer(submissionID, "latitude",
+                            formItem.getRepeatId(), repeatCount);
+                    if (latitude1 == null) {
+                        latitude1 = new Answer(submissionID, "latitude");
+                    }
+
+                    latitude1.setAnswer(String.valueOf(location.getLatitude()));
+                    latitude1.setDisplayAnswer(addressLine);
+                    latitude1.setRepeatID(formItem.getRepeatId());
+                    latitude1.setRepeatCount(repeatCount);
+
+                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, latitude1.toContentValues());
+
+                    Answer longitude = DBHandler.getInstance().getAnswer(submissionID, "longitude",
+                            formItem.getRepeatId(), repeatCount);
+                    if (longitude == null) {
+                        longitude = new Answer(submissionID, "longitude");
+                    }
+
+                    longitude.setAnswer(String.valueOf(location.getLongitude()));
+                    longitude.setDisplayAnswer(addressLine);
+                    longitude.setRepeatID(formItem.getRepeatId());
+                    longitude.setRepeatCount(repeatCount);
+
+                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, longitude.toContentValues());
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1601,12 +1610,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private void bindPhotoHolder(PhotoHolder holder, int position) {
         FormItem formItem = formItems.get(position);
 
-        if(formItem.getTitle().equalsIgnoreCase("Take Photo/Video")){
-            Answer answer = DBHandler.getInstance().getAnswer(submissionID , "photoTypes" , null , 0);
-            if(answer != null){
+        if (formItem.getTitle().equalsIgnoreCase("Take Photo/Video")) {
+            Answer answer = DBHandler.getInstance().getAnswer(submissionID, "photoTypes", null, 0);
+            if (answer != null) {
                 formItem.setPhotoId(answer.getAnswer());
                 ArrayList<Photo> photos = formItem.getPhotos();
-                if(photos != null && !photos.isEmpty()){
+                if (photos != null && !photos.isEmpty()) {
                     for (Photo photo :
                             photos) {
                         photo.setPhoto_id(formItem.getPhotoId());
@@ -1615,7 +1624,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
         }
 
-        if(holder.adapterPhoto == null){
+        if (holder.adapterPhoto == null) {
             holder.adapterPhoto = new AdapterPhoto(context, submissionID, formItem, repeatCount, this);
             holder.recyclerView.setAdapter(holder.adapterPhoto);
         }
@@ -1633,13 +1642,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
 
 
-
         if (formItem.getTitle().equalsIgnoreCase("Damage Photo")) {
             holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload_damage), formItem.getPhotoSize()));
         } else {
-            if(formItem.getPhotoSize() >= 100){
+            if (formItem.getPhotoSize() >= 100) {
                 holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload_unlimited), formItem.getPhotoRequired()));
-            }else {
+            } else {
                 holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload), formItem.getPhotoSize(), formItem.getPhotoRequired()));
             }
         }
@@ -1651,8 +1659,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final ArrayList<Photo> photos = formItem.getPhotos();
         int size = photos.size();
         int required = 0;
-
-        ArrayList<Answer> answers = new ArrayList<>();
 
         int photosTaken = 0;
         for (int i = 0; i < size; i++) {
@@ -1667,14 +1673,13 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (answer != null) {
                 photo.setIsVideo(answer.isPhoto() == 2);
                 photo.setUrl(answer.getAnswer());
-                answers.add(answer);
                 photosTaken++;
             }
         }
 
-        if(size >= 100) {
+        if (size >= 100) {
             holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload_unlimited), required));
-        }else{
+        } else {
             holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload), size, required));
         }
 
@@ -1738,22 +1743,25 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private void bindForkCard(ForkCardHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
-        int rC = 0;
-        ArrayList<String> fields = formItem.getFields();
-        ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "items");
-        answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "negItems"));
 
-        if (answers != null) {
-            for (int i = 0; i < answers.size() ; i++){
-                if(rC <= answers.get(i).getRepeatCount()){
+
+        holder.view.setOnClickListener(v -> {
+            int rC = 0;
+            ArrayList<String> fields = formItem.getFields();
+            ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "items");
+            answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "negItems"));
+
+
+            for (int i = 0; i < answers.size(); i++) {
+                if (rC <= answers.get(i).getRepeatCount()) {
                     rC = answers.get(i).getRepeatCount();
                 }
             }
-        }
 
-        final int repeatCount = rC+1;
-        holder.view.setOnClickListener(v -> listener.openForkFragment(formItem, submissionID, repeatCount));
 
+            rC = rC + 1;
+            listener.openForkFragment(formItem, submissionID, repeatCount);
+        });
     }
 
     private void bindForkHolder(ForkHolder holder, final int position) {
@@ -1879,10 +1887,10 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 items.addAll(DBHandler.getInstance().getNotices(submission.getJobID()));
             }
 
-            if(formItem.getKey().equalsIgnoreCase(
+            if (formItem.getKey().equalsIgnoreCase(
                     Job.DBTable.NAME)) {
                 items.addAll(DBHandler.getInstance().getJobs());
-            }else if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)) {
+            } else if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)) {
                 items.addAll(DBHandler.getInstance().getWorkItem(DatasetResponse.DBTable.dfeWorkItems,
                         WorkItem.DBTable.itemCode));
             } else if (formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)) {
@@ -1955,7 +1963,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                     DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
 
-                    if(needToBeNotified(formItem)){
+                    if (needToBeNotified(formItem)) {
                         reInflateItems(true);
                     }
                 }
@@ -2161,15 +2169,15 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 if (answer != null) {
                     String value = answer.getAnswer();
                     if (!TextUtils.isEmpty(value)) {
-                       if (item.getFormType() == FormItem.TYPE_YES_NO_NA) {
+                        if (item.getFormType() == FormItem.TYPE_YES_NO_NA) {
                             int v = 0;
                             try {
                                 v = Integer.parseInt(value);
                             } catch (Exception e) {
                             }
                             addEnableItems(item, v);
-                        }else if(item.getFormType() == FormItem.TYPE_DROPDOWN){
-                           addEnableItems(item, true);
+                        } else if (item.getFormType() == FormItem.TYPE_DROPDOWN) {
+                            addEnableItems(item, true);
                         } else {
                             addEnableItems(item, value.equalsIgnoreCase("true"));
                         }
@@ -2193,7 +2201,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             return;
         }
 
-        ArrayList<FormItem> toBeAdded = null;
+        ArrayList<FormItem> toBeAdded;
         ArrayList<FormItem> toBeRemoved = new ArrayList<>();
         if (value == 1) {
             toBeAdded = formItem.getEnables();
@@ -2377,13 +2385,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             focusedEditText.clearFocus();
         }
 
-//        if (getPoleCount() != 0) {
-//            Intent intent = new Intent(context, PollingSurveyActivity.class);
-//            intent.putExtra(PollingSurveyActivity.ARG_SUBMISSION_ID, submissionID);
-//            ((Activity) context).startActivityForResult(intent, 1234);
-//            return true;
-//        }
-
         missingAnswerMode = false;
         int missingCount = 0;
         boolean isPhotoMissing = false;
@@ -2414,16 +2415,16 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     }
 
 
-                }else if ((item.getFormType() == FormItem.TYPE_ADD_POS_DFE) ||
+                } else if ((item.getFormType() == FormItem.TYPE_ADD_POS_DFE) ||
                         (item.getFormType() == FormItem.TYPE_ADD_NEG_DFE)) {
                     ArrayList<String> fields = item.getFields();
                     if (fields != null && !fields.isEmpty()) {
                         ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
-                        if (answers!=null && !answers.isEmpty()) {
+                        if (answers != null && !answers.isEmpty()) {
                             ifDFEAdded = true;
                         }
                     }
-                }else if (item.getFormType() == FormItem.TYPE_LOCATION) {
+                } else if (item.getFormType() == FormItem.TYPE_LOCATION) {
                     Answer answer = DBHandler.getInstance().getAnswer(submissionID, "latitude", item.getRepeatId(), repeatCount);
                     if (answer == null || TextUtils.isEmpty(answer.getAnswer())) {
                         missingCount++;
@@ -2442,11 +2443,11 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 }
             }
         }
-        if(submission.getJsonFileName().equalsIgnoreCase("log_dfe.json") && !ifDFEAdded){
+        if (submission.getJsonFileName().equalsIgnoreCase("log_dfe.json") && !ifDFEAdded) {
             missingCount++;
-            listener.showValidationDialog("Validation Error" , "Please add Positive or negative DFEs");
-        }else if(isPhotoMissing){
-            listener.showValidationDialog("Validation Error" , "Photos are missing");
+            listener.showValidationDialog("Validation Error", "Please add Positive or negative DFEs");
+        } else if (isPhotoMissing) {
+            listener.showValidationDialog("Validation Error", "Photos are missing");
         }
         if (missingCount > 0) {
             missingAnswerMode = true;

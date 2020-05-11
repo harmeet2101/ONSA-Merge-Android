@@ -10,6 +10,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
+        android:layout_above="@id/btn_upload_all"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="@dimen/_12sdp"
@@ -18,5 +19,15 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:context=".fragments.FragmentQueue"
         tools:listitem="@layout/item_offline_queue" />
+
+    <Button
+        android:id="@+id/btn_upload_all"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:background="@drawable/btn_backgorund"
+        android:text="@string/upload_all"
+        android:textColor="@color/white" />
 
 </RelativeLayout>

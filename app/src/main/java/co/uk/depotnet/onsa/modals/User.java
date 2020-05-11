@@ -30,6 +30,13 @@ public class User implements Parcelable {
     private String token;
     private String foreName;
     private boolean isDisclaimerAccepted;
+    private boolean canSeeCommercial;
+    private boolean twoFactorEnabled;
+    private boolean twoFactorMandatory;
+
+    public void setTwoFactorMandatory(boolean twoFactorMandatory) {
+        this.twoFactorMandatory = twoFactorMandatory;
+    }
 
     protected User(Parcel in) {
         surName = in.readString();
@@ -41,6 +48,9 @@ public class User implements Parcelable {
         token = in.readString();
         foreName = in.readString();
         isDisclaimerAccepted = in.readInt() == 1;
+        canSeeCommercial = in.readInt() == 1;
+        twoFactorEnabled = in.readInt() == 1;
+        twoFactorMandatory = in.readInt() == 1;
     }
 
     public User(Cursor cursor) {
@@ -57,6 +67,9 @@ public class User implements Parcelable {
         token = cursor.getString(cursor.getColumnIndex(DBTable.token));
         foreName = cursor.getString(cursor.getColumnIndex(DBTable.foreName));
         isDisclaimerAccepted = cursor.getInt(cursor.getColumnIndex(DBTable.isDisclaimerAccepted)) == 1;
+        canSeeCommercial = cursor.getInt(cursor.getColumnIndex(DBTable.canSeeCommercial)) == 1;
+        twoFactorEnabled = cursor.getInt(cursor.getColumnIndex(DBTable.twoFactorEnabled)) == 1;
+        twoFactorMandatory = cursor.getInt(cursor.getColumnIndex(DBTable.twoFactorMandatory)) == 1;
 
     }
 
@@ -128,6 +141,18 @@ public class User implements Parcelable {
         return isDisclaimerAccepted;
     }
 
+    public boolean isCanSeeCommercial() {
+        return canSeeCommercial;
+    }
+
+    public boolean isTwoFactorEnabled() {
+        return twoFactorEnabled;
+    }
+
+    public boolean isTwoFactorMandatory() {
+        return twoFactorMandatory;
+    }
+
     public void setDisclaimerAccepted(boolean disclaimerAccepted) {
         isDisclaimerAccepted = disclaimerAccepted;
     }
@@ -148,6 +173,9 @@ public class User implements Parcelable {
         dest.writeString(token);
         dest.writeString(foreName);
         dest.writeInt(isDisclaimerAccepted ? 1 : 0);
+        dest.writeInt(canSeeCommercial ? 1 : 0);
+        dest.writeInt(twoFactorEnabled ? 1 : 0);
+        dest.writeInt(twoFactorMandatory ? 1 : 0);
     }
 
     public ContentValues toContentValues() {
@@ -175,6 +203,9 @@ public class User implements Parcelable {
 
         cv.put(DBTable.foreName, this.foreName);
         cv.put(DBTable.isDisclaimerAccepted, this.isDisclaimerAccepted);
+        cv.put(DBTable.canSeeCommercial, this.canSeeCommercial);
+        cv.put(DBTable.twoFactorEnabled, this.twoFactorEnabled);
+        cv.put(DBTable.twoFactorMandatory, this.twoFactorMandatory);
 
         return cv;
     }
@@ -190,6 +221,9 @@ public class User implements Parcelable {
         public static final String token = "token";
         public static final String foreName = "foreName";
         public static final String isDisclaimerAccepted = "isDisclaimerAccepted";
+        public static final String canSeeCommercial = "canSeeCommercial";
+        public static final String twoFactorEnabled = "twoFactorEnabled";
+        public static final String twoFactorMandatory = "twoFactorMandatory";
 
     }
 }

@@ -241,7 +241,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_10sdp"
-                android:text="7856478474"
+                android:text="N/A"
                 android:textColor="@color/depotnet_color"
                 android:textSize="@dimen/_12sdp" />
 
@@ -313,7 +313,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_10sdp"
-                android:text="xyz@gmail.com"
+                android:text="N/A"
                 android:textColor="@color/depotnet_color"
                 android:textSize="@dimen/_12sdp" />
 
@@ -377,7 +377,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_10sdp"
-                android:text="mermaind77"
+                android:text="N/A"
                 android:textColor="@color/depotnet_color"
                 android:textSize="@dimen/_12sdp" />
 

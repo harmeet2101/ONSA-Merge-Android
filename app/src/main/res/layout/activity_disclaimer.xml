@@ -37,7 +37,6 @@
         android:paddingRight="@dimen/_16sdp">
 
         <TextView
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -46,52 +45,66 @@
             android:textSize="@dimen/_22sdp"
             android:textStyle="bold" />
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/txt_disclaimer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_16sdp"
-            android:textColor="@color/txt_color_dark"
-            android:textSize="@dimen/_12sdp"
-            android:textStyle="bold"
-            android:textAlignment="center" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/img_disclaimer"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_width="@dimen/_72sdp"
-            android:layout_height="@dimen/_72sdp" />
+                <TextView
+                    android:id="@+id/txt_disclaimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:textAlignment="center"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/txt_color_dark"
+                    android:textSize="@dimen/_12sdp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/img_disclaimer"
+                    android:layout_width="@dimen/_72sdp"
+                    android:layout_height="@dimen/_72sdp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/_10sdp" />
 
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:orientation="horizontal">
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/_16sdp"
-    android:orientation="horizontal">
+                    <Button
+                        android:id="@+id/btn_decline"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:layout_marginRight="@dimen/_10sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_backgorund"
+                        android:text="@string/decline"
+                        android:textColor="@color/white" />
 
-        <Button
-            android:id="@+id/btn_decline"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:layout_marginRight="@dimen/_10sdp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btn_backgorund"
-            android:text="@string/decline"
-            android:textColor="@color/white" />
+                    <Button
+                        android:id="@+id/btn_accept"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_backgorund"
+                        android:text="@string/accept"
+                        android:textColor="@color/white" />
 
-        <Button
-            android:id="@+id/btn_accept"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btn_backgorund"
-            android:text="@string/accept"
-            android:textColor="@color/white" />
+                </LinearLayout>
 
-</LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
 
 
     </LinearLayout>
@@ -108,12 +121,12 @@
         android:id="@+id/ll_ui_blocker"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/transparent_overlay"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
-        android:visibility="gone"
-        android:background="@color/transparent_overlay"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <ProgressBar
             android:id="@+id/progress_bar"

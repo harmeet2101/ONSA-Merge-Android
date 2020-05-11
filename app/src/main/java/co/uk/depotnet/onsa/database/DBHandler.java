@@ -369,7 +369,7 @@ public class DBHandler {
         }
 
 
-        Cursor cursor = db.query(Answer.DBTable.NAME, null, whereClause, whereArgs, null, null, Answer.DBTable.repeatID + " ASC");
+        Cursor cursor = db.query(Answer.DBTable.NAME, null, whereClause, whereArgs, null, null, Answer.DBTable.repeatCounter + " ASC");
         ArrayList<Answer> answers = new ArrayList<>();
         if (cursor.moveToFirst()) {
             do {
@@ -674,11 +674,19 @@ JobWorkItem workItem = null;
                 null, selection, selectionArgs,
                 null, null, JobModuleStatus.DBTable.JobId + " ASC");
 
-        if (cursor == null || !cursor.moveToFirst()) {
+        if (cursor == null ) {
             return false;
         }
 
+        if(!cursor.moveToFirst()){
+            cursor.close();
+            return false;
+        }
+
+
+
         JobModuleStatus jobModuleStatus = new JobModuleStatus(cursor);
+        cursor.close();
         return jobModuleStatus.isStatus();
     }
 
@@ -693,11 +701,17 @@ JobWorkItem workItem = null;
                 null, null,
                 JobModuleStatus.DBTable.JobId + " ASC");
 
-        if (cursor == null || !cursor.moveToFirst()) {
+        if (cursor == null ) {
+            return false;
+        }
+
+        if(!cursor.moveToFirst()){
+            cursor.close();
             return false;
         }
 
         JobModuleStatus jobModuleStatus = new JobModuleStatus(cursor);
+        cursor.close();
         return jobModuleStatus.isStatus();
     }
 

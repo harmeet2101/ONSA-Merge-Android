@@ -1,6 +1,5 @@
 package co.uk.depotnet.onsa.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -17,7 +16,9 @@ import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.dialogs.ErrorDialog;
+import co.uk.depotnet.onsa.dialogs.MFADialog;
 import co.uk.depotnet.onsa.modals.User;
+import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
 import co.uk.depotnet.onsa.modals.httprequests.UserRequest;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
@@ -32,32 +33,70 @@ public class LoginActivity extends AppCompatActivity
     private EditText etUserName;
     private EditText etPassword;
     private LinearLayout llUiBlocker;
-    private User user;
+    
+    private Callback<ActiveMfa> mfaCallback = new Callback<ActiveMfa>() {
+        @Override
+        public void onResponse(@NonNull Call<ActiveMfa> call, @NonNull Response<ActiveMfa> response) {
+            hideProgressBar();
+            if(response.isSuccessful()){
+                ActiveMfa activeMfa = response.body();
+                if(activeMfa != null){
+                    showMFADialog(activeMfa);
+                    return;
+                }
+            }
+
+            ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "Please try again.","Some Error occurred");
+            dialog.show();
+        }
+
+        @Override
+        public void onFailure(@NonNull Call<ActiveMfa> call, @NonNull Throwable t) {
+            ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "Please try again.","Some Error occurred");
+            dialog.show();
+        }
+    };
+
+    private void showMFADialog(ActiveMfa mfa) {
+        MFADialog mfaDialog = new MFADialog(this , mfa);
+        mfaDialog.show();
+    }
 
     private Callback<User> loginCallback = new Callback<User>() {
         @Override
-        public void onResponse(@NonNull Call<User> call, Response<User> response) {
+        public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+            hideProgressBar();
             if (response.isSuccessful()) {
-                user = response.body();
+                User user = response.body();
                 if (user != null && !TextUtils.isEmpty(user.getuserId())) {
                     DBHandler.getInstance().insertData(User.DBTable.NAME, user.toContentValues());
                     AppPreferences.putString("UserName" , etUserName.getText().toString().trim());
                     AppPreferences.putString("UserPassword" , etPassword.getText().toString().trim());
 
-                    startActivity(new Intent(LoginActivity.this , DisclaimerActivity.class));
-                    finish();
+                    if(!user.isTwoFactorMandatory()){
+                        startActivity(new Intent(LoginActivity.this , DisclaimerActivity.class));
+                        finish();
+                        return;
+                    }
+
+                    if(user.isTwoFactorEnabled()){
+                        startActivity(new Intent(LoginActivity.this , VerificationActivity.class));
+                        finish();
+                        return;
+                    }
+                    
+                    showProgressBar();
+                    APICalls.activeMFA(user.gettoken()).enqueue(mfaCallback);
                     return;
                 }
             }
 
-           // ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "User name or Password not matching.","Wrong Password");
             ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "Please try again.","Wrong Password");
             dialog.show();
-            hideProgressBar();
         }
 
         @Override
-        public void onFailure(Call<User> call, Throwable t) {
+        public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
             hideProgressBar();
             ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "Please try again.","Wrong Password");
             dialog.show();
@@ -73,7 +112,7 @@ public class LoginActivity extends AppCompatActivity
         etPassword = findViewById(R.id.et_password);
         llUiBlocker = findViewById(R.id.ll_ui_blocker);
         TextView txtVersionCode = findViewById(R.id.txt_version_code);
-        txtVersionCode.setText("version " + BuildConfig.VERSION_NAME);
+        txtVersionCode.setText(String.format("version %s", BuildConfig.VERSION_NAME));
 
         findViewById(R.id.btn_login).setOnClickListener(LoginActivity.this);
         findViewById(R.id.txt_btn_forgot_password).setOnClickListener(LoginActivity.this);

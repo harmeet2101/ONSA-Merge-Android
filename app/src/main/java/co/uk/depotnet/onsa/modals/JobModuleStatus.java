@@ -13,11 +13,12 @@ public class JobModuleStatus implements Parcelable {
     private boolean Status;
     private String selectedDate;
 
+
     protected JobModuleStatus(Parcel in) {
         submissionId = in.readLong();
         JobId = in.readString();
         ModuleName = in.readString();
-        Status = in.readByte() != 0;
+        Status = in.readByte() == 1;
         selectedDate = in.readString();
     }
 
@@ -43,7 +44,7 @@ public class JobModuleStatus implements Parcelable {
         parcel.writeLong(submissionId);
         parcel.writeString(JobId);
         parcel.writeString(ModuleName);
-        parcel.writeByte((byte) (Status ? 1 : 0));
+        parcel.writeByte((byte) (Status? 1:0));
         parcel.writeString(selectedDate);
     }
 
@@ -107,7 +108,7 @@ public class JobModuleStatus implements Parcelable {
         submissionId = cursor.getLong(cursor.getColumnIndex(DBTable.submissionId));
         JobId = cursor.getString(cursor.getColumnIndex(DBTable.JobId));
         ModuleName = cursor.getString(cursor.getColumnIndex(DBTable.ModuleName));
-        Status = cursor.getInt(cursor.getColumnIndex(DBTable.Status))==1;
+        Status = cursor.getInt(cursor.getColumnIndex(DBTable.Status)) ==1;
         selectedDate = cursor.getString(cursor.getColumnIndex(DBTable.selectedDate));
     }
 

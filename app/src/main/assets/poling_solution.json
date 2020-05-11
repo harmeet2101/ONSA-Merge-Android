@@ -45,10 +45,10 @@
           "optional": true,
           "dialogItems": [
             {
-              "type": "card_fork",
+              "type": "add_pos_dfe",
               "uploadId": "",
               "repeatId": "dfeItems",
-              "title": "Click to add a DFE Item",
+              "title": "Click to add + DFE Item",
               "listItemType": "log_dfe_item",
               "fields": [
                 "itemCode",
@@ -68,6 +68,35 @@
                   "type": "number",
                   "uploadId": "quantity",
                   "repeatId": "dfeItems",
+                  "title": "Qty",
+                  "optional": false
+                }
+              ]
+            },
+            {
+              "type": "add_neg_dfe",
+              "uploadId": "",
+              "repeatId": "negDfeItems",
+              "title": "Click to add - DFE Item",
+              "listItemType": "log_dfe_item",
+              "fields": [
+                "itemCode",
+                "quantity"
+              ],
+              "optional": true,
+              "dialogItems": [
+                {
+                  "type": "dropdown",
+                  "uploadId": "itemCode",
+                  "repeatId": "negDfeItems",
+                  "key": "JobWorkItem",
+                  "title": "DFE Item",
+                  "optional": false
+                },
+                {
+                  "type": "number",
+                  "uploadId": "quantity",
+                  "repeatId": "negDfeItems",
                   "title": "Qty",
                   "optional": false
                 }

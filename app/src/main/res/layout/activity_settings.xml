@@ -95,6 +95,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn_backgorund"
                 android:text="@string/user_profile"
+                android:visibility="gone"
                 android:textColor="@color/white" />
             <Button
                 android:id="@+id/btn_password_reset"

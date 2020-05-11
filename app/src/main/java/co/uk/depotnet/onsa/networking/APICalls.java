@@ -4,7 +4,10 @@ import java.util.concurrent.TimeUnit;
 
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.modals.Disclaimer;
+import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
 import co.uk.depotnet.onsa.modals.httprequests.ResetPassword;
+import co.uk.depotnet.onsa.modals.httprequests.VerificationRequest;
+import co.uk.depotnet.onsa.modals.httpresponses.VerificationResult;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.responses.JobResponse;
 import co.uk.depotnet.onsa.modals.User;
@@ -28,6 +31,21 @@ public class APICalls {
     public static Call<User> callLogin(UserRequest user){
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
         return apiInterface.login(user);
+    }
+
+    public static Call<VerificationResult> verifyCode(VerificationRequest verificationRequest , String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.verifyCode(verificationRequest);
+    }
+
+    public static Call<User> verify2FAChallenge(VerificationRequest verificationRequest , String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.verify2FAChallenge(verificationRequest);
+    }
+
+    public static Call<ActiveMfa> activeMFA(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.activeMFA();
     }
 
     public static Call<User> resetPassword(ResetPassword resetPassword){

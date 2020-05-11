@@ -171,7 +171,7 @@ public class DatasetResponse implements Parcelable {
         if (this.workItems != null && !this.workItems.isEmpty()) {
             for (WorkItem item : this.workItems) {
                 item.settype(DBTable.workItems);
-                dbHandler.insertData(WorkItem.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(WorkItem.DBTable.NAME, item.toContentValues());
             }
         }
         if (this.dcrReasonCodes != null && !this.dcrReasonCodes.isEmpty()) {

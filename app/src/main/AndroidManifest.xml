@@ -28,7 +28,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.PhotoActivity"></activity>
+        <activity android:name=".activities.VerificationActivity"></activity>
+        <activity android:name=".activities.PhotoActivity" />
         <activity android:name=".activities.CurrentStoreActivity" />
         <activity
             android:name=".activities.AssetDataActivity"

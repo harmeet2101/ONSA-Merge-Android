@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@color/bg_white"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:id="@+id/txtTitle"
+        android:textSize="@dimen/_12sdp"
+        android:gravity="center"
+        android:padding="@dimen/_8sdp"
+        android:background="@color/depotnet_color"
+        android:textColor="@color/white"
+        android:text="@string/mfa_detail"/>
+
+    <TextView
+        android:id="@+id/txt_title_shared_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_8sdp"
+        android:layout_marginLeft="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:layout_marginRight="@dimen/_8sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_4sdp"
+        android:textSize="@dimen/_10sdp"
+        android:text="@string/shared_key"
+        android:textColor="@color/txt_color_dark"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+
+        android:layout_marginStart="@dimen/_8sdp"
+        android:layout_marginLeft="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:layout_marginRight="@dimen/_8sdp"
+        android:background="@drawable/et_background"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_toLeftOf="@id/btn_txt_share_key"
+            android:layout_toStartOf="@id/btn_txt_share_key"
+            android:id="@+id/txt_shared_key"
+            android:padding="@dimen/_8sdp"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="@dimen/_10sdp"
+            android:textColor="@color/txt_color_dark"/>
+
+        <TextView
+            android:id="@+id/btn_txt_share_key"
+            android:layout_width="wrap_content"
+            android:padding="@dimen/_8sdp"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:background="@color/depotnet_color"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/white"
+            android:text="@string/copy"/>
+
+    </RelativeLayout>
+
+
+
+    <Button
+        android:id="@+id/btn_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_8sdp"
+        android:background="@drawable/btn_backgorund"
+        android:text="@string/ok"
+        android:textColor="@color/white" />
+
+</LinearLayout>

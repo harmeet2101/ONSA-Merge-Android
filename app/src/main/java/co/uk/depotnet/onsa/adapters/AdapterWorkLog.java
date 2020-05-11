@@ -129,7 +129,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
 
     private boolean isRFNAEnable(){
         boolean status =
-                hasRFNA ||
+                !hasRFNA &&
                 DBHandler.getInstance().getJobModuleStatus(jobID , "Start on Site") &&
                         !DBHandler.getInstance().getJobModuleStatus(jobID , "Eng Comp");
 
@@ -138,7 +138,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
 
     private boolean isEngCompEnable(){
         boolean status =
-                hasRFNA || DBHandler.getInstance().getJobModuleStatus(jobID , "RFNA");
+                hasRFNA || DBHandler.getInstance().getJobModuleStatus(jobID , "Ready For Next Activity");
 
         return status;
     }

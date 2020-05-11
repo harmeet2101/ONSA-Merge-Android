@@ -95,6 +95,7 @@ public class ImageAnnotationActivity extends AppCompatActivity implements View.O
         llPickColor.setOnClickListener(this);
         llBtnShapes.setOnClickListener(this);
         llBtnRotate.setOnClickListener(this);
+        findViewById(R.id.btn_clear).setOnClickListener(this);
 
 //        imgClose.setOnClickListener(this);
         imgBack.setOnClickListener(this);

@@ -236,4 +236,12 @@
     <string name="shapes">Shapes</string>
     <string name="photo_gallery">Photo Gallery</string>
     <string name="rotate">Rotate</string>
+    <string name="upload_all">Upload All</string>
+    <string name="verify">Verify</string>
+    <string name="otp">OTP</string>
+    <string name="mfa_detail">MFA Detail</string>
+    <string name="shared_key">Please copy Shared Key to generate OTP from MS Authenticator app.</string>
+    <string name="copy">Copy</string>
+    <string name="auth_uri">Auth Uri</string>
+    <string name="get_shared_key">Didn\'t get otp. Click here to get shared key to generate otp.</string>
 </resources>

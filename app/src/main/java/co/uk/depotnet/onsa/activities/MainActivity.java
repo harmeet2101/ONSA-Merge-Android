@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -31,6 +32,8 @@ import com.tonyodev.fetch2okhttp.OkHttpDownloader;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.FragmentHome;
@@ -41,6 +44,7 @@ import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.listeners.HomeBottomBarListener;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Submission;
+import co.uk.depotnet.onsa.networking.NetworkStateReceiver;
 import co.uk.depotnet.onsa.utils.Utils;
 import co.uk.depotnet.onsa.views.MaterialAlertDialog;
 import co.uk.depotnet.onsa.views.PopupMenu;
@@ -48,7 +52,7 @@ import co.uk.depotnet.onsa.views.PopupMenu;
 public class MainActivity extends AppCompatActivity
         implements HomeBottomBarListener,
         FragmentActionListener, View.OnClickListener,
-        PopupMenu.OnSearchListener {
+        PopupMenu.OnSearchListener , NetworkStateReceiver.NetworkStateReceiverListener {
 
     private static final int STORAGE_PERMISSION_CODE = 1;
     private ProgressBar progressBar;
@@ -61,7 +65,7 @@ public class MainActivity extends AppCompatActivity
     private Fetch fetch;
     private boolean isSearchEnable;
     private HomeBottomBarHandler bottomBarHandler;
-
+    private NetworkStateReceiver networkStateReceiver;
 
     public Fetch getFetch() {
         return fetch;
@@ -71,12 +75,14 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        networkStateReceiver = new NetworkStateReceiver();
+        networkStateReceiver.addListener(this);
+
         user = getIntent().getParcelableExtra("User");
         progressBar = findViewById(R.id.progress_bar);
         txtToolbarTitle = findViewById(R.id.txt_toolbar_title);
         btnImageSearch = findViewById(R.id.btn_img_search);
-
-
 
         btnImageSearch.setOnClickListener(this);
         btnImageSettings = findViewById(R.id.btn_img_settings);
@@ -103,6 +109,19 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment;
         fragment = FragmentHome.newInstance(user);
         addFragment(fragment, false);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.registerReceiver(networkStateReceiver , new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.unregisterReceiver(networkStateReceiver);
     }
 
     @Override
@@ -291,7 +310,7 @@ public class MainActivity extends AppCompatActivity
     public void onOfflineQueueClick() {
         btnSearchCancel.setVisibility(View.GONE);
         btnImageSettings.setVisibility(View.VISIBLE);
-        FragmentQueue fragmentQueue = FragmentQueue.newInstance();
+        FragmentQueue fragmentQueue = FragmentQueue.newInstance(false);
         addFragment(fragmentQueue, true);
     }
 
@@ -347,5 +366,54 @@ public class MainActivity extends AppCompatActivity
             btnSearchCancel.setVisibility(View.GONE);
         }
 
+    }
+
+    private boolean isNetworkDialogVisible;
+
+    @Override
+    public void networkAvailable() {
+        ArrayList<Submission> submissions = DBHandler.getInstance().getQueuedSubmissions();
+        if(submissions.isEmpty()){
+            return;
+        }
+
+        if(!isNetworkDialogVisible) {
+            showNetworkDialog("Network Available", "Do you want to upload Offline queue");
+        }
+    }
+
+    @Override
+    public void networkUnavailable() {
+
+    }
+
+    public void showNetworkDialog(String title, String message) {
+
+        isNetworkDialogVisible = true;
+        MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositive(getString(R.string.ok), (dialog1, i) -> {
+                    hideProgressBar();
+//                    isNetworkDialogVisible = false;
+                    dialog1.dismiss();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    Fragment fragment = fragmentManager.findFragmentByTag(FragmentQueue.class.getName());
+
+                    if (fragment != null && fragment.isVisible() ) {
+                        return;
+                    }
+                    btnSearchCancel.setVisibility(View.GONE);
+                    btnImageSettings.setVisibility(View.VISIBLE);
+                    FragmentQueue fragmentQueue = FragmentQueue.newInstance(true);
+                    addFragment(fragmentQueue, true);
+                }).setNegative(getString(R.string.generic_cancel), (dialog12, which) -> {
+//                    isNetworkDialogVisible = false;
+                    dialog12.dismiss();
+                })
+                .build();
+
+        dialog.setCancelable(false);
+        dialog.show(getSupportFragmentManager(), "_ERROR_DIALOG");
     }
 }

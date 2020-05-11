@@ -160,11 +160,13 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     }
 
     private boolean isRFNAEnable() {
-        boolean status =
-                DBHandler.getInstance().getJobModuleStatus(jobID, "Start on Site") &&
-                        !DBHandler.getInstance().getJobModuleStatus(jobID, "Eng Comp");
 
-        return status;
+        Job job = DBHandler.getInstance().getJob(jobID);
+        boolean hasRFNA = job != null && job.hasRFNA();
+
+        return !hasRFNA &&
+                DBHandler.getInstance().getJobModuleStatus(jobID, "Start on Site") &&
+                !DBHandler.getInstance().getJobModuleStatus(jobID, "Eng Comp");
     }
 
     private int getChamberCount() {
@@ -233,34 +235,47 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     }
 
     public void submit() {
-        if (formAdapter.validate()) {
-            String url = screen.getUrl();
-            if (screen.isUpload() && !TextUtils.isEmpty(url)) {
-                if (url.equalsIgnoreCase("appstores/logtojob")) {
-                    sendLogJobRequest();
-                } else {
-                    sendToServer();
-                }
-            }else if(screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("take_photo.json")){
-                sendToServer();
-            } else if (screen.isUpload()) {
-                JobModuleStatus jobModuleStatus = new JobModuleStatus();
-                jobModuleStatus.setStatus(true);
-                jobModuleStatus.setJobId(jobID);
-                jobModuleStatus.setModuleName(submission.getJsonFileName());
-                jobModuleStatus.setSubmissionId(submission.getID());
-                DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
-                        jobModuleStatus.toContentValues());
-                ((Activity) context).finish();
-            } else if (submission.getJsonFileName().equalsIgnoreCase("poling_asset_data.json")) {
-                Intent intent = new Intent(context, AssetDataActivity.class);
-                intent.putExtra(AssetDataActivity.ARG_USER, user);
-                intent.putExtra(AssetDataActivity.ARG_SUBMISSION, submission);
-                startActivityForResult(intent, ASSET_DATA_RESULT);
-            } else {
-                listener.goToNextScreen(screen.getIndex());
-            }
+        if (!formAdapter.validate()) {
+            return;
         }
+
+        String url = screen.getUrl();
+        if (screen.isUpload() && !TextUtils.isEmpty(url)) {
+            if (url.equalsIgnoreCase("appstores/logtojob")) {
+                sendLogJobRequest();
+            } else {
+                sendToServer();
+            }
+        } else if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("take_photo.json")) {
+            sendToServer();
+        } else if (screen.isUpload()) {
+            JobModuleStatus jobModuleStatus = new JobModuleStatus();
+            jobModuleStatus.setStatus(true);
+            jobModuleStatus.setJobId(jobID);
+            jobModuleStatus.setModuleName(submission.getJsonFileName());
+            jobModuleStatus.setSubmissionId(submission.getID());
+            DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+                    jobModuleStatus.toContentValues());
+            ((Activity) context).finish();
+        } else if (submission.getJsonFileName().equalsIgnoreCase("poling_asset_data.json")) {
+            Intent intent = new Intent(context, AssetDataActivity.class);
+            intent.putExtra(AssetDataActivity.ARG_USER, user);
+            intent.putExtra(AssetDataActivity.ARG_SUBMISSION, submission);
+            startActivityForResult(intent, ASSET_DATA_RESULT);
+        } else {
+            listener.goToNextScreen(screen.getIndex());
+        }
+
+    }
+
+    private void setJobModuleStatus(Submission submission) {
+        JobModuleStatus jobModuleStatus = new JobModuleStatus();
+        jobModuleStatus.setStatus(true);
+        jobModuleStatus.setJobId(jobID);
+        jobModuleStatus.setModuleName(submission.getTitle());
+        jobModuleStatus.setSubmissionId(submission.getID());
+        DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+                jobModuleStatus.toContentValues());
     }
 
 
@@ -361,6 +376,13 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
 
     private void sendLogJobRequest() {
 
+        JobModuleStatus jobModuleStatus = new JobModuleStatus();
+        jobModuleStatus.setStatus(true);
+        jobModuleStatus.setJobId(jobID);
+        jobModuleStatus.setModuleName(formTitle);
+        DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+                jobModuleStatus.toContentValues());
+
         if (!CommonUtils.isNetworkAvailable(context)) {
             String title = "Submission Error";
             String message = "Internet connection is not available. Please check your internet connection.";
@@ -380,10 +402,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 }
             }
 
-
             ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submission.getID(), "StaStockItemId", "Items");
-
-
             int count = answers.size();
 
             String uniqueId = UUID.randomUUID().toString();
@@ -423,12 +442,6 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     photoUrl = photoUrl.replace("{jobId}", submission.getJobID());
                     new ConnectionHelper(context).uploadPhotos(photos, uniqueId, photoUrl, getChildFragmentManager(), "");
                     DBHandler.getInstance().removeAnswers(submission);
-                    JobModuleStatus jobModuleStatus = new JobModuleStatus();
-                    jobModuleStatus.setStatus(true);
-                    jobModuleStatus.setJobId(jobID);
-                    jobModuleStatus.setModuleName(formTitle);
-                    DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
-                            jobModuleStatus.toContentValues());
                 }
 
 
@@ -471,6 +484,16 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         }).start();
     }
 
+    private void setBookOffOnStatus() {
+        if (screen.getTitle().equalsIgnoreCase("Book Off")) {
+            AppPreferences.putString(jobID + "_" + Constants.IS_BOOK_ON, null);
+        } else if (screen.getTitle().equalsIgnoreCase("Book On")) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            Date d = new Date();
+            AppPreferences.putString(jobID + "_" + Constants.IS_BOOK_ON, sdf.format(d));
+        }
+    }
+
 
     private void sendToServer() {
 
@@ -478,6 +501,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             String title = "Submission Error";
             String message = "Internet connection is not available. Please check your internet connection. Your request is submitted in Queue.";
             DBHandler.getInstance().setSubmissionQueued(submission);
+            setJobModuleStatus(submission);
+            setBookOffOnStatus();
             showErrorDialog(title, message, false);
             return;
         }
@@ -489,52 +514,42 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                             submission, getChildFragmentManager());
 
 
-            if (response != null) {
-                if (!response.isSuccessful()) {
-                    if (response.code() != 400) {
-                        DBHandler.getInstance().setSubmissionQueued(submission);
-                    }
-                } else {
+            if (response == null || !response.isSuccessful()) {
+                DBHandler.getInstance().setSubmissionQueued(submission);
+            }
 
-                    if (submission.getJsonFileName().equalsIgnoreCase("finish_on_site.json")) {
-                        Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "rfna", null, 0);
-                        if (answer != null && !TextUtils.isEmpty(answer.getAnswer()) && answer.getAnswer().equalsIgnoreCase("true")) {
-                            Response response1 = new ConnectionHelper(context).sendRfna(submission);
+            setBookOffOnStatus();
 
-                            if (response1 != null && response1.isSuccessful()) {
-                                JobModuleStatus status = new JobModuleStatus();
-                                status.setStatus(true);
-                                status.setJobId(jobID);
-                                status.setModuleName("RFNA");
-                                status.setSubmissionId(submission.getID());
-                                DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
-                                        status.toContentValues());
-                            }
-                        }
-                    }
-                    DBHandler.getInstance().removeAnswers(submission);
-                    JobModuleStatus jobModuleStatus = new JobModuleStatus();
-                    jobModuleStatus.setStatus(true);
-                    jobModuleStatus.setJobId(jobID);
-                    jobModuleStatus.setModuleName(formTitle);
+            if (submission.getJsonFileName().equalsIgnoreCase("finish_on_site.json")) {
+                Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "rfna", null, 0);
+                if (answer != null && !TextUtils.isEmpty(answer.getAnswer()) && answer.getAnswer().equalsIgnoreCase("true")) {
+                    Response response1 = new ConnectionHelper(context).sendRfna(submission);
+
+                    JobModuleStatus status = new JobModuleStatus();
+                    status.setStatus(true);
+                    status.setJobId(jobID);
+                    status.setModuleName("Ready For Next Activity");
+                    status.setSubmissionId(submission.getID());
                     DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
-                            jobModuleStatus.toContentValues());
-
+                            status.toContentValues());
 
                 }
             }
+            DBHandler.getInstance().removeAnswers(submission);
+            JobModuleStatus jobModuleStatus = new JobModuleStatus();
+            jobModuleStatus.setStatus(true);
+            jobModuleStatus.setJobId(jobID);
+            jobModuleStatus.setModuleName(formTitle);
+            DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+                    jobModuleStatus.toContentValues());
+
+
             handler.post(() -> {
                 listener.hideProgressBar();
                 String title = "Success";
                 String message = "Submission was successful";
                 if (response != null && response.isSuccessful()) {
-                    if (screen.getTitle().equalsIgnoreCase("Book Off")) {
-                        AppPreferences.putString(jobID + "_" + Constants.IS_BOOK_ON, null);
-                    } else if (screen.getTitle().equalsIgnoreCase("Book On")) {
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-                        Date d = new Date();
-                        AppPreferences.putString(jobID + "_" + Constants.IS_BOOK_ON, sdf.format(d));
-                    } else if (submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json")) {
+                    if (submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json")) {
                         getJobs();
                     }
                 }
@@ -546,7 +561,6 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 }
 
                 if (response != null && response.code() == 400) {
-
                     ResponseBody body = response.body();
                     if (body != null) {
                         try {
@@ -705,8 +719,6 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     }
                     DBHandler.getInstance().replaceData(Answer.DBTable.NAME, StaId.toContentValues());
                 }
-
-
             }
 
         }
@@ -742,8 +754,6 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         dialog.setCancelable(false);
         dialog.show(getChildFragmentManager(), "_ERROR_DIALOG");
     }
-
-
 
 
     private void requestPermissions(@NonNull final String[] permissions, String permissionRequestRationale) {
@@ -801,7 +811,6 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
 
             mFusedLocationClient.getLastLocation()
                     .addOnSuccessListener(location -> {
-                        // GPS location can be null if GPS is switched off
                         if (location != null) {
                             listener.onSuccess(location);
 
@@ -822,36 +831,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED) {
 
-            } else {
-                FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
-                mFusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(location -> {
-                            // GPS location can be null if GPS is switched off
-                            if (location != null) {
-                                try {
-                                    Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-                                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                                    if (addresses != null && addresses.size() > 0) {
-                                        String addressLine = addresses.get(0).getAddressLine(0);
-//                                            etLocation.setText(addressLine);
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.d("ADD JOB", "Error trying to get last GPS location");
-                            e.printStackTrace();
-                        });
-
-
-            }
         } else {
             android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context, R.style.DialogTheme)
                     .setTitle(getString(R.string.permission_denied))

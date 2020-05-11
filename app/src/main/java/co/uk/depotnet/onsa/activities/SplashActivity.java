@@ -23,6 +23,7 @@ import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
+import co.uk.depotnet.onsa.utils.AppPreferences;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,11 +39,8 @@ public class SplashActivity extends AppCompatActivity {
 
             if (response.body() != null) {
                 response.body().toContentValues();
-
             }
-
             startMainActivity();
-
         }
 
         @Override
@@ -62,39 +60,46 @@ public class SplashActivity extends AppCompatActivity {
             if (response.body() != null) {
                 DBHandler.getInstance().resetDatasetTable();
                 response.body().toContentValues();
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
 
-                if(Constants.isStoreEnabled) {
-                    APICalls.getStoreDataSet(user.gettoken()).enqueue(storeDataSetCallback);
-                    return;
-                }
             }
-                startMainActivity();
+            Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
+
+            if(Constants.isStoreEnabled) {
+                APICalls.getStoreDataSet(user.gettoken()).enqueue(storeDataSetCallback);
+                return;
+            }
+            startMainActivity();
 
         }
 
         @Override
         public void onFailure(@NonNull Call<DatasetResponse> call, @NonNull Throwable t) {
-         startMainActivity();
+            Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
+
+            if(Constants.isStoreEnabled) {
+                APICalls.getStoreDataSet(user.gettoken()).enqueue(storeDataSetCallback);
+                return;
+            }
+            startMainActivity();
         }
     };
 
     private void getFeatures(){
         APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
             @Override
-            public void onResponse(Call<FeatureResult> call, Response<FeatureResult> response) {
+            public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
                 if(response.isSuccessful()){
                     FeatureResult featureResult = response.body();
                     if(featureResult != null){
                         featureResult.toContentValues();
-                        APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
                     }
                 }
+                APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
             }
 
             @Override
-            public void onFailure(Call<FeatureResult> call, Throwable t) {
-
+            public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
+                APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
             }
         });
     }
@@ -120,8 +125,17 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             Intent intent;
 
+
+
             if (!isLogin()) {
                 intent = new Intent(SplashActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+                return;
+            }
+
+            if(!isVerifiedOTP()){
+                intent = new Intent(SplashActivity.this, VerificationActivity.class);
                 startActivity(intent);
                 finish();
                 return;
@@ -146,16 +160,17 @@ public class SplashActivity extends AppCompatActivity {
                 finish();
                 return;
             }
-
             getFeatures();
-
-
         }, 2000);
     }
 
 
     private boolean isLogin() {
         return user != null && !TextUtils.isEmpty(user.gettoken());
+    }
+
+    private boolean isVerifiedOTP() {
+        return isLogin() && (!user.isTwoFactorMandatory() || AppPreferences.getInt("isOtpVerified" , 0) == 1);
     }
 
 
