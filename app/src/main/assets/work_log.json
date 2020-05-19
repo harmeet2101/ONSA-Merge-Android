@@ -20,6 +20,11 @@
     "status": false
   },
   {
+    "title": "Log Measure",
+    "json": "log_measure.json",
+    "status": false
+  },
+  {
     "title": "Finish On Site",
     "json": "finish_on_site.json",
     "status": false

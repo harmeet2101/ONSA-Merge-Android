@@ -243,5 +243,5 @@
     <string name="shared_key">Please copy Shared Key to generate OTP from MS Authenticator app.</string>
     <string name="copy">Copy</string>
     <string name="auth_uri">Auth Uri</string>
-    <string name="get_shared_key">Didn\'t get otp. Click here to get shared key to generate otp.</string>
+    <string name="get_shared_key">Didn\'t get otp? Click here to get shared key to generate otp.</string>
 </resources>

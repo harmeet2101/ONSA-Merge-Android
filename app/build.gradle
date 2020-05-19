@@ -48,14 +48,14 @@ android {
             resValue "string", "app_name", "ONSA-DEV"
         }*/
 
-        /*storedev {
+        storedev {
             initWith debug
             android.defaultConfig.versionName "1.8.3"
             android.defaultConfig.versionCode 48
             applicationIdSuffix ".store.dev"
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
             resValue "string", "app_name", "ONSA-STORE-DEV"
-        }*/
+        }
 
         /*storeuat {
             initWith debug
@@ -87,7 +87,7 @@ android {
             resValue "string", "app_name", "KIER-ONSA-STORE"
         }*/
 
-        store_uat_mjq {
+        /*store_uat_mjq {
             initWith debug
             android.defaultConfig.versionName "1.0.2"
             android.defaultConfig.versionCode 3
@@ -95,7 +95,27 @@ android {
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-mjq-api.depotnet.co.uk/"')
 
             resValue "string", "app_name", "MJQ-ONSA-STORE-UAT"
-        }
+        }*/
+
+       /* store_uat_oroh {
+            initWith debug
+            android.defaultConfig.versionName "1.0.0"
+            android.defaultConfig.versionCode 1
+            applicationIdSuffix ".store.oroh.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-onsa-oroh-api.depotnet.co.uk/"')
+
+            resValue "string", "app_name", "OROH-ONSA-STORE-UAT"
+        }*/
+
+        /*store_uat_mapgroup {
+            initWith debug
+            android.defaultConfig.versionName "1.1.2"
+            android.defaultConfig.versionCode 14
+            applicationIdSuffix ".store.mapgroup.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-onsa-mapgroup-api.depotnet.co.uk/"')
+
+            resValue "string", "app_name", "MAP Group-UAT"
+        }*/
 
         /*store_live_mjq {
             initWith debug
