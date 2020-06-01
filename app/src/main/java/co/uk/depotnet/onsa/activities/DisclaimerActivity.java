@@ -21,12 +21,14 @@ import java.io.InputStream;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.modals.Disclaimer;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
 import co.uk.depotnet.onsa.views.MaterialAlertDialog;
 import okhttp3.ResponseBody;
@@ -49,6 +51,10 @@ public class DisclaimerActivity extends AppCompatActivity
         @Override
         public void onResponse(@NonNull Call<DatasetResponse> call,
                                Response<DatasetResponse> response) {
+
+            if(CommonUtils.onTokenExpired(DisclaimerActivity.this , response.code())){
+                return;
+            }
 
             if (response.isSuccessful() && response.body() != null) {
                 response.body().toContentValues();
@@ -87,6 +93,10 @@ public class DisclaimerActivity extends AppCompatActivity
         @Override
         public void onResponse(@NonNull Call<StoreDataset> call,
                                @NonNull Response<StoreDataset> response) {
+
+            if(CommonUtils.onTokenExpired(DisclaimerActivity.this , response.code())){
+                return;
+            }
 
             if (response.isSuccessful() && response.body() != null) {
                 response.body().toContentValues();
@@ -145,7 +155,9 @@ public class DisclaimerActivity extends AppCompatActivity
     private Callback<Disclaimer> disclaimerCallback = new Callback<Disclaimer>() {
         @Override
         public void onResponse(@NonNull Call<Disclaimer> call, Response<Disclaimer> response) {
-
+            if(CommonUtils.onTokenExpired(DisclaimerActivity.this , response.code())){
+                return;
+            }
             if (response.isSuccessful()) {
                 Disclaimer disclaimer = response.body();
                 if (disclaimer != null) {
@@ -153,8 +165,6 @@ public class DisclaimerActivity extends AppCompatActivity
                     APICalls.getDisclaimerLogo(user.gettoken(), disclaimerCallbackLogo);
                     return;
                 }
-            }else if(response.code() == 429){
-                showErrorDialog("Error" , "JWT Rewoked");
             }
 
             hideProgressBar();
@@ -236,6 +246,10 @@ public class DisclaimerActivity extends AppCompatActivity
         APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
             @Override
             public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
+                if(CommonUtils.onTokenExpired(DisclaimerActivity.this , response.code())){
+                    return;
+                }
+
                 if(response.isSuccessful()){
                     FeatureResult featureResult = response.body();
                     if(featureResult != null){

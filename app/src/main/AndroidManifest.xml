@@ -108,7 +108,7 @@
             android:name=".barcode.ScannedBarcodeActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".activities.ListStoreItemActivity" />
-        <activity android:name=".fragments.store.FragmentStoreDetail" />
+        <activity android:name=".fragments.store.StoreDetailActivity" />
         <activity android:name=".activities.ListStockItemActivity" />
         <activity
             android:name=".activities.ImageAnnotationActivity"

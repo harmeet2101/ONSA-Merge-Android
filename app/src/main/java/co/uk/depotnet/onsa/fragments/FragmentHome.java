@@ -246,7 +246,15 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
         Calendar instance1 = Calendar.getInstance();
 //        SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy");
+
         selectedDate = instance1.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        try {
+            selectedDate = sdf.parse(sdf.format(instance1.getTime()));
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
 
         int noOfDaysInMonth = instance1.getActualMaximum(Calendar.DAY_OF_MONTH);
         SimpleDateFormat formatter = new SimpleDateFormat("dd", Locale.ENGLISH);
@@ -541,7 +549,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                 Job job = originalJobs.get(i);
                 Date startDate = getDate(job.getScheduledStartDate(), sdf, true);
                 Date endDate = getDate(job.getScheduledEndDate(), sdf, false);
-
                 if (startDate.compareTo(currentDate) <= 0 && endDate.compareTo(currentDate) >= 0) {
                     jobs.add(job);
                 }
@@ -629,7 +636,9 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         APICalls.getJobList(user.gettoken()).enqueue(new Callback<JobResponse>() {
             @Override
             public void onResponse(@NonNull Call<JobResponse> call, @NonNull Response<JobResponse> response) {
-
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    return;
+                }
                 if (response.isSuccessful()) {
                     DBHandler.getInstance().resetJobs();
                     JobResponse jobResponse = response.body();
@@ -666,7 +675,11 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     private void getReceipts(){
         APICalls.getReceipts(user.gettoken()).enqueue(new Callback<DataReceipts>() {
             @Override
-            public void onResponse(Call<DataReceipts> call, Response<DataReceipts> response) {
+            public void onResponse(@NonNull Call<DataReceipts> call,@NonNull Response<DataReceipts> response) {
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    return;
+                }
+
                 if (response.isSuccessful()) {
                     if(response.body()!= null){
                         response.body().toContentValues();
@@ -681,7 +694,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             }
 
             @Override
-            public void onFailure(Call<DataReceipts> call, Throwable t) {
+            public void onFailure(@NonNull Call<DataReceipts> call, @NonNull Throwable t) {
                 isRefreshing = false;
                 refreshLayout.setRefreshing(false);
                 listener.hideProgressBar();
@@ -694,7 +707,11 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
         APICalls.getMyRequests(user.gettoken()).enqueue(new Callback<DataMyRequests>() {
             @Override
-            public void onResponse(Call<DataMyRequests> call, Response<DataMyRequests> response) {
+            public void onResponse(@NonNull Call<DataMyRequests> call, @NonNull Response<DataMyRequests> response) {
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    return;
+                }
+
                 if(response.isSuccessful()){
 
                     DataMyRequests dataMyRequests = response.body();
@@ -708,7 +725,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             }
 
             @Override
-            public void onFailure(Call<DataMyRequests> call, Throwable t) {
+            public void onFailure(@NonNull Call<DataMyRequests> call, @NonNull Throwable t) {
                 isRefreshing = false;
                 refreshLayout.setRefreshing(false);
                 listener.hideProgressBar();
@@ -840,8 +857,13 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
 
             @Override
-            public void onResponse(Call<DataMyStores> call,
-                                   Response<DataMyStores> response) {
+            public void onResponse(@NonNull Call<DataMyStores> call,
+                                   @NonNull Response<DataMyStores> response) {
+
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    return;
+                }
+
                 if (response.isSuccessful()) {
                     DataMyStores dataMyStores = response.body();
                     if (dataMyStores != null) {
@@ -854,7 +876,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             }
 
             @Override
-            public void onFailure(Call<DataMyStores> call, Throwable t) {
+            public void onFailure(@NonNull Call<DataMyStores> call, @NonNull Throwable t) {
                 listener.hideProgressBar();
                 startLogStoreFrom(job);
             }

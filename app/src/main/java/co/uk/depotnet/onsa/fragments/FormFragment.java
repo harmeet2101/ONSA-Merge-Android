@@ -5,8 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,7 +48,8 @@ import co.uk.depotnet.onsa.activities.SignatureActivity;
 import co.uk.depotnet.onsa.adapters.FormAdapter;
 import co.uk.depotnet.onsa.barcode.ScannedBarcodeActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.fragments.store.FragmentStoreDetail;
+import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
+import co.uk.depotnet.onsa.fragments.store.StoreDetailActivity;
 import co.uk.depotnet.onsa.listeners.FormAdapterListener;
 import co.uk.depotnet.onsa.listeners.FromActivityListener;
 import co.uk.depotnet.onsa.listeners.LocationListener;
@@ -592,7 +591,9 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             @Override
             public void onResponse(@NonNull Call<JobResponse> call, @NonNull retrofit2.Response<JobResponse> response) {
 
-
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    return;
+                }
                 if (response.isSuccessful() && response.body() != null) {
                     List<Job> jobs = response.body().getJobs();
                     DBHandler.getInstance().resetJobs();
@@ -658,7 +659,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             } else if (requestCode == ASSET_DATA_RESULT) {
                 ((Activity) context).finish();
             } else if (requestCode == ScannedBarcodeActivity.REQUEST_CODE) {
-                Intent intent = new Intent(context, FragmentStoreDetail.class);
+                Intent intent = new Intent(context, StoreDetailActivity.class);
                 intent.putExtra("barcode_result", data.getStringExtra("barcode_result"));
                 intent.putExtra("StaId", data.getStringExtra("StaId"));
                 startActivityForResult(intent, STORE_DETAIL_REQUEST);

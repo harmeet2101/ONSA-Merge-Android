@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -22,6 +23,8 @@ import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobModuleStatus;
 import co.uk.depotnet.onsa.modals.JobWorkItem;
 import co.uk.depotnet.onsa.modals.KitBagDocument;
+import co.uk.depotnet.onsa.modals.MeasureItems;
+import co.uk.depotnet.onsa.modals.MenSplit;
 import co.uk.depotnet.onsa.modals.Note;
 import co.uk.depotnet.onsa.modals.Notice;
 import co.uk.depotnet.onsa.modals.RiskElementType;
@@ -70,7 +73,7 @@ public class DBHandler {
     }
 
     private void openDatabase() {
-        if(dbHelper == null){
+        if (dbHelper == null) {
             return;
         }
         try {
@@ -381,13 +384,13 @@ public class DBHandler {
     }
 
     public ArrayList<Answer> getPhotos(long submissionId,
-                                       String photoID, String title , int repeatCount) {
+                                       String photoID, String title, int repeatCount) {
         String whereClause = Answer.DBTable.submissionID + " = ? AND " +
                 Answer.DBTable.uploadID + " = ? AND " +
-                Answer.DBTable.displayAnswer + " like ? AND "+
-                Answer.DBTable.repeatCounter+ " = ?";
+                Answer.DBTable.displayAnswer + " like ? AND " +
+                Answer.DBTable.repeatCounter + " = ?";
         String[] whereArgs = new String[]{String.valueOf(submissionId),
-                photoID, title+"%" , String.valueOf(repeatCount)};
+                photoID, title + "%", String.valueOf(repeatCount)};
 
 
         Cursor cursor = db.query(Answer.DBTable.NAME, null, whereClause, whereArgs, null, null, Answer.DBTable.repeatID + " ASC");
@@ -418,7 +421,6 @@ public class DBHandler {
         }
         return ans;
     }
-
 
 
     public ArrayList<Note> getNotes(String jobId) {
@@ -537,11 +539,11 @@ public class DBHandler {
         return workItems;
     }
 
-    public JobWorkItem getJobWorkItem(String jobId , String code) {
+    public JobWorkItem getJobWorkItem(String jobId, String code) {
 
-        String selection = JobWorkItem.DBTable.jobId + " = ? AND "+JobWorkItem.DBTable.itemCode+" = ?";
-        String[] selectionArgs = new String[]{String.valueOf(jobId) , code};
-JobWorkItem workItem = null;
+        String selection = JobWorkItem.DBTable.jobId + " = ? AND " + JobWorkItem.DBTable.itemCode + " = ?";
+        String[] selectionArgs = new String[]{String.valueOf(jobId), code};
+        JobWorkItem workItem = null;
         Cursor cursor = db.query(JobWorkItem.DBTable.NAME,
                 null, selection, selectionArgs,
                 null, null,
@@ -575,10 +577,10 @@ JobWorkItem workItem = null;
         return workItems;
     }
 
-    public ArrayList<WorkItem> getWorkItem(String type, String contractNumber ,String orderBy) {
+    public ArrayList<WorkItem> getWorkItem(String type, String contractNumber, String orderBy) {
 
-        String selection = WorkItem.DBTable.type + " = ? AND "+WorkItem.DBTable.contractNumber+" = ?";
-        String[] selectionArgs = new String[]{String.valueOf(type) , contractNumber};
+        String selection = WorkItem.DBTable.type + " = ? AND " + WorkItem.DBTable.contractNumber + " = ?";
+        String[] selectionArgs = new String[]{String.valueOf(type), contractNumber};
 
         Cursor cursor = db.query(WorkItem.DBTable.NAME,
                 null, selection, selectionArgs,
@@ -638,11 +640,11 @@ JobWorkItem workItem = null;
         String whereClause = Submission.DBTable.id + " = ?";
         String[] whereArgs = {String.valueOf(submission.getID())};
         submission.setQueued(0);
-        replaceData(Submission.DBTable.NAME , submission.toContentValues());
+        replaceData(Submission.DBTable.NAME, submission.toContentValues());
 //        int affectedRows = db.delete(Submission.DBTable.NAME, whereClause, whereArgs);
 
-        whereClause = Answer.DBTable.submissionID + " = ? AND "+Answer.DBTable.isPhoto+" = ?";
-        whereArgs = new String[]{String.valueOf(submission.getID()) , String.valueOf(0)};
+        whereClause = Answer.DBTable.submissionID + " = ? AND " + Answer.DBTable.isPhoto + " = ?";
+        whereArgs = new String[]{String.valueOf(submission.getID()), String.valueOf(0)};
         int affectedRows = db.delete(Answer.DBTable.NAME, whereClause, whereArgs);
         return affectedRows > 0;
     }
@@ -674,15 +676,14 @@ JobWorkItem workItem = null;
                 null, selection, selectionArgs,
                 null, null, JobModuleStatus.DBTable.JobId + " ASC");
 
-        if (cursor == null ) {
+        if (cursor == null) {
             return false;
         }
 
-        if(!cursor.moveToFirst()){
+        if (!cursor.moveToFirst()) {
             cursor.close();
             return false;
         }
-
 
 
         JobModuleStatus jobModuleStatus = new JobModuleStatus(cursor);
@@ -701,11 +702,11 @@ JobWorkItem workItem = null;
                 null, null,
                 JobModuleStatus.DBTable.JobId + " ASC");
 
-        if (cursor == null ) {
+        if (cursor == null) {
             return false;
         }
 
-        if(!cursor.moveToFirst()){
+        if (!cursor.moveToFirst()) {
             cursor.close();
             return false;
         }
@@ -839,18 +840,18 @@ JobWorkItem workItem = null;
 
     }
 
-    public ItemType getItemType(String type , String value) {
+    public ItemType getItemType(String type, String value) {
 
 
-        String whereClause = ItemType.DBTable.type + " = ? AND "+ItemType.DBTable.value + " = ?";
-        String[] whereArgs = {type , value};
+        String whereClause = ItemType.DBTable.type + " = ? AND " + ItemType.DBTable.value + " = ?";
+        String[] whereArgs = {type, value};
         Cursor cursor = db.query(ItemType.DBTable.NAME, null,
                 whereClause, whereArgs, null, null,
                 ItemType.DBTable.id + " ASC");
 
         if (cursor != null && cursor.moveToFirst()) {
 
-                return new ItemType(cursor);
+            return new ItemType(cursor);
 
         }
 
@@ -932,7 +933,7 @@ JobWorkItem workItem = null;
 
     public MyStore getMyStores(String staStockItemId) {
         MyStore myStore = null;
-        String selection = MyStore.DBTable.staStockItemId+" = ?";
+        String selection = MyStore.DBTable.staStockItemId + " = ?";
         String[] selectionArgs = new String[]{staStockItemId};
 
         Cursor cursor = db.query(MyStore.DBTable.NAME,
@@ -949,7 +950,7 @@ JobWorkItem workItem = null;
 
     public ArrayList<MyStore> getMyStoresByStaId(String staId) {
         ArrayList<MyStore> myStores = new ArrayList<>();
-        String selection = MyStore.DBTable.staId+" = ?";
+        String selection = MyStore.DBTable.staId + " = ?";
         String[] selectionArgs = new String[]{staId};
 
         Cursor cursor = db.query(MyStore.DBTable.NAME,
@@ -970,7 +971,7 @@ JobWorkItem workItem = null;
 
     public ArrayList<MyStore> getMyStoresByBatchRef(String batchRef) {
         ArrayList<MyStore> myStores = new ArrayList<>();
-        String selection = MyStore.DBTable.batchRef+" = ?";
+        String selection = MyStore.DBTable.batchRef + " = ?";
         String[] selectionArgs = new String[]{batchRef};
 
         Cursor cursor = db.query(MyStore.DBTable.NAME,
@@ -993,8 +994,8 @@ JobWorkItem workItem = null;
 
         String[] columns = new String[]{MyStore.DBTable.batchRef};
 
-        Cursor cursor = db.query(true , MyStore.DBTable.NAME, columns,
-                null,  null,null,
+        Cursor cursor = db.query(true, MyStore.DBTable.NAME, columns,
+                null, null, null,
                 null, null, null);
 
 
@@ -1002,10 +1003,10 @@ JobWorkItem workItem = null;
             do {
 
                 String tempVal = cursor.getString(0);
-                if (tempVal==null || tempVal.isEmpty()){
-                    tempVal="NA";
+                if (tempVal == null || tempVal.isEmpty()) {
+                    tempVal = "NA";
                 }
-               String value=tempVal;
+                String value = tempVal;
                 myStores.add(new DropDownItem() {
                     @Override
                     public String getDisplayItem() {
@@ -1056,7 +1057,7 @@ JobWorkItem workItem = null;
 
     public ArrayList<StockItems> getStockItemsByStaId(String staId) {
         ArrayList<StockItems> stockItems = new ArrayList<>();
-        String selection = StockItems.DBTable.staId+" = ?";
+        String selection = StockItems.DBTable.staId + " = ?";
         String[] selectionArgs = new String[]{staId};
 
         Cursor cursor = db.query(StockItems.DBTable.NAME,
@@ -1072,7 +1073,6 @@ JobWorkItem workItem = null;
         cursor.close();
         return stockItems;
     }
-
 
 
     public StockItems getStockItems(String staStockItemId) {
@@ -1142,7 +1142,7 @@ JobWorkItem workItem = null;
     }
 
 
-    public ArrayList<Submission> getSubmissionsByJobId(String jobId){
+    public ArrayList<Submission> getSubmissionsByJobId(String jobId) {
         String whereClause = Submission.DBTable.jobID + " = ?";
         String[] whereArgs = new String[]{jobId};
 
@@ -1158,6 +1158,7 @@ JobWorkItem workItem = null;
         return submissions;
 
     }
+
     public ArrayList<Answer> getRecentPhotos(String jobId) {
 
         ArrayList<Submission> submissions = getSubmissionsByJobId(jobId);
@@ -1165,16 +1166,16 @@ JobWorkItem workItem = null;
         int coount = 0;
         for (Submission s :
                 submissions) {
-            String whereClause = Answer.DBTable.isPhoto + " = ? AND "+Answer.DBTable.submissionID+" = ?";
-            String[] whereArgs = new String[]{String.valueOf(1) , String.valueOf(s.getID())};
+            String whereClause = Answer.DBTable.isPhoto + " = ? AND " + Answer.DBTable.submissionID + " = ?";
+            String[] whereArgs = new String[]{String.valueOf(1), String.valueOf(s.getID())};
 
 
-            Cursor cursor = db.query(Answer.DBTable.NAME, null, whereClause, whereArgs, null, null, Answer.DBTable.repeatCounter + " DESC" , "5");
+            Cursor cursor = db.query(Answer.DBTable.NAME, null, whereClause, whereArgs, null, null, Answer.DBTable.repeatCounter + " DESC", "5");
 
             if (cursor.moveToFirst()) {
                 do {
                     Answer answer = new Answer(cursor);
-                    if(answer.getUploadID() != null && !answer.getUploadID().equalsIgnoreCase("SignatureId")) {
+                    if (answer.getUploadID() != null && !answer.getUploadID().equalsIgnoreCase("SignatureId")) {
                         answers.add(new Answer(cursor));
                         coount++;
                         if (coount == 5) {
@@ -1188,5 +1189,35 @@ JobWorkItem workItem = null;
 
 
         return answers;
+    }
+
+    public ArrayList<MenSplit> getMenSplit() {
+        ArrayList<MenSplit> menSplits = new ArrayList<>();
+        String whereClause = null;
+        String[] whereArgs = null;
+        Cursor cursor = db.query(MenSplit.DBTable.NAME, null, whereClause, whereArgs, null, null, MenSplit.DBTable.menSplitId + " DESC");
+        if (cursor.moveToFirst()) {
+            do {
+                MenSplit menSplit = new MenSplit(cursor);
+                menSplits.add(menSplit);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return menSplits;
+    }
+
+    public ArrayList<MeasureItems> getMeasures() {
+        ArrayList<MeasureItems> measureItems = new ArrayList<>();
+        String whereClause = null;
+        String[] whereArgs = null;
+        Cursor cursor = db.query(MeasureItems.DBTable.NAME, null, whereClause, whereArgs, null, null, MeasureItems.DBTable.subcontractorRateId + " DESC");
+        if (cursor.moveToFirst()) {
+            do {
+                MeasureItems mi =new MeasureItems(cursor);
+                measureItems.add(mi);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return measureItems;
     }
 }

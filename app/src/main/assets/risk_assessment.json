@@ -343,7 +343,7 @@
           "optional": false,
           "enables": [
             {
-              "type": "et_long_text",
+              "type": "number",
               "uploadId": "copPageNo",
               "title": "C.O.P Page number",
               "optional": false

@@ -18,14 +18,10 @@ import android.widget.Button;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -35,16 +31,15 @@ import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.activities.PollingSurveyActivity;
 import co.uk.depotnet.onsa.adapters.OfflineQueueAdapter;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.fragments.store.ReceiptItemsFragment;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
-import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobModuleStatus;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.Form;
 import co.uk.depotnet.onsa.modals.forms.Screen;
 import co.uk.depotnet.onsa.modals.forms.Submission;
-import co.uk.depotnet.onsa.modals.responses.JobResponse;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.networking.APICalls;
@@ -57,7 +52,6 @@ import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 import co.uk.depotnet.onsa.views.MaterialAlertDialog;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -115,12 +109,7 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
         recyclerView.addItemDecoration(itemDecoration);
         recyclerView.setAdapter(adapter);
         btnUploadAll = view.findViewById(R.id.btn_upload_all);
-        btnUploadAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadAll();
-            }
-        });
+        btnUploadAll.setOnClickListener(v -> uploadAll());
         return view;
     }
 
@@ -317,41 +306,11 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
                         DBHandler.getInstance().removeAnswers(submission);
                         adapter.notifyDataSetChanged();
                     }
-//                    ((Activity) context).setResult(Activity.RESULT_OK);
-//                    ((Activity) context).finish();
-
                 })
                 .build();
 
         dialog.setCancelable(false);
         dialog.show(getChildFragmentManager(), "_ERROR_DIALOG");
-    }
-
-    private void getJobs() {
-
-        listener.showProgressBar();
-        APICalls.getJobList(user.gettoken()).enqueue(new Callback<JobResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<JobResponse> call, @NonNull retrofit2.Response<JobResponse> response) {
-
-
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Job> jobs = response.body().getJobs();
-                    DBHandler.getInstance().resetJobs();
-                    if (jobs != null && !jobs.isEmpty()) {
-                        for (Job j : jobs) {
-                            DBHandler.getInstance().replaceData(Job.DBTable.NAME, j.toContentValues());
-                        }
-                    }
-                }
-                listener.hideProgressBar();
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<JobResponse> call, @NonNull Throwable t) {
-                listener.hideProgressBar();
-            }
-        });
     }
 
 
@@ -502,6 +461,11 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
         APICalls.sendRfna(submission.getJobID() , user.gettoken()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull retrofit2.Response<Void> response) {
+
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    return;
+                }
+
                 if(response.isSuccessful()){
                     showErrorDialog("Success", "Submission was successful");
                     DBHandler.getInstance().removeAnswers(submission);
@@ -525,7 +489,7 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
 
     private void refreshQueue(){
         ArrayList<Submission> submissions = DBHandler.getInstance().getQueuedSubmissions();
-        this.submissions.clear();;
+        this.submissions.clear();
         this.submissions.addAll(submissions);
         adapter.notifyDataSetChanged();
     }

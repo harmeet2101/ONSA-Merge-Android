@@ -156,14 +156,14 @@ public class DatasetResponse implements Parcelable {
         if (this.photoTypes != null && !this.photoTypes.isEmpty()) {
             for (ItemType item : this.photoTypes) {
                 item.settype(DBTable.photoTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.bookOperatives != null && !this.bookOperatives.isEmpty()) {
             for (ItemType item : this.bookOperatives) {
                 item.settype(DBTable.bookOperatives);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
@@ -231,7 +231,7 @@ public class DatasetResponse implements Parcelable {
         if (this.dfeWorkItems != null && !this.dfeWorkItems.isEmpty()) {
             for (WorkItem item : this.dfeWorkItems) {
                 item.settype(DBTable.dfeWorkItems);
-                dbHandler.insertData(WorkItem.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(WorkItem.DBTable.NAME, item.toContentValues());
             }
         }
 
@@ -260,84 +260,84 @@ public class DatasetResponse implements Parcelable {
         if (this.jobCategories != null && !this.jobCategories.isEmpty()) {
             for (ItemType item : this.jobCategories) {
                 item.settype(DBTable.jobCategories);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.lowestWireTypes != null && !this.lowestWireTypes.isEmpty()) {
             for (ItemType item : this.lowestWireTypes) {
                 item.settype(DBTable.lowestWireTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.anchorTypes != null && !this.anchorTypes.isEmpty()) {
             for (ItemType item : this.anchorTypes) {
                 item.settype(DBTable.anchorTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.ugCableTypes != null && !this.ugCableTypes.isEmpty()) {
             for (ItemType item : this.ugCableTypes) {
                 item.settype(DBTable.ugCableTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.trafficManagementTypes != null && !this.trafficManagementTypes.isEmpty()) {
             for (ItemType item : this.trafficManagementTypes) {
                 item.settype(DBTable.trafficManagementTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.poleTypes != null && !this.poleTypes.isEmpty()) {
             for (ItemType item : this.poleTypes) {
                 item.settype(DBTable.poleTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.blockTerminalTypes != null && !this.blockTerminalTypes.isEmpty()) {
             for (ItemType item : this.blockTerminalTypes) {
                 item.settype(DBTable.blockTerminalTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.jointClosureTypes != null && !this.jointClosureTypes.isEmpty()) {
             for (ItemType item : this.jointClosureTypes) {
                 item.settype(DBTable.jointClosureTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.dacTypes != null && !this.dacTypes.isEmpty()) {
             for (ItemType item : this.dacTypes) {
                 item.settype(DBTable.dacTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.weatherConditions != null && !this.weatherConditions.isEmpty()) {
             for (ItemType item : this.weatherConditions) {
                 item.settype(DBTable.weatherConditions);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.pedestrianManagementTypes != null && !this.pedestrianManagementTypes.isEmpty()) {
             for (ItemType item : this.pedestrianManagementTypes) {
                 item.settype(DBTable.pedestrianManagementTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.newReplacedRecycledTypes != null && !this.newReplacedRecycledTypes.isEmpty()) {
             for (ItemType item : this.newReplacedRecycledTypes) {
                 item.settype(DBTable.newReplacedRecycledTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 

@@ -5,22 +5,20 @@
     {
       "title": "Log Measure",
       "index": 0,
-      "url": "app/jobs/{jobId}/raise-dfe/v2",
-      "photoUrl": "app/jobs/{jobId}/photos",
+      "url": "app/jobs/{jobId}/addmeasure",
       "upload": true,
       "items": [
         {
           "type": "dropdown",
-          "uploadId": "itemCode",
+          "uploadId": "menSplitId",
           "repeatId": "items",
           "key": "MenSplits",
           "title": "1st Man Crew Split (optional)",
           "optional": false
         },
         {
-          "type": "dropdown",
-          "uploadId": "itemCode",
-          "repeatId": "items",
+          "type": "et_short_text",
+          "uploadId": "locationDetails",
           "key": "dfeWorkItems",
           "title": "Additional Location Details i.e. PONID. WP - WP etc.",
           "optional": false
@@ -28,19 +26,19 @@
         {
           "type": "add_log_measure",
           "uploadId": "",
-          "repeatId": "items",
+          "repeatId": "measureItems",
           "title": "ADD MEASURE",
           "listItemType": "log_measure_item",
           "fields": [
-            "itemCode",
+            "subcontractorRateId",
             "quantity"
           ],
           "optional": false,
           "dialogItems": [
             {
               "type": "dropdown",
-              "uploadId": "itemCode",
-              "repeatId": "items",
+              "uploadId": "subcontractorRateId",
+              "repeatId": "measureItems",
               "key": "MeasureItem",
               "title": "DFE Item",
               "optional": false
@@ -48,7 +46,7 @@
             {
               "type": "number",
               "uploadId": "quantity",
-              "repeatId": "items",
+              "repeatId": "measureItems",
               "title": "Qty",
               "optional": false
             }

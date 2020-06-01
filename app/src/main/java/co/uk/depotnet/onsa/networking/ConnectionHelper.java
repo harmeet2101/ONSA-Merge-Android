@@ -1,6 +1,7 @@
 package co.uk.depotnet.onsa.networking;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import androidx.annotation.NonNull;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import co.uk.depotnet.onsa.BuildConfig;
+import co.uk.depotnet.onsa.activities.LoginActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Answer;
@@ -71,7 +73,7 @@ public class ConnectionHelper {
     }
 
     private User refreshToken(UserRequest userRequest) {
-
+        User user = null;
         String url = BuildConfig.BASE_URL + "signin";
 
         String jsonSubmission = gson.toJson(userRequest);
@@ -87,15 +89,14 @@ public class ConnectionHelper {
                 ResponseBody responseBody = response.body();
                 if (responseBody != null) {
                     String result = responseBody.string();
-                    return gson.fromJson(result, User.class);
+                    user = gson.fromJson(result, User.class);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null;
-
+        return user;
     }
 
 
@@ -880,6 +881,13 @@ public class ConnectionHelper {
         public Response intercept(final Chain chain) throws IOException {
             Response mainResponse = chain.proceed(chain.request());
             final Request mainRequest = chain.request();
+
+            if(mainResponse.code() == 429){
+                Intent intent = new Intent(context , LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                context.startActivity(intent);
+                return mainResponse;
+            }
 
             if (mainResponse.code() == 401) {
                 User existUser = DBHandler.getInstance().getUser();

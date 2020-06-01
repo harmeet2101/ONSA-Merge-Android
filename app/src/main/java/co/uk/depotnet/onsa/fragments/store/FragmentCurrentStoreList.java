@@ -25,6 +25,7 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.adapters.store.AdapterStore;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.listeners.DropDownItem;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.listeners.OnItemClickListener;
@@ -386,8 +387,13 @@ public class FragmentCurrentStoreList extends Fragment
 
 
             @Override
-            public void onResponse(Call<DataMyStores> call,
-                                   Response<DataMyStores> response) {
+            public void onResponse(@NonNull Call<DataMyStores> call,
+                                   @NonNull Response<DataMyStores> response) {
+
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    return;
+                }
+
                 if (response.isSuccessful()) {
                     DataMyStores dataMyStores = response.body();
                     if (dataMyStores != null) {
@@ -401,7 +407,7 @@ public class FragmentCurrentStoreList extends Fragment
             }
 
             @Override
-            public void onFailure(Call<DataMyStores> call, Throwable t) {
+            public void onFailure(@NonNull Call<DataMyStores> call, @NonNull Throwable t) {
                 listener.hideProgressBar();
                 stores.clear();
                 stores.addAll(DBHandler.getInstance().getMyStores());

@@ -37,6 +37,7 @@ import co.uk.depotnet.onsa.listeners.DropDownItem;
 import co.uk.depotnet.onsa.listeners.FormAdapterListener;
 import co.uk.depotnet.onsa.listeners.PhotoAdapterListener;
 import co.uk.depotnet.onsa.modals.JobWorkItem;
+import co.uk.depotnet.onsa.modals.MeasureItems;
 import co.uk.depotnet.onsa.modals.RiskElementType;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
@@ -515,87 +516,82 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
 
-        holder.view.setOnClickListener(new View.OnClickListener() {
+        holder.view.setOnClickListener(view -> {
 
-            @Override
-            public void onClick(View view) {
+            String repeatId = formItem.getRepeatId();
+            String uploadId = formItem.getUploadId();
 
-                String repeatId = formItem.getRepeatId();
-                String uploadId = formItem.getUploadId();
+            if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)
+                    || formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)
+            ) {
+                Intent intent = new Intent(context, ListActivity.class);
+                intent.putExtra("submissionID", submissionID);
+                intent.putExtra("repeatId", repeatId);
+                intent.putExtra("uploadId", uploadId);
+                intent.putExtra("keyItemType", formItem.getKey());
+                intent.putExtra("isMultiSelection", formItem.isMultiSelection());
+                intent.putExtra("isConcatDisplayText", formItem.isConcatDisplayText());
+                intent.putExtra("repeatCount", repeatCount);
+                context.startActivity(intent);
+            } else {
+                final ArrayList<DropDownItem> items = new ArrayList<>();
 
-                if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)
-                        || formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)
-                ) {
-                    Intent intent = new Intent(context, ListActivity.class);
-                    intent.putExtra("submissionID", submissionID);
-                    intent.putExtra("repeatId", repeatId);
-                    intent.putExtra("uploadId", uploadId);
-                    intent.putExtra("keyItemType", formItem.getKey());
-                    intent.putExtra("isMultiSelection", formItem.isMultiSelection());
-                    intent.putExtra("isConcatDisplayText", formItem.isConcatDisplayText());
-                    intent.putExtra("repeatCount", repeatCount);
-                    context.startActivity(intent);
+                if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.riskAssessmentRiskElementTypes)) {
+                    items.addAll(DBHandler.getInstance().getRiskElementType(formItem.getKey()));
+                }if (formItem.getKey().equalsIgnoreCase(MeasureItems.DBTable.NAME)) {
+                    items.addAll(DBHandler.getInstance().getMeasures());
                 } else {
-                    final ArrayList<DropDownItem> items = new ArrayList<>();
+                    items.addAll(DBHandler.getInstance().getItemTypes(formItem.getKey()));
+                }
 
-                    if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.riskAssessmentRiskElementTypes)) {
-                        items.addAll(DBHandler.getInstance().getRiskElementType(formItem.getKey()));
-                    } else {
-                        items.addAll(DBHandler.getInstance().getItemTypes(formItem.getKey()));
+                final DropdownMenu dropdownMenu = DropdownMenu.newInstance(items);
+                dropdownMenu.setListener(position1 -> {
+                    holder.txtValue.setText(items.get(position1).getDisplayItem());
+
+                    Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                            formItem.getRepeatId(), repeatCount);
+                    if (answer1 == null) {
+                        answer1 = new Answer(submissionID, formItem.getUploadId());
                     }
 
-                    final DropdownMenu dropdownMenu = DropdownMenu.newInstance(items);
-                    dropdownMenu.setListener(new DropDownAdapter.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(int position) {
-                            holder.txtValue.setText(items.get(position).getDisplayItem());
+                    answer1.setAnswer(items.get(position1).getUploadValue());
+                    answer1.setDisplayAnswer(items.get(position1).getDisplayItem());
+                    answer1.setRepeatID(formItem.getRepeatId());
+                    answer1.setRepeatCount(repeatCount);
 
-                            Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
-                                    formItem.getRepeatId(), repeatCount);
-                            if (answer == null) {
-                                answer = new Answer(submissionID, formItem.getUploadId());
-                            }
+                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
 
-                            answer.setAnswer(items.get(position).getUploadValue());
-                            answer.setDisplayAnswer(items.get(position).getDisplayItem());
-                            answer.setRepeatID(formItem.getRepeatId());
-                            answer.setRepeatCount(repeatCount);
-
-                            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
-
-                            if (formItem.getUploadId().equalsIgnoreCase("type") && formItem.getRepeatId().equalsIgnoreCase("riskElements")) {
-                                if (items.get(position).getUploadValue().equalsIgnoreCase("dorSPoles")) {
-                                    ArrayList<FormItem> items = JsonReader.loadFormJSON(context, FormItem.class, "pra_DOS.json");
-                                    formItem.setDialogItems(items);
-                                } else if (items.get(position).getUploadValue().equalsIgnoreCase("workAtHeight")) {
-                                    ArrayList<FormItem> items = JsonReader.loadFormJSON(context, FormItem.class, "pra_work_n_height.json");
-                                    formItem.setDialogItems(items);
-                                } else {
-                                    ArrayList<FormItem> items = JsonReader.loadFormJSON(context, FormItem.class, "pra_access.json");
-                                    formItem.setDialogItems(items);
-                                }
-
-                                Answer consideration = DBHandler.getInstance().getAnswer(submissionID, "",
-                                        formItem.getRepeatId(), repeatCount);
-                                if (consideration == null) {
-                                    consideration = new Answer(submissionID, "consideration");
-
-                                }
-
-                                consideration.setAnswer(((RiskElementType) items.get(position)).getOnScreenText());
-                                consideration.setDisplayAnswer(((RiskElementType) items.get(position)).getOnScreenText());
-                                consideration.setRepeatID(formItem.getRepeatId());
-                                consideration.setRepeatCount(repeatCount);
-
-                                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, consideration.toContentValues());
-
-                                listener.openForkFragment(formItem, submissionID, repeatCount);
-                            }
+                    if (formItem.getUploadId().equalsIgnoreCase("type") && formItem.getRepeatId().equalsIgnoreCase("riskElements")) {
+                        if (items.get(position1).getUploadValue().equalsIgnoreCase("dorSPoles")) {
+                            ArrayList<FormItem> items1 = JsonReader.loadFormJSON(context, FormItem.class, "pra_DOS.json");
+                            formItem.setDialogItems(items1);
+                        } else if (items.get(position1).getUploadValue().equalsIgnoreCase("workAtHeight")) {
+                            ArrayList<FormItem> items1 = JsonReader.loadFormJSON(context, FormItem.class, "pra_work_n_height.json");
+                            formItem.setDialogItems(items1);
+                        } else {
+                            ArrayList<FormItem> items1 = JsonReader.loadFormJSON(context, FormItem.class, "pra_access.json");
+                            formItem.setDialogItems(items1);
                         }
-                    });
 
-                    listener.showBottomSheet(dropdownMenu);
-                }
+                        Answer consideration = DBHandler.getInstance().getAnswer(submissionID, "",
+                                formItem.getRepeatId(), repeatCount);
+                        if (consideration == null) {
+                            consideration = new Answer(submissionID, "consideration");
+
+                        }
+
+                        consideration.setAnswer(((RiskElementType) items.get(position1)).getOnScreenText());
+                        consideration.setDisplayAnswer(((RiskElementType) items.get(position1)).getOnScreenText());
+                        consideration.setRepeatID(formItem.getRepeatId());
+                        consideration.setRepeatCount(repeatCount);
+
+                        DBHandler.getInstance().replaceData(Answer.DBTable.NAME, consideration.toContentValues());
+
+                        listener.openForkFragment(formItem, submissionID, repeatCount);
+                    }
+                });
+
+                listener.showBottomSheet(dropdownMenu);
             }
         });
     }

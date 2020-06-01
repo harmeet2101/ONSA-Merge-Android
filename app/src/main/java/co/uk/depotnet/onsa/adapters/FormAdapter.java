@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Address;
@@ -14,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SwitchCompat;
 
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,6 +82,8 @@ import co.uk.depotnet.onsa.listeners.PhotoAdapterListener;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobWorkItem;
 import co.uk.depotnet.onsa.modals.LogMeasureForkItem;
+import co.uk.depotnet.onsa.modals.MeasureItems;
+import co.uk.depotnet.onsa.modals.MenSplit;
 import co.uk.depotnet.onsa.modals.WorkItem;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
@@ -267,6 +272,25 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         formItems.addAll(forkPosition, listItems);
                     }
                 }
+            } else if (!ifNegDFEAdded && item.getFormType() == FormItem.TYPE_ADD_LOG_MEASURE) {
+                forkPosition = formItems.size() - 1;
+                ifNegDFEAdded = true;
+                listItems.clear();
+                ArrayList<String> fields = item.getFields();
+                if (fields != null && !fields.isEmpty()) {
+                    ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                    if (answers != null) {
+                        for (int i = 0; i < answers.size(); i++) {
+                            repeatCount = answers.get(i).getRepeatCount();
+                            FormItem qItem = new FormItem(item.getListItemType(), "", "", item.getRepeatId(), true);
+                            qItem.setFields(fields);
+                            qItem.setDialogItems(item.getDialogItems());
+                            qItem.setRepeatCount(repeatCount);
+                            listItems.add(qItem);
+                        }
+                        formItems.addAll(forkPosition, listItems);
+                    }
+                }
             }
         }
         notifyDataSetChanged();
@@ -367,10 +391,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_FORK_CARD:
             case FormItem.TYPE_ADD_NEG_DFE:
             case FormItem.TYPE_ADD_POS_DFE:
+            case FormItem.TYPE_ADD_LOG_MEASURE:
                 return new ForkCardHolder(LayoutInflater.from(context).inflate(R.layout.item_fork_card, viewGroup, false));
             case FormItem.TYPE_CALENDER:
                 return new CalenderHolder(LayoutInflater.from(context).inflate(R.layout.item_calender, viewGroup, false));
             case FormItem.TYPE_DFE_ITEM:
+            case FormItem.TYPE_LOG_MEASURE:
                 return new DFEItemHolder(LayoutInflater.from(context).inflate(R.layout.item_dfe, viewGroup, false));
             case FormItem.TYPE_YES_NO_NA:
                 return new YesNoNAHolder(LayoutInflater.from(context).inflate(R.layout.item_yes_no_na, viewGroup, false));
@@ -457,12 +483,16 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_FORK_CARD:
             case FormItem.TYPE_ADD_NEG_DFE:
             case FormItem.TYPE_ADD_POS_DFE:
+            case FormItem.TYPE_ADD_LOG_MEASURE:
                 bindForkCard((ForkCardHolder) holder, position);
                 break;
             case FormItem.TYPE_CALENDER:
                 bindCalender((CalenderHolder) holder, position);
                 break;
             case FormItem.TYPE_DFE_ITEM:
+                bindDFEHolder((DFEItemHolder) holder, position);
+                break;
+            case FormItem.TYPE_LOG_MEASURE:
                 bindDFEHolder((DFEItemHolder) holder, position);
                 break;
             case FormItem.TYPE_YES_NO_NA:
@@ -1367,6 +1397,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.view.setOnClickListener(view -> dropdownMenu.show());
     }
 
+
+
+
     private void bindNumberHolder(NumberHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
@@ -1895,6 +1928,10 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         WorkItem.DBTable.itemCode));
             } else if (formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)) {
                 items.addAll(DBHandler.getInstance().getJobWorkItem(submission.getJobID()));
+            }else if (formItem.getKey().equalsIgnoreCase(MeasureItems.DBTable.NAME)) {
+                items.addAll(DBHandler.getInstance().getMeasures());
+            }else if (formItem.getKey().equalsIgnoreCase(MenSplit.DBTable.NAME)) {
+                items.addAll(DBHandler.getInstance().getMenSplit());
             } else {
                 items.addAll(DBHandler.getInstance().getItemTypes(formItem.getKey()));
             }

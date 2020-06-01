@@ -74,7 +74,8 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
             holder.imgIcon.setBackgroundResource(workLog.isStatus() ?
                     R.drawable.img_bg_circle : R.drawable.img_bg_cirlcle_orange);
         }
-        if(position == 5 ) {
+
+        if(position == 6) {
             if (isRFNAEnable()) {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
             } else {
@@ -82,7 +83,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
             }
         }
 
-        if(position == 6 ) {
+        if(position == 7) {
             if (isEngCompEnable()) {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
             } else {
@@ -94,11 +95,11 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
 
         holder.view.setOnClickListener(view -> {
 
-            if(holder.getAdapterPosition() == 5 && !isRFNAEnable()) {
+            if(holder.getAdapterPosition() == 6 && !isRFNAEnable()) {
                 return;
             }
 
-            if(holder.getAdapterPosition() == 6 && !isEngCompEnable()) {
+            if(holder.getAdapterPosition() == 7 && !isEngCompEnable()) {
                 return;
             }
             listener.onItemClick(workLog, holder.getAdapterPosition());

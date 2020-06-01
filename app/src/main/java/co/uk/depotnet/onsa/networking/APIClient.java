@@ -1,9 +1,7 @@
 package co.uk.depotnet.onsa.networking;
 
 import android.os.Build;
-import android.util.Log;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -12,7 +10,6 @@ import javax.net.ssl.SSLContext;
 
 import co.uk.depotnet.onsa.BuildConfig;
 import okhttp3.ConnectionSpec;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -25,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class APIClient {
 
     private static Retrofit retrofit = null;
-    private static OkHttpClient.Builder httpClient;
+    private static OkHttpClient.Builder httpClientBuilder;
 
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
@@ -34,7 +31,7 @@ public class APIClient {
 
 
 
-    public static Retrofit getClient() {
+    static Retrofit getClient() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient().newBuilder()
@@ -57,7 +54,7 @@ public class APIClient {
         return retrofit;
     }
 
-    public static OkHttpClient.Builder enableTls12OnPreLollipop(OkHttpClient.Builder client) {
+    private static OkHttpClient.Builder enableTls12OnPreLollipop(OkHttpClient.Builder client) {
         if (Build.VERSION.SDK_INT >= 16 && Build.VERSION.SDK_INT < 22) {
             try {
                 SSLContext sc = SSLContext.getInstance("TLSv1.2");
@@ -74,6 +71,7 @@ public class APIClient {
 
                 client.connectionSpecs(specs);
             } catch (Exception exc) {
+                exc.printStackTrace();
             }
         }
 
@@ -81,48 +79,48 @@ public class APIClient {
     }
 
 
-    public static <S> S createService(Class<S> serviceClass) {
-        return createService(serviceClass, null);
-    }
 
-    public static <S> S createService(Class<S> serviceClass, String userToken) {
+    static <S> S createService(Class<S> serviceClass, String userToken) {
         return createService(serviceClass, userToken, true);
     }
 
-    public static <S> S createService(Class<S> serviceClass, String userToken, final boolean isJSONHeader) {
+    private static <S> S createService( Class<S> serviceClass, String userToken, final boolean isJSONHeader) {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        httpClient = new OkHttpClient.Builder().connectTimeout(150, TimeUnit.SECONDS)
+        httpClientBuilder = new OkHttpClient.Builder().connectTimeout(150, TimeUnit.SECONDS)
                 .readTimeout(150, TimeUnit.SECONDS)
                 .writeTimeout(150, TimeUnit.SECONDS);
-        httpClient.addInterceptor(interceptor);
+        httpClientBuilder.addInterceptor(interceptor);
 
         final String basic =
                 "Bearer " + userToken;
 
-        httpClient.addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request original = chain.request();
-                Request.Builder requestBuilder = null;
-                if (isJSONHeader) {
-                    requestBuilder = original.newBuilder()
-                            .header("Authorization", basic)
-                            .header("Accept", "application/json")
-                            .method(original.method(), original.body());
-                } else {
-                    requestBuilder = original.newBuilder()
-                            .header("Authorization", basic)
-                            .method(original.method(), original.body());
-                }
-
-                Request request = requestBuilder.build();
-                return chain.proceed(request);
+        httpClientBuilder.addInterceptor(chain -> {
+            Request original = chain.request();
+            Request.Builder requestBuilder = null;
+            if (isJSONHeader) {
+                requestBuilder = original.newBuilder()
+                        .header("Authorization", basic)
+                        .header("Accept", "application/json")
+                        .method(original.method(), original.body());
+            } else {
+                requestBuilder = original.newBuilder()
+                        .header("Authorization", basic)
+                        .method(original.method(), original.body());
             }
+
+            Request request = requestBuilder.build();
+            Response response = chain.proceed(request);
+
+            if(response.code()== 401){
+
+            }
+
+            return response;
         });
 
-        OkHttpClient client = httpClient.build();
+        OkHttpClient client = httpClientBuilder.build();
         Retrofit retrofit = builder.client(client).build();
         return retrofit.create(serviceClass);
     }

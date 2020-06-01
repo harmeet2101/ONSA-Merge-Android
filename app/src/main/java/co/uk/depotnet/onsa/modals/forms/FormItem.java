@@ -47,9 +47,8 @@ public class FormItem implements Parcelable {
     public static final int TYPE_BAR_CODE = 35;
     public static final int TYPE_ADD_POS_DFE = 36;
     public static final int TYPE_ADD_NEG_DFE = 37;
-
-
-
+    public static final int TYPE_ADD_LOG_MEASURE = 38;
+    public static final int TYPE_LOG_MEASURE = 39;
 
     private String type;
     private String uploadId;
@@ -423,6 +422,10 @@ public class FormItem implements Parcelable {
             return TYPE_ADD_POS_DFE;
         }else if (type.equalsIgnoreCase("add_neg_dfe")) {
             return TYPE_ADD_NEG_DFE;
+        }else if (type.equalsIgnoreCase("add_log_measure")) {
+            return TYPE_ADD_LOG_MEASURE;
+        }else if (type.equalsIgnoreCase("log_measure_item")) {
+            return TYPE_LOG_MEASURE;
         }
 
 

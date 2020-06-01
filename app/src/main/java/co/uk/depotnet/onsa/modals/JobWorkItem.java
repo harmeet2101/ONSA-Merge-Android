@@ -23,14 +23,14 @@ public class JobWorkItem implements Parcelable , DropDownItem {
     };
     private String jobId;
     private String unitType;
-    private int quantity;
+    private float quantity;
     private String itemCode;
     private String description;
 
     protected JobWorkItem(Parcel in) {
         jobId = in.readString();
         unitType = in.readString();
-        quantity = in.readInt();
+        quantity = in.readFloat();
         itemCode = in.readString();
         description = in.readString();
 
@@ -39,7 +39,7 @@ public class JobWorkItem implements Parcelable , DropDownItem {
     public JobWorkItem(Cursor cursor) {
         jobId = cursor.getString(cursor.getColumnIndex(DBTable.jobId));
         unitType = cursor.getString(cursor.getColumnIndex(DBTable.unitType));
-        quantity = cursor.getInt(cursor.getColumnIndex(DBTable.quantity));
+        quantity = cursor.getFloat(cursor.getColumnIndex(DBTable.quantity));
         itemCode = cursor.getString(cursor.getColumnIndex(DBTable.itemCode));
         description = cursor.getString(cursor.getColumnIndex(DBTable.description));
 
@@ -53,11 +53,11 @@ public class JobWorkItem implements Parcelable , DropDownItem {
         return this.unitType;
     }
 
-    public void setquantity(int quantity) {
+    public void setquantity(float quantity) {
         this.quantity = quantity;
     }
 
-    public int getquantity() {
+    public float getquantity() {
         return this.quantity;
     }
 
@@ -94,7 +94,7 @@ public class JobWorkItem implements Parcelable , DropDownItem {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(jobId);
         parcel.writeString(unitType);
-        parcel.writeInt(quantity);
+        parcel.writeFloat(quantity);
         parcel.writeString(itemCode);
         parcel.writeString(description);
 

@@ -16,6 +16,7 @@ import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.dialogs.ErrorDialog;
+import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.dialogs.MFADialog;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
@@ -38,6 +39,11 @@ public class LoginActivity extends AppCompatActivity
         @Override
         public void onResponse(@NonNull Call<ActiveMfa> call, @NonNull Response<ActiveMfa> response) {
             hideProgressBar();
+
+            if(CommonUtils.onTokenExpired(LoginActivity.this , response.code())){
+                return;
+            }
+
             if(response.isSuccessful()){
                 ActiveMfa activeMfa = response.body();
                 if(activeMfa != null){
@@ -69,7 +75,7 @@ public class LoginActivity extends AppCompatActivity
             if (response.isSuccessful()) {
                 User user = response.body();
                 if (user != null && !TextUtils.isEmpty(user.getuserId())) {
-                    DBHandler.getInstance().insertData(User.DBTable.NAME, user.toContentValues());
+                    DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
                     AppPreferences.putString("UserName" , etUserName.getText().toString().trim());
                     AppPreferences.putString("UserPassword" , etPassword.getText().toString().trim());
 

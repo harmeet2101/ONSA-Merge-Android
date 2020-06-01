@@ -2,7 +2,6 @@ package co.uk.depotnet.onsa.fragments.store;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -35,11 +34,6 @@ public class FragmentStore extends Fragment implements
     private FragmentActionListener listener;
     private User user;
     private TextView txtRequestNoti;
-    private TextView txtReceiptNoti;
-
-
-    public FragmentStore() {
-    }
 
 
     public static FragmentStore newInstance(User user) {
@@ -70,17 +64,12 @@ public class FragmentStore extends Fragment implements
         view.findViewById(R.id.rl_my_request).setOnClickListener(this);
 
 
-        txtReceiptNoti = view.findViewById(R.id.txt_receipt_notification);
+        TextView txtReceiptNoti = view.findViewById(R.id.txt_receipt_notification);
         txtRequestNoti = view.findViewById(R.id.txt_request_notification);
 
         int receiptCount = DBHandler.getInstance().getReceipts().size();
         txtReceiptNoti.setText(String.valueOf(receiptCount));
-        view.findViewById(R.id.btn_img_cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((Activity)context).onBackPressed();
-            }
-        });
+        view.findViewById(R.id.btn_img_cancel).setOnClickListener(v -> ((Activity)context).onBackPressed());
 
 //        getMyRequests();
         int requestCount = DBHandler.getInstance().getMyRequest().size();
@@ -98,7 +87,7 @@ public class FragmentStore extends Fragment implements
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
         if (context instanceof FragmentActionListener) {
@@ -150,7 +139,7 @@ public class FragmentStore extends Fragment implements
         listener.showProgressBar();
         APICalls.getMyRequests(user.gettoken()).enqueue(new Callback<DataMyRequests>() {
             @Override
-            public void onResponse(Call<DataMyRequests> call, Response<DataMyRequests> response) {
+            public void onResponse(@NonNull Call<DataMyRequests> call, @NonNull Response<DataMyRequests> response) {
                 if(response.isSuccessful()){
 
                     DataMyRequests dataMyRequests = response.body();
@@ -164,7 +153,7 @@ public class FragmentStore extends Fragment implements
             }
 
             @Override
-            public void onFailure(Call<DataMyRequests> call, Throwable t) {
+            public void onFailure(@NonNull Call<DataMyRequests> call, @NonNull Throwable t) {
                 listener.hideProgressBar();
             }
         });
@@ -177,12 +166,7 @@ public class FragmentStore extends Fragment implements
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositive(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int i) {
-                        dialog.dismiss();
-                    }
-                })
+                .setPositive(getString(R.string.ok), (dialog1, i) -> dialog1.dismiss())
                 .build();
 
         dialog.setCancelable(false);

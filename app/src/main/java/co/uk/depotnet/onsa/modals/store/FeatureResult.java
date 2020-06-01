@@ -1,7 +1,5 @@
 package co.uk.depotnet.onsa.modals.store;
 
-import android.content.ContentValues;
-
 import java.util.ArrayList;
 
 import co.uk.depotnet.onsa.database.DBHandler;

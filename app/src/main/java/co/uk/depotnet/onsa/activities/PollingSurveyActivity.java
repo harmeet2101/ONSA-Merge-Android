@@ -1,7 +1,6 @@
 package co.uk.depotnet.onsa.activities;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -152,60 +151,54 @@ public class PollingSurveyActivity extends AppCompatActivity
 
 
         showProgressBar();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final Response response = new ConnectionHelper(PollingSurveyActivity.this).
-                        submitPollingSurvey("app/jobs/{jobId}/poling-surveys", "app/jobs/{jobId}/photos",
-                                submission, getSupportFragmentManager());
+        new Thread(() -> {
+            final Response response = new ConnectionHelper(PollingSurveyActivity.this).
+                    submitPollingSurvey("app/jobs/{jobId}/poling-surveys", "app/jobs/{jobId}/photos",
+                            submission, getSupportFragmentManager());
 
 
-                if (response != null) {
-                    if (!response.isSuccessful()) {
-                        if (response.code() != 400) {
-                            DBHandler.getInstance().setSubmissionQueued(submission);
-                        }
-                    } else {
-                        DBHandler.getInstance().removeAnswers(submission);
+            if (response != null) {
+                if (!response.isSuccessful()) {
+                    if (response.code() != 400) {
+                        DBHandler.getInstance().setSubmissionQueued(submission);
                     }
+                } else {
+                    DBHandler.getInstance().removeAnswers(submission);
                 }
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideProgressBar();
-                        String title = "Success";
-                        String message = "Submission was successful";
+            }
+            handler.post(() -> {
+                hideProgressBar();
+                String title = "Success";
+                String message = "Submission was successful";
 
-                        if (response == null || !response.isSuccessful()) {
-                            title = "Submission Error";
-                            message = "Submission Error, your submission has been added to the queue";
-                        }
+                if (response == null || !response.isSuccessful()) {
+                    title = "Submission Error";
+                    message = "Submission Error, your submission has been added to the queue";
+                }
 
-                        if(response != null && response.code() == 400){
+                if(response != null && response.code() == 400){
 
-                                ResponseBody body = response.body();
-                                if(body!= null){
-                                    try {
-                                        String data = body.string();
-                                        if (!TextUtils.isEmpty(data)) {
-                                            JSONObject jsonObject = new JSONObject(data);
-                                            if(jsonObject.has("status")) {
-                                                title = jsonObject.getString("status");
-                                            }
+                        ResponseBody body = response.body();
+                        if(body!= null){
+                            try {
+                                String data = body.string();
+                                if (!TextUtils.isEmpty(data)) {
+                                    JSONObject jsonObject = new JSONObject(data);
+                                    if(jsonObject.has("status")) {
+                                        title = jsonObject.getString("status");
+                                    }
 
-                                            if(jsonObject.has("message")) {
-                                                message = jsonObject.getString("message");
-                                            }
-                                        }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                                    if(jsonObject.has("message")) {
+                                        message = jsonObject.getString("message");
                                     }
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                        showErrorDialog(title, message);
-                    }
-                });
-            }
+                }
+                showErrorDialog(title, message);
+            });
         }).start();
     }
 
@@ -228,13 +221,10 @@ public class PollingSurveyActivity extends AppCompatActivity
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositive(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int i) {
-                        dialog.dismiss();
-                        setResult(Activity.RESULT_OK);
-                        finish();
-                    }
+                .setPositive(getString(R.string.ok), (dialog1, i) -> {
+                    dialog1.dismiss();
+                    setResult(Activity.RESULT_OK);
+                    finish();
                 })
                 .build();
 

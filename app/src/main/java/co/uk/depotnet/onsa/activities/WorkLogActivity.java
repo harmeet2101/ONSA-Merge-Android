@@ -1,7 +1,5 @@
 package co.uk.depotnet.onsa.activities;
 
-
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -31,6 +29,8 @@ import co.uk.depotnet.onsa.modals.JobModuleStatus;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.WorkLog;
 import co.uk.depotnet.onsa.modals.forms.Submission;
+import co.uk.depotnet.onsa.modals.responses.MeasureItemResponse;
+import co.uk.depotnet.onsa.modals.responses.MenSplitResponse;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
@@ -57,7 +57,6 @@ public class WorkLogActivity extends AppCompatActivity
 
     private RelativeLayout rlWarning;
     private RecyclerView recyclerView;
-    private boolean isClickable = false;
     private LinearLayout llUiBlocker;
 
     @Override
@@ -72,7 +71,7 @@ public class WorkLogActivity extends AppCompatActivity
         Job job = DBHandler.getInstance().getJob(jobID);
         if(job != null){
             TextView txtToolbarTitle = findViewById(R.id.txt_toolbar_title);
-            txtToolbarTitle.setText(getString(R.string.work_log)+": "+job.getestimateNumber());
+            txtToolbarTitle.setText(String.format("%s: %s", getString(R.string.work_log), job.getestimateNumber()));
         }
         llUiBlocker = findViewById(R.id.ll_ui_blocker);
 
@@ -98,15 +97,19 @@ public class WorkLogActivity extends AppCompatActivity
             return false;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-
+        Date date;
+        Date currentDate;
         try {
-            Date date = sdf.parse(book_on_date);
-            Date currentDate = sdf.parse(sdf.format(new Date()));
-            return date.compareTo(currentDate) == 0;
+            date = sdf.parse(book_on_date);
+            currentDate = sdf.parse(sdf.format(new Date()));
         } catch (ParseException e) {
             return false;
         }
 
+        if(date == null || currentDate == null){
+            return false;
+        }
+        return date.compareTo(currentDate) == 0;
     }
 
     @Override
@@ -134,8 +137,6 @@ public class WorkLogActivity extends AppCompatActivity
                 workLogs.get(0).setJson("book_on.json");
                 workLogs.get(0).setTitle("Book On");
             }
-
-
             adapter.setBookOn(isBookOn);
             adapter.notifyDataSetChanged();
         }else{
@@ -143,9 +144,6 @@ public class WorkLogActivity extends AppCompatActivity
             rlWarning.setVisibility(View.VISIBLE);
         }
     }
-
-
-
 
     @Override
     public void onClick(View view) {
@@ -186,12 +184,6 @@ public class WorkLogActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(WorkLog workLog, int position) {
-
-//        if(workLog.isStatus()){
-//            showErrorDialog(workLog.getTitle(), "Already Submitted Successfully");
-//            return;
-//        }
-
         String jsonName = workLog.getJson();
 
         if (jsonName == null || jsonName.isEmpty()) {
@@ -207,6 +199,11 @@ public class WorkLogActivity extends AppCompatActivity
         }
 
         if (!isBookOn() && !jsonName.equalsIgnoreCase("book_on.json")) {
+            return;
+        }
+
+        if(jsonName.equalsIgnoreCase("log_measure.json")){
+            openLogMeasure(workLog);
             return;
         }
 
@@ -227,17 +224,71 @@ public class WorkLogActivity extends AppCompatActivity
         }
     }
 
+    private void openLogMeasure(WorkLog workLog) {
+        if(!CommonUtils.isNetworkAvailable(WorkLogActivity.this)){
+            Submission submission = new Submission(workLog.getJson(), workLog.getTitle(), jobID);
+            long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+            submission.setId(submissionID);
+            Intent intent = new Intent(this, FormActivity.class);
+            intent.putExtra(FormActivity.ARG_USER, user);
+            intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+            startActivity(intent);
+            return;
+        }
+        showProgressBar();
+        APICalls.getMenSplits(user.gettoken()).enqueue(new Callback<MenSplitResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MenSplitResponse> call, @NonNull Response<MenSplitResponse> response) {
+                if(response.isSuccessful()){
+                    MenSplitResponse menSplits = response.body();
+                    if(menSplits != null ){
+                        menSplits.toContentValues();
+                    }
+
+                }
+
+                APICalls.getMeasureItems(user.gettoken()).enqueue(new Callback<MeasureItemResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<MeasureItemResponse> call, @NonNull Response<MeasureItemResponse> response) {
+                        hideProgressBar();
+
+                        if(response.isSuccessful()){
+                            MeasureItemResponse measureItemResponse = response.body();
+                            if(measureItemResponse!= null){
+                                measureItemResponse.toContentValues();
+                                Submission submission = new Submission(workLog.getJson(), workLog.getTitle(), jobID);
+                                long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+                                submission.setId(submissionID);
+                                Intent intent = new Intent(WorkLogActivity.this, FormActivity.class);
+                                intent.putExtra(FormActivity.ARG_USER, user);
+                                intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+                                startActivity(intent);
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<MeasureItemResponse> call, @NonNull Throwable t) {
+                        hideProgressBar();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MenSplitResponse> call, @NonNull Throwable t) {
+                hideProgressBar();
+            }
+        });
+
+    }
+
     public void showErrorDialog(String title, String message) {
 
         final MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositive(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                })
+                .setPositive(getString(R.string.ok), (dialogInterface, i) -> dialogInterface.dismiss())
                 .build();
 
         dialog.setCancelable(false);
@@ -289,6 +340,11 @@ public class WorkLogActivity extends AppCompatActivity
         APICalls.sendRfna(jobID , user.gettoken()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+
+                if(CommonUtils.onTokenExpired(WorkLogActivity.this , response.code())){
+                    return;
+                }
+
                 if(response.isSuccessful()){
                     showErrorDialog("Success", "Submission was successful");
                 }else{

@@ -4,6 +4,8 @@ import co.uk.depotnet.onsa.modals.Disclaimer;
 import co.uk.depotnet.onsa.modals.Driver;
 import co.uk.depotnet.onsa.modals.Feature;
 import co.uk.depotnet.onsa.modals.Job;
+import co.uk.depotnet.onsa.modals.MeasureItems;
+import co.uk.depotnet.onsa.modals.MenSplit;
 import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
 import co.uk.depotnet.onsa.modals.httprequests.ResetPassword;
 import co.uk.depotnet.onsa.modals.httprequests.VerificationRequest;
@@ -20,6 +22,8 @@ import co.uk.depotnet.onsa.modals.httpresponses.BaseTask;
 
 import java.util.List;
 
+import co.uk.depotnet.onsa.modals.responses.MeasureItemResponse;
+import co.uk.depotnet.onsa.modals.responses.MenSplitResponse;
 import co.uk.depotnet.onsa.modals.store.DataMyRequests;
 import co.uk.depotnet.onsa.modals.store.DataMyStores;
 import co.uk.depotnet.onsa.modals.store.DataReceipts;
@@ -89,5 +93,11 @@ public interface APIInterface {
 
     @GET("/app/features")
     Call<FeatureResult> getFeatures();
+
+    @GET("/app/getmensplits")
+    Call<MenSplitResponse> getMenSplits();
+
+    @GET("/app/getmeasureitems")
+    Call<MeasureItemResponse> getMeasureItems();
 
 }

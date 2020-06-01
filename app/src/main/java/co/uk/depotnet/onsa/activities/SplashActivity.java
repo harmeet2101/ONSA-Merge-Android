@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.store.FeatureResult;
@@ -37,6 +38,10 @@ public class SplashActivity extends AppCompatActivity {
         public void onResponse(@NonNull Call<StoreDataset> call,
                                Response<StoreDataset> response) {
 
+            if(CommonUtils.onTokenExpired(SplashActivity.this , response.code())){
+                return;
+            }
+
             if (response.body() != null) {
                 response.body().toContentValues();
             }
@@ -56,7 +61,9 @@ public class SplashActivity extends AppCompatActivity {
         @Override
         public void onResponse(@NonNull Call<DatasetResponse> call,
                                Response<DatasetResponse> response) {
-
+            if(CommonUtils.onTokenExpired(SplashActivity.this , response.code())){
+                return;
+            }
             if (response.body() != null) {
                 DBHandler.getInstance().resetDatasetTable();
                 response.body().toContentValues();
@@ -88,6 +95,10 @@ public class SplashActivity extends AppCompatActivity {
         APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
             @Override
             public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
+                if(CommonUtils.onTokenExpired(SplashActivity.this , response.code())){
+                    return;
+                }
+
                 if(response.isSuccessful()){
                     FeatureResult featureResult = response.body();
                     if(featureResult != null){
@@ -125,8 +136,6 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             Intent intent;
 
-
-
             if (!isLogin()) {
                 intent = new Intent(SplashActivity.this, LoginActivity.class);
                 startActivity(intent);
@@ -151,7 +160,6 @@ public class SplashActivity extends AppCompatActivity {
 
 
             DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
-
             if (!CommonUtils.isNetworkAvailable(SplashActivity.this)) {
                 Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
                 intent = new Intent(SplashActivity.this, MainActivity.class);

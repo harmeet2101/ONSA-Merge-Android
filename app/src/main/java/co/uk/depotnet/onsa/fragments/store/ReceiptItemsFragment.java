@@ -19,6 +19,7 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.adapters.store.AdapterReceiptItems;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Submission;
@@ -26,6 +27,7 @@ import co.uk.depotnet.onsa.modals.store.DataReceipts;
 import co.uk.depotnet.onsa.modals.store.ReceiptItems;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -161,7 +163,11 @@ public class ReceiptItemsFragment extends Fragment implements View.OnClickListen
         listener.showProgressBar();
         APICalls.getReceipts(user.gettoken()).enqueue(new Callback<DataReceipts>() {
             @Override
-            public void onResponse(Call<DataReceipts> call, Response<DataReceipts> response) {
+            public void onResponse(@NonNull Call<DataReceipts> call, @NonNull Response<DataReceipts> response) {
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    return;
+                }
+
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         DBHandler.getInstance().resetReceipts();
@@ -174,7 +180,7 @@ public class ReceiptItemsFragment extends Fragment implements View.OnClickListen
             }
 
             @Override
-            public void onFailure(Call<DataReceipts> call, Throwable t) {
+            public void onFailure(@NonNull Call<DataReceipts> call, @NonNull Throwable t) {
                 listener.hideProgressBar();
             }
         });

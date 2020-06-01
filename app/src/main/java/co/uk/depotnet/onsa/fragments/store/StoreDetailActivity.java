@@ -2,6 +2,8 @@ package co.uk.depotnet.onsa.fragments.store;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,16 +14,18 @@ import android.widget.Toast;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.store.StockItems;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.views.DropdownNumberBottomSheet;
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FragmentStoreDetail extends AppCompatActivity implements View.OnClickListener {
+public class StoreDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     private static final String ARG_BARCODE_RESULT = "barcode_result";
@@ -43,8 +47,6 @@ public class FragmentStoreDetail extends AppCompatActivity implements View.OnCli
     private TextView txtWarehouse;
     private TextView txtDepartName;
     private TextView txtStockLevel;
-    private CircleImageView imgStore;
-
 
 
     @Override
@@ -64,7 +66,7 @@ public class FragmentStoreDetail extends AppCompatActivity implements View.OnCli
         txtWarehouse = findViewById(R.id.txt_ware_house);
         txtDepartName = findViewById(R.id.txt_department);
         txtStockLevel = findViewById(R.id.txt_stock_level);
-        imgStore = findViewById(R.id.img_store);
+        CircleImageView imgStore = findViewById(R.id.img_store);
 
 
         findViewById(R.id.btn_accept).setOnClickListener(this);
@@ -102,8 +104,6 @@ public class FragmentStoreDetail extends AppCompatActivity implements View.OnCli
                 showNumber();
                 break;
             case R.id.btn_reject:
-                finish();
-                break;
             case R.id.btn_img_cancel:
                 finish();
                 break;
@@ -116,40 +116,36 @@ public class FragmentStoreDetail extends AppCompatActivity implements View.OnCli
 
     private void showNumber(){
         final DropdownNumberBottomSheet dropdownMenu =
-                new DropdownNumberBottomSheet(this, new DropdownNumberBottomSheet.OnNumberSelected() {
+                new DropdownNumberBottomSheet(this, number -> {
+                    if(TextUtils.isEmpty(number)){
+                        return;
+                    }
 
-            @Override
-            public void numberSelected(String number) {
-                if(TextUtils.isEmpty(number)){
-                    return;
-                }
+                    double value = 0;
 
-                double value = 0;
+                    try{
+                        value = Double.parseDouble(number);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
 
-                try{
-                    value = Double.parseDouble(number);
-                }catch (Exception e){
+                    if(value == 0){
+                        return;
+                    }
 
-                }
-
-                if(value == 0){
-                    return;
-                }
-
-                if(value > store.getStockLevelUnit()){
-                    return;
-                }
+                    if(value > store.getStockLevelUnit()){
+                        return;
+                    }
 
 
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("stock_quantity", value);
-                resultIntent.putExtra("StaId", getIntent().getStringExtra("StaId"));
-                resultIntent.putExtra("stockItemId", store.getstockItemId());
-                setResult(RESULT_OK, resultIntent);
-                finish();
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("stock_quantity", value);
+                    resultIntent.putExtra("StaId", getIntent().getStringExtra("StaId"));
+                    resultIntent.putExtra("stockItemId", store.getstockItemId());
+                    setResult(RESULT_OK, resultIntent);
+                    finish();
 
-            }
-        });
+                });
         dropdownMenu.show();
 
     }
@@ -159,13 +155,17 @@ public class FragmentStoreDetail extends AppCompatActivity implements View.OnCli
         User user = DBHandler.getInstance().getUser();
         APICalls.getItem(user.gettoken() , barcode , staId).enqueue(new Callback<StockItems>() {
             @Override
-            public void onResponse(Call<StockItems> call, Response<StockItems> response) {
+            public void onResponse(@NonNull Call<StockItems> call, @NonNull Response<StockItems> response) {
+
+                if(CommonUtils.onTokenExpired(StoreDetailActivity.this , response.code())){
+                    return;
+                }
                 if(response.isSuccessful()){
                     store = response.body();
 
 
                     if(store == null || TextUtils.isEmpty(store.getstockItemId()) || store.getstockItemId().startsWith("0000")){
-                        Toast.makeText(FragmentStoreDetail.this , "Scanned Stock Item not found" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(StoreDetailActivity.this , "Scanned Stock Item not found" , Toast.LENGTH_SHORT).show();
                         finish();
                     }
 
@@ -174,7 +174,7 @@ public class FragmentStoreDetail extends AppCompatActivity implements View.OnCli
             }
 
             @Override
-            public void onFailure(Call<StockItems> call, Throwable t) {
+            public void onFailure(@NonNull Call<StockItems> call, @NonNull Throwable t) {
 
             }
         });

@@ -16,13 +16,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import co.uk.depotnet.onsa.R;
+import co.uk.depotnet.onsa.activities.VerificationActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.fragments.store.RequestItemsFragment;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.modals.User;
-import co.uk.depotnet.onsa.modals.store.DataMyStores;
 import co.uk.depotnet.onsa.modals.store.MyRequest;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
@@ -46,9 +48,9 @@ public class AdapterMyRequests extends RecyclerView.Adapter<AdapterMyRequests.Vi
         this.items = items;
         this.listener = listener;
         this.user = DBHandler.getInstance().getUser();
-        inDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        outDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        timeFormat = new SimpleDateFormat("HH:mm");
+        inDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.UK);
+        outDateFormat = new SimpleDateFormat("dd/MM/yyyy" , Locale.UK);
+        timeFormat = new SimpleDateFormat("HH:mm", Locale.UK);
         this.context=context;
     }
 
@@ -65,56 +67,53 @@ public class AdapterMyRequests extends RecyclerView.Adapter<AdapterMyRequests.Vi
         holder.item = items.get(position);
         String requestDate = holder.item.getcreatedDate();
 
-        holder.txtRequestDate.setText("Request Date: "+getDate(requestDate));
-        holder.txtTimeSent.setText("Sent Time: "+getTime(requestDate));
-        holder.txtNoOfItems.setText("Number of Items: "+holder.item.getitemCount());
-        holder.txtComment.setText("Comment: "+holder.item.getrequestComments());
-        holder.txtRequestStatus.setText("Request Status: "+holder.item.getrequestStatusName());
+        holder.txtRequestDate.setText(String.format("Request Date: %s", getDate(requestDate)));
+        holder.txtTimeSent.setText(String.format("Sent Time: %s", getTime(requestDate)));
+        holder.txtNoOfItems.setText(String.format("Number of Items: %d", holder.item.getitemCount()));
+        holder.txtComment.setText(String.format("Comment: %s", holder.item.getrequestComments()));
+        holder.txtRequestStatus.setText(String.format("Request Status: %s", holder.item.getrequestStatusName()));
 
 
-        holder.btnView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.addFragment(RequestItemsFragment.newInstance(holder.item , user),
-                        false);
-            }
-        });
+        holder.btnView.setOnClickListener(v -> listener.addFragment(RequestItemsFragment.newInstance(holder.item , user),
+                false));
 
         if(holder.item.getrequestStatusName().equalsIgnoreCase("rejected") ||
                 holder.item.getrequestStatusName().equalsIgnoreCase("accepted")) {
 
             holder.imgCancel.setVisibility(View.VISIBLE);
             holder.llCheckYourReceipt.setVisibility(View.VISIBLE);
-            holder.imgCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            holder.imgCancel.setOnClickListener(v -> {
 
-                    if (!CommonUtils.isNetworkAvailable(context)) {
-                        return;
+                if (!CommonUtils.isNetworkAvailable(context)) {
+                    return;
+                }
+
+                listener.showProgressBar();
+                APICalls.hideReequest(user.gettoken(),holder.item.getrequestId()).enqueue(new Callback<Void>() {
+
+                    @Override
+                    public void onResponse(@NonNull Call<Void> call,
+                                           @NonNull Response<Void> response) {
+
+                        if(CommonUtils.onTokenExpired(context , response.code())){
+                            return;
+                        }
+
+                        if (response.isSuccessful()) {
+                            DBHandler.getInstance().removeMyRequests(holder.item);
+                            items.remove(holder.getAdapterPosition());
+                            notifyItemRemoved(holder.getAdapterPosition());
+                            listener.hideProgressBar();
+                        }
                     }
 
-                    listener.showProgressBar();
-                    APICalls.hideReequest(user.gettoken(),holder.item.getrequestId()).enqueue(new Callback<Void>() {
+                    @Override
+                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                        listener.hideProgressBar();
 
-                        @Override
-                        public void onResponse(Call<Void> call,
-                                               Response<Void> response) {
-                            if (response.isSuccessful()) {
-                                DBHandler.getInstance().removeMyRequests(holder.item);
-                                items.remove(holder.getAdapterPosition());
-                                notifyItemRemoved(holder.getAdapterPosition());
-                                listener.hideProgressBar();
-                            }
-                        }
+                    }
+                });
 
-                        @Override
-                        public void onFailure(Call<Void> call, Throwable t) {
-                            listener.hideProgressBar();
-
-                        }
-                    });
-
-                }
             });
 
         }else{
@@ -124,22 +123,29 @@ public class AdapterMyRequests extends RecyclerView.Adapter<AdapterMyRequests.Vi
     }
 
     private String getDate(String dateStr){
+        Date date = null;
         try {
-            Date date = inDateFormat.parse(dateStr);
-            return outDateFormat.format(date);
+            date = inDateFormat.parse(dateStr);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
+        if(date != null){
+            return outDateFormat.format(date);
+        }
         return dateStr;
     }
 
     private String getTime(String dateStr){
+        Date date = null;
         try {
-            Date date = inDateFormat.parse(dateStr);
-            return timeFormat.format(date);
+            date = inDateFormat.parse(dateStr);
         } catch (ParseException e) {
             e.printStackTrace();
+        }
+
+        if(date != null){
+            return timeFormat.format(date);
         }
         return dateStr;
     }
@@ -149,7 +155,7 @@ public class AdapterMyRequests extends RecyclerView.Adapter<AdapterMyRequests.Vi
         return items.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public final View view;
         final TextView txtRequestDate;
         final TextView txtTimeSent;
