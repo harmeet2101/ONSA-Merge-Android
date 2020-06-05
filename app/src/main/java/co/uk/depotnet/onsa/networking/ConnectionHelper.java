@@ -128,6 +128,8 @@ public class ConnectionHelper {
         ArrayList<Answer> signatures = new ArrayList<>();
 
         requestMap.put("submissionId", uniqueId);
+
+
         requestMap.put("submittedDate", submission.getDate());
         requestMap.put("dateTaken", submission.getDate());
         requestMap.put("latitude", submission.getLatitude());
@@ -451,7 +453,9 @@ public class ConnectionHelper {
         Map<String, Object> requestMap = new HashMap<>();
         ArrayList<Answer> photosToUpload = new ArrayList<>();
         ArrayList<Answer> signatures = new ArrayList<>();
-
+        if(submission.getJsonFileName().equalsIgnoreCase("log_measure.json")){
+            requestMap.put("submittedDateTime", submission.getDate());
+        }
         requestMap.put("submissionId", uniqueId);
         requestMap.put("submittedDate", submission.getDate());
         requestMap.put("dateTaken", submission.getDate());

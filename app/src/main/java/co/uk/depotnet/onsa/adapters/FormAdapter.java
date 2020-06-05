@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Address;
@@ -15,8 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SwitchCompat;
 
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +54,7 @@ import co.uk.depotnet.onsa.formholders.ForkCardHolder;
 import co.uk.depotnet.onsa.formholders.ForkHolder;
 import co.uk.depotnet.onsa.formholders.LocationHolder;
 import co.uk.depotnet.onsa.formholders.LogDigForkHolder;
+import co.uk.depotnet.onsa.formholders.LogMeasureItemHolder;
 import co.uk.depotnet.onsa.formholders.LongTextHolder;
 import co.uk.depotnet.onsa.formholders.NumberHolder;
 import co.uk.depotnet.onsa.formholders.PassFailHolder;
@@ -157,7 +155,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         }
                     }
                 }
-
             }
         }
 
@@ -209,6 +206,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         boolean ifItemAdded = false;
         boolean ifPosDFEAdded = false;
         boolean ifNegDFEAdded = false;
+        int repeatCount = 0;
         DBHandler dbHandler = DBHandler.getInstance();
         ArrayList<FormItem> listItems = new ArrayList<>();
         for (int c = 0; c < inflatedItems.size(); c++) {
@@ -396,8 +394,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_CALENDER:
                 return new CalenderHolder(LayoutInflater.from(context).inflate(R.layout.item_calender, viewGroup, false));
             case FormItem.TYPE_DFE_ITEM:
-            case FormItem.TYPE_LOG_MEASURE:
                 return new DFEItemHolder(LayoutInflater.from(context).inflate(R.layout.item_dfe, viewGroup, false));
+            case FormItem.TYPE_LOG_MEASURE:
+                return new LogMeasureItemHolder(LayoutInflater.from(context).inflate(R.layout.item_log_measure, viewGroup, false));
             case FormItem.TYPE_YES_NO_NA:
                 return new YesNoNAHolder(LayoutInflater.from(context).inflate(R.layout.item_yes_no_na, viewGroup, false));
             case FormItem.TYPE_STOP_WATCH:
@@ -493,7 +492,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 bindDFEHolder((DFEItemHolder) holder, position);
                 break;
             case FormItem.TYPE_LOG_MEASURE:
-                bindDFEHolder((DFEItemHolder) holder, position);
+                bindLogMeasureHolder((LogMeasureItemHolder) holder, position);
                 break;
             case FormItem.TYPE_YES_NO_NA:
                 bindYesNoNAHolder((YesNoNAHolder) holder, position);
@@ -974,6 +973,54 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
 
     }
+
+    private void bindLogMeasureHolder(LogMeasureItemHolder holder, final int position) {
+        final FormItem formItem = formItems.get(position);
+        final ArrayList<String> fields = formItem.getFields();
+        if (fields == null || fields.isEmpty()) {
+            return;
+        }
+
+        Answer answerItemId = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+                formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer quantity = DBHandler.getInstance().getAnswer(submissionID, fields.get(1),
+                formItem.getRepeatId(), formItem.getRepeatCount());
+
+        if (answerItemId != null) {
+            String value = answerItemId.getAnswer();
+            if (!TextUtils.isEmpty(value)) {
+                holder.txtValue.setText(answerItemId.getDisplayAnswer());
+            }
+        }
+
+        if (quantity != null) {
+            String value = quantity.getAnswer();
+            if (!TextUtils.isEmpty(value)) {
+                holder.txtQuantity.setText(value);
+            }
+        }
+
+        holder.llBtnDelete.setOnClickListener(v -> {
+            formItems.remove(position);
+            Answer answerItemId1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+                    formItem.getRepeatId(), formItem.getRepeatCount());
+            Answer quantity1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(1),
+                    formItem.getRepeatId(), formItem.getRepeatCount());
+            if (answerItemId1 != null) {
+                DBHandler.getInstance().removeAnswer(answerItemId1);
+            }
+
+            if (quantity1 != null) {
+                DBHandler.getInstance().removeAnswer(quantity1);
+            }
+
+            notifyDataSetChanged();
+        });
+
+        holder.llBtnEdit.setOnClickListener(v -> listener.openForkFragment(formItem, submissionID, formItem.getRepeatCount()));
+
+    }
+
 
     private void bindDFEHolder(DFEItemHolder holder, final int position) {
         final FormItem formItem = formItems.get(position);
@@ -1781,9 +1828,13 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.view.setOnClickListener(v -> {
             int rC = 0;
             ArrayList<String> fields = formItem.getFields();
-            ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "items");
-            answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "negItems"));
-
+            ArrayList<Answer> answers = new ArrayList<>();
+            if(submission.getJsonFileName().equalsIgnoreCase("log_dfe.json")) {
+                answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "items"));
+                answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "negItems"));
+            }else{
+                answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), formItem.getRepeatId()));
+            }
 
             for (int i = 0; i < answers.size(); i++) {
                 if (rC <= answers.get(i).getRepeatCount()) {
@@ -1793,7 +1844,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
             rC = rC + 1;
-            listener.openForkFragment(formItem, submissionID, repeatCount);
+            listener.openForkFragment(formItem, submissionID, rC);
         });
     }
 
@@ -1976,33 +2027,30 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
 
             final DropdownMenu dropdownMenu = DropdownMenu.newInstance(items);
-            dropdownMenu.setListener(new DropDownAdapter.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(int position1) {
+            dropdownMenu.setListener(position1 -> {
 
 
-                    holder.txtValue.setText(items.get(position1).getDisplayItem());
-                    Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
-                            formItem.getRepeatId(), repeatCount);
-                    if (answer1 == null) {
-                        answer1 = new Answer(submissionID, formItem.getUploadId());
-                    }
+                holder.txtValue.setText(items.get(position1).getDisplayItem());
+                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                        formItem.getRepeatId(), repeatCount);
+                if (answer1 == null) {
+                    answer1 = new Answer(submissionID, formItem.getUploadId());
+                }
 
-                    if (formItem.getKey().equalsIgnoreCase("bookOperatives")
-                            && formItem.getUploadId().equalsIgnoreCase("userIds")) {
-                        answer1.setIsMultiList(1);
-                    }
+                if (formItem.getKey().equalsIgnoreCase("bookOperatives")
+                        && formItem.getUploadId().equalsIgnoreCase("userIds")) {
+                    answer1.setIsMultiList(1);
+                }
 
-                    answer1.setAnswer(items.get(position1).getUploadValue());
-                    answer1.setDisplayAnswer(items.get(position1).getDisplayItem());
-                    answer1.setRepeatID(formItem.getRepeatId());
-                    answer1.setRepeatCount(repeatCount);
+                answer1.setAnswer(items.get(position1).getUploadValue());
+                answer1.setDisplayAnswer(items.get(position1).getDisplayItem());
+                answer1.setRepeatID(formItem.getRepeatId());
+                answer1.setRepeatCount(repeatCount);
 
-                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
 
-                    if (needToBeNotified(formItem)) {
-                        reInflateItems(true);
-                    }
+                if (needToBeNotified(formItem)) {
+                    reInflateItems(true);
                 }
             });
 
@@ -2469,6 +2517,14 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 } else if (item.getFormType() == FormItem.TYPE_LOG_AND_DIG_FORK) {
                     if (getLogRepeatedItems(item).isEmpty()) {
                         missingCount++;
+                    }
+                }else if (item.getFormType() == FormItem.TYPE_ADD_LOG_MEASURE) {
+                    ArrayList<String> fields = item.getFields();
+                    if (fields != null && !fields.isEmpty()) {
+                        ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                        if (answers == null || answers.isEmpty()) {
+                            missingCount++;
+                        }
                     }
                 } else {
                     if (!item.isOptional() && item.getUploadId() != null) {

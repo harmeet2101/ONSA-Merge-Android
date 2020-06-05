@@ -15,8 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
+import co.uk.depotnet.onsa.RefreshDatasetService;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
+import co.uk.depotnet.onsa.modals.Constant;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.store.FeatureResult;
@@ -33,87 +35,8 @@ import retrofit2.Response;
 public class SplashActivity extends AppCompatActivity {
 
     private User user;
-    private Callback<StoreDataset> storeDataSetCallback = new Callback<StoreDataset>() {
-        @Override
-        public void onResponse(@NonNull Call<StoreDataset> call,
-                               Response<StoreDataset> response) {
-
-            if(CommonUtils.onTokenExpired(SplashActivity.this , response.code())){
-                return;
-            }
-
-            if (response.body() != null) {
-                response.body().toContentValues();
-            }
-            startMainActivity();
-        }
-
-        @Override
-        public void onFailure(@NonNull Call<StoreDataset> call, @NonNull Throwable t) {
-            startMainActivity();
-        }
-    };
 
 
-
-
-    private Callback<DatasetResponse> dataSetCallback = new Callback<DatasetResponse>() {
-        @Override
-        public void onResponse(@NonNull Call<DatasetResponse> call,
-                               Response<DatasetResponse> response) {
-            if(CommonUtils.onTokenExpired(SplashActivity.this , response.code())){
-                return;
-            }
-            if (response.body() != null) {
-                DBHandler.getInstance().resetDatasetTable();
-                response.body().toContentValues();
-
-            }
-            Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
-
-            if(Constants.isStoreEnabled) {
-                APICalls.getStoreDataSet(user.gettoken()).enqueue(storeDataSetCallback);
-                return;
-            }
-            startMainActivity();
-
-        }
-
-        @Override
-        public void onFailure(@NonNull Call<DatasetResponse> call, @NonNull Throwable t) {
-            Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
-
-            if(Constants.isStoreEnabled) {
-                APICalls.getStoreDataSet(user.gettoken()).enqueue(storeDataSetCallback);
-                return;
-            }
-            startMainActivity();
-        }
-    };
-
-    private void getFeatures(){
-        APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
-            @Override
-            public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
-                if(CommonUtils.onTokenExpired(SplashActivity.this , response.code())){
-                    return;
-                }
-
-                if(response.isSuccessful()){
-                    FeatureResult featureResult = response.body();
-                    if(featureResult != null){
-                        featureResult.toContentValues();
-                    }
-                }
-                APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
-                APICalls.getDataSet(user.gettoken()).enqueue(dataSetCallback);
-            }
-        });
-    }
 
     private void startMainActivity(){
         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
@@ -126,7 +49,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        AppCenter.start(getApplication(), "96c34dd5-a1d3-4ff1-b5b3-cfb9a90756bf",
+        AppCenter.start(getApplication(), "135e3d47-d004-4619-8ba3-da341e88b408",
                 Analytics.class, Crashes.class);
         DBHandler.getInstance().init(getApplicationContext());
         user = DBHandler.getInstance().getUser();
@@ -168,8 +91,41 @@ public class SplashActivity extends AppCompatActivity {
                 finish();
                 return;
             }
-            getFeatures();
-        }, 2000);
+            getAPIData();
+        }, 1000);
+    }
+
+    private void getAPIData(){
+        RefreshDatasetService.startAction(this , user.gettoken());
+        getFeatures();
+    }
+
+    private void getFeatures() {
+
+        APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
+            @Override
+            public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
+                if (CommonUtils.onTokenExpired(SplashActivity.this, response.code())) {
+                    return;
+                }
+
+                if (response.isSuccessful()) {
+                    FeatureResult featureResult = response.body();
+                    if (featureResult != null) {
+                        featureResult.toContentValues();
+                    }
+                }
+
+                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
+                startMainActivity();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
+                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
+                startMainActivity();
+            }
+        });
     }
 
 
@@ -180,6 +136,4 @@ public class SplashActivity extends AppCompatActivity {
     private boolean isVerifiedOTP() {
         return isLogin() && (!user.isTwoFactorMandatory() || AppPreferences.getInt("isOtpVerified" , 0) == 1);
     }
-
-
 }

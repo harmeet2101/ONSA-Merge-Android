@@ -12,7 +12,6 @@ import co.uk.depotnet.onsa.BuildConfig;
 import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.TlsVersion;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -79,12 +78,7 @@ public class APIClient {
     }
 
 
-
-    static <S> S createService(Class<S> serviceClass, String userToken) {
-        return createService(serviceClass, userToken, true);
-    }
-
-    private static <S> S createService( Class<S> serviceClass, String userToken, final boolean isJSONHeader) {
+    static <S> S createService( Class<S> serviceClass, String userToken) {
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -98,26 +92,13 @@ public class APIClient {
 
         httpClientBuilder.addInterceptor(chain -> {
             Request original = chain.request();
-            Request.Builder requestBuilder = null;
-            if (isJSONHeader) {
-                requestBuilder = original.newBuilder()
+            Request.Builder requestBuilder = original.newBuilder()
                         .header("Authorization", basic)
                         .header("Accept", "application/json")
                         .method(original.method(), original.body());
-            } else {
-                requestBuilder = original.newBuilder()
-                        .header("Authorization", basic)
-                        .method(original.method(), original.body());
-            }
 
             Request request = requestBuilder.build();
-            Response response = chain.proceed(request);
-
-            if(response.code()== 401){
-
-            }
-
-            return response;
+            return chain.proceed(request);
         });
 
         OkHttpClient client = httpClientBuilder.build();

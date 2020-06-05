@@ -62,8 +62,6 @@ public class DBHandler {
         if (dbHandler.db == null) {
             dbHandler.openDatabase();
         }
-
-
         return dbHandler;
     }
 
@@ -169,6 +167,25 @@ public class DBHandler {
                     Document.DBTable.NAME,
                     User.DBTable.NAME,
                     RiskElementType.DBTable.NAME,
+            };
+
+            db.beginTransaction();
+
+            for (String table : tables) {
+                db.delete(table, null, null);
+            }
+
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearUser() {
+        try {
+            String[] tables = {
+                    User.DBTable.NAME,
             };
 
             db.beginTransaction();

@@ -21,8 +21,8 @@ android {
     buildTypes {
 
         debug {
-            android.defaultConfig.versionName "1.9.0"
-            android.defaultConfig.versionCode 55
+            android.defaultConfig.versionName "1.9.8"
+            android.defaultConfig.versionCode 63
             applicationIdSuffix ".store.dev"
             resValue "string", "app_name", "ONSA-STORE-DEV"
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
@@ -50,8 +50,8 @@ android {
 
         /*storedev {
             initWith debug
-            android.defaultConfig.versionName "1.9.0"
-            android.defaultConfig.versionCode 55
+            android.defaultConfig.versionName "1.9.8"
+            android.defaultConfig.versionCode 63
             applicationIdSuffix ".store.dev"
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
             resValue "string", "app_name", "ONSA-STORE-DEV"
@@ -69,8 +69,8 @@ android {
 
         /*store_uat_kier {
             initWith debug
-            android.defaultConfig.versionName "1.0.5"
-            android.defaultConfig.versionCode 5
+            android.defaultConfig.versionName "1.0.6"
+            android.defaultConfig.versionCode 6
             applicationIdSuffix ".store.kier.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-kier-api.depotnet.co.uk/"')
 
@@ -89,8 +89,8 @@ android {
 
         /*store_uat_mjq {
             initWith debug
-            android.defaultConfig.versionName "1.0.3"
-            android.defaultConfig.versionCode 4
+            android.defaultConfig.versionName "1.0.4"
+            android.defaultConfig.versionCode 5
             applicationIdSuffix ".store.mjq.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-mjq-api.depotnet.co.uk/"')
 
@@ -99,8 +99,9 @@ android {
 
         /*store_uat_oroh {
             initWith debug
-            android.defaultConfig.versionName "1.0.1"
-            android.defaultConfig.versionCode 2
+            android.defaultConfig.versionName "1.0.3"
+            android.defaultConfig.versionCode 4
+
             applicationIdSuffix ".store.oroh.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-oroh-api.depotnet.co.uk/"')
 
@@ -109,32 +110,32 @@ android {
 
         /*store_uat_mapgroup {
             initWith debug
-            android.defaultConfig.versionName "1.1.3"
-            android.defaultConfig.versionCode 15
+            android.defaultConfig.versionName "1.1.5"
+            android.defaultConfig.versionCode 17
             applicationIdSuffix ".store.mapgroup.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-mapgroup-api.depotnet.co.uk/"')
 
             resValue "string", "app_name", "MAP Group-UAT"
-        }*/
-
-        store_live_mapgroup {
+        }
+*/
+        /*store_live_mapgroup {
             initWith debug
-            android.defaultConfig.versionName "1.0.1"
-            android.defaultConfig.versionCode 2
+            android.defaultConfig.versionName "1.0.3"
+            android.defaultConfig.versionCode 4
             applicationIdSuffix ".store.mapgroup"
             buildConfigField("String", "BASE_URL", '"https://onsa-mapgroup-api.depotnet.co.uk/"')
 
             resValue "string", "app_name", "MAP Group"
-        }
+        }*/
 
-        /*store_live_mjq {
+        store_live_mjq {
             initWith debug
             android.defaultConfig.versionName "1.0.0"
             android.defaultConfig.versionCode 1
             applicationIdSuffix ".store.mjq"
             buildConfigField("String", "BASE_URL", '"https://onsa-mjq-api.depotnet.co.uk/"')
             resValue "string", "app_name", "MJQ-ONSA-STORE"
-        }*/
+        }
 
 
         /*uat {
@@ -162,10 +163,10 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
     implementation 'com.prolificinteractive:material-calendarview:1.4.3'
-    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.13.1'
-    implementation 'com.squareup.okhttp3:okhttp:3.13.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
     implementation 'com.github.gcacace:signature-pad:1.2.1'
     implementation 'com.tonyodev.fetch2:fetch2:2.3.6'
     implementation 'com.tonyodev.fetch2okhttp:fetch2okhttp:2.3.6'
@@ -174,11 +175,11 @@ dependencies {
     implementation 'org.apache.commons:commons-io:1.3.2'
     implementation 'org.apache.commons:commons-lang3:3.4'
     implementation 'de.hdodenhof:circleimageview:3.0.1'
-    implementation 'com.google.android.gms:play-services-vision:19.0.0'
+    implementation 'com.google.android.gms:play-services-vision:20.0.0'
     implementation 'com.journeyapps:zxing-android-embedded:3.3.0@aar'
-    implementation 'com.google.zxing:core:3.2.1'
-
-    def appCenterSdkVersion = '3.0.0'
+    implementation 'com.google.zxing:core:3.3.1'
+//    implementation 'com.squareup.retrofit2:converter-jackson:2.9.0'
+    def appCenterSdkVersion = '3.2.1'
     implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
     implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
 

@@ -126,11 +126,11 @@ public class DatasetResponse implements Parcelable {
     private void insertRecordReturn(){
         DBHandler dbHandler = DBHandler.getInstance();
         ItemType itemType0 = new ItemType("No Return Required" , "recordReturn", "KC40");
-        dbHandler.insertData(ItemType.DBTable.NAME, itemType0.toContentValues());
+        dbHandler.replaceData(ItemType.DBTable.NAME, itemType0.toContentValues());
         ItemType itemType1 = new ItemType("Works Executed as Planned" , "recordReturn", "KC41");
-        dbHandler.insertData(ItemType.DBTable.NAME, itemType1.toContentValues());
+        dbHandler.replaceData(ItemType.DBTable.NAME, itemType1.toContentValues());
         ItemType itemType2 = new ItemType("Works Executed with Changes" , "recordReturn", "KC42");
-        dbHandler.insertData(ItemType.DBTable.NAME, itemType2.toContentValues());
+        dbHandler.replaceData(ItemType.DBTable.NAME, itemType2.toContentValues());
 
 
     }
@@ -148,7 +148,7 @@ public class DatasetResponse implements Parcelable {
         if (this.aerialCables != null && !this.aerialCables.isEmpty()) {
             for (ItemType item : this.aerialCables) {
                 item.settype(DBTable.aerialCables);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
@@ -177,21 +177,21 @@ public class DatasetResponse implements Parcelable {
         if (this.dcrReasonCodes != null && !this.dcrReasonCodes.isEmpty()) {
             for (ItemType item : this.dcrReasonCodes) {
                 item.settype(DBTable.dcrReasonCodes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.roadTypes != null && !this.roadTypes.isEmpty()) {
             for (ItemType item : this.roadTypes) {
                 item.settype(DBTable.roadTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.engCompOutcomes != null && !this.engCompOutcomes.isEmpty()) {
             for (ItemType item : this.engCompOutcomes) {
                 item.settype(DBTable.engCompOutcomes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
@@ -199,7 +199,7 @@ public class DatasetResponse implements Parcelable {
         if (this.reinstatementTypes != null && !this.reinstatementTypes.isEmpty()) {
             for (ItemType item : this.reinstatementTypes) {
                 item.settype(DBTable.reinstatementTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
@@ -207,7 +207,7 @@ public class DatasetResponse implements Parcelable {
         if (this.speedLimits != null && !this.speedLimits.isEmpty()) {
             for (ItemType item : this.speedLimits) {
                 item.settype(DBTable.speedLimits);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
@@ -215,7 +215,7 @@ public class DatasetResponse implements Parcelable {
         if (this.abandonReasons != null && !this.abandonReasons.isEmpty()) {
             for (ItemType item : this.abandonReasons) {
                 item.settype(DBTable.abandonReasons);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
@@ -223,7 +223,7 @@ public class DatasetResponse implements Parcelable {
         if (this.surfaceTypes != null && !this.surfaceTypes.isEmpty()) {
             for (ItemType item : this.surfaceTypes) {
                 item.settype(DBTable.surfaceTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
@@ -239,7 +239,7 @@ public class DatasetResponse implements Parcelable {
         if (this.stayTypes != null && !this.stayTypes.isEmpty()) {
             for (ItemType item : this.stayTypes) {
                 item.settype(DBTable.stayTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
@@ -253,7 +253,7 @@ public class DatasetResponse implements Parcelable {
         if (this.materialTypes != null && !this.materialTypes.isEmpty()) {
             for (ItemType item : this.materialTypes) {
                 item.settype(DBTable.materialTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 

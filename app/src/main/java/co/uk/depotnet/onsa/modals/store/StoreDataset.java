@@ -62,7 +62,7 @@ public class StoreDataset implements Parcelable {
         if (this.issueTypes != null && !this.issueTypes.isEmpty()) {
             for (ItemType item : this.issueTypes) {
                 item.settype(DBTable.issueTypes);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
@@ -70,14 +70,14 @@ public class StoreDataset implements Parcelable {
         if (this.stas != null && !this.stas.isEmpty()) {
             for (ItemType item : this.stas) {
                 item.settype(DBTable.stas);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 
         if (this.operatives != null && !this.operatives.isEmpty()) {
             for (ItemType item : this.operatives) {
                 item.settype(DBTable.operatives);
-                dbHandler.insertData(ItemType.DBTable.NAME, item.toContentValues());
+                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
             }
         }
 

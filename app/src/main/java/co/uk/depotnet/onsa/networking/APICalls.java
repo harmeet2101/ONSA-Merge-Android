@@ -28,6 +28,7 @@ import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 
 public class APICalls {
@@ -63,10 +64,13 @@ public class APICalls {
         return apiInterface.getDisclaimer();
     }
     public static void getDisclaimerLogo(String authToken , Callback callback){
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder()
                 .connectTimeout(150, TimeUnit.SECONDS)
                 .readTimeout(150, TimeUnit.SECONDS)
-                .writeTimeout(150, TimeUnit.SECONDS).build();
+                .writeTimeout(150, TimeUnit.SECONDS)
+                .addInterceptor(logging).build();
 
         Request request = new Request.Builder()
                 .url(BuildConfig.BASE_URL+"app/disclaimer/logo")
@@ -77,6 +81,8 @@ public class APICalls {
 //        APIInterface apiInterface = APIClient.getClient(APIInterface.class);
 //        return apiInterface. getDisclaimerLogo();
     }
+
+
 
     public static Call<JobResponse> getJobList(String authToken){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);

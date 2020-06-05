@@ -132,6 +132,18 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         jobs = new ArrayList<>();
 
         jobTags = new ArrayList<>();
+
+
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+
+        selectedDate = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        try {
+            selectedDate = sdf.parse(sdf.format(calendar.getTime()));
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
         jobTagAdapter = new JobTagAdapter(context, jobTags, position -> filterOnDate(selectedDate));
         adapter = new HomeAdapter(context, jobs, this);
     }
@@ -210,7 +222,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         refreshLayout.setOnRefreshListener(() -> {
             if(!isRefreshing) {
                 isRefreshing = true;
-                getJobs();
+                fetchData();
             }
         });
 
@@ -227,33 +239,18 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         calendarView.setTitleFormatter(new DateFormatTitleFormatter(dateFormat));
 
         calendarView.setDayFormatter(day -> {
-            //return  FORMATTER.format(day);
             return day.getDay() + "";
         });
         calendarView.setShowOtherDates(MaterialCalendarView.SHOW_ALL);
         calendarView.setOnDateChangedListener(this);
 
-//        calendarView.setHeaderTextAppearance(R.style.calender_header_styles);
-//        calendarView.setWeekDayTextAppearance(R.style.calender_week_styles);
-        // calendarView.setSelectionMode(MaterialCalendarView.SELECTION_MODE_RANGE);
         calendarView.setLeftArrowMask(null);
         calendarView.setRightArrowMask(null);
         calendarView.setTopbarVisible(false);
 
         Date date = new Date();
-        final Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-        calendarView.setSelectedDate(calendar.getTime());
-
         Calendar instance1 = Calendar.getInstance();
-//        SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy");
-
-        selectedDate = instance1.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-        try {
-            selectedDate = sdf.parse(sdf.format(instance1.getTime()));
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+        calendarView.setSelectedDate(instance1.getTime());
 
 
         int noOfDaysInMonth = instance1.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -317,12 +314,12 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             txtToolbarTitle.setText(title);
         }
 
+
         if (jobs.isEmpty()) {
-            getJobs();
+            fetchData();
         }else{
             getJobsFromDb();
         }
-        //  listener.setTitle(title);
         listener.onFragmentHomeVisible(true);
     }
 
@@ -528,6 +525,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         try {
             Date currentDate = sdf.parse(input_date);
+            selectedDate = currentDate;
             SimpleDateFormat sdf2 = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
             if(currentDate != null) {
                 Toast.makeText(getActivity(), sdf2.format(currentDate), Toast.LENGTH_SHORT).show();
@@ -536,7 +534,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -628,14 +625,36 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         }
     }
 
+    private int apiCounter;
 
-    private void getJobs() {
+    private void fetchData(){
+        apiCounter = 0;
+        if(!CommonUtils.isNetworkAvailable(context)){
+            getJobsFromDb();
+            if(Constants.isStoreEnabled) {
+                int count = DBHandler.getInstance().getReceipts().size() + DBHandler.getInstance().getMyRequest().size();
+                listener.setReceiptsBadge(String.valueOf(count));
+            }
+            return;
+        }
+
         isRefreshing = true;
         listener.showProgressBar();
+        getJobs();
+        if(Constants.isStoreEnabled) {
+            getMyRequests();
+            getReceipts();
+        }
+    }
+
+    private void getJobs() {
+//        isRefreshing = true;
+//        listener.showProgressBar();
 
         APICalls.getJobList(user.gettoken()).enqueue(new Callback<JobResponse>() {
             @Override
             public void onResponse(@NonNull Call<JobResponse> call, @NonNull Response<JobResponse> response) {
+                apiCounter++;
                 if(CommonUtils.onTokenExpired(context , response.code())){
                     return;
                 }
@@ -652,23 +671,35 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                     }
                 }
                 getJobsFromDb();
-                if(Constants.isStoreEnabled) {
-                    getMyRequests();
-                }else{
-                    isRefreshing = false;
-                    refreshLayout.setRefreshing(false);
-                    listener.hideProgressBar();
-                }
+//                if(Constants.isStoreEnabled) {
+//                    getMyRequests();
+//                }else{
+//                    isRefreshing = false;
+//                    refreshLayout.setRefreshing(false);
+//                    listener.hideProgressBar();
+//                }
+                onApiCallResponse();
             }
 
             @Override
             public void onFailure(@NonNull Call<JobResponse> call, @NonNull Throwable t) {
                 getJobsFromDb();
-                isRefreshing = false;
-                refreshLayout.setRefreshing(false);
-                listener.hideProgressBar();
+                apiCounter++;
+                onApiCallResponse();
             }
         });
+    }
+
+    private void onApiCallResponse(){
+        if(apiCounter == 3 || (!Constants.isStoreEnabled && apiCounter == 1)){
+            isRefreshing = false;
+            refreshLayout.setRefreshing(false);
+            listener.hideProgressBar();
+            if(Constants.isStoreEnabled) {
+                int count = DBHandler.getInstance().getReceipts().size() + DBHandler.getInstance().getMyRequest().size();
+                listener.setReceiptsBadge(String.valueOf(count));
+            }
+        }
     }
 
 
@@ -676,62 +707,49 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         APICalls.getReceipts(user.gettoken()).enqueue(new Callback<DataReceipts>() {
             @Override
             public void onResponse(@NonNull Call<DataReceipts> call,@NonNull Response<DataReceipts> response) {
+                apiCounter++;
                 if(CommonUtils.onTokenExpired(context , response.code())){
                     return;
                 }
 
-                if (response.isSuccessful()) {
-                    if(response.body()!= null){
-                        response.body().toContentValues();
-                        int count = response.body().getCount()+DBHandler.getInstance().getMyRequest().size();
-                        listener.setReceiptsBadge(String.valueOf(count));
-                    }
+                if (response.isSuccessful() && response.body() != null) {
+                    response.body().toContentValues();
                 }
-
-                isRefreshing = false;
-                refreshLayout.setRefreshing(false);
-                listener.hideProgressBar();
+                onApiCallResponse();
             }
 
             @Override
             public void onFailure(@NonNull Call<DataReceipts> call, @NonNull Throwable t) {
-                isRefreshing = false;
-                refreshLayout.setRefreshing(false);
-                listener.hideProgressBar();
+                onApiCallResponse();
             }
         });
     }
 
 
     private void getMyRequests(){
-
         APICalls.getMyRequests(user.gettoken()).enqueue(new Callback<DataMyRequests>() {
             @Override
             public void onResponse(@NonNull Call<DataMyRequests> call, @NonNull Response<DataMyRequests> response) {
+                apiCounter++;
                 if(CommonUtils.onTokenExpired(context , response.code())){
                     return;
                 }
 
                 if(response.isSuccessful()){
-
                     DataMyRequests dataMyRequests = response.body();
                     if(dataMyRequests != null){
                         DBHandler.getInstance().resetMyRequest();
                         dataMyRequests.toContentValues();
                     }
                 }
-                getReceipts();
-
+                onApiCallResponse();
             }
 
             @Override
             public void onFailure(@NonNull Call<DataMyRequests> call, @NonNull Throwable t) {
-                isRefreshing = false;
-                refreshLayout.setRefreshing(false);
-                listener.hideProgressBar();
+                onApiCallResponse();
             }
         });
-
     }
 
     private void getJobsFromDb() {

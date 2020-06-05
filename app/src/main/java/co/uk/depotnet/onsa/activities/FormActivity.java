@@ -297,4 +297,6 @@ public class FormActivity extends AppCompatActivity implements
             addFragment(FormFragment.newInstance(submission, user, form.getScreens().get(currentScreen + 1), form.getTitle(), currentScreen + 1, repeatCount));
         }
     }
+
+
 }

@@ -87,7 +87,6 @@ public class LoginActivity extends AppCompatActivity
 
                     if(user.isTwoFactorEnabled()){
                         startActivity(new Intent(LoginActivity.this , VerificationActivity.class));
-                        finish();
                         return;
                     }
                     
@@ -119,7 +118,7 @@ public class LoginActivity extends AppCompatActivity
         llUiBlocker = findViewById(R.id.ll_ui_blocker);
         TextView txtVersionCode = findViewById(R.id.txt_version_code);
         txtVersionCode.setText(String.format("version %s", BuildConfig.VERSION_NAME));
-
+        DBHandler.getInstance().clearTable(User.DBTable.NAME);
         findViewById(R.id.btn_login).setOnClickListener(LoginActivity.this);
         findViewById(R.id.txt_btn_forgot_password).setOnClickListener(LoginActivity.this);
     }
@@ -127,6 +126,7 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+
             case R.id.btn_login:
                 login();
                 break;

@@ -4,14 +4,27 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import androidx.core.app.ActivityCompat;
@@ -104,6 +117,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     private int repeatCount;
     private String formTitle;
 
+    private FusedLocationProviderClient mFusedLocationClient ;
+
 
     public static FormFragment newInstance(Submission submission, User user,
                                            Screen screen, String formTitle, int index,
@@ -136,7 +151,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 repeatCount = args.getInt(ARG_REPEAT_COUNT);
             }
         }
-
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
         jobID = submission.getJobID();
         this.handler = new Handler();
 
@@ -807,25 +822,94 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                             Manifest.permission.ACCESS_COARSE_LOCATION},
                     permissionRationale);
         } else {
-            FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
-
 
             mFusedLocationClient.getLastLocation()
                     .addOnSuccessListener(location -> {
                         if (location != null) {
                             listener.onSuccess(location);
-
                         } else {
-                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            createLocationRequest(listener);
+//                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                             listener.onFailure();
                         }
                     })
                     .addOnFailureListener(e -> {
                         listener.onFailure();
+                        createLocationRequest(listener);
                         Log.d("ADD JOB", "Error trying to get last GPS location");
                         e.printStackTrace();
                     });
         }
+    }
+
+    private void createLocationRequest(LocationListener listener) {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+
+        SettingsClient client = LocationServices.getSettingsClient(context);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+
+        task.addOnSuccessListener((Activity) context, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                System.out.println("test navin getLocation ");
+                startLocationUpdates(listener);
+            }
+        });
+
+        task.addOnFailureListener((Activity)context, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult((Activity) context,
+                                11);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                    }
+                }
+            }
+        });
+    }
+
+    private void startLocationUpdates(LocationListener listener) {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        mFusedLocationClient.requestLocationUpdates(locationRequest,
+                new LocationCallback(){
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        super.onLocationResult(locationResult);
+                        if (locationResult == null) {
+                            return;
+                        }
+                        for (Location location : locationResult.getLocations()) {
+                            if(location != null){
+                                listener.onSuccess(location);
+                                mFusedLocationClient.removeLocationUpdates(this);
+                                break;
+                            }
+                        }
+                    }
+                },
+                Looper.getMainLooper());
     }
 
     @Override

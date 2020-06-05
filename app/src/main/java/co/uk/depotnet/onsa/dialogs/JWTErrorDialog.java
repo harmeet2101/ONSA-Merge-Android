@@ -44,10 +44,10 @@ public class JWTErrorDialog extends Dialog implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_ok:
+                dismiss();
                 Intent intent = new Intent(context , LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 context.startActivity(intent);
-                dismiss();
                 break;
         }
     }

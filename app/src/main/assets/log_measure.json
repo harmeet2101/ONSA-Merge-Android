@@ -9,19 +9,24 @@
       "upload": true,
       "items": [
         {
+          "type": "location",
+          "uploadId": "Location",
+          "title": "Locate Me",
+          "optional": false
+        },
+        {
           "type": "dropdown",
           "uploadId": "menSplitId",
-          "repeatId": "items",
           "key": "MenSplits",
           "title": "1st Man Crew Split (optional)",
-          "optional": false
+          "optional": true
         },
         {
           "type": "et_short_text",
           "uploadId": "locationDetails",
           "key": "dfeWorkItems",
           "title": "Additional Location Details i.e. PONID. WP - WP etc.",
-          "optional": false
+          "optional": true
         },
         {
           "type": "add_log_measure",
@@ -39,7 +44,7 @@
               "type": "dropdown",
               "uploadId": "subcontractorRateId",
               "repeatId": "measureItems",
-              "key": "MeasureItem",
+              "key": "MeasureItems",
               "title": "DFE Item",
               "optional": false
             },

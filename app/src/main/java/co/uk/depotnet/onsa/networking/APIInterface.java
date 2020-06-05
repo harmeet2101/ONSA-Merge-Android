@@ -43,61 +43,61 @@ import retrofit2.http.Query;
 
 public interface APIInterface {
 
-    @POST("/signin")
+    @POST("signin")
     Call<User> login(@Body UserRequest user);
 
-    @POST("/your-account/verifyCode")
+    @POST("your-account/verifyCode")
     Call<VerificationResult> verifyCode(@Body VerificationRequest verificationRequest);
 
-    @POST("/verify2FAChallenge")
+    @POST("verify2FAChallenge")
     Call<User> verify2FAChallenge(@Body VerificationRequest verificationRequest);
 
-    @PUT("/your-account/activate-mfa")
+    @PUT("your-account/activate-mfa")
     Call<ActiveMfa> activeMFA();
 
-    @POST("/reset-password")
+    @POST("reset-password")
     Call<User> resetPassword(@Body ResetPassword resetPassword);
 
-    @GET("/app/disclaimer")
+    @GET("app/disclaimer")
     Call<Disclaimer> getDisclaimer();
 
-    @GET("/app/jobs")
+    @GET("app/jobs")
     Call<JobResponse> getJobList();
 
-    @GET("/app/dataset")
+    @GET("app/dataset")
     Call<DatasetResponse> getDataSet();
 
-    @GET("/appstores/dataset")
+    @GET("appstores/dataset")
     Call<StoreDataset> getStoreDataSet();
 
-    @GET("/appstores/getreceipts")
+    @GET("appstores/getreceipts")
     Call<DataReceipts> getReceipts();
 
-    @GET("/appstores/getrequests")
+    @GET("appstores/getrequests")
     Call<DataMyRequests> getMyRequests();
 
-    @GET("/appstores/getitem")
+    @GET("appstores/getitem")
     Call<StockItems> getItem(@Query("Barcode") String barcode , @Query("StaId") String StaId);
 
-    @GET("/appstores/mystores")
+    @GET("appstores/mystores")
     Call<DataMyStores> getMyStore();
 
-    @GET("/appstores/getstocklevel")
+    @GET("appstores/getstocklevel")
     Call<StockLevel> getStockLevel(@Query("StaId") String StaId , @Query("StockItemId") String StockItemId);
 
-    @PUT("/appstores/hiderequest/{requestId}")
+    @PUT("appstores/hiderequest/{requestId}")
     Call<Void> hideReequest(@Path("requestId") String requestId);
 
-    @POST("/app/jobs/{jobId}/sendrfna")
+    @POST("app/jobs/{jobId}/sendrfna")
     Call<Void> sendrfna(@Path("jobId") String jobId);
 
-    @GET("/app/features")
+    @GET("app/features")
     Call<FeatureResult> getFeatures();
 
-    @GET("/app/getmensplits")
+    @GET("app/getmensplits")
     Call<MenSplitResponse> getMenSplits();
 
-    @GET("/app/getmeasureitems")
+    @GET("app/getmeasureitems")
     Call<MeasureItemResponse> getMeasureItems();
 
 }

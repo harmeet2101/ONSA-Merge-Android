@@ -76,7 +76,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
         }
 
         if(position == 6) {
-            if (isRFNAEnable()) {
+            if (isRFNAEnable()&& isBookOn) {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
             } else {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
@@ -84,7 +84,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
         }
 
         if(position == 7) {
-            if (isEngCompEnable()) {
+            if (isEngCompEnable() && isBookOn) {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
             } else {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
