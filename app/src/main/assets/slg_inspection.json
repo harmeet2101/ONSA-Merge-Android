@@ -1,0 +1,30 @@
+{
+  "title": "SLG Inspection",
+  "isProgressVisible": true,
+  "themeColor": "#243d4d",
+  "screens": [
+    {
+      "title": "SIGNATURE",
+      "index": 1,
+      "url":"apphseq/inspections/submit-new-inspection",
+      "upload": true,
+      "items": [
+        {
+          "type": "signature",
+          "uploadId": "signatureFileBytes",
+          "signatureUrl": "signatureFileBytes",
+          "title": "Inspector Signature",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "Slg Inspection Photo",
+          "uploadId": "fileBytes",
+          "photoSize": 20,
+          "photoRequired": 0,
+          "photoId": "fileBytes"
+        }
+      ]
+    }
+  ]
+}

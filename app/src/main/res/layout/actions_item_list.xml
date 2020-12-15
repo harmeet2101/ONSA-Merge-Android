@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/actions_img"
+        android:layout_width="@dimen/_60sdp"
+        android:layout_height="@dimen/_60sdp"
+        android:layout_margin="@dimen/_12sdp"
+        app:civ_border_color="@color/ColorHseq"
+        app:civ_border_width="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_raised"
+        app:layout_constraintEnd_toStartOf="@+id/tv_actions_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_worklog" />
+
+
+    <TextView
+        android:id="@+id/tv_actions_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center|start"
+        android:lines="2"
+        android:maxLines="3"
+        android:text="Was additional fault caused by vandalism?"
+        android:textSize="@dimen/_14sdp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tv_raised"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/actions_img"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_raised_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:drawableStart="@drawable/ic_user_new"
+        android:drawableLeft="@drawable/ic_user_new"
+        android:drawablePadding="@dimen/_4sdp"
+        android:drawableTint="@color/btn_gray"
+        android:gravity="start"
+        android:text="Raised by: "
+        app:layout_constraintBottom_toTopOf="@+id/tv_inspectionType_label"
+        app:layout_constraintEnd_toStartOf="@+id/tv_raised"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/actions_img"
+        tools:targetApi="m" />
+
+    <TextView
+        android:id="@+id/tv_raised"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:gravity="start"
+        android:text=" Dave Jackson"
+        android:textAlignment="textStart"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_raised_label"
+        app:layout_constraintBottom_toTopOf="@+id/tv_inspectionType"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_raised_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_actions_title" />
+
+    <TextView
+        android:id="@+id/tv_inspectionType_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:drawableStart="@drawable/ic_event_note"
+        android:drawableLeft="@drawable/ic_event_note"
+        android:drawablePadding="@dimen/_4sdp"
+        android:drawableTint="@color/btn_gray"
+        android:gravity="start"
+        android:text="Notes: "
+        app:layout_constraintBottom_toTopOf="@+id/tv_ref_label"
+        app:layout_constraintEnd_toStartOf="@+id/tv_inspectionType"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_raised_label"
+        tools:targetApi="m" />
+
+    <TextView
+        android:id="@+id/tv_inspectionType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:text="Sort it out now"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_inspectionType_label"
+        app:layout_constraintBottom_toTopOf="@+id/tv_ref"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_inspectionType_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_raised" />
+
+    <TextView
+        android:id="@+id/tv_ref_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:drawableStart="@drawable/ic_visitoronsite"
+        android:drawableLeft="@drawable/ic_visitoronsite"
+        android:drawablePadding="@dimen/_4sdp"
+        android:drawableTint="@color/btn_gray"
+        android:gravity="start"
+        android:text="Ref: "
+        app:layout_constraintBottom_toTopOf="@+id/rl_view_schedule"
+        app:layout_constraintEnd_toStartOf="@+id/tv_ref"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_inspectionType_label"
+        tools:targetApi="m" />
+
+    <TextView
+        android:id="@+id/tv_ref"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:gravity="start"
+        android:text="523"
+        android:textAlignment="textStart"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_ref_label"
+        app:layout_constraintBottom_toTopOf="@+id/rl_view_schedule"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_ref_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_inspectionType" />
+
+    <RelativeLayout
+        android:id="@+id/rl_view_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_36sdp"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:background="@color/ColorBriefing"
+        android:padding="@dimen/_8sdp"
+        app:layout_constraintBottom_toTopOf="@+id/rl_hide_schedule"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_ref">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Complete/ Rectify"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_12sdp" />
+
+        <ImageView
+            android:id="@+id/actions_expend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="@dimen/_8sdp"
+            android:layout_marginRight="@dimen/_8sdp"
+            android:tint="@color/white"
+            app:srcCompat="@drawable/ic_add_circle" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_hide_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rl_view_schedule">
+
+        <TextView
+            android:id="@+id/tv_Corrective_Measure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_8sdp"
+            android:drawableStart="@drawable/ic_jobdetails"
+            android:drawableLeft="@drawable/ic_jobdetails"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:drawableRight="@drawable/ic_chevron_right"
+            android:drawablePadding="@dimen/_8sdp"
+            android:drawableTint="@color/ColorHseq"
+            android:gravity="center|start"
+            android:padding="@dimen/_2sdp"
+            android:text="Corrective Measure"
+            android:textSize="14sp"
+            tools:targetApi="m" />
+
+        <View
+            android:id="@+id/divactions"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:layout_below="@+id/tv_Corrective_Measure"
+            android:layout_margin="@dimen/_8sdp"
+            android:background="@color/txt_color_light_grey"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_Cannot_Rectify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/divactions"
+            android:layout_margin="@dimen/_8sdp"
+            android:drawableStart="@drawable/ic_jobdetails"
+            android:drawableLeft="@drawable/ic_jobdetails"
+            android:drawableEnd="@drawable/ic_chevron_right"
+            android:drawableRight="@drawable/ic_chevron_right"
+            android:drawablePadding="@dimen/_8sdp"
+            android:drawableTint="@color/ColorHseq"
+            android:gravity="center|start"
+            android:padding="@dimen/_2sdp"
+            android:text="Cannot Rectify"
+            android:textSize="14sp"
+            tools:targetApi="m" />
+
+        <View
+            android:id="@+id/divactions1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:layout_below="@+id/tv_Cannot_Rectify"
+            android:layout_margin="@dimen/_8sdp"
+            android:background="@color/txt_color_light_grey"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

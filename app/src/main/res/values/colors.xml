@@ -25,6 +25,22 @@
     <color name="yellow">#FFC300</color>
     <color name="transparent_overlay">#11000000</color>
     <color name="bg_filter">#1C232C</color>
+    <color name="bg_grey">#6D7179</color>
 
     <color name="blue">#FFFFFF</color>
+
+    <color name="ColorMyWork">#28b473</color>
+    <color name="ColorHseq">#213d4f</color>
+    <color name="ColorHseqLight">#15375D</color>
+    <color name="ColorStore">#347265</color>
+    <color name="ColorBriefing">#fdc357</color>
+
+    <color name="ColorAlerts">#7F7F7F</color>
+    <!--<color name="ColorActions">#f5853b</color>-->
+    <color name="ColorActions">#FC9F5B</color>
+    <color name="transparentblack">#C0000000</color>
+    <color name="transparentLightblack">#88000000</color>
+    <color name="transparentwhite">#89FFFFFF</color>
+    <color name="transparentlight">#49000000</color>
+    <color name="windowBackground">#FAFAFA</color>
 </resources>

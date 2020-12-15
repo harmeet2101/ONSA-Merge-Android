@@ -12,18 +12,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
+
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.dialogs.ErrorDialog;
-import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.dialogs.MFADialog;
+import co.uk.depotnet.onsa.modals.ErrorBody;
+import co.uk.depotnet.onsa.modals.ItemType;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
 import co.uk.depotnet.onsa.modals.httprequests.UserRequest;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -68,25 +73,58 @@ public class LoginActivity extends AppCompatActivity
         mfaDialog.show();
     }
 
+    private void createItemTypes(){
+        ItemType itemType = new ItemType("Site Clear" , "TaskType" , "6");
+        ItemType itemType1 = new ItemType("Muckaway" , "TaskType" , "3");
+        ItemType itemType2 = new ItemType("Service/Material Drop off" , "TaskType" , "1");
+        ItemType itemType3 = new ItemType("Reinstatement" , "TaskType" , "5");
+        ItemType itemType4 = new ItemType("Backfill" , "TaskType" , "4");
+
+        DBHandler.getInstance().replaceData(ItemType.DBTable.NAME , itemType.toContentValues());
+        DBHandler.getInstance().replaceData(ItemType.DBTable.NAME , itemType1.toContentValues());
+        DBHandler.getInstance().replaceData(ItemType.DBTable.NAME , itemType2.toContentValues());
+        DBHandler.getInstance().replaceData(ItemType.DBTable.NAME , itemType3.toContentValues());
+        DBHandler.getInstance().replaceData(ItemType.DBTable.NAME , itemType4.toContentValues());
+    }
+
     private Callback<User> loginCallback = new Callback<User>() {
         @Override
         public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
             hideProgressBar();
+            String errorMessage = "Please try again.";
+            String errorTitle = "Login Unsuccessful";
+
+            createItemTypes();
+
             if (response.isSuccessful()) {
                 User user = response.body();
+
                 if (user != null && !TextUtils.isEmpty(user.getuserId())) {
+                    DBHandler.getInstance().clearTable(User.DBTable.NAME);
+                    user.setLoggedIn(true);
                     DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
                     AppPreferences.putString("UserName" , etUserName.getText().toString().trim());
                     AppPreferences.putString("UserPassword" , etPassword.getText().toString().trim());
 
                     if(!user.isTwoFactorMandatory()){
-                        startActivity(new Intent(LoginActivity.this , DisclaimerActivity.class));
+                        Intent intent = new Intent(LoginActivity.this , DisclaimerActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
                         finish();
                         return;
                     }
 
                     if(user.isTwoFactorEnabled()){
-                        startActivity(new Intent(LoginActivity.this , VerificationActivity.class));
+                        if(user.isCaptureMfaChallenge()){
+
+                            startActivity(new Intent(LoginActivity.this, VerificationActivity.class));
+                        }else{
+                            AppPreferences.putInt("isOtpVerified" , 1);
+                            Intent intent = new Intent(LoginActivity.this , DisclaimerActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
                         return;
                     }
                     
@@ -94,16 +132,30 @@ public class LoginActivity extends AppCompatActivity
                     APICalls.activeMFA(user.gettoken()).enqueue(mfaCallback);
                     return;
                 }
+            }else{
+                ResponseBody responseBody = response.errorBody();
+                if(responseBody != null){
+                    try {
+                        String res = responseBody.string();
+                        if(!TextUtils.isEmpty(res)){
+                            ErrorBody errorBody = new Gson().fromJson(res , ErrorBody.class);
+                            errorMessage = errorBody.getMessage();
+                            errorTitle = errorBody.getStatus();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
-            ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "Please try again.","Wrong Password");
+            ErrorDialog dialog = new ErrorDialog(LoginActivity.this , errorMessage,errorTitle);
             dialog.show();
         }
 
         @Override
         public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
             hideProgressBar();
-            ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "Please try again.","Wrong Password");
+            ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "Please try again.","Login Unsuccessful");
             dialog.show();
         }
     };
@@ -118,7 +170,6 @@ public class LoginActivity extends AppCompatActivity
         llUiBlocker = findViewById(R.id.ll_ui_blocker);
         TextView txtVersionCode = findViewById(R.id.txt_version_code);
         txtVersionCode.setText(String.format("version %s", BuildConfig.VERSION_NAME));
-        DBHandler.getInstance().clearTable(User.DBTable.NAME);
         findViewById(R.id.btn_login).setOnClickListener(LoginActivity.this);
         findViewById(R.id.txt_btn_forgot_password).setOnClickListener(LoginActivity.this);
     }
@@ -160,7 +211,10 @@ public class LoginActivity extends AppCompatActivity
 //      etPassword.setText("Whistle1!");
 //      etUserName.setText("harriet.abbott");
 //      etPassword.setText("Testing2!");
-
+//        etUserName.setText("AidanApp");
+//        etPassword.setText("Testing1!");
+//        etUserName.setText("sam1");
+//        etPassword.setText("PopPop247!");
         if(!CommonUtils.isNetworkAvailable(LoginActivity.this)){
             hideProgressBar();
             ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "Please check your Internet connection","Error");
@@ -172,7 +226,12 @@ public class LoginActivity extends AppCompatActivity
             UserRequest userRequest = new UserRequest(etUserName.getText().toString().trim(),
                     etPassword.getText().toString().trim());
 
-            APICalls.callLogin(userRequest).enqueue(loginCallback);
+            User user = DBHandler.getInstance().getUser();
+            String token = null;
+            if(user != null){
+                token = user.gettoken();
+            }
+            APICalls.callLogin(userRequest , token).enqueue(loginCallback);
             return;
         }
         hideProgressBar();

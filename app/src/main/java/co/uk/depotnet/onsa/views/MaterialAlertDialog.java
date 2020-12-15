@@ -7,6 +7,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,6 +85,15 @@ public class MaterialAlertDialog extends DialogFragment {
         }
         return v;
     }
+
+//    @Override
+//    public void show(@NonNull FragmentManager manager, @Nullable String tag) {
+//        super.show(manager, tag);
+//
+//        FragmentTransaction ft = manager.beginTransaction();
+//        ft.add(this, tag).addToBackStack(null);
+//        ft.commitAllowingStateLoss();
+//    }
 
     @Override
     public void onResume() {

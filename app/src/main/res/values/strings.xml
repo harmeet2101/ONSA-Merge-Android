@@ -214,6 +214,7 @@
     <string name="transfer">Transfer</string>
     <string name="site_cleared">Site Cleared</string>
     <string name="a75">A75</string>
+    <string name="notes">Notes</string>
     <string name="log_store">Log Stores</string>
     <string name="action_requests">Requests</string>
     <string name="action_goods_in">Goods In</string>
@@ -244,4 +245,58 @@
     <string name="copy">Copy</string>
     <string name="auth_uri">Auth Uri</string>
     <string name="get_shared_key">Didn\'t get otp? Click here to get shared key to generate otp.</string>
+    <string name="add_notes">Add Notes</string>
+
+    <string name="task">Task</string>
+    <string name="measures">Measures</string>
+    <string name="measureQuantity">Quantity</string>
+
+    <string name="home">Home</string>
+    <string name="title_activity_welcome">Welcome</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="welcome">Welcome</string>
+    <string name="hseq">HSEQ</string>
+    <string name="stores">STORES</string>
+    <string name="briefings">Briefings</string>
+    <string name="alerts">Alerts</string>
+    <string name="scheduled_inspection"><u>Scheduled Inspections</u></string>
+    <string name="estimate_number">Estimate Number</string>
+    <string name="insert_estimate_number">Insert Estimate Number</string>
+
+
+    <string name="locate_me"><u>Locate Me</u></string>
+    <string name="click_link_to_auto_insert">Click link to auto-insert</string>
+    <string name="select_operatives">Select operatives(s)</string>
+    <string name="add_inspection_type">Add Inspection Type</string>
+    <string name="select_inspection_type">Select Inspection Type</string>
+    <string name="start_inspection">Start Inspection</string>
+    <string name="new_inspection"><u>New Inspection</u></string>
+    <string name="was_this_fault_incorrectly_reported">Was this fault incorrectly reported?</string>
+    <string name="complaint">Complaint</string>
+    <string name="non_complaint">Non-Complaint</string>
+    <string name="n_a">N/A</string>
+    <string name="corrective_measure">Corrective Measure?</string>
+    <string name="inspector">Inspector</string>
+    <string name="due_date">Due Date</string>
+    <string name="select_due_date">Select Due Date</string>
+    <string name="select_inspector">Select Inspector</string>
+    <string name="please_enter_any_comment_corrective_measures_defect_commennts">Please enter any comment/corrective measures/defect commennts</string>
+    <string name="please_enter_any_additional_comments">Please enter any additional comments.</string>
+    <string name="schedule_inspection">Schedule Inspection</string>
+
+    <string name="start_inspection1"><u>Start Inspection</u></string>
+    <string name="add_another_operative"><u>Add another Operative</u></string>
+    <string name="notifications">Notifications</string>
+    <string name="title_activity_edit_share">Edit/Share Photo</string>
+    <string name="previous">Previous</string>
+    <string name="view_existing_comments"><u>View Existing Comments</u></string>
+    <string name="tooltip">TOOLTIP</string>
+    <string name="read">Read</string>
+    <string name="request_task">Request Task</string>
+    <string name="hours_logged">Log Hours</string>
+    <string name="date">Date</string>
+    <string name="time_type">Time Type</string>
+
 </resources>

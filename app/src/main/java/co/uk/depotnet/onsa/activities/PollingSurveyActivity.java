@@ -17,7 +17,6 @@ import org.json.JSONObject;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.networking.CommonUtils;
@@ -29,12 +28,10 @@ import okhttp3.ResponseBody;
 public class PollingSurveyActivity extends AppCompatActivity
         implements View.OnClickListener {
 
-    public static final String ARG_USER = "User";
     public static final String ARG_SUBMISSION = "Submission";
 
     private Submission submission;
     private LinearLayout llUiBlocker;
-    private User user;
     private String[] files = new String[]{"poling_job_data.json", "poling_fluidity_task.json"
             , "poling_solution.json", "poling_asset_data.json", "poling_risk_assessment.json"};
 
@@ -47,7 +44,6 @@ public class PollingSurveyActivity extends AppCompatActivity
         setContentView(R.layout.activity_polling_survey);
         llUiBlocker = findViewById(R.id.ll_ui_blocker);
         Intent intent = getIntent();
-        user = intent.getParcelableExtra(ARG_USER);
         submission = intent.getParcelableExtra(ARG_SUBMISSION);
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
         findViewById(R.id.btn_submit).setOnClickListener(this);
@@ -149,6 +145,9 @@ public class PollingSurveyActivity extends AppCompatActivity
             return;
         }
 
+        if(!CommonUtils.validateToken(PollingSurveyActivity.this)){
+            return;
+        }
 
         showProgressBar();
         new Thread(() -> {
@@ -218,6 +217,11 @@ public class PollingSurveyActivity extends AppCompatActivity
     }
 
     public void showErrorDialog(String title, String message) {
+        if(getSupportFragmentManager().isStateSaved()){
+            setResult(Activity.RESULT_OK);
+            finish();
+            return;
+        }
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
@@ -235,7 +239,6 @@ public class PollingSurveyActivity extends AppCompatActivity
 
     public void startForm() {
         Intent intent = new Intent(this, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         intent.putExtra(FormActivity.ARG_REPEAT_COUNT, 0);
         startActivityForResult(intent, 1234);

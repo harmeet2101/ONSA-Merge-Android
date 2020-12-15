@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/Widget.MaterialComponents.CardView"
+    app:cardCornerRadius="8dp"
+    app:strokeWidth="2dp"
+    app:strokeColor="@android:color/holo_blue_light"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true"
+    app:contentPadding="8dp">
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/edtag_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="4dp"
+        app:srcCompat="@drawable/ic_close"
+        android:layout_marginRight="4dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/_16sdp"
+        android:padding="@dimen/_8sdp"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/edtag_suggesstion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tags"
+            android:imeActionLabel="Search"
+            android:imeOptions="actionDone"
+            android:inputType="textAutoCorrect"
+            android:textAlignment="textStart"
+            android:textColor="@color/colorPrimary"
+            android:textColorHint="@color/txt_color_light_grey"
+            android:gravity="start" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/edtag_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:padding="@dimen/_4sdp"
+            tools:itemCount="4"
+            app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+            tools:listitem="@layout/edit_share_tag_select"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/edtag_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.Button"
+            android:gravity="center"
+            android:layout_margin="@dimen/_4sdp"
+            android:textColor="@color/txt_color_light_grey"
+            android:backgroundTint="@color/item_bg_light_gray"
+            android:text="Add a tag and press Enter"
+            app:icon="@drawable/ic_add_circle"
+            app:iconGravity="textStart"
+            app:cornerRadius="@dimen/_8sdp"
+            android:padding="@dimen/_8sdp"
+            app:elevation="@dimen/_8sdp"
+            tools:targetApi="lollipop" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

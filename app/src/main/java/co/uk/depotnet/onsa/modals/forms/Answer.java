@@ -1,9 +1,17 @@
 package co.uk.depotnet.onsa.modals.forms;
 
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.ArrayList;
+
+import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.hseq.PhotoComments;
+import co.uk.depotnet.onsa.modals.hseq.PhotoTags;
+
 
 public class Answer implements Parcelable {
 
@@ -13,16 +21,17 @@ public class Answer implements Parcelable {
     private int isMultiList;
     private int repeatCounter;
     private String uploadID;
-    private String answer;
-    private String displayAnswer;
-    private String repeatID;
+    private String answer;//to upload value ( in server post param too
+    private String displayAnswer; // to show in field of form
+    private String repeatID;// in case pass repeat counter too..
     private boolean shouldUpload = true;
     private int estimatedQuantity;
     private String signatureUrl;
     private double latitude;
     private double longitude;
     private String takenDateTime;
-
+    private ArrayList<PhotoComments> comments;
+    private ArrayList<PhotoTags> tags;
     public Answer(){
 
     }
@@ -44,8 +53,8 @@ public class Answer implements Parcelable {
             latitude = cursor.getDouble(cursor.getColumnIndex(DBTable.latitude));
             longitude = cursor.getDouble(cursor.getColumnIndex(DBTable.longitude));
             takenDateTime = cursor.getString(cursor.getColumnIndex(DBTable.takenDateTime));
-
-
+            comments= DBHandler.getInstance().getPhotoComments(String.valueOf(id));
+            tags= DBHandler.getInstance().getPhotoTags(id);
         }
     }
 
@@ -84,6 +93,8 @@ public class Answer implements Parcelable {
         latitude=in.readDouble();
         longitude=in.readDouble();
         takenDateTime=in.readString();
+        comments = in.createTypedArrayList(PhotoComments.CREATOR);
+        tags = in.createTypedArrayList(PhotoTags.CREATOR);
     }
 
     public static final Creator<Answer> CREATOR = new Creator<Answer>() {
@@ -112,6 +123,10 @@ public class Answer implements Parcelable {
 
     public void setShouldUpload(boolean shouldUpload) {
         this.shouldUpload = shouldUpload;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getID() {
@@ -212,13 +227,43 @@ public class Answer implements Parcelable {
         this.answer = answer;
     }
 
+    public ArrayList<PhotoComments> getComments() {
+        return comments;
+    }
+
+    public void setComments(ArrayList<PhotoComments> comments) {
+        this.comments = comments;
+    }
+
+    public ArrayList<PhotoTags> getTags() {
+        return tags;
+    }
+
+    public void setTags(ArrayList<PhotoTags> tags) {
+        this.tags = tags;
+    }
+
     public ContentValues toContentValues() {
         ContentValues cv = new ContentValues();
 
         if (id > 0) {
             cv.put(DBTable.id, id);
         }
-
+       /* DBHandler dbHandler = DBHandler.getInstance();
+        if (comments != null && !comments.isEmpty()) {
+            for (PhotoComments n :
+                    comments) {
+                n.setAnswerId(id);
+                dbHandler.replaceData(PhotoComments.DBTable.NAME, n.toContentValues());
+            }
+        }
+        if (tags != null && !tags.isEmpty()) {
+            for (PhotoTags n :
+                    tags) {
+                n.setAnswerId(id);
+                dbHandler.replaceData(PhotoTags.DBTable.NAME, n.toContentValues());
+            }
+        }*/
         cv.put(DBTable.submissionID, submissionID);
         cv.put(DBTable.answer, answer);
         cv.put(DBTable.displayAnswer, displayAnswer);
@@ -259,6 +304,8 @@ public class Answer implements Parcelable {
         parcel.writeDouble(latitude);
         parcel.writeDouble(longitude);
         parcel.writeString(takenDateTime);
+        parcel.writeTypedList(comments);
+        parcel.writeTypedList(tags);
     }
 
     public static class DBTable {
@@ -279,5 +326,13 @@ public class Answer implements Parcelable {
         public static final String longitude = "longitude";
         public static final String takenDateTime = "takenDateTime";
 
+    }
+
+    @Override
+    public String toString() {
+        return "Answer{" +
+                "comments=" + comments +
+                ", tags=" + tags +
+                '}';
     }
 }

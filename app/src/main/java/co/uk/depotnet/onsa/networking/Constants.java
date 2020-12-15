@@ -1,33 +1,20 @@
 package co.uk.depotnet.onsa.networking;
 
 
-import org.json.JSONObject;
-
-import java.util.Iterator;
-import java.util.List;
-
-import co.uk.depotnet.onsa.BuildConfig;
-
 public class Constants {
-
-////    public final static String BASE_URL = "https://onsa-amey-api.depotnet.co.uk/";
-//    public static String BASE_URL = "https://dev-onsa-acme-api.depotnet.co.uk/";
-////    public final static String BASE_URL = "https://uat-onsa-mapgroup-api.depotnet.co.uk/";
-//
-//    static {
-//        if(BuildConfig.BUILD_TYPE.equalsIgnoreCase("dev") || BuildConfig.BUILD_TYPE.equalsIgnoreCase("dev")){
-//            BASE_URL = "https://dev-onsa-acme-api.depotnet.co.uk/";
-//        }else if(BuildConfig.BUILD_TYPE.equalsIgnoreCase("uat")){
-//            BASE_URL = "https://dev-onsa-acme-api.depotnet.co.uk/";
-//        }else if(BuildConfig.BUILD_TYPE.equalsIgnoreCase("dev") || BuildConfig.BUILD_TYPE.equalsIgnoreCase("dev")){
-//            BASE_URL = "https://dev-onsa-acme-api.depotnet.co.uk/";
-//        }else
-//    }
 
     public final static String IS_BOOK_ON = "is_book_on";
     public static boolean isStoreEnabled;
-    public static final String FEATURE_NAME = "Stores";
+    public static boolean isHSEQEnabled;
+    public static final String FEATURE_STORE = "Stores";
+    public static final String FEATURE_HSEQ = "HSEQ";
 
+    public static final int TYPE_ID_SERVICE_MATERAL = 1;
+    public static final int TYPE_ID_MUCKAWAY = 3;
+    public static final int TYPE_ID_BACKFILL = 4;
+    public static final int TYPE_ID_REINSTATEMENT = 5;
+    public static final int TYPE_ID_SITE_CLEAR = 6;
 
-
+    //WApr174v
+//sygfj23y
 }

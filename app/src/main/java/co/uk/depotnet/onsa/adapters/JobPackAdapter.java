@@ -37,11 +37,11 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
 
 
     public JobPackAdapter(Context context, List<Document> jobPacks,
-                          DownloadActionListener listener) {
+                          DownloadActionListener listener , Fetch fetch) {
         this.context = context;
         this.jobPacks = jobPacks;
         this.listener = listener;
-        fetch = ((MainActivity) context).getFetch();
+        this.fetch = fetch;
     }
 
     @NonNull

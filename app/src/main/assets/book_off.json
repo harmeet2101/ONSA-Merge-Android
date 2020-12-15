@@ -33,12 +33,12 @@
           "key": "bookOperatives",
           "isMultiSelection": true,
           "title": "Pick Your Crew",
-          "optional": false
+          "optional": true
         },
         {
           "type": "photo",
           "title": "Book Off",
-          "photoSize": 1,
+          "photoSize": 100,
           "photoRequired": 1,
           "photoId": "75"
         }

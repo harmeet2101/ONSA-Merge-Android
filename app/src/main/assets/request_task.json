@@ -1,0 +1,126 @@
+{
+  "title": "Request Task",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Request Task",
+      "index": 0,
+      "upload": true,
+      "url":"app/jobs/{jobId}/request-task",
+      "items": [
+        {
+          "type": "dropdown",
+          "key":"noticeId",
+          "uploadId": "NoticeID",
+          "title": "Notice",
+          "optional": false
+        },
+        {
+          "type": "calender",
+          "uploadId": "dateTaken",
+          "title": "Requested For",
+          "hint": "Select Date",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "siteActivityTypeId",
+          "key": "TaskType",
+          "title": "Task Type",
+          "optional": false,
+          "enables": [
+            {
+              "type": "number",
+              "uploadId": "cones",
+              "title": "Cones",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "barriers",
+              "title": "Barriers",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "chpt8",
+              "title": "Chpt8",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "fwBoards",
+              "title": "FwBoards",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "bags",
+              "title": "Bags",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "sand",
+              "title": "Sand",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "stone",
+              "title": "Stone",
+              "optional": false
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "dropdown",
+              "uploadId": "surfaceTypeId",
+              "key": "surfaceTypes",
+              "title": "Surface Types",
+              "optional": false
+            },
+            {
+              "type": "dropdown",
+              "uploadId": "materialTypeId",
+              "key": "materialTypes",
+              "title": "Material Types",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "Length",
+              "title": "Length (m)",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "Width",
+              "title": "Width (m)",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "Depth",
+              "title": "Depth (m)",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Request Task",
+          "photoSize": 20,
+          "photoRequired": 3,
+          "photoId": "122"
+        }
+      ]
+    }
+  ]
+}

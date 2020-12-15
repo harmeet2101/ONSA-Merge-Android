@@ -4,8 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/splash"
+    android:background="@color/depotnet_color"
     tools:context=".activities.SplashActivity">
+
+    <ImageView
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/_56sdp"
+        android:layout_width="@dimen/_120sdp"
+        android:layout_height="@dimen/_360sdp"
+        app:srcCompat="@drawable/ic_logo_half_1" />
 
     <ImageView
         android:layout_marginTop="@dimen/_90sdp"
@@ -13,6 +22,8 @@
         android:layout_height="@dimen/_160sdp"
         android:layout_centerHorizontal="true"
         app:srcCompat="@drawable/neddie_white" />
+
+
 
     <TextView
         android:layout_width="wrap_content"

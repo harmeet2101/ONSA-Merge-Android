@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/Widget.MaterialComponents.CardView"
+    app:cardCornerRadius="16dp"
+    app:strokeWidth="2dp"
+    app:strokeColor="@android:color/holo_blue_light"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true"
+    app:contentPadding="8dp">
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/edcomment_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="4dp"
+        app:srcCompat="@drawable/ic_close"
+        android:layout_marginRight="4dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/_16sdp"
+        android:padding="@dimen/_8sdp"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            style="@style/TextInputLayout"
+            app:counterEnabled="true"
+            app:counterMaxLength="256"
+            app:errorEnabled="true"
+            app:endIconMode="clear_text"
+            app:boxCornerRadiusTopStart="@dimen/activity_horizontal_margin"
+            app:boxCornerRadiusBottomEnd="@dimen/activity_horizontal_margin"
+            android:hint="Please enter any additional comments">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edcomment_inputtxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine|textAutoComplete"
+                android:maxLength="256"
+                android:textSize="14sp"
+                android:lines="4"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/edcomment_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.Button"
+            android:gravity="center"
+            android:layout_margin="@dimen/_4sdp"
+            android:backgroundTint="?attr/selected_background_color"
+            android:text="@string/submit"
+            app:icon="@drawable/ic_surveys"
+            app:iconGravity="textStart"
+            app:cornerRadius="@dimen/activity_horizontal_margin"
+            app:strokeColor="@color/mcv_text_date_light"
+            app:strokeWidth="0.5dp"
+            android:padding="@dimen/_8sdp"
+            app:elevation="@dimen/_8sdp"
+            tools:targetApi="lollipop" />
+        <TextView
+            android:id="@+id/edcomment_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/view_existing_comments"
+            android:textColor="@color/ColorHseq"
+            android:textSize="16sp"
+            android:layout_margin="@dimen/_4sdp"
+            />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

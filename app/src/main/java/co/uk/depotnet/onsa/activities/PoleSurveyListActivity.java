@@ -15,18 +15,15 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.AdapterUnSubmittedSurvey;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.OnItemClickListener;
-import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 
 public class PoleSurveyListActivity extends AppCompatActivity implements View.OnClickListener,
         OnItemClickListener<Submission> {
 
-    public static final String ARG_USER = "User";
     public static final String ARG_JOB_ID = "JOB_ID";
 
 
-    private User user;
     private ArrayList<Submission> submissions;
     private String jobID;
     private AdapterUnSubmittedSurvey adapter;
@@ -37,7 +34,6 @@ public class PoleSurveyListActivity extends AppCompatActivity implements View.On
         setContentView(R.layout.activity_pole_survey_list);
 
         Intent intent = getIntent();
-        user = intent.getParcelableExtra(ARG_USER);
         jobID = intent.getStringExtra(ARG_JOB_ID);
         submissions = new ArrayList<>();
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
@@ -76,7 +72,6 @@ public class PoleSurveyListActivity extends AppCompatActivity implements View.On
                 long ID = DBHandler.getInstance().insertData(Submission.DBTable.NAME , submission.toContentValues());
                 submission.setId(ID);
                 Intent intent = new Intent(this, PollingSurveyActivity.class);
-                intent.putExtra(PollingSurveyActivity.ARG_USER, user);
                 intent.putExtra(PollingSurveyActivity.ARG_SUBMISSION, submission);
                 startActivityForResult(intent , 1234);
                 break;
@@ -87,7 +82,6 @@ public class PoleSurveyListActivity extends AppCompatActivity implements View.On
     @Override
     public void onItemClick(Submission submission, int position) {
         Intent intent = new Intent(this, PollingSurveyActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         intent.putExtra(FormActivity.ARG_REPEAT_COUNT, position);
         startActivityForResult(intent , 1234);

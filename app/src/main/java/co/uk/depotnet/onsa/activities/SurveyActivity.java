@@ -7,18 +7,15 @@ import android.view.View;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 
 public class SurveyActivity extends AppCompatActivity
         implements View.OnClickListener {
 
-    public static final String ARG_USER = "User";
     public static final String ARG_JOB_ID = "Job_ID";
     public static final String ARG_JOB_REFERENCE_NUMBER = "Job_Reference_Number";
 
     private String jobID;
-    private User user;
 
 
     @Override
@@ -27,7 +24,6 @@ public class SurveyActivity extends AppCompatActivity
         setContentView(R.layout.activity_survey);
 
         Intent intent = getIntent();
-        user = intent.getParcelableExtra(ARG_USER);
         jobID = intent.getStringExtra(ARG_JOB_ID);
 
 
@@ -60,7 +56,6 @@ public class SurveyActivity extends AppCompatActivity
 
     private void openPolingSurveyList() {
         Intent intent = new Intent(this, PoleSurveyListActivity.class);
-        intent.putExtra(PoleSurveyListActivity.ARG_USER, user);
         intent.putExtra(PoleSurveyListActivity.ARG_JOB_ID, jobID);
         startActivity(intent);
     }
@@ -77,7 +72,6 @@ public class SurveyActivity extends AppCompatActivity
 
     private void startFormActivity(Submission submission) {
         Intent intent = new Intent(this, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivity(intent);
     }

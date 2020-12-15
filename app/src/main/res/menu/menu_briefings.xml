@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_briefing"
+        android:enabled="true"
+        android:icon="@drawable/ic_briefing"
+        android:title="Briefings"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_actions"
+        android:enabled="true"
+        android:icon="@drawable/ic_actions"
+        android:title="Actions"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_schedule"
+        android:enabled="true"
+        android:icon="@drawable/ic_schedule"
+        android:title="Schedule"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_kit_bag"
+        android:enabled="true"
+        android:icon="@drawable/ic_kit_bag_01"
+        android:title="@string/kit_bag"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_offline_queue"
+        android:enabled="true"
+        android:icon="@drawable/ic_offline_queue_01"
+        android:title="@string/offline_queue"
+        app:showAsAction="ifRoom" />
+</menu>

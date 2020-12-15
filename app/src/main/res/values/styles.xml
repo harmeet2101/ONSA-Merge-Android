@@ -1,10 +1,46 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+    <style name="Theme.MyApp" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <!--  It extends AppCompat theme, but add all necessary stuff....
+         old one    Theme.AppCompat.Light.NoActionBar-->
+    </style>
+    <style name="AppTheme" parent="Theme.MyApp">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="selected_background_color">@color/depotnet_color</item>
+        <item name="selected_txt_color">@color/depotnet_color</item>
+        <item name="unselected_background_color">@color/white</item>
+        <item name="unselected_txt_color">@color/txt_color_light_grey</item>
+    </style>
+    <style name="AppTheme.Hseq" parent="Theme.MyApp">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/ColorHseqLight</item>
+        <item name="selected_background_color">@color/ColorHseq</item>
+        <item name="selected_txt_color">@color/ColorHseqLight</item>
+        <item name="unselected_background_color">@color/white</item>
+        <item name="unselected_txt_color">@color/txt_color_light_grey</item>
+    </style>
+    <style name="AppTheme.Briefings" parent="Theme.MyApp">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/ColorBriefing</item>
+        <item name="selected_background_color">@color/ColorBriefing</item>
+        <item name="selected_txt_color">@color/ColorBriefing</item>
+        <item name="unselected_background_color">@color/white</item>
+        <item name="unselected_txt_color">@color/txt_color_light_grey</item>
+    </style>
+    <style name="AppTheme.Actions" parent="Theme.MyApp">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/ColorActions</item>
+        <item name="selected_background_color">@color/ColorActions</item>
+        <item name="selected_txt_color">@color/ColorActions</item>
+        <item name="unselected_background_color">@color/white</item>
+        <item name="unselected_txt_color">@color/txt_color_light_grey</item>
     </style>
 
     <style name="ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
@@ -66,6 +102,21 @@
     <style name="TextAppearance.MyHeader" parent="TextAppearance.MaterialCalendarWidget.Header">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/_12sdp</item>
+    </style>
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="hintTextAppearance">@style/HintText</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="HintText" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:textColor">@color/txt_color_light_grey</item>
     </style>
 
 

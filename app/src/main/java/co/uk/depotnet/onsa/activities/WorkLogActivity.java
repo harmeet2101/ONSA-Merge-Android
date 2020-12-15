@@ -45,7 +45,6 @@ import retrofit2.Response;
 public class WorkLogActivity extends AppCompatActivity
         implements View.OnClickListener, OnItemClickListener<WorkLog> {
 
-    public static final String ARG_USER = "User";
     public static final String ARG_JOB_ID = "Job_ID";
     public static final String ARG_JOB_REFERENCE_NUMBER = "Job_Reference_Number";
 
@@ -65,7 +64,7 @@ public class WorkLogActivity extends AppCompatActivity
         setContentView(R.layout.activity_work_log);
 
         Intent intent = getIntent();
-        user = intent.getParcelableExtra(ARG_USER);
+        user = DBHandler.getInstance().getUser();
         jobID = intent.getStringExtra(ARG_JOB_ID);
         jobReferenceNumber = intent.getStringExtra(ARG_JOB_REFERENCE_NUMBER);
         Job job = DBHandler.getInstance().getJob(jobID);
@@ -85,6 +84,54 @@ public class WorkLogActivity extends AppCompatActivity
         recyclerView.addItemDecoration(itemDecoration);
         String fileName = "work_log.json";
         workLogs = JsonReader.loadFormJSON(this, WorkLog.class, fileName);
+
+        if(!user.isReinstatement()){
+            for(int i = 0 ; i< workLogs.size() ; i++) {
+                if(workLogs.get(i).getJson().equalsIgnoreCase("log_reinstatement.json")) {
+                    workLogs.remove(i);
+                }
+            }
+        }
+
+        if(!user.isBackfill()){
+            for(int i = 0 ; i< workLogs.size() ; i++) {
+                if(workLogs.get(i).getJson().equalsIgnoreCase("log_back_fill.json")) {
+                    workLogs.remove(i);
+                }
+            }
+        }
+
+        if(!user.isSiteClear()){
+            for(int i = 0 ; i< workLogs.size() ; i++) {
+                if(workLogs.get(i).getJson().equalsIgnoreCase("log_site_clear.json")) {
+                    workLogs.remove(i);
+                }
+            }
+        }
+
+        if(!user.isMuckaway()){
+            for(int i = 0 ; i< workLogs.size() ; i++) {
+                if(workLogs.get(i).getJson().equalsIgnoreCase("log_muckaway.json")) {
+                    workLogs.remove(i);
+                }
+            }
+        }
+
+        if(!user.isServiceMaterialDrop()){
+            for(int i = 0 ; i< workLogs.size() ; i++) {
+                if(workLogs.get(i).getJson().equalsIgnoreCase("service_material.json")) {
+                    workLogs.remove(i);
+                }
+            }
+        }
+
+        if(!TextUtils.isEmpty(user.getroleName()) && !user.getroleName().equalsIgnoreCase("Supervisor")){
+            for(int i = 0 ; i< workLogs.size() ; i++) {
+                if(workLogs.get(i).getJson().equalsIgnoreCase("request_task.json")) {
+                    workLogs.remove(i);
+                }
+            }
+        }
 
         adapter = new AdapterWorkLog(this, workLogs, this, jobID);
         recyclerView.setAdapter(adapter);
@@ -123,7 +170,7 @@ public class WorkLogActivity extends AppCompatActivity
 
         boolean status =
                 DBHandler.getInstance().getJobModuleStatus(jobID , "Risk Assessment");
-
+//        status = true;
         if(status){
             recyclerView.setVisibility(View.VISIBLE);
             rlWarning.setVisibility(View.GONE);
@@ -160,10 +207,12 @@ public class WorkLogActivity extends AppCompatActivity
     public void openRiskAssessment(String jobID) {
         String jsonFileName = "risk_assessment.json";
         Submission submission = new Submission(jsonFileName, "Risk Assessment", jobID);
+
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
+
+//        Submission submission = DBHandler.getInstance().getSubmissionsByJobAndTitle("Risk Assessment" , jobID).get(0);
         Intent intent = new Intent(this, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivity(intent);
     }
@@ -191,12 +240,12 @@ public class WorkLogActivity extends AppCompatActivity
             return;
         }
 
-        if (jsonName.equalsIgnoreCase("rfna.json")) {
-            String title = "RFNA";
-            String message = "This Process is irreversible. Do you really want to submit  ";
-            showRFNAConfirmation(title, message);
-            return;
-        }
+//        if (jsonName.equalsIgnoreCase("rfna.json")) {
+//            String title = "RFNA";
+//            String message = "This Process is irreversible. Do you really want to submit  ";
+//            showRFNAConfirmation(title, message);
+//            return;
+//        }
 
         if (!isBookOn() && !jsonName.equalsIgnoreCase("book_on.json")) {
             return;
@@ -209,7 +258,6 @@ public class WorkLogActivity extends AppCompatActivity
 
         if (jsonName.equalsIgnoreCase("raise_variation.json")) {
             Intent intent = new Intent(WorkLogActivity.this, VariationActivity.class);
-            intent.putExtra(SurveyActivity.ARG_USER, user);
             intent.putExtra(SurveyActivity.ARG_JOB_ID, jobID);
             intent.putExtra(SurveyActivity.ARG_JOB_REFERENCE_NUMBER, jobReferenceNumber);
             startActivity(intent);
@@ -218,7 +266,6 @@ public class WorkLogActivity extends AppCompatActivity
             long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
             submission.setId(submissionID);
             Intent intent = new Intent(this, FormActivity.class);
-            intent.putExtra(FormActivity.ARG_USER, user);
             intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
             startActivity(intent);
         }
@@ -230,12 +277,17 @@ public class WorkLogActivity extends AppCompatActivity
             long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
             submission.setId(submissionID);
             Intent intent = new Intent(this, FormActivity.class);
-            intent.putExtra(FormActivity.ARG_USER, user);
             intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
             startActivity(intent);
             return;
         }
+        if(!CommonUtils.validateToken(WorkLogActivity.this)){
+            return;
+        }
+
         showProgressBar();
+
+
         APICalls.getMenSplits(user.gettoken()).enqueue(new Callback<MenSplitResponse>() {
             @Override
             public void onResponse(@NonNull Call<MenSplitResponse> call, @NonNull Response<MenSplitResponse> response) {
@@ -260,7 +312,6 @@ public class WorkLogActivity extends AppCompatActivity
                                 long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
                                 submission.setId(submissionID);
                                 Intent intent = new Intent(WorkLogActivity.this, FormActivity.class);
-                                intent.putExtra(FormActivity.ARG_USER, user);
                                 intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
                                 startActivity(intent);
                             }
@@ -284,7 +335,9 @@ public class WorkLogActivity extends AppCompatActivity
     }
 
     public void showErrorDialog(String title, String message) {
-
+        if(getSupportFragmentManager().isStateSaved()){
+            return;
+        }
         final MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
@@ -331,6 +384,10 @@ public class WorkLogActivity extends AppCompatActivity
             DBHandler.getInstance().setSubmissionQueued(submission);
             showErrorDialog(title, message);
             adapter.notifyDataSetChanged();
+            return;
+        }
+
+        if(!CommonUtils.validateToken(WorkLogActivity.this)){
             return;
         }
 

@@ -21,13 +21,10 @@ import co.uk.depotnet.onsa.adapters.AdapterA75Groups;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.modals.A75Groups;
 import co.uk.depotnet.onsa.modals.Job;
-import co.uk.depotnet.onsa.modals.User;
 
 public class FragmentA75 extends Fragment {
-    private static final String ARG_USER = "User";
     private static final String ARG_JOB = "Job";
     private Context context;
-    private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private AdapterA75Groups adapter;
 
@@ -35,15 +32,14 @@ public class FragmentA75 extends Fragment {
     private List<A75Groups> a75Gropus;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
     }
 
-    public static FragmentA75 newInstance(User user , Job job){
+    public static FragmentA75 newInstance(Job job){
         FragmentA75 fragmentNotices = new FragmentA75();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_USER , user);
         args.putParcelable(ARG_JOB , job);
         fragmentNotices.setArguments(args);
         return fragmentNotices;
@@ -62,7 +58,7 @@ public class FragmentA75 extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_work_item, container , false);
-        recyclerView = view.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         progressBar = view.findViewById(R.id.progress_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(context , LinearLayoutManager.VERTICAL , false));
         recyclerView.setAdapter(adapter);

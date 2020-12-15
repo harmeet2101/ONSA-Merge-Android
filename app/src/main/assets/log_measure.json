@@ -5,57 +5,164 @@
     {
       "title": "Log Measure",
       "index": 0,
-      "url": "app/jobs/{jobId}/addmeasure",
-      "upload": true,
+      "upload": false,
       "items": [
         {
-          "type": "location",
-          "uploadId": "Location",
-          "title": "Locate Me",
-          "optional": false
-        },
-        {
           "type": "dropdown",
-          "uploadId": "menSplitId",
-          "key": "MenSplits",
-          "title": "1st Man Crew Split (optional)",
+          "uploadId": "jobEtonSiteId",
+          "key":"noticeId",
+          "title": "Select Notice",
           "optional": true
         },
         {
-          "type": "et_short_text",
-          "uploadId": "locationDetails",
-          "key": "dfeWorkItems",
-          "title": "Additional Location Details i.e. PONID. WP - WP etc.",
+          "type": "dropdown",
+          "uploadId": "menSplitID",
+          "key": "MenSplits",
+          "title": "1st Man Crew Split",
           "optional": true
         },
         {
           "type": "add_log_measure",
-          "uploadId": "",
-          "repeatId": "measureItems",
-          "title": "ADD MEASURE",
-          "listItemType": "log_measure_item",
+          "uploadId": "add_measure",
+          "repeatId": "measures",
+          "title": "Log Measure",
           "fields": [
-            "subcontractorRateId",
-            "quantity"
+            "synthCode","measureQuantity","raiseATask","surfaceTypeId" , "materialTypeId" , "length" ,
+            "width" , "depth"
           ],
-          "optional": false,
           "dialogItems": [
             {
               "type": "dropdown",
-              "uploadId": "subcontractorRateId",
-              "repeatId": "measureItems",
-              "key": "MeasureItems",
-              "title": "DFE Item",
-              "optional": false
+              "uploadId": "synthCode",
+              "repeatId": "measures",
+              "title": "Work Item",
+              "key": "JobWorkItem",
+              "optional": true
             },
             {
               "type": "number",
-              "uploadId": "quantity",
-              "repeatId": "measureItems",
-              "title": "Qty",
+              "uploadId": "measureQuantity",
+              "repeatId": "measures",
+              "title": "Quantity",
               "optional": false
+            },
+            {
+              "type": "yes_no",
+              "uploadId": "raiseATask",
+              "repeatId": "measures",
+              "title": "Do you want to raise a task?",
+              "optional": false,
+              "enables": [
+                {
+                  "type": "dropdown",
+                  "uploadId": "surfaceTypeId",
+                  "key": "surfaceTypes",
+                  "repeatId": "measures",
+                  "title": "Surface Types",
+                  "optional": true
+                },
+                {
+                  "type": "dropdown",
+                  "uploadId": "materialTypeId",
+                  "key": "materialTypes",
+                  "repeatId": "measures",
+                  "title": "Material Types",
+                  "optional": true
+                },
+                {
+                  "type": "number",
+                  "uploadId": "length",
+                  "repeatId": "measures",
+                  "title": "Length",
+                  "optional": false
+                },
+                {
+                  "type": "number",
+                  "uploadId": "width",
+                  "repeatId": "measures",
+                  "title": "Width",
+                  "optional": false
+                },
+                {
+                  "type": "number",
+                  "uploadId": "depth",
+                  "repeatId": "measures",
+                  "title": "Depth",
+                  "optional": false
+                }
+              ]
+            },
+            {
+              "type": "et_long_text",
+              "uploadId": "comments",
+              "title": "Comments",
+              "hint": "Comments",
+              "optional": true
             }
           ]
+        }
+
+      ]
+    },
+    {
+      "title": "Log Measure",
+      "index": 1,
+      "url":"app/jobs/{jobId}/log-measure",
+      "photoUrl": "app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+
+        {
+          "type": "switch_layout",
+          "uploadId": "backfill",
+          "title": "Backfill required?",
+          "optional": true,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "backfillComments",
+              "title": "Backfill Comments",
+              "hint": "Comments",
+              "optional": true
+            }
+          ]
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "muckaway",
+          "title": " Is a muckaway task required?",
+          "optional": true,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "muckawayComments",
+              "title": "Muckaway Comments",
+              "hint": "Comments",
+              "optional": true
+            }
+          ]
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "reinstatement",
+          "title": "Reinstatement required?",
+          "optional": true,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "reinstatementComments",
+              "title": "Reinstatement Comments",
+              "hint": "Comments",
+              "optional": true
+            }
+          ]
+        },
+        {
+          "type": "photo",
+          "title": "Log Measure",
+          "photoSize": 20,
+          "photoRequired": 3,
+          "photoId": "115"
         }
       ]
     }

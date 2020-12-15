@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="@dimen/_4sdp"
+    app:cardElevation="@dimen/_2sdp"
+    app:cardUseCompatPadding="true"
+    app:cardPreventCornerOverlap="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/due_img"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:layout_margin="@dimen/_12sdp"
+            app:civ_border_color="@color/ColorHseq"
+            app:civ_border_width="1dp"
+            app:srcCompat="@drawable/ic_worklog"
+            app:layout_constraintBottom_toTopOf="@+id/tv_ref"
+            app:layout_constraintEnd_toStartOf="@+id/tv_due_date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+
+        <TextView
+            android:id="@+id/tv_due_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:text="DUE: 24 may 2020"
+            app:layout_constraintBottom_toTopOf="@+id/tv_auditee"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/due_img"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_auditee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:text="Auditee: "
+            app:layout_constraintStart_toStartOf="@+id/tv_due_date"
+            app:layout_constraintEnd_toStartOf="@+id/tv_auditee_text"
+            app:layout_constraintStart_toEndOf="@+id/due_img"
+            app:layout_constraintTop_toBottomOf="@+id/tv_due_date" />
+        <TextView
+            android:id="@+id/tv_auditee_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_4sdp"
+            tools:text="WAPLL23X"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_auditee"
+            app:layout_constraintTop_toBottomOf="@+id/tv_due_date" />
+
+        <TextView
+            android:id="@+id/tv_ref"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16sdp"
+            android:layout_marginLeft="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:gravity="start"
+            tools:text="Ref: 523"
+            android:textAlignment="textStart"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toTopOf="@+id/tv_inspectionType"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/due_img" />
+
+
+        <TextView
+            android:id="@+id/tv_inspectionType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16sdp"
+            android:layout_marginLeft="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:layout_marginBottom="@dimen/_8sdp"
+            tools:text="Inspection Type: SLG"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toTopOf="@+id/rl_view_schedule"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_ref" />
+
+        <RelativeLayout
+            android:id="@+id/rl_view_schedule"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_36sdp"
+            android:visibility="visible"
+            android:background="@color/ColorHseq"
+            android:padding="@dimen/_8sdp"
+            app:layout_constraintBottom_toTopOf="@+id/rl_hide_schedule"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_inspectionType">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="View Inspection"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12sdp" />
+
+            <ImageView
+                android:id="@+id/due_expend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_add_circle"
+                android:layout_marginRight="@dimen/_8sdp" />
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/rl_hide_schedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rl_view_schedule">
+
+            <TextView
+                android:id="@+id/tv_start_inspection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_jobdetails"
+                android:drawablePadding="@dimen/_8sdp"
+                android:drawableTint="@color/ColorHseq"
+                android:drawableEnd="@drawable/ic_chevron_right"
+                android:layout_margin="@dimen/_8sdp"
+                android:text="@string/start_inspection1"
+                android:padding="@dimen/_2sdp"
+                android:textSize="14sp"
+                android:gravity="center|start"
+                android:drawableRight="@drawable/ic_chevron_right"
+                android:drawableLeft="@drawable/ic_jobdetails"
+                tools:targetApi="m" />
+
+            <View
+                android:id="@+id/divdue"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:layout_below="@+id/tv_start_inspection"
+                android:layout_margin="@dimen/_8sdp"
+                android:visibility="gone"
+                android:background="@color/txt_color_light_grey"/>
+
+        </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>

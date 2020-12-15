@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_annotate"
+        android:icon="@drawable/ic_pencil_tool"
+        android:title="Annotate"
+        android:orderInCategory="1"
+        app:showAsAction="always|withText" />
+    <item
+        android:id="@+id/action_comment"
+        android:icon="@drawable/ic_comment_tool"
+        android:title="Comment"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="2" />
+    <item
+        android:id="@+id/action_tag"
+        android:icon="@drawable/ic_tag_tool"
+        android:title="Tag"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="3" />
+</menu>

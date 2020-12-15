@@ -2,19 +2,22 @@ package co.uk.depotnet.onsa.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,8 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.ListActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.formholders.BoldTextHolder;
+import co.uk.depotnet.onsa.formholders.BriefingSignHolder;
+import co.uk.depotnet.onsa.formholders.Briefingtextholder;
 import co.uk.depotnet.onsa.formholders.DFEItemHolder;
 import co.uk.depotnet.onsa.formholders.DescTextHolder;
 import co.uk.depotnet.onsa.formholders.DropDownHolder;
@@ -31,6 +36,7 @@ import co.uk.depotnet.onsa.formholders.LongTextHolder;
 import co.uk.depotnet.onsa.formholders.NumberHolder;
 import co.uk.depotnet.onsa.formholders.PhotoHolder;
 import co.uk.depotnet.onsa.formholders.ShortTextHolder;
+import co.uk.depotnet.onsa.formholders.SignatureHolder;
 import co.uk.depotnet.onsa.formholders.YesNoHolder;
 import co.uk.depotnet.onsa.fragments.FragmentStopWork;
 import co.uk.depotnet.onsa.listeners.DropDownItem;
@@ -41,8 +47,8 @@ import co.uk.depotnet.onsa.modals.MeasureItems;
 import co.uk.depotnet.onsa.modals.RiskElementType;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
-import co.uk.depotnet.onsa.modals.forms.Photo;
 import co.uk.depotnet.onsa.modals.forms.Submission;
+import co.uk.depotnet.onsa.modals.hseq.HseqDataset;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.utils.JsonReader;
 import co.uk.depotnet.onsa.views.DropdownMenu;
@@ -62,19 +68,24 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private boolean missingAnswerMode;
     private FormAdapterListener listener;
     private GradientDrawable redBG;
+    private String themeColor;
+    private ArrayList<FormItem> originalItems;
+    private ArrayList<String> recipients;
 
     public FrokFormAdapter(Context context, Submission submission,
                            FormItem parentFormItem, int repeatCount,
-                           FormAdapterListener listener) {
+                           FormAdapterListener listener ,String themeColor , ArrayList<String> recipients) {
         this.context = context;
         this.parentFormItem = parentFormItem;
         this.submission = submission;
         this.submissionID = submission.getID();
         this.repeatCount = repeatCount;
+        this.themeColor = themeColor;
         this.listener = listener;
         this.formItems = new ArrayList<>();
-        this.formItems.addAll(parentFormItem.getDialogItems());
-
+        this.originalItems = parentFormItem.getDialogItems();
+        this.formItems = new ArrayList<>(originalItems);
+        this.recipients = recipients;
         redBG = new GradientDrawable();
         redBG.setColor(Color.parseColor("#e24444"));
 
@@ -163,6 +174,35 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             repeatCount++;
         }
 
+        addBriefingsDocs();
+
+    }
+
+    public void addBriefingsDocs() {
+        ArrayList<FormItem> dialogItems = parentFormItem.getDialogItems();
+        int forkPosition = 0;
+
+        DBHandler dbHandler = DBHandler.getInstance();
+        ArrayList<FormItem> listItems = new ArrayList<>();
+        for (int c = 0; c < dialogItems.size(); c++) {
+            FormItem item = dialogItems.get(c);
+            if (item.getFormType() == FormItem.TYPE_LIST_BREIFDOC) {
+                forkPosition = c;
+                ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, item.getUploadId(), item.getRepeatId());
+                if (answers != null) {
+                    for (int i = 0; i < answers.size(); i++) {
+                        int repeatCount = answers.get(i).getRepeatCount();
+                        FormItem qItem = new FormItem(item.getListItemType(), "", item.getUploadId(), item.getRepeatId(), true);
+                        qItem.setRepeatCount(repeatCount);
+                        listItems.add(qItem);
+                    }
+                }
+                formItems.addAll(forkPosition+1, listItems);
+                break;
+            }
+        }
+
+        notifyDataSetChanged();
     }
 
 
@@ -175,6 +215,7 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case FormItem.TYPE_ET_LONG_TEXT:
                 return new LongTextHolder(LayoutInflater.from(context).inflate(R.layout.item_et_long_text, viewGroup, false));
             case FormItem.TYPE_TXT_BOLD_HEAD:
+            case FormItem.TYPE_LIST_BREIFDOC:
                 return new BoldTextHolder(LayoutInflater.from(context).inflate(R.layout.item_txt_bold_head, viewGroup, false));
             case FormItem.TYPE_TXT_DESC:
                 return new DescTextHolder(LayoutInflater.from(context).inflate(R.layout.item_txt_bold_head, viewGroup, false));
@@ -184,6 +225,8 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 return new DropDownHolder(LayoutInflater.from(context).inflate(R.layout.item_dropdown, viewGroup, false));
             case FormItem.TYPE_NUMBER:
                 return new NumberHolder(LayoutInflater.from(context).inflate(R.layout.item_et_number, viewGroup, false));
+            case FormItem.TYPE_SIGNATURE:
+                return new SignatureHolder(LayoutInflater.from(context).inflate(R.layout.item_signature, viewGroup, false));
             case FormItem.TYPE_FORK_CARD:
             case FormItem.TYPE_ADD_NEG_DFE:
             case FormItem.TYPE_ADD_POS_DFE:
@@ -192,6 +235,10 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 return new PhotoHolder(LayoutInflater.from(context).inflate(R.layout.item_form_photo, viewGroup, false));
             case FormItem.TYPE_DFE_ITEM:
                 return new DFEItemHolder(LayoutInflater.from(context).inflate(R.layout.item_dfe, viewGroup, false));
+            case FormItem.TYPE_SIGN_BRIEFING:
+                return new BriefingSignHolder(LayoutInflater.from(context).inflate(R.layout.item_briefing_signs, viewGroup, false));
+            case FormItem.TYPE_TV_BRIEFING_TEXT:
+                return new Briefingtextholder(LayoutInflater.from(context).inflate(R.layout.briefings_read_item, viewGroup, false));
 
         }
         return null;
@@ -208,6 +255,7 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 bindLongTextHolder((LongTextHolder) holder, position);
                 break;
             case FormItem.TYPE_TXT_BOLD_HEAD:
+            case FormItem.TYPE_LIST_BREIFDOC:
                 bindBoldTextHolder((BoldTextHolder) holder, position);
                 break;
             case FormItem.TYPE_TXT_DESC:
@@ -222,6 +270,9 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case FormItem.TYPE_NUMBER:
                 bindNumberHolder((NumberHolder) holder, position);
                 break;
+            case FormItem.TYPE_SIGNATURE:
+                bindSignatureHolder((SignatureHolder) holder, position);
+                break;
             case FormItem.TYPE_FORK_CARD:
             case FormItem.TYPE_ADD_NEG_DFE:
             case FormItem.TYPE_ADD_POS_DFE:
@@ -233,6 +284,80 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case FormItem.TYPE_DFE_ITEM:
                 bindDFEHolder((DFEItemHolder) holder, position);
                 break;
+            case FormItem.TYPE_SIGN_BRIEFING:
+                bindBRIEFINGSignHolder((BriefingSignHolder) holder, position);
+                break;
+            case FormItem.TYPE_TV_BRIEFING_TEXT:
+                bindBRIEFINGTEXTHolder((Briefingtextholder) holder, position);
+                break;
+        }
+    }
+
+    private void bindBRIEFINGSignHolder(BriefingSignHolder holder, final int position) {
+        final FormItem formItem = formItems.get(position);
+        final ArrayList<String> fields = formItem.getFields();
+        if (fields == null || fields.isEmpty()) {
+            return;
+        }
+
+        Answer answerItemId = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+                formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer docname = DBHandler.getInstance().getAnswer(submissionID, fields.get(1),
+                formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer quantity = DBHandler.getInstance().getAnswer(submissionID, fields.get(2),
+                formItem.getRepeatId(), formItem.getRepeatCount());
+
+        if (answerItemId != null) {
+            String value = answerItemId.getAnswer();
+            if (!TextUtils.isEmpty(value)) {
+                //holder.txtValue.setText(value);
+                holder.txtTitle.setText(answerItemId.getDisplayAnswer());
+            }
+        }
+        if (docname!=null)
+        {
+            String value = docname.getAnswer();
+            if (!TextUtils.isEmpty(value)) {
+                //Toast.makeText(context, ""+value, Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (quantity != null) {
+            String value = quantity.getAnswer();
+           /* if (!TextUtils.isEmpty(value)) {
+                holder.txtQuantity.setText(value);
+            }*/
+        }
+
+        holder.imgButton.setOnClickListener(v -> {
+            formItems.remove(position);
+            Answer answerItemId1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+                    formItem.getRepeatId(), formItem.getRepeatCount());
+
+            Answer quantity1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(2),
+                    formItem.getRepeatId(), formItem.getRepeatCount());
+            if (answerItemId1 != null) {
+                DBHandler.getInstance().removeAnswer(answerItemId1);
+            }
+            // do not remove doc name of position 1 - for multiple item use to display...
+            if (quantity1 != null) {
+                DBHandler.getInstance().removeAnswer(quantity1);
+            }
+
+            notifyDataSetChanged();
+        });
+
+        holder.view.setOnClickListener(v -> listener.openForkFragment(formItem, submissionID, formItem.getRepeatCount()));
+
+    }
+    private void bindBRIEFINGTEXTHolder(Briefingtextholder holder, final int position) {
+        final FormItem formItem = formItems.get(position);
+        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                formItem.getRepeatId(), formItem.getRepeatCount());// repeat count for multiple doc display...
+        if (answer != null) {
+            String value = answer.getDisplayAnswer();
+            if (value != null && !value.isEmpty()) {
+                holder.textView.setText(value);
+            }
         }
     }
 
@@ -325,6 +450,10 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 answer.setRepeatCount(repeatCount);
                 DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
 
+                if (needToBeNotified(formItem)) {
+                    reInflateItems(true);
+                }
+
             }
         });
 
@@ -352,10 +481,104 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
 
-
+                if (needToBeNotified(formItem)) {
+                    reInflateItems(true);
+                }
             }
         });
 
+    }
+
+    private boolean needToBeNotified(FormItem formItem) {
+        return (formItem.getEnables() != null && !formItem.getEnables().isEmpty())
+                || (formItem.getFalseEnables() != null && !formItem.getFalseEnables().isEmpty())
+                || (formItem.getNaEnables() != null && !formItem.getNaEnables().isEmpty());
+    }
+
+    private void reInflateItems(boolean isNotified){
+        this.formItems.clear();
+        for (int i = 0; i < originalItems.size(); i++) {
+            FormItem item = originalItems.get(i);
+            this.formItems.add(new FormItem(item));
+            if(!TextUtils.isEmpty(item.getUploadId())){
+                Answer answer = DBHandler.getInstance().getAnswer(submissionID,
+                        item.getUploadId(), item.getRepeatId(), repeatCount);
+                if(answer != null){
+                    String value = answer.getAnswer();
+                    if (!TextUtils.isEmpty(value)) {
+                        if(item.getFormType() == FormItem.TYPE_YES_NO || item.getFormType() == FormItem.TYPE_PASS_FAIL){
+                            addEnableItems(item , value);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(isNotified){
+            notifyDataSetChanged();
+        }
+    }
+
+    private void addEnableItems(FormItem formItem, String value) {
+        ArrayList<FormItem> toBeAdded = new ArrayList<>();
+        ArrayList<FormItem> toBeRemoved = new ArrayList<>();
+        ArrayList<FormItem> enableItems = formItem.getEnables();
+        ArrayList<FormItem> falseEnableItems = formItem.getFalseEnables();
+        ArrayList<FormItem> naEnableItems = formItem.getNaEnables();
+
+
+        if(value.equalsIgnoreCase("1") || value.equalsIgnoreCase("true")){
+            if(enableItems!= null && !enableItems.isEmpty()){
+                toBeAdded.addAll(enableItems);
+            }
+            if(falseEnableItems!= null && !falseEnableItems.isEmpty()){
+                toBeRemoved.addAll(falseEnableItems);
+            }
+            if(naEnableItems!= null && !naEnableItems.isEmpty()){
+                toBeRemoved.addAll(naEnableItems);
+            }
+        }else if(value.equalsIgnoreCase("2") || value.equalsIgnoreCase("false")){
+            if(falseEnableItems!= null && !falseEnableItems.isEmpty()){
+                toBeAdded.addAll(falseEnableItems);
+            }
+            if(enableItems!= null && !enableItems.isEmpty()){
+                toBeRemoved.addAll(enableItems);
+            }
+            if(naEnableItems!= null && !naEnableItems.isEmpty()){
+                toBeRemoved.addAll(naEnableItems);
+            }
+        }else if(value.equalsIgnoreCase("3")){
+            if(naEnableItems!= null && !naEnableItems.isEmpty()){
+                toBeAdded.addAll(naEnableItems);
+            }
+            if(falseEnableItems!= null && !falseEnableItems.isEmpty()){
+                toBeRemoved.addAll(falseEnableItems);
+            }
+            if(enableItems!= null && !enableItems.isEmpty()){
+                toBeRemoved.addAll(enableItems);
+            }
+        }
+
+        if (!toBeRemoved.isEmpty()) {
+
+            for (FormItem item : toBeRemoved) {
+                String field = item.getUploadId();
+                for (int i = 0; i < formItems.size(); i++) {
+                    FormItem fi = formItems.get(i);
+                    String uploadId = fi.getUploadId();
+                    if (uploadId != null) {
+                        if (fi.getUploadId().equalsIgnoreCase(field)) {
+                            formItems.remove(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!toBeAdded.isEmpty()) {
+            formItems.addAll(toBeAdded);
+        }
     }
 
     private void bindDFEHolder(DFEItemHolder holder, final int position) {
@@ -523,6 +746,7 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)
                     || formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)
+                    || formItem.getKey().equalsIgnoreCase(HseqDataset.DBTable.OperativesHseq)
             ) {
                 Intent intent = new Intent(context, ListActivity.class);
                 intent.putExtra("submissionID", submissionID);
@@ -531,6 +755,7 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 intent.putExtra("keyItemType", formItem.getKey());
                 intent.putExtra("isMultiSelection", formItem.isMultiSelection());
                 intent.putExtra("isConcatDisplayText", formItem.isConcatDisplayText());
+                intent.putExtra("recipients", recipients);
                 intent.putExtra("repeatCount", repeatCount);
                 context.startActivity(intent);
             } else {
@@ -718,6 +943,36 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
+    private void bindSignatureHolder(final SignatureHolder holder, int position) {
+
+        final FormItem formItem = formItems.get(position);
+        holder.txtTitle.setText(formItem.getTitle());
+        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
+
+        holder.imgSignature.setImageDrawable(null);
+        if (answer != null) {
+            Glide.with(context).load(answer.getAnswer()).into(holder.imgSignature);
+        } else if (missingAnswerMode && !formItem.isOptional()) {
+            holder.view.setBackground(redBG);
+        }
+
+        holder.view.setOnClickListener(view -> listener.openSignature(formItem, submissionID, repeatCount));
+        if (themeColor!=null && !themeColor.isEmpty())
+        {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                holder.btnClear.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(themeColor)));
+            }
+        }
+
+        holder.btnClear.setOnClickListener(view -> {
+            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
+            if (answer1 != null) {
+                DBHandler.getInstance().removeAnswer(answer1);
+            }
+            holder.imgSignature.setImageDrawable(null);
+        });
+    }
+
     @Override
     public int getItemCount() {
         return formItems.size();
@@ -743,7 +998,47 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (answer == null || TextUtils.isEmpty(answer.getAnswer())) {
                     missingCount++;
                 }
-                if (!TextUtils.isEmpty(item.getRepeatId()) && item.getRepeatId().equalsIgnoreCase("negItems")) {
+                if (submission.getJsonFileName().equalsIgnoreCase("log_measure.json")
+                        && !TextUtils.isEmpty(item.getUploadId())
+                        && item.getUploadId().equalsIgnoreCase("measureQuantity")) {
+                    if (!TextUtils.isEmpty(answer.getAnswer())) {
+                        try {
+                            int qty = Integer.parseInt(answer.getAnswer());
+
+                            Answer code = DBHandler.getInstance().getAnswer(submissionID,
+                                    "synthCode", "measures", repeatCount);
+                            if (code != null && !TextUtils.isEmpty(code.getAnswer())) {
+                                ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID,
+                                        "synthCode", "measures");
+                                JobWorkItem workItem = DBHandler.getInstance().getJobWorkItem(submission.getJobID(), code.getAnswer());
+                                if (workItem != null) {
+
+                                    if (qty == 0 || qty > workItem.getAvailableToMeasureQuantity()) {
+                                        missingCount++;
+                                        listener.showValidationDialog("Validation Error", "Please enter correct quantity");
+                                    }
+                                    //validation check for same item
+                                    else if (answers!=null && answers.size()>1) {
+                                            for (Answer A1 : answers)
+                                            {
+                                                List<Answer> subanswers = answers.subList(answers.indexOf(A1) + 1, answers.size());
+                                                for (Answer A2 : subanswers) {
+                                                    if (A1.getAnswer().equalsIgnoreCase(A2.getAnswer()))
+                                                    {
+                                                        missingCount++;
+                                                        listener.showValidationDialog("Validation Error", "Please select different workitem!");
+                                                    }
+                                                }
+                                            }
+                                        }
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }else if (!TextUtils.isEmpty(item.getRepeatId()) && item.getRepeatId().equalsIgnoreCase("negItems")) {
                     if (!TextUtils.isEmpty(item.getUploadId()) && item.getUploadId().equalsIgnoreCase("quantity")) {
                         if (!TextUtils.isEmpty(answer.getAnswer())) {
                             try {

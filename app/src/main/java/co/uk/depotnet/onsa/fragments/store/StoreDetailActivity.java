@@ -151,6 +151,9 @@ public class StoreDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void getItems(){
+        if(!CommonUtils.validateToken(StoreDetailActivity.this)){
+            return;
+        }
 
         User user = DBHandler.getInstance().getUser();
         APICalls.getItem(user.gettoken() , barcode , staId).enqueue(new Callback<StockItems>() {

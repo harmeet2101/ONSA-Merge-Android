@@ -1,39 +1,46 @@
 package co.uk.depotnet.onsa.adapters;
 
-import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import co.uk.depotnet.onsa.R;
+import co.uk.depotnet.onsa.activities.WorkLogActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.OnItemClickListener;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.WorkLog;
+import co.uk.depotnet.onsa.modals.httpresponses.BaseTask;
 
 import java.util.ArrayList;
 
 public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHolder> {
 
-    private Context context;
+    private WorkLogActivity context;
     private ArrayList<WorkLog> items;
     private OnItemClickListener<WorkLog> listener;
     private String jobID;
     private boolean isBookOn;
     private boolean hasRFNA;
+    private boolean hasRecordReturns;
+    private boolean rfnaNotRequired;
 
-    public AdapterWorkLog(Context context, ArrayList<WorkLog> items, OnItemClickListener<WorkLog> listener,String jobID) {
+    public AdapterWorkLog(WorkLogActivity context, ArrayList<WorkLog> items, OnItemClickListener<WorkLog> listener, String jobID) {
         this.context = context;
         this.items = items;
         this.listener = listener;
         this.jobID=jobID;
         Job job = DBHandler.getInstance().getJob(jobID);
         hasRFNA = job!=null && job.hasRFNA();
+        hasRecordReturns = job!=null && job.hasRecordReturns();
+        rfnaNotRequired = job!=null && job.rfnaNotRequired();
     }
 
     @NonNull
@@ -51,18 +58,21 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final WorkLog workLog = items.get(position);
+        String jsonName = workLog.getJson();
 
-
-
-        if(position == 0 ){
+        if(position == 0){
             holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
         }else if(isBookOn){
-            holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
+            if (jsonName.equalsIgnoreCase("start_on_site.json") || isStartOnSite() ){
+                holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
+            }else {
+                holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
+            }
         }else{
             holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
         }
 
-        if(!isBookOn ){
+        if(!isBookOn && !isStartOnSite()){
             holder.imgIcon.setImageResource(R.drawable.ic_offline_queue_01);
             holder.imgIcon.setBackgroundResource(R.drawable.img_bg_cirlcle_orange);
         }else if(position == 0){
@@ -75,16 +85,24 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
                     R.drawable.img_bg_circle : R.drawable.img_bg_cirlcle_orange);
         }
 
-        if(position == 6) {
-            if (isRFNAEnable()&& isBookOn) {
+        if(jsonName.equalsIgnoreCase("rfna.json")) {
+            if (isRFNAEnable()) {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
             } else {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
             }
         }
 
-        if(position == 7) {
-            if (isEngCompEnable() && isBookOn) {
+        if(jsonName.equalsIgnoreCase("record_return.json")) {
+            if (isRecordReturnEnable()) {
+                holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
+            } else {
+                holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
+            }
+        }
+
+        if(jsonName.equalsIgnoreCase("eng_comp.json")) {
+            if (isEngCompEnable()) {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
             } else {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
@@ -93,13 +111,38 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
 
         holder.txtTitle.setText(workLog.getTitle());
 
+        ArrayList<BaseTask> baseTasks = DBHandler.getInstance().getTaskItems(jobID , workLog.getTaskId());
+
+        if(!workLog.isIndicatorVisible()){
+            holder.txtCount.setVisibility(View.GONE);
+        }else if(baseTasks.isEmpty() || (!isBookOn || !isStartOnSite())){
+            holder.txtCount.setVisibility(View.GONE);
+            holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
+        }else{
+            holder.txtCount.setVisibility(View.VISIBLE);
+            holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
+            holder.txtCount.setText(String.valueOf(baseTasks.size()));
+        }
+
         holder.view.setOnClickListener(view -> {
 
-            if(holder.getAdapterPosition() == 6 && !isRFNAEnable()) {
+            if(holder.getAdapterPosition() != 0 && (!isBookOn || (!jsonName.equalsIgnoreCase("start_on_site.json") && !isStartOnSite())) ) {
                 return;
             }
 
-            if(holder.getAdapterPosition() == 7 && !isEngCompEnable()) {
+            if(jsonName.equalsIgnoreCase("rfna.json") && !isRFNAEnable()) {
+                return;
+            }
+
+            if(jsonName.equalsIgnoreCase("record_return.json") && !isRecordReturnEnable()) {
+                return;
+            }
+
+            if(jsonName.equalsIgnoreCase("eng_comp.json") && !isEngCompEnable()) {
+                return;
+            }
+
+            if(workLog.isIndicatorVisible() && baseTasks.isEmpty()){
                 return;
             }
             listener.onItemClick(workLog, holder.getAdapterPosition());
@@ -115,9 +158,9 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
 
         View view;
         TextView txtTitle;
+        TextView txtCount;
         ImageView imgIcon;
-        RelativeLayout rlParent;
-
+        LinearLayout rlParent;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -125,22 +168,25 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
             this.txtTitle = itemView.findViewById(R.id.txt_title);
             this.imgIcon = itemView.findViewById(R.id.img_icon);
             this.rlParent=itemView.findViewById(R.id.rlParent);
+            this.txtCount = itemView.findViewById(R.id.txt_task_count);
         }
     }
 
-    private boolean isRFNAEnable(){
-        boolean status =
-                !hasRFNA &&
-                DBHandler.getInstance().getJobModuleStatus(jobID , "Start on Site") &&
-                        !DBHandler.getInstance().getJobModuleStatus(jobID , "Eng Comp");
+    private boolean isStartOnSite(){
+        return isBookOn && DBHandler.getInstance().getJobModuleStatus(jobID , "Start on Site");
+    }
 
-        return status;
+    private boolean isRFNAEnable(){
+        return isStartOnSite() && !(hasRFNA || rfnaNotRequired || DBHandler.getInstance().getJobModuleStatus(jobID , "Ready For Next Activity"));
+    }
+
+
+    private boolean isRecordReturnEnable(){
+        return isStartOnSite() && !hasRecordReturns && ((hasRFNA || rfnaNotRequired || DBHandler.getInstance().getJobModuleStatus(jobID , "Ready For Next Activity")));
     }
 
     private boolean isEngCompEnable(){
-        boolean status =
-                hasRFNA || DBHandler.getInstance().getJobModuleStatus(jobID , "Ready For Next Activity");
-
-        return status;
+        return isStartOnSite() && (hasRecordReturns  || DBHandler.getInstance().getJobModuleStatus(jobID , "Record Return"));
     }
+
 }

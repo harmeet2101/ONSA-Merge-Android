@@ -12,7 +12,6 @@ import co.uk.depotnet.onsa.modals.forms.Submission;
 
 public class VariationActivity extends AppCompatActivity implements View.OnClickListener {
 
-public static final String ARG_USER = "User";
 public static final String ARG_JOB_ID = "Job_ID";
 public static final String ARG_JOB_REFERENCE_NUMBER = "Job_Reference_Number";
 
@@ -20,7 +19,6 @@ public static final String ARG_JOB_REFERENCE_NUMBER = "Job_Reference_Number";
 
 private String jobID;
 private String jobReferenceNumber;
-private User user;
 
 @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +26,6 @@ private User user;
         setContentView(R.layout.activity_variation);
 
     Intent intent = getIntent();
-    user = intent.getParcelableExtra(ARG_USER);
     jobID = intent.getStringExtra(ARG_JOB_ID);
     jobReferenceNumber = intent.getStringExtra(ARG_JOB_REFERENCE_NUMBER);
 
@@ -63,7 +60,6 @@ private User user;
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME , submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(this , FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER , user);
         intent.putExtra(FormActivity.ARG_SUBMISSION , submission);
         startActivity(intent);
     }

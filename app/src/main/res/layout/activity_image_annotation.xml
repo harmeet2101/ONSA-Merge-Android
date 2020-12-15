@@ -245,16 +245,36 @@
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/white" />
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:background="@drawable/rectangle_shape">
+
+                <ImageView
+                    android:id="@+id/img_minus"
+                    android:layout_width="@dimen/_25sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    android:tint="@color/depotnet_color"
+                    app:srcCompat="@drawable/ic_indeterminate_check_box_black_24dp"/>
+
                 <TextView
                     android:id="@+id/text_Size"
                     android:layout_width="@dimen/_25sdp"
                     android:layout_height="@dimen/_25sdp"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="@dimen/_10sdp"
-                    android:background="@drawable/rectangle_shape"
                     android:clickable="false"
                     android:gravity="center"
                     android:text="@string/back" />
+
+                <ImageView
+                    android:id="@+id/img_plus"
+                    android:layout_width="@dimen/_25sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    android:tint="@color/depotnet_color"
+                    app:srcCompat="@drawable/ic_add_box_black_24dp"/>
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout

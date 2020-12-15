@@ -3,40 +3,21 @@
   "isProgressVisible": false,
   "screens": [
     {
-      "title": "rfna",
+      "title": "Ready For Next Activity",
       "index": 0,
-      "url":"app/jobs/{jobId}/eng-comp",
-      "photoUrl":"app/jobs/{jobId}/photos",
+      "url":"app/jobs/{jobId}/sendrfna",
       "upload": true,
       "items": [
         {
-          "type": "dropdown",
-          "uploadId": "outcome",
-          "key": "engCompOutcomes",
-          "title": "Eng Comp Outcome",
+          "type": "txt_bold_head",
+          "title": "Please select one of the following options in order to update Openreach and proceed to Eng Comp"
+        },
+        {
+          "type": "rfna_toggle",
+          "uploadId": "isRFNARequired",
+          "title": "Activity is complete and site is ready for the next activity to proceed",
           "optional": false
-        },
-        {
-          "type": "dropdown",
-          "uploadId": "recordReturn",
-          "key": "recordReturn",
-          "title": "Record Return",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "comment",
-          "title": "Comments",
-          "optional": true
-        },
-        {
-          "type": "photo",
-          "title": "Eng Comp",
-          "photoSize": 1,
-          "photoRequired": 1,
-          "photoId": "25"
         }
-
       ]
     }
   ]

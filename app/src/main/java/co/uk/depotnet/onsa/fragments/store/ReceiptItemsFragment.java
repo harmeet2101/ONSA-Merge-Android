@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
@@ -19,7 +21,6 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.adapters.store.AdapterReceiptItems;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Submission;
@@ -28,6 +29,7 @@ import co.uk.depotnet.onsa.modals.store.ReceiptItems;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
+import co.uk.depotnet.onsa.utils.Utils;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +39,6 @@ import retrofit2.Response;
 public class ReceiptItemsFragment extends Fragment implements View.OnClickListener {
 
     private static final String ARG_RECEIPT = "Receipts";
-    private static final String ARG_USER = "User";
     private static final String ARG_SUBMISSION_ID = "_arg_submission_id";
     private Receipts receipt;
     private FragmentActionListener listener;
@@ -46,16 +47,10 @@ public class ReceiptItemsFragment extends Fragment implements View.OnClickListen
     private Context context;
     private long submissionId;
 
-
-    public ReceiptItemsFragment() {
-    }
-
-
-    public static ReceiptItemsFragment newInstance(Receipts receipts, User user , long submissionId) {
+    public static ReceiptItemsFragment newInstance(Receipts receipts, long submissionId) {
         ReceiptItemsFragment fragment = new ReceiptItemsFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_RECEIPT, receipts);
-        args.putParcelable(ARG_USER, user);
         args.putLong(ARG_SUBMISSION_ID, submissionId);
         fragment.setArguments(args);
         return fragment;
@@ -67,7 +62,7 @@ public class ReceiptItemsFragment extends Fragment implements View.OnClickListen
         Bundle args = getArguments();
         if (args != null) {
             receipt = args.getParcelable(ARG_RECEIPT);
-            user = args.getParcelable(ARG_USER);
+            user = DBHandler.getInstance().getUser();
             submissionId = args.getLong(ARG_SUBMISSION_ID);
             ArrayList<ReceiptItems> receiptItems =new ArrayList<>();
             if (receipt != null && receipt.getItems() != null && !receipt.getItems().isEmpty()) {
@@ -81,7 +76,21 @@ public class ReceiptItemsFragment extends Fragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_receipt_items_list, container, false);
-
+        try {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            if (Utils.store_call) {
+                params.bottomMargin += 160;
+                view.requestLayout();
+            }
+            else {
+                params.bottomMargin += 20;
+                view.requestLayout();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
@@ -107,7 +116,7 @@ public class ReceiptItemsFragment extends Fragment implements View.OnClickListen
     }
 
 
-    public void onAccept(Receipts items) {
+    private void onAccept(Receipts items) {
 
         adapterReceiptItems.clearFocus();
         String jsonFileName = "store_receipt_accept.json";
@@ -123,14 +132,13 @@ public class ReceiptItemsFragment extends Fragment implements View.OnClickListen
 
 
         Intent intent = new Intent(context, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, DBHandler.getInstance().getUser());
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         intent.putExtra(FormActivity.ARG_RECEIPT, items);
         startActivityForResult(intent, 1000);
     }
 
 
-    public void onReject(Receipts items) {
+    private void onReject(Receipts items) {
         adapterReceiptItems.clearFocus();
         String jsonFileName = "store_receipt_reject.json";
 
@@ -145,7 +153,6 @@ public class ReceiptItemsFragment extends Fragment implements View.OnClickListen
 
 
         Intent intent = new Intent(context, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, DBHandler.getInstance().getUser());
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         intent.putExtra(FormActivity.ARG_RECEIPT, items);
         startActivityForResult(intent, 1000);
@@ -160,6 +167,9 @@ public class ReceiptItemsFragment extends Fragment implements View.OnClickListen
     }
 
     private void getReceipts() {
+        if(!CommonUtils.validateToken(context)){
+            return;
+        }
         listener.showProgressBar();
         APICalls.getReceipts(user.gettoken()).enqueue(new Callback<DataReceipts>() {
             @Override

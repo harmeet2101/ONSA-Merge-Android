@@ -1,0 +1,36 @@
+{
+  "title": "Service/Material",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Service/Material",
+      "index": 0,
+      "url":"app/jobs/{jobId}/log-service-material-drop",
+      "photoUrl": "app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "task_list_service_material",
+          "taskId": 1,
+          "title": "Select Task",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comments",
+          "title": "Comments",
+          "hint": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Service/Material Photo",
+          "photoSize": 10,
+          "photoRequired": 3,
+          "photoId": "120"
+        }
+
+      ]
+    }
+  ]
+}

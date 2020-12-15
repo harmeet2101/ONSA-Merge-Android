@@ -41,6 +41,7 @@ public class ImageAnnotationActivity extends AppCompatActivity implements View.O
 //    private Bitmap bitmap;
     private Answer photo;
     private int position;
+    private ImageView imgBtnPlus , imgBtnMinus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,8 @@ public class ImageAnnotationActivity extends AppCompatActivity implements View.O
         llBtnRotate = findViewById(R.id.ll_btn_rotate);
 
 //        imgClose = findViewById(R.id.img_close);
+        imgBtnPlus = findViewById(R.id.img_plus);
+        imgBtnMinus = findViewById(R.id.img_minus);
         imgBack = findViewById(R.id.btn_img_back);
         imgRemoveChange = findViewById(R.id.btn_img_remove_change);
         imgAddChange = findViewById(R.id.btn_img_add_change);
@@ -91,13 +94,15 @@ public class ImageAnnotationActivity extends AppCompatActivity implements View.O
         llBtnLine.setOnClickListener(this);
         llBtnSquare.setOnClickListener(this);
         llBtnArrow.setOnClickListener(this);
-        llPointSize.setOnClickListener(this);
+//        llPointSize.setOnClickListener(this);
         llPickColor.setOnClickListener(this);
         llBtnShapes.setOnClickListener(this);
         llBtnRotate.setOnClickListener(this);
         findViewById(R.id.btn_clear).setOnClickListener(this);
 
 //        imgClose.setOnClickListener(this);
+        imgBtnMinus.setOnClickListener(this);
+        imgBtnPlus.setOnClickListener(this);
         imgBack.setOnClickListener(this);
         imgRemoveChange.setOnClickListener(this);
         imgAddChange.setOnClickListener(this);
@@ -178,8 +183,16 @@ public class ImageAnnotationActivity extends AppCompatActivity implements View.O
             case R.id.img_close:
 //                llAddColorSize.setVisibility(View.GONE);
                 break;
-            case R.id.ll_point_size:
+            case R.id.img_plus:
                 pointSizeCount = pointSizeCount + 2;
+                textPointSize.setText(String.valueOf(pointSizeCount));
+                annotationView.setBrushSize(pointSizeCount);
+                break;
+            case R.id.img_minus:
+                if(pointSizeCount == 2){
+                    return;
+                }
+                pointSizeCount = pointSizeCount - 2;
                 textPointSize.setText(String.valueOf(pointSizeCount));
                 annotationView.setBrushSize(pointSizeCount);
                 break;

@@ -6,10 +6,20 @@ import co.uk.depotnet.onsa.modals.Feature;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.MeasureItems;
 import co.uk.depotnet.onsa.modals.MenSplit;
+import co.uk.depotnet.onsa.modals.actions.OutstandingAction;
+import co.uk.depotnet.onsa.modals.briefings.BriefingsDocModal;
+import co.uk.depotnet.onsa.modals.briefings.BriefingsDocument;
+import co.uk.depotnet.onsa.modals.briefings.IssuedModel;
+import co.uk.depotnet.onsa.modals.briefings.ReceivedModel;
+import co.uk.depotnet.onsa.modals.hseq.HseqDataset;
+import co.uk.depotnet.onsa.modals.hseq.ToolTipModel;
 import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
 import co.uk.depotnet.onsa.modals.httprequests.ResetPassword;
 import co.uk.depotnet.onsa.modals.httprequests.VerificationRequest;
+import co.uk.depotnet.onsa.modals.httpresponses.SiteActivityModel;
 import co.uk.depotnet.onsa.modals.httpresponses.VerificationResult;
+import co.uk.depotnet.onsa.modals.notify.NotifyModel;
+import co.uk.depotnet.onsa.modals.notify.NotifyReadPush;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.responses.JobResponse;
 import co.uk.depotnet.onsa.modals.KitBagDocument;
@@ -20,10 +30,13 @@ import co.uk.depotnet.onsa.modals.Vehicle;
 import co.uk.depotnet.onsa.modals.httprequests.UserRequest;
 import co.uk.depotnet.onsa.modals.httpresponses.BaseTask;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import co.uk.depotnet.onsa.modals.responses.MeasureItemResponse;
 import co.uk.depotnet.onsa.modals.responses.MenSplitResponse;
+import co.uk.depotnet.onsa.modals.schedule.JobEstimate;
+import co.uk.depotnet.onsa.modals.schedule.Schedule;
 import co.uk.depotnet.onsa.modals.store.DataMyRequests;
 import co.uk.depotnet.onsa.modals.store.DataMyStores;
 import co.uk.depotnet.onsa.modals.store.DataReceipts;
@@ -99,5 +112,51 @@ public interface APIInterface {
 
     @GET("app/getmeasureitems")
     Call<MeasureItemResponse> getMeasureItems();
+
+    @GET("app/jobs/{jobId}/get-site-activity-tasks/{siteActivityTypeId}")
+    Call<SiteActivityModel> GetSiteActivityTasks(@Path("jobId") String JobID , @Path("siteActivityTypeId") int SiteActivityTypeID );
+
+    @GET("apphseq/dataset")
+    Call<HseqDataset> getHSEQDataSet();
+
+    @GET("apphseq/scheduledinspections")
+    Call<List<Schedule>> getHSEQScheduleInspection();
+
+    @GET("apphseq/briefings")
+    Call<List<BriefingsDocModal>> getBriefings();
+
+    @GET("apphseq/briefings/{briefingId}")
+    Call<BriefingsDocument> GetBriefingsDoc(@Path("briefingId") String briefingId);
+
+    @GET("apphseq/briefings/sharedbyme")
+    Call<List<IssuedModel>> getBriefingsIssued();
+
+    @GET("apphseq/briefings/readbyme")
+    Call<List<ReceivedModel>> getBriefingsReceived();
+
+    @GET("apphseq/actions/open")
+    Call<List<OutstandingAction>> getActionsOutstanding();
+
+    @GET("apphseq/actions/closed")
+    Call<List<OutstandingAction>> getActionsCleared();
+
+    @GET("apphseq/tags")
+    Call<ArrayList<String>> methodReturnsTags();
+
+    @GET("apphseq/jobs/{estimateNumber}")
+    Call<JobEstimate> GetJobEstimate(@Path("estimateNumber") String estimateNo);
+
+    @GET("apphseq/inspections/template-versions/{inspectionTemplateVersionId}/questions")
+    Call<ArrayList<ToolTipModel>> GetInspectionToolTip(@Path("inspectionTemplateVersionId") String templateid);
+
+    @GET("apphseq/notifications")
+    Call<ArrayList<NotifyModel>> GetAllNotification();
+
+    @POST("apphseq/notifications/mark-as-read")
+    Call<NotifyReadPush> notificationRead(@Body NotifyReadPush readPush);
+
+    @POST("apphseq/notifications/mark-as-pushed")
+    Call<NotifyReadPush> notificationpush(@Body NotifyReadPush readPush);
+
 
 }

@@ -28,11 +28,20 @@ public class User implements Parcelable {
     private String userName;
     private String userId;
     private String token;
+    private String tokenId;
     private String foreName;
     private boolean isDisclaimerAccepted;
     private boolean canSeeCommercial;
     private boolean twoFactorEnabled;
     private boolean twoFactorMandatory;
+    private boolean captureMfaChallenge;
+    private boolean isLoggedIn;
+    private boolean backfill;
+    private boolean reinstatement;
+    private boolean muckaway;
+    private boolean serviceMaterialDrop;
+    private boolean siteClear;
+    private String qrCodeBase64;
 
     public void setTwoFactorMandatory(boolean twoFactorMandatory) {
         this.twoFactorMandatory = twoFactorMandatory;
@@ -46,11 +55,20 @@ public class User implements Parcelable {
         userName = in.readString();
         userId = in.readString();
         token = in.readString();
+        tokenId = in.readString();
         foreName = in.readString();
         isDisclaimerAccepted = in.readInt() == 1;
         canSeeCommercial = in.readInt() == 1;
         twoFactorEnabled = in.readInt() == 1;
         twoFactorMandatory = in.readInt() == 1;
+        captureMfaChallenge = in.readInt() == 1;
+        isLoggedIn = in.readInt() == 1;
+        backfill = in.readInt() == 1;
+        reinstatement = in.readInt() == 1;
+        muckaway = in.readInt() == 1;
+        serviceMaterialDrop = in.readInt() == 1;
+        siteClear = in.readInt() == 1;
+        qrCodeBase64 = in.readString();
     }
 
     public User(Cursor cursor) {
@@ -65,11 +83,20 @@ public class User implements Parcelable {
         userName = cursor.getString(cursor.getColumnIndex(DBTable.userName));
         userId = cursor.getString(cursor.getColumnIndex(DBTable.userId));
         token = cursor.getString(cursor.getColumnIndex(DBTable.token));
+        tokenId = cursor.getString(cursor.getColumnIndex(DBTable.tokenId));
         foreName = cursor.getString(cursor.getColumnIndex(DBTable.foreName));
         isDisclaimerAccepted = cursor.getInt(cursor.getColumnIndex(DBTable.isDisclaimerAccepted)) == 1;
         canSeeCommercial = cursor.getInt(cursor.getColumnIndex(DBTable.canSeeCommercial)) == 1;
         twoFactorEnabled = cursor.getInt(cursor.getColumnIndex(DBTable.twoFactorEnabled)) == 1;
         twoFactorMandatory = cursor.getInt(cursor.getColumnIndex(DBTable.twoFactorMandatory)) == 1;
+        captureMfaChallenge = cursor.getInt(cursor.getColumnIndex(DBTable.captureMfaChallenge)) == 1;
+        isLoggedIn = cursor.getInt(cursor.getColumnIndex(DBTable.isLoggedIn)) == 1;
+        backfill = cursor.getInt(cursor.getColumnIndex(DBTable.backfill)) == 1;
+        reinstatement = cursor.getInt(cursor.getColumnIndex(DBTable.reinstatement)) == 1;
+        muckaway = cursor.getInt(cursor.getColumnIndex(DBTable.muckaway)) == 1;
+        serviceMaterialDrop = cursor.getInt(cursor.getColumnIndex(DBTable.serviceMaterialDrop)) == 1;
+        siteClear = cursor.getInt(cursor.getColumnIndex(DBTable.siteClear)) == 1;
+        qrCodeBase64 = cursor.getString(cursor.getColumnIndex(DBTable.qrCodeBase64));
 
     }
 
@@ -141,6 +168,22 @@ public class User implements Parcelable {
         return isDisclaimerAccepted;
     }
 
+    public boolean isCaptureMfaChallenge() {
+        return captureMfaChallenge;
+    }
+
+    public String getTokenId() {
+        return tokenId;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        isLoggedIn = loggedIn;
+    }
+
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+
     public boolean isCanSeeCommercial() {
         return canSeeCommercial;
     }
@@ -151,6 +194,30 @@ public class User implements Parcelable {
 
     public boolean isTwoFactorMandatory() {
         return twoFactorMandatory;
+    }
+
+    public boolean isBackfill() {
+        return backfill;
+    }
+
+    public boolean isReinstatement() {
+        return reinstatement;
+    }
+
+    public boolean isSiteClear() {
+        return siteClear;
+    }
+
+    public boolean isMuckaway() {
+        return muckaway;
+    }
+
+    public boolean isServiceMaterialDrop() {
+        return serviceMaterialDrop;
+    }
+
+    public String getQrCodeBase64() {
+        return qrCodeBase64;
     }
 
     public void setDisclaimerAccepted(boolean disclaimerAccepted) {
@@ -171,11 +238,20 @@ public class User implements Parcelable {
         dest.writeString(userName);
         dest.writeString(userId);
         dest.writeString(token);
+        dest.writeString(tokenId);
         dest.writeString(foreName);
         dest.writeInt(isDisclaimerAccepted ? 1 : 0);
         dest.writeInt(canSeeCommercial ? 1 : 0);
         dest.writeInt(twoFactorEnabled ? 1 : 0);
         dest.writeInt(twoFactorMandatory ? 1 : 0);
+        dest.writeInt(captureMfaChallenge ? 1 : 0);
+        dest.writeInt(isLoggedIn ? 1 : 0);
+        dest.writeInt(backfill ? 1 : 0);
+        dest.writeInt(reinstatement ? 1 : 0);
+        dest.writeInt(muckaway ? 1 : 0);
+        dest.writeInt(serviceMaterialDrop ? 1 : 0);
+        dest.writeInt(siteClear ? 1 : 0);
+        dest.writeString(qrCodeBase64);
     }
 
     public ContentValues toContentValues() {
@@ -206,6 +282,15 @@ public class User implements Parcelable {
         cv.put(DBTable.canSeeCommercial, this.canSeeCommercial);
         cv.put(DBTable.twoFactorEnabled, this.twoFactorEnabled);
         cv.put(DBTable.twoFactorMandatory, this.twoFactorMandatory);
+        cv.put(DBTable.captureMfaChallenge, this.captureMfaChallenge);
+        cv.put(DBTable.isLoggedIn, this.isLoggedIn);
+        cv.put(DBTable.backfill, this.backfill);
+        cv.put(DBTable.reinstatement, this.reinstatement);
+        cv.put(DBTable.muckaway, this.muckaway);
+        cv.put(DBTable.serviceMaterialDrop, this.serviceMaterialDrop);
+        cv.put(DBTable.siteClear, this.siteClear);
+        cv.put(DBTable.siteClear, this.siteClear);
+        cv.put(DBTable.qrCodeBase64, this.qrCodeBase64);
 
         return cv;
     }
@@ -219,11 +304,20 @@ public class User implements Parcelable {
         public static final String userName = "userName";
         public static final String userId = "userId";
         public static final String token = "token";
+        public static final String tokenId = "tokenId";
         public static final String foreName = "foreName";
         public static final String isDisclaimerAccepted = "isDisclaimerAccepted";
         public static final String canSeeCommercial = "canSeeCommercial";
         public static final String twoFactorEnabled = "twoFactorEnabled";
         public static final String twoFactorMandatory = "twoFactorMandatory";
+        public static final String captureMfaChallenge = "captureMfaChallenge";
+        public static final String isLoggedIn = "isLoggedIn";
+        public static final String backfill = "backfill";
+        public static final String reinstatement = "reinstatement";
+        public static final String muckaway = "muckaway";
+        public static final String serviceMaterialDrop = "serviceMaterialDrop";
+        public static final String siteClear = "siteClear";
+        public static final String qrCodeBase64 = "qrCodeBase64";
 
     }
 }

@@ -51,7 +51,7 @@ public class AdapterStockListItem extends
                                  final int position) {
 
         final StockItems stockItems = items.get(position);
-        if(!TextUtils.isEmpty(stockItems.getdescription())){
+        if(!TextUtils.isEmpty(    stockItems.getdescription())){
             holder.txtDescription.setVisibility(View.VISIBLE);
             holder.txtDescription.setText(stockItems.getdescription());
         }else{

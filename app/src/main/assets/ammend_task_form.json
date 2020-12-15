@@ -1,0 +1,41 @@
+{
+  "dialogItems": [
+    {
+      "type": "dropdown",
+      "uploadId": "surfaceTypeId",
+      "key": "surfaceTypes",
+      "repeatId": "amendments",
+      "title": "Surface Types",
+      "optional": true
+    },
+    {
+      "type": "dropdown",
+      "uploadId": "materialTypeId",
+      "key": "materialTypes",
+      "repeatId": "amendments",
+      "title": "Material Types",
+      "optional": true
+    },
+    {
+      "type": "number",
+      "uploadId": "length",
+      "repeatId": "amendments",
+      "title": "Length",
+      "optional": false
+    },
+    {
+      "type": "number",
+      "uploadId": "width",
+      "repeatId": "amendments",
+      "title": "Width",
+      "optional": false
+    },
+    {
+      "type": "number",
+      "uploadId": "depth",
+      "repeatId": "amendments",
+      "title": "Depth",
+      "optional": false
+    }
+  ]
+}

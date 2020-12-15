@@ -8,11 +8,15 @@ public class WorkLog implements Parcelable {
     private String title;
     private String json;
     private boolean status;
+    private int taskId;
+    private boolean isIndicatorVisible;
 
     protected WorkLog(Parcel in) {
         title = in.readString();
         json = in.readString();
         status = in.readByte() != 0;
+        taskId = in.readInt();
+        isIndicatorVisible = in.readByte() != 0;
     }
 
     public static final Creator<WorkLog> CREATOR = new Creator<WorkLog>() {
@@ -37,6 +41,12 @@ public class WorkLog implements Parcelable {
         parcel.writeString(title);
         parcel.writeString(json);
         parcel.writeByte((byte) (status ? 1 : 0));
+        parcel.writeInt(taskId);
+        parcel.writeByte((byte) (isIndicatorVisible ? 1 : 0));
+    }
+
+    public int getTaskId() {
+        return taskId;
     }
 
     public String getTitle() {
@@ -61,5 +71,13 @@ public class WorkLog implements Parcelable {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public boolean isIndicatorVisible() {
+        return isIndicatorVisible;
+    }
+
+    public void setIndicatorVisible(boolean indicatorVisible) {
+        isIndicatorVisible = indicatorVisible;
     }
 }

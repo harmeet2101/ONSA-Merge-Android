@@ -1,0 +1,31 @@
+{
+  "title": "Cannot Rectify",
+  "isProgressVisible": false,
+  "themeColor": "#FC9F5B",
+  "screens": [
+    {
+      "title": "Cannot Rectify",
+      "index": 0,
+      "url":"apphseq/actions/close-action",
+      "photoUrl":"app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "cannotBeRectifiedComments",
+          "title": "Comments",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "uploadId": "fileBytes",
+          "title": "Please enter any additional comments.",
+          "photoSize": 5,
+          "photoRequired": 1,
+          "repeatId": "photos",
+          "photoId": "fileBytes"
+        }
+      ]
+    }
+  ]
+}

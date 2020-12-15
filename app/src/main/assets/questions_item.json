@@ -1,0 +1,102 @@
+{
+  "dialogItems": [
+    {
+      "type": "yes_no_na_tooltip",
+      "uploadId": "questionId",
+      "toolTip": "If not, has it been updated",
+      "title": "Was this fault incorrectly reported?",
+      "optional": false,
+      "repeatId": "questions",
+      "enables": [
+        {
+          "type": "et_long_text",
+          "uploadId": "comments",
+          "title": "Comments",
+          "hint": "Comments",
+          "repeatId": "questions",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "Slg Questions Photo",
+          "uploadId": "fileBytes",
+          "photoSize": 20,
+          "photoRequired": 0,
+          "photoId": "fileBytes"
+        }
+      ],
+      "falseEnables": [
+        {
+          "type": "switch_layout",
+          "uploadId": "actionWasRectifiedOnSite",
+          "title": "Rectified on Site?",
+          "repeatId": "questions",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_short_text",
+              "uploadId": "actionCorrectiveMeasure",
+              "repeatId": "questions",
+              "title": "corrective measures comments",
+              "hint": "Please enter any comments/ corrective measures",
+              "optional": false
+            },
+            {
+              "type": "et_short_text",
+              "uploadId": "actionDefectComments",
+              "repeatId": "questions",
+              "title": "defect comments",
+              "hint": "Please enter any comments/ corrective measures/ defect comments",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "Slg Questions Photo",
+              "uploadId": "fileBytes",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "fileBytes"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_short_text",
+              "uploadId": "actionDefectComments",
+              "repeatId": "questions",
+              "title": "defect comments",
+              "hint": "Please enter any comments/ corrective measures/ defect comments",
+              "optional": false
+            },
+            {
+              "type": "dropdown",
+              "uploadId": "actionAssignedToUserId",
+              "key": "InspectorsHseq",
+              "isMultiSelection": false,
+              "isConcatDisplayText": false,
+              "title": "Inspector",
+              "hint": "Select Inspector",
+              "repeatId": "questions",
+              "optional": false
+            },
+            {
+              "type": "calender",
+              "uploadId": "actionDueDate",
+              "title": "Due Date",
+              "hint": "Select Due Date",
+              "repeatId": "questions",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "Slg Questions Photo",
+              "uploadId": "fileBytes",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "fileBytes"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

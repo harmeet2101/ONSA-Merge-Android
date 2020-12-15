@@ -11,12 +11,13 @@ public class LocationHolder extends RecyclerView.ViewHolder {
     public View view;
     public TextView txtTitle;
     public TextView txtLocation;
-
+    public TextView txtBtnAddress;
 
     public LocationHolder(@NonNull View itemView) {
         super(itemView);
         this.view = itemView;
         this.txtTitle = itemView.findViewById(R.id.txt_title);
         this.txtLocation = itemView.findViewById(R.id.txt_location);
+        this.txtBtnAddress = itemView.findViewById(R.id.txt_fetch_address);
     }
 }

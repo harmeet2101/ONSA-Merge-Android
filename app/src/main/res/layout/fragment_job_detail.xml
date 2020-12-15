@@ -52,8 +52,7 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_300sdp"
-                    android:background="@color/fire"
-                    >
+                    android:background="@color/fire">
 
                     <com.google.android.gms.maps.MapView
                         android:id="@+id/map_view"
@@ -63,11 +62,11 @@
                     <ImageView
                         android:id="@+id/btn_directions"
                         app:srcCompat="@drawable/ic_navigation"
-                        android:rotation="-45"
-                        android:padding="@dimen/_8sdp"
-                        android:layout_width="@dimen/_48sdp"
-                        android:layout_height="@dimen/_48sdp"
-                        android:layout_margin="@dimen/_10sdp"
+                        android:rotation="45"
+                        android:padding="@dimen/_6sdp"
+                        android:layout_width="@dimen/_32sdp"
+                        android:layout_height="@dimen/_32sdp"
+                        android:layout_margin="@dimen/_8sdp"
                         android:layout_gravity="bottom|end"
                         android:tint="@color/depotnet_color"
                         android:background="@drawable/img_bg_circle"

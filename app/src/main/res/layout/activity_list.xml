@@ -28,14 +28,14 @@
                 android:background="@color/depotnet_color"
                 android:layout_centerVertical="true"
                 android:queryHint="Search here"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <ImageView
                 android:id="@+id/btn_img_search"
                 android:layout_width="@dimen/_24sdp"
                 android:layout_height="@dimen/_24sdp"
                 android:tint="@color/white"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_centerVertical="true"
                 app:srcCompat="@drawable/ic_search" />
 

@@ -65,6 +65,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import co.uk.depotnet.onsa.R;
+import co.uk.depotnet.onsa.activities.ui.EditShareActivity;
 import co.uk.depotnet.onsa.adapters.AdapterCameraPhoto;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.LocationListener;
@@ -76,7 +77,6 @@ import co.uk.depotnet.onsa.utils.PathUtil;
 import co.uk.depotnet.onsa.utils.Utils;
 import co.uk.depotnet.onsa.views.CameraView;
 
-
 public class CameraActivity extends AppCompatActivity implements
         ActivityCompat.OnRequestPermissionsResultCallback,
         View.OnClickListener, AdapterCameraPhoto.OnImageChange,
@@ -85,10 +85,10 @@ public class CameraActivity extends AppCompatActivity implements
     public static final String BACK_STACK_TAG = CameraActivity.class.getName();
     public static final int PICK_IMAGE_REQUEST = 1001;
     public static final int PICK_MODIFY_IMAGE = 1002;
-
     public static final String ARG_SUBMISSION_ID = "_arg_submission_id";
     public static final String ARG_FORM_ITEM = "_arg_form_item";
     public static final String ARG_REPEAT = "_arg_repeat";
+    public static final String ARG_COLOR = "color";
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 0;
@@ -121,6 +121,7 @@ public class CameraActivity extends AppCompatActivity implements
     private LinearLayout llTimer;
     private TextView tvTimer;
     private boolean isVideoModeOn;
+    private String themeColor;
 
     private SimpleTarget target = new SimpleTarget<BitmapDrawable>() {
 
@@ -204,9 +205,9 @@ public class CameraActivity extends AppCompatActivity implements
         formItem = intent.getParcelableExtra(ARG_FORM_ITEM);
         submissionID = intent.getLongExtra(ARG_SUBMISSION_ID, 0);
         repeatCount = intent.getIntExtra(ARG_REPEAT, 0);
+        themeColor = intent.getStringExtra(ARG_COLOR);
         title = formItem.getTitle();
         initPhotos();
-
 
         btnCancel = findViewById(R.id.img_cancel);
         btnTakePic = findViewById(R.id.img_btn_camera);
@@ -222,7 +223,6 @@ public class CameraActivity extends AppCompatActivity implements
         llTimer = findViewById(R.id.llTimer);
         tvTimer = findViewById(R.id.tvTimer);
 
-
         btnCancel.setOnClickListener(this);
         btnTakePic.setOnClickListener(this);
         btnGallery.setOnClickListener(this);
@@ -232,7 +232,7 @@ public class CameraActivity extends AppCompatActivity implements
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
         if (photos != null && photos.size() > 0)
-            adapter = new AdapterCameraPhoto(this, answers , this);
+            adapter = new AdapterCameraPhoto(this, answers, this);
         recyclerView.setAdapter(adapter);
         pictureCallback = (data, camera) -> {
             File pictureFile = null;
@@ -252,7 +252,7 @@ public class CameraActivity extends AppCompatActivity implements
 //                FileOutputStream fos = new FileOutputStream(pictureFile);
 //                fos.write(data);
 //                fos.close();
-                changeOrientation(data , pictureFile.getAbsolutePath());
+                changeOrientation(data, pictureFile.getAbsolutePath());
                 setPicture(pictureFile.getPath());
             } catch (Exception e) {
                 restartCamera();
@@ -267,8 +267,8 @@ public class CameraActivity extends AppCompatActivity implements
 
 
         answers.addAll(DBHandler.getInstance().getPhotos(submissionID, String.valueOf(formItem.getPhotoId()),
-                formItem.getTitle() , repeatCount));
-        for (int i = 0 ; i < answers.size(); i++){
+                formItem.getTitle(), repeatCount));
+        for (int i = 0; i < answers.size(); i++) {
             photos.get(i).setUrl(answers.get(i).getAnswer());
         }
     }
@@ -312,7 +312,20 @@ public class CameraActivity extends AppCompatActivity implements
                 takePicture();
                 break;
             case R.id.img_btn_gallery:
-                openGallery();
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    //   startCameraPreview();
+                } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_GRANTED &&
+                        ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                == PackageManager.PERMISSION_GRANTED &&
+                        ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                                == PackageManager.PERMISSION_GRANTED) {
+                    openGallery();
+                } else {
+                    requestPermissions(
+                            new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO},
+                            MY_PERMISSIONS_REQUEST_CAMERA);
+                }
                 break;
             case R.id.img_btn_video:
                 isVideoModeOn = !isVideoModeOn;
@@ -324,10 +337,27 @@ public class CameraActivity extends AppCompatActivity implements
 
     @Override
     public void notifyImage(Answer photo, int position) {
-        Intent intent = new Intent(this , ImageAnnotationActivity.class);
-        intent.putExtra("photos" , photo);
-        intent.putExtra("POSITION" , position);
-        startActivityForResult(intent , PICK_MODIFY_IMAGE);
+
+        if (photos == null || photos.isEmpty()) {
+            return;
+        }
+        Photo p = photos.get(position);
+        String photoUrl = p.getUrl();
+        if (TextUtils.isEmpty(photoUrl)) {
+            return;
+        }
+        //Intent intent = new Intent(this , ImageAnnotationActivity.class);
+        Intent intent = new Intent(this, EditShareActivity.class);
+        intent.putExtra("photos", photo);
+        intent.putExtra("photomodel", p);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.putExtra("POSITION", position);
+        intent.putExtra(ARG_COLOR, themeColor);
+        startActivityForResult(intent, PICK_MODIFY_IMAGE);
+//        Intent intent = new Intent(this , ImageAnnotationActivity.class);
+//        intent.putExtra("photos" , photo);
+//        intent.putExtra("POSITION" , position);
+//        startActivityForResult(intent , PICK_MODIFY_IMAGE);
     }
 
     private void startVideoCapturing() {
@@ -398,8 +428,8 @@ public class CameraActivity extends AppCompatActivity implements
         }
 
         int currentIndex = answers.size();
-        if(currentIndex >= photos.size()){
-            currentIndex = photos.size()-1;
+        if (currentIndex >= photos.size()) {
+            currentIndex = photos.size() - 1;
         }
 
         Photo photoTaken = photos.get(currentIndex);
@@ -419,10 +449,10 @@ public class CameraActivity extends AppCompatActivity implements
         answer.setRepeatCount(repeatCount);
         answer.setDisplayAnswer(photoTaken.getTitle());
         photoTaken.setUrl(picturePath);
-        if(answers.size() < photos.size()) {
+        if (answers.size() < photos.size()) {
             this.answers.add(answer);
-        }else{
-            this.answers.set(photos.size()-1 , answer);
+        } else {
+            this.answers.set(photos.size() - 1, answer);
         }
         DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
         lastPhotoPath = picturePath;
@@ -490,19 +520,18 @@ public class CameraActivity extends AppCompatActivity implements
             //  startCameraPreview();
             checkAndStart();
         } else {
-            if(!isLocationPermissionFirstTime) {
+            if (!isLocationPermissionFirstTime) {
                 isLocationPermissionFirstTime = true;
                 requestPermissions(
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                         MY_PERMISSIONS_LOCATION);
             }
         }
-
     }
 
     private void checkAndStart() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            startCameraPreview();
+            //   startCameraPreview();
         } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -588,10 +617,10 @@ public class CameraActivity extends AppCompatActivity implements
         }
     }
 
-    private void changeOrientation(byte[] data , String fileUrl) {
+    private void changeOrientation(byte[] data, String fileUrl) {
 
         int orientation = cameraView.getOrientation();
-        Bitmap bmp  = BitmapFactory.decodeByteArray(data , 0 , data.length);
+        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
 //        Bitmap bmp = BitmapFactory.decodeFile(fileUrl);
 //        Bitmap bmp = BitmapFactory.decodeFile(photopath);
 
@@ -679,7 +708,11 @@ public class CameraActivity extends AppCompatActivity implements
                                 startActivity(intent);
                                 dialogInterface.dismiss();
                             })
-                            .setNegativeButton(getString(R.string.generic_cancel), (dialogInterface, i) -> dialogInterface.dismiss());
+                            .setNegativeButton(getString(R.string.generic_cancel), (dialogInterface, i) -> {
+                                isLocationPermissionFirstTime = false;
+                                dialogInterface.dismiss();
+                                checkLocation();
+                            });
                     dialog.show();
                 }
                 startCameraPreview();
@@ -702,8 +735,8 @@ public class CameraActivity extends AppCompatActivity implements
             }
         } else if (resultCode == Activity.RESULT_OK && requestCode == PICK_MODIFY_IMAGE) {
             Answer photo = data.getParcelableExtra("photo");
-            int position = data.getIntExtra("position" , 0);
-            answers.set(position , photo);
+            int position = data.getIntExtra("position", 0);
+            answers.set(position, photo);
             adapter.notifyDataSetChanged();
         }
     }
@@ -784,7 +817,10 @@ public class CameraActivity extends AppCompatActivity implements
                                 requestPermissions(permissions, INTENT_PERMISSION);
                             }
                         })
-                        .setNegativeButton(getString(android.R.string.cancel), (dialog12, which) -> dialog12.dismiss());
+                        .setNegativeButton(getString(android.R.string.cancel), (dialog12, which) -> {
+                            dialog12.dismiss();
+                            checkAndStart();
+                        });
                 dialog.show();
             } else {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -808,7 +844,7 @@ public class CameraActivity extends AppCompatActivity implements
 
             //ask user to grant permission
             String permissionRationale = getString(R.string.location_default_permission_rationale);
-            if(!isLocationPermissionFirstTime) {
+            if (!isLocationPermissionFirstTime) {
                 isLocationPermissionFirstTime = true;
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                                 Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -820,18 +856,14 @@ public class CameraActivity extends AppCompatActivity implements
 
             mFusedLocationClient.getLastLocation()
                     .addOnSuccessListener(location -> {
-                        // GPS location can be null if GPS is switched off
                         if (location != null) {
                             listener.onSuccess(location);
                         } else {
-//                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                             listener.onFailure();
                         }
                     })
                     .addOnFailureListener(e -> {
                         listener.onFailure();
-                        Log.d("ADD JOB", "Error trying to get last GPS location");
-                        e.printStackTrace();
                     });
         }
     }

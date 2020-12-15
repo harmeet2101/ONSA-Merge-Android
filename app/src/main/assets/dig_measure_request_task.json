@@ -1,0 +1,93 @@
+{
+  "title": "Log Dig & Request Task",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log Dig & Request Task",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "jobEtonSiteId",
+          "key":"noticeId",
+          "title": "Select Notice",
+          "optional": true
+        },
+        {
+          "type": "add_dig_measure",
+          "uploadId": "add_measure",
+          "repeatId": "items",
+          "title": "Dig Measure",
+          "fields": [
+            "surfaceTypeId", "materialTypeId", "length",
+            "width", "depth"
+          ],
+          "dialogItems": [
+            {
+              "type": "dropdown",
+              "uploadId": "surfaceTypeId",
+              "key": "surfaceTypes",
+              "repeatId": "items",
+              "title": "Surface Types",
+              "optional": false
+            },
+            {
+              "type": "dropdown",
+              "uploadId": "materialTypeId",
+              "key": "materialTypes",
+              "repeatId": "items",
+              "title": "Material Types",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "length",
+              "repeatId": "items",
+              "title": "Length",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "width",
+              "repeatId": "items",
+              "title": "Width",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "depth",
+              "repeatId": "items",
+              "title": "Depth",
+              "optional": false
+            }
+          ],
+
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Dig Measure",
+      "index": 1,
+      "upload": true,
+      "url":"app/jobs/{jobId}/create-task",
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "Comments",
+          "title": "Comments",
+          "hint": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Log Dig & Request Task",
+          "photoSize": 20,
+          "photoRequired": 3,
+          "photoId": "121"
+        }
+      ]
+    }
+  ]
+}

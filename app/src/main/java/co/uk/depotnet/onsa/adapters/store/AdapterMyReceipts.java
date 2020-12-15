@@ -12,12 +12,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import co.uk.depotnet.onsa.R;
-import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.store.ReceiptItemsFragment;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
-import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 
 
@@ -25,7 +24,6 @@ public class AdapterMyReceipts extends RecyclerView.Adapter<AdapterMyReceipts.Vi
 
     private final ArrayList<Receipts> items;
     private FragmentActionListener listener;
-    private User user;
     private SimpleDateFormat inDateFormat;
     private SimpleDateFormat outDateFormat;
     private SimpleDateFormat timeFormat;
@@ -36,12 +34,9 @@ public class AdapterMyReceipts extends RecyclerView.Adapter<AdapterMyReceipts.Vi
     public AdapterMyReceipts(ArrayList<Receipts> items , FragmentActionListener listener) {
         this.items = items;
         this.listener = listener;
-        this.user = DBHandler.getInstance().getUser();
-        inDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        outDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        timeFormat = new SimpleDateFormat("HH:mm");
-
-
+        inDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss" , Locale.UK);
+        outDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
+        timeFormat = new SimpleDateFormat("HH:mm", Locale.UK);
     }
 
     @NonNull
@@ -63,13 +58,8 @@ public class AdapterMyReceipts extends RecyclerView.Adapter<AdapterMyReceipts.Vi
         holder.txtBatchRef.setText("Batch ref: "+holder.item.getbatchRef());
 
 
-        holder.btnView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.addFragment(ReceiptItemsFragment.newInstance(holder.item , user , 0),
-                        false);
-            }
-        });
+        holder.btnView.setOnClickListener(v -> listener.addFragment(ReceiptItemsFragment.newInstance(holder.item , 0),
+                false));
     }
 
     private String getDate(String dateStr){

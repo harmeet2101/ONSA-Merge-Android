@@ -18,7 +18,6 @@ import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.dialogs.ErrorDialog;
-import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.dialogs.MFADialog;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
@@ -38,7 +37,7 @@ public class VerificationActivity extends AppCompatActivity {
     private User user;
     private Callback<ActiveMfa> mfaCallback = new Callback<ActiveMfa>() {
         @Override
-        public void onResponse(Call<ActiveMfa> call, Response<ActiveMfa> response) {
+        public void onResponse(@NonNull Call<ActiveMfa> call, Response<ActiveMfa> response) {
             hideProgressBar();
 
             if(CommonUtils.onTokenExpired(VerificationActivity.this , response.code())){
@@ -58,7 +57,7 @@ public class VerificationActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onFailure(Call<ActiveMfa> call, Throwable t) {
+        public void onFailure(@NonNull Call<ActiveMfa> call, @NonNull Throwable t) {
             ErrorDialog dialog = new ErrorDialog(VerificationActivity.this , "Please try again.","Some Error occurred");
             dialog.show();
         }
@@ -134,6 +133,7 @@ public class VerificationActivity extends AppCompatActivity {
         }
 
         VerificationRequest verificationRequest = new VerificationRequest();
+        verificationRequest.setRememberMe(true);
         verificationRequest.setCode(otp);
 
         final User user = DBHandler.getInstance().getUser();
@@ -152,10 +152,13 @@ public class VerificationActivity extends AppCompatActivity {
                     return;
                 }
 
+
+
                 if(response.isSuccessful()){
+
                     AppPreferences.putInt("isOtpVerified" , 1);
                     Intent intent = new Intent(VerificationActivity.this, DisclaimerActivity.class);
-                    intent.putExtra("User", user);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     finish();
                     return;
@@ -191,6 +194,7 @@ public class VerificationActivity extends AppCompatActivity {
         }
 
         VerificationRequest verificationRequest = new VerificationRequest();
+        verificationRequest.setRememberMe(true);
         verificationRequest.setCode(otp);
 
 
@@ -208,16 +212,14 @@ public class VerificationActivity extends AppCompatActivity {
 
                 if(response.isSuccessful()){
                     User user = response.body();
-
-
-
                     if(user != null){
+                        user.setLoggedIn(true);
                         DBHandler.getInstance().replaceData(User.DBTable.NAME , user.toContentValues());
                     }
                     VerificationActivity.this.user = user;
                     AppPreferences.putInt("isOtpVerified" , 1);
                     Intent intent = new Intent(VerificationActivity.this, DisclaimerActivity.class);
-                    intent.putExtra("User", user);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     finish();
                     return;

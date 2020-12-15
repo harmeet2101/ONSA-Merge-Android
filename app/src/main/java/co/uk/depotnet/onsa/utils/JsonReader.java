@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 
+import co.uk.depotnet.onsa.modals.forms.Amends;
 import co.uk.depotnet.onsa.modals.forms.Form;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
 import co.uk.depotnet.onsa.modals.forms.Photo;
@@ -174,6 +175,37 @@ public class JsonReader {
         }
 
         return null;
+    }
+
+
+    @NonNull
+    public static Amends loadAmends(Context context,
+                                    String fileName) {
+        String json = null;
+        Amends amends = null;
+        ArrayList<FormItem> formItems;
+        try {
+            InputStream is = context.getAssets().open(fileName);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+            Gson gson;
+            gson = new Gson();
+// Type type = new ListOfJson<>(typeClass);
+            Type type = Amends.class;
+            amends = gson.fromJson(json, type);
+            formItems = amends.getDialogItems();
+            for (FormItem formItem :formItems)
+            {
+                initFormItem(formItem);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return amends;
     }
 
 }

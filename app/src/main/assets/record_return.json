@@ -1,0 +1,22 @@
+{
+  "title": "Record Return",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Record Return",
+      "index": 0,
+      "url":"app/jobs/{jobId}/record-returns",
+      "photoUrl":"app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "recordReturnsType",
+          "key": "RecordReturnReason",
+          "title": "Record Return",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

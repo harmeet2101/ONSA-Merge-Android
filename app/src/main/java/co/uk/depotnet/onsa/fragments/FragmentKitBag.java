@@ -17,11 +17,17 @@ import co.uk.depotnet.onsa.activities.MainActivity;
 import co.uk.depotnet.onsa.adapters.AdapterKitBag;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.DownloadActionListener;
+import co.uk.depotnet.onsa.listeners.GetFetchListener;
 import co.uk.depotnet.onsa.modals.KitBagDocument;
 import com.tonyodev.fetch2.AbstractFetchListener;
+import com.tonyodev.fetch2.DefaultFetchNotificationManager;
 import com.tonyodev.fetch2.Download;
 import com.tonyodev.fetch2.Error;
+import com.tonyodev.fetch2.Fetch;
+import com.tonyodev.fetch2.FetchConfiguration;
 import com.tonyodev.fetch2.FetchListener;
+import com.tonyodev.fetch2core.Downloader;
+import com.tonyodev.fetch2okhttp.OkHttpDownloader;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -30,28 +36,41 @@ import java.util.List;
 
 public class FragmentKitBag extends Fragment implements
         DownloadActionListener {
+    private static final String ARG_PARENTID = "parent_id";
     private static final int UNKNOWN_REMAINING_TIME = -1;
     private static final int UNKNOWN_DOWNLOADED_BYTES_PER_SECOND = 0;
     private Context context;
     private AdapterKitBag adapter;
+    private GetFetchListener getFetchListener;
+    private Fetch fetch;
+
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
+        if(this.context instanceof GetFetchListener ){
+            getFetchListener = (GetFetchListener)context;
+        }
     }
 
-    public static FragmentKitBag newInstance(){
-        return new FragmentKitBag();
+    public static FragmentKitBag newInstance( int parentId){
+        FragmentKitBag fragmentKitBag = new FragmentKitBag();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARENTID , parentId);
+        fragmentKitBag.setArguments(args);
+        return fragmentKitBag;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        List<KitBagDocument> kitBagItems = DBHandler.getInstance().getKitBagDoc();
-        adapter = new AdapterKitBag(context , kitBagItems);
-
-        ((MainActivity)context).getFetch().addListener(fetchListener);
+        Bundle args = getArguments();
+        int parentId = args.getInt(ARG_PARENTID , 0);
+        List<KitBagDocument> kitBagItems = DBHandler.getInstance().getKitBagDoc(parentId);
+        fetch = getFetchListener.getFetch();
+        fetch.addListener(fetchListener);
+        adapter = new AdapterKitBag(context , kitBagItems , fetch , getFetchListener);
     }
 
     @Nullable
@@ -158,6 +177,6 @@ public class FragmentKitBag extends Fragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ((MainActivity)context).getFetch().removeListener(fetchListener);
+        fetch.removeListener(fetchListener);
     }
 }

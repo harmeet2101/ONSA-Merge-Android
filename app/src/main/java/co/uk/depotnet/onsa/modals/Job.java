@@ -11,6 +11,156 @@ import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.DropDownItem;
 
 public class Job implements Parcelable, DropDownItem {
+
+    private ArrayList<Note> notes;
+    private ArrayList<Document> documents;
+    private String estimateNumber;
+    private ArrayList<JobWorkItem> workItems;
+    private String workTitle;
+    private String shortAddress;
+    private double latitude;
+    private String contract;
+    private String requiredByDate;
+    private String locationAddress;
+    private String priority;
+    private ArrayList<Notice> notices;
+    private String jobId;
+    private String jobCatagory;
+    private String specialInstructions;
+    private String exchange;
+    private String postCode;
+    private String jobOrderNotes;
+    private String activityType;
+    private String jobNumber;
+    private String status;
+    private double longitude;
+    private String scheduledStartDate;
+    private String scheduledEndDate;
+    private String icon;
+    private boolean isHotJob;
+    private boolean hasRecordReturns;
+    private boolean rfnaNotRequired;
+    private boolean isSiteClear;
+    private ArrayList<A75Groups> a75Groups;
+    private boolean hasRFNA;
+    private JobTasks siteActivityTasks;
+    private ArrayList<RecordReturnReason> recordReturnReasons;
+
+    public Job() {
+
+    }
+
+    public Job(Cursor cursor) {
+        jobId = cursor.getString(cursor.getColumnIndex(DBTable.jobId));
+
+        notes = DBHandler.getInstance().getNotes(jobId);
+        documents = DBHandler.getInstance().getDocument(jobId);
+        estimateNumber = cursor.getString(cursor.getColumnIndex(DBTable.estimateNumber));
+        workItems = DBHandler.getInstance().getJobWorkItem(jobId);
+        workTitle = cursor.getString(cursor.getColumnIndex(DBTable.workTitle));
+        shortAddress = cursor.getString(cursor.getColumnIndex(DBTable.shortAddress));
+        latitude = cursor.getDouble(cursor.getColumnIndex(DBTable.latitude));
+        contract = cursor.getString(cursor.getColumnIndex(DBTable.contract));
+        requiredByDate = cursor.getString(cursor.getColumnIndex(DBTable.requiredByDate));
+        locationAddress = cursor.getString(cursor.getColumnIndex(DBTable.locationAddress));
+        priority = cursor.getString(cursor.getColumnIndex(DBTable.priority));
+        notices = DBHandler.getInstance().getNotices(jobId);
+
+        jobCatagory = cursor.getString(cursor.getColumnIndex(DBTable.jobCatagory));
+        specialInstructions = cursor.getString(cursor.getColumnIndex(DBTable.specialInstructions));
+        exchange = cursor.getString(cursor.getColumnIndex(DBTable.exchange));
+        postCode = cursor.getString(cursor.getColumnIndex(DBTable.postCode));
+        jobOrderNotes = cursor.getString(cursor.getColumnIndex(DBTable.jobOrderNotes));
+        activityType = cursor.getString(cursor.getColumnIndex(DBTable.activityType));
+        jobNumber = cursor.getString(cursor.getColumnIndex(DBTable.jobNumber));
+        status = cursor.getString(cursor.getColumnIndex(DBTable.status));
+        longitude = cursor.getDouble(cursor.getColumnIndex(DBTable.longitude));
+        scheduledStartDate = cursor.getString(cursor.getColumnIndex(DBTable.scheduledStartDate));
+        scheduledEndDate = cursor.getString(cursor.getColumnIndex(DBTable.scheduledEndDate));
+        icon = cursor.getString(cursor.getColumnIndex(DBTable.icon));
+        isHotJob = cursor.getInt(cursor.getColumnIndex(DBTable.isHotJob)) == 1;
+        hasRecordReturns = cursor.getInt(cursor.getColumnIndex(DBTable.hasRecordReturns)) == 1;
+        rfnaNotRequired = cursor.getInt(cursor.getColumnIndex(DBTable.rfnaNotRequired)) == 1;
+        isSiteClear = cursor.getInt(cursor.getColumnIndex(DBTable.isSiteClear)) == 1;
+        a75Groups = DBHandler.getInstance().getA75Groups(jobId);
+        hasRFNA = cursor.getInt(cursor.getColumnIndex(DBTable.hasRFNA)) == 1;
+        siteActivityTasks = new JobTasks(jobId);
+        recordReturnReasons =  DBHandler.getInstance().getRecordReturnReasons(jobId);
+    }
+
+    protected Job(Parcel in) {
+        notes = in.createTypedArrayList(Note.CREATOR);
+        documents = in.createTypedArrayList(Document.CREATOR);
+        estimateNumber = in.readString();
+        workItems = in.createTypedArrayList(JobWorkItem.CREATOR);
+        workTitle = in.readString();
+        shortAddress = in.readString();
+        latitude = in.readDouble();
+        contract = in.readString();
+        requiredByDate = in.readString();
+        locationAddress = in.readString();
+        priority = in.readString();
+        notices = in.createTypedArrayList(Notice.CREATOR);
+        jobId = in.readString();
+        jobCatagory = in.readString();
+        specialInstructions = in.readString();
+        exchange = in.readString();
+        postCode = in.readString();
+        jobOrderNotes = in.readString();
+        activityType = in.readString();
+        jobNumber = in.readString();
+        status = in.readString();
+        longitude = in.readDouble();
+        scheduledStartDate = in.readString();
+        scheduledEndDate = in.readString();
+        icon = in.readString();
+        isHotJob = in.readByte() != 0;
+        hasRecordReturns = in.readByte() != 0;
+        rfnaNotRequired = in.readByte() != 0;
+        isSiteClear = in.readByte() != 0;
+        a75Groups = in.createTypedArrayList(A75Groups.CREATOR);
+        hasRFNA = in.readByte() != 0;
+        siteActivityTasks = in.readParcelable(JobTasks.class.getClassLoader());
+        recordReturnReasons = in.createTypedArrayList(RecordReturnReason.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(notes);
+        dest.writeTypedList(documents);
+        dest.writeString(estimateNumber);
+        dest.writeTypedList(workItems);
+        dest.writeString(workTitle);
+        dest.writeString(shortAddress);
+        dest.writeDouble(latitude);
+        dest.writeString(contract);
+        dest.writeString(requiredByDate);
+        dest.writeString(locationAddress);
+        dest.writeString(priority);
+        dest.writeTypedList(notices);
+        dest.writeString(jobId);
+        dest.writeString(jobCatagory);
+        dest.writeString(specialInstructions);
+        dest.writeString(exchange);
+        dest.writeString(postCode);
+        dest.writeString(jobOrderNotes);
+        dest.writeString(activityType);
+        dest.writeString(jobNumber);
+        dest.writeString(status);
+        dest.writeDouble(longitude);
+        dest.writeString(scheduledStartDate);
+        dest.writeString(scheduledEndDate);
+        dest.writeString(icon);
+        dest.writeByte((byte) (isHotJob ? 1 : 0));
+        dest.writeByte((byte) (rfnaNotRequired ? 1 : 0));
+        dest.writeByte((byte) (hasRecordReturns ? 1 : 0));
+        dest.writeByte((byte) (isSiteClear ? 1 : 0));
+        dest.writeTypedList(a75Groups);
+        dest.writeByte((byte) (hasRFNA ? 1 : 0));
+        dest.writeParcelable(siteActivityTasks, flags);
+        dest.writeTypedList(recordReturnReasons);
+    }
+
     public static final Creator<Job> CREATOR = new Creator<Job>() {
         @Override
         public Job createFromParcel(Parcel in) {
@@ -22,101 +172,6 @@ public class Job implements Parcelable, DropDownItem {
             return new Job[size];
         }
     };
-    private ArrayList<Note> notes;
-    private ArrayList<Document> documents;
-    private String estimateNumber;
-    private ArrayList<JobWorkItem> workItems;
-    private String workTitle;
-    private String shortAddress;
-    private String latitude;
-    private String contract;
-    private String requiredByDate;
-    private String locationAddress;
-    private String priority;
-    private ArrayList<Notice> notices;
-    private String jobId;
-    private String jobCatagory;
-    private String specialInstructions;
-    private String exchange;
-    private String postCode;
-    private String activityType;
-    private String jobNumber;
-    private String status;
-    private String longitude;
-    private String scheduledStartDate;
-    private String scheduledEndDate;
-    private String icon;
-    private boolean isHotJob;
-    private boolean isSiteClear;
-    private ArrayList<A75Groups> a75Groups;
-    private boolean hasRFNA;
-
-    protected Job(Parcel in) {
-        notes = in.createTypedArrayList(Note.CREATOR);
-        documents = in.createTypedArrayList(Document.CREATOR);
-        estimateNumber = in.readString();
-        workItems = in.createTypedArrayList(JobWorkItem.CREATOR);
-        workTitle = in.readString();
-        shortAddress = in.readString();
-        latitude = in.readString();
-        contract = in.readString();
-        requiredByDate = in.readString();
-        locationAddress = in.readString();
-        priority = in.readString();
-        notices = in.createTypedArrayList(Notice.CREATOR);
-        jobId = in.readString();
-        jobCatagory = in.readString();
-        specialInstructions = in.readString();
-        exchange = in.readString();
-        postCode = in.readString();
-        activityType = in.readString();
-        jobNumber = in.readString();
-        status = in.readString();
-        longitude = in.readString();
-        scheduledStartDate = in.readString();
-        scheduledEndDate = in.readString();
-        icon = in.readString();
-        isHotJob = in.readInt()==1;
-        isSiteClear = in.readInt()==1;
-        a75Groups = in.createTypedArrayList(A75Groups.CREATOR);
-        hasRFNA = in.readInt()==1;
-    }
-
-    public Job() {
-
-    }
-
-    public Job(Cursor cursor) {
-        jobId = cursor.getString(cursor.getColumnIndex(DBTable.jobId));
-        notes = DBHandler.getInstance().getNotes(jobId);
-        documents = DBHandler.getInstance().getDocument(jobId);
-        estimateNumber = cursor.getString(cursor.getColumnIndex(DBTable.estimateNumber));
-        workItems = DBHandler.getInstance().getJobWorkItem(jobId);
-        workTitle = cursor.getString(cursor.getColumnIndex(DBTable.workTitle));
-        shortAddress = cursor.getString(cursor.getColumnIndex(DBTable.shortAddress));
-        latitude = cursor.getString(cursor.getColumnIndex(DBTable.latitude));
-        contract = cursor.getString(cursor.getColumnIndex(DBTable.contract));
-        requiredByDate = cursor.getString(cursor.getColumnIndex(DBTable.requiredByDate));
-        locationAddress = cursor.getString(cursor.getColumnIndex(DBTable.locationAddress));
-        priority = cursor.getString(cursor.getColumnIndex(DBTable.priority));
-        notices = DBHandler.getInstance().getNotices(jobId);
-
-        jobCatagory = cursor.getString(cursor.getColumnIndex(DBTable.jobCatagory));
-        specialInstructions = cursor.getString(cursor.getColumnIndex(DBTable.specialInstructions));
-        exchange = cursor.getString(cursor.getColumnIndex(DBTable.exchange));
-        postCode = cursor.getString(cursor.getColumnIndex(DBTable.postCode));
-        activityType = cursor.getString(cursor.getColumnIndex(DBTable.activityType));
-        jobNumber = cursor.getString(cursor.getColumnIndex(DBTable.jobNumber));
-        status = cursor.getString(cursor.getColumnIndex(DBTable.status));
-        longitude = cursor.getString(cursor.getColumnIndex(DBTable.longitude));
-        scheduledStartDate = cursor.getString(cursor.getColumnIndex(DBTable.scheduledStartDate));
-        scheduledEndDate = cursor.getString(cursor.getColumnIndex(DBTable.scheduledEndDate));
-        icon = cursor.getString(cursor.getColumnIndex(DBTable.icon));
-        isHotJob = cursor.getInt(cursor.getColumnIndex(DBTable.isHotJob)) == 1;
-        isSiteClear = cursor.getInt(cursor.getColumnIndex(DBTable.isSiteClear)) == 1;
-        a75Groups = DBHandler.getInstance().getA75Groups(jobId);
-        hasRFNA = cursor.getInt(cursor.getColumnIndex(DBTable.hasRFNA)) == 1;
-    }
 
     public void setnotes(ArrayList<Note> notes) {
         this.notes = notes;
@@ -166,11 +221,11 @@ public class Job implements Parcelable, DropDownItem {
         return this.shortAddress;
     }
 
-    public void setlatitude(String latitude) {
+    public void setlatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public String getlatitude() {
+    public Double getlatitude() {
         return this.latitude;
     }
 
@@ -278,11 +333,11 @@ public class Job implements Parcelable, DropDownItem {
         return this.status;
     }
 
-    public void setlongitude(String longitude) {
+    public void setlongitude(Double longitude) {
         this.longitude = longitude;
     }
 
-    public String getlongitude() {
+    public Double getlongitude() {
         return this.longitude;
     }
 
@@ -313,6 +368,12 @@ public class Job implements Parcelable, DropDownItem {
     public boolean isHotJob() {
         return isHotJob;
     }
+    public boolean rfnaNotRequired() {
+        return rfnaNotRequired;
+    }
+    public boolean hasRecordReturns() {
+        return hasRecordReturns;
+    }
 
     public boolean isSiteClear() {
         return isSiteClear;
@@ -331,36 +392,21 @@ public class Job implements Parcelable, DropDownItem {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(notes);
-        dest.writeTypedList(documents);
-        dest.writeString(estimateNumber);
-        dest.writeTypedList(workItems);
-        dest.writeString(workTitle);
-        dest.writeString(shortAddress);
-        dest.writeString(latitude);
-        dest.writeString(contract);
-        dest.writeString(requiredByDate);
-        dest.writeString(locationAddress);
-        dest.writeString(priority);
-        dest.writeTypedList(notices);
-        dest.writeString(jobId);
-        dest.writeString(jobCatagory);
-        dest.writeString(specialInstructions);
-        dest.writeString(exchange);
-        dest.writeString(postCode);
-        dest.writeString(activityType);
-        dest.writeString(jobNumber);
-        dest.writeString(status);
-        dest.writeString(longitude);
-        dest.writeString(scheduledStartDate);
-        dest.writeString(scheduledEndDate);
-        dest.writeString(icon);
-        dest.writeInt(isHotJob ? 1 : 0);
-        dest.writeInt(isSiteClear ? 1 : 0);
-        dest.writeTypedList(a75Groups);
-        dest.writeInt(hasRFNA ? 1: 0);
+
+    public String getJobOrderNotes() {
+        return jobOrderNotes;
+    }
+
+    public void setJobOrderNotes(String jobOrderNotes) {
+        this.jobOrderNotes = jobOrderNotes;
+    }
+
+    public ArrayList<RecordReturnReason> getRecordReturnReasons() {
+        return recordReturnReasons;
+    }
+
+    public void setRecordReturnReasons(ArrayList<RecordReturnReason> recordReturnReasons) {
+        this.recordReturnReasons = recordReturnReasons;
     }
 
     public ContentValues toContentValues() {
@@ -385,8 +431,8 @@ public class Job implements Parcelable, DropDownItem {
 
 
         if (workItems != null && !workItems.isEmpty()) {
-            for (JobWorkItem w :
-                    workItems) {
+            DBHandler.getInstance().removeWorkItems(jobId);
+            for (JobWorkItem w : workItems) {
                 w.setJobId(jobId);
                 dbHandler.replaceData(JobWorkItem.DBTable.NAME, w.toContentValues());
             }
@@ -426,6 +472,7 @@ public class Job implements Parcelable, DropDownItem {
         cv.put(DBTable.exchange, this.exchange);
 
         cv.put(DBTable.postCode, this.postCode);
+        cv.put(DBTable.jobOrderNotes, this.jobOrderNotes);
 
         cv.put(DBTable.activityType, this.activityType);
 
@@ -438,6 +485,8 @@ public class Job implements Parcelable, DropDownItem {
         cv.put(DBTable.scheduledEndDate, this.scheduledEndDate);
         cv.put(DBTable.icon, this.icon);
         cv.put(DBTable.isHotJob, this.isHotJob);
+        cv.put(DBTable.rfnaNotRequired, this.rfnaNotRequired);
+        cv.put(DBTable.hasRecordReturns, this.hasRecordReturns);
         cv.put(DBTable.isSiteClear, this.isSiteClear);
         cv.put(DBTable.hasRFNA, this.hasRFNA);
 
@@ -446,6 +495,20 @@ public class Job implements Parcelable, DropDownItem {
                 a.setJobId(jobId);
                 dbHandler.replaceData(A75Groups.DBTable.NAME, a.toContentValues());
             }
+        }
+
+        if (recordReturnReasons != null && !recordReturnReasons.isEmpty()) {
+            DBHandler.getInstance().removeRecordReturnReasons(jobId);
+            for (RecordReturnReason r : recordReturnReasons) {
+                r.setJobId(jobId);
+                dbHandler.replaceData(RecordReturnReason.DBTable.NAME, r.toContentValues());
+            }
+        }
+
+
+        if(siteActivityTasks != null){
+            siteActivityTasks.setJobId(jobId);
+            siteActivityTasks.toContentValues();
         }
         return cv;
     }
@@ -469,6 +532,7 @@ public class Job implements Parcelable, DropDownItem {
         public static final String specialInstructions = "specialInstructions";
         public static final String exchange = "exchange";
         public static final String postCode = "postCode";
+        public static final String jobOrderNotes = "jobOrderNotes";
         public static final String activityType = "activityType";
         public static final String jobNumber = "jobNumber";
         public static final String status = "status";
@@ -477,9 +541,12 @@ public class Job implements Parcelable, DropDownItem {
         public static final String scheduledEndDate = "scheduledEndDate";
         public static final String icon = "icon";
         public static final String isHotJob = "isHotJob";
+        public static final String hasRecordReturns = "hasRecordReturns";
+        public static final String rfnaNotRequired = "rfnaNotRequired";
         public static final String isSiteClear = "isSiteClear";
         public static final String a75Groups = "a75Groups";
         public static final String hasRFNA = "hasRFNA";
+        public static final String recordReturnReason = "RecordReturnReason";
 
     }
 

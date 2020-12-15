@@ -97,6 +97,18 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/txt_color_light_grey"
                         android:textSize="@dimen/_9sdp" />
+                    <TextView
+                        android:id="@+id/txt_job_priority"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/txt_color_light_grey"
+                        android:textSize="@dimen/_9sdp" />
+                    <TextView
+                        android:id="@+id/txt_task_scheduled"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/txt_color_light_grey"
+                        android:textSize="@dimen/_9sdp" />
                 </LinearLayout>
 
                 <TextView

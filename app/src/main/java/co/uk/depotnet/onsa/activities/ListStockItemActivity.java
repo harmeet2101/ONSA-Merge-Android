@@ -226,6 +226,9 @@ public class ListStockItemActivity extends AppCompatActivity {
     }
 
     public void showErrorDialog(String title, String message) {
+        if(getSupportFragmentManager().isStateSaved()){
+            return;
+        }
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
@@ -338,7 +341,7 @@ public class ListStockItemActivity extends AppCompatActivity {
                 DBHandler.getInstance().replaceData(Answer.DBTable.NAME, staStockItemId.toContentValues());
 
                 Answer quantity = DBHandler.getInstance().getAnswer(submissionId, "Quantity",
-                        "Quantity", repeatCount);
+                        repeatId, repeatCount);
                 if (quantity == null) {
                     quantity = new Answer(submissionId, "Quantity");
                 }

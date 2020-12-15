@@ -1,0 +1,62 @@
+{
+  "title": "Log Hours",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log Hours",
+      "index": 0,
+      "url": "app/timesheets/log-hours",
+      "upload": true,
+      "items": [
+        {
+          "type": "add_log_hours",
+          "uploadId": "",
+          "repeatId": "timesheetHours",
+          "title": "Click to Log Hours",
+          "listItemType": "log_hours_item",
+          "fields": [
+            "dateWorked",
+            "timeTypeActivityId",
+            "timeFrom",
+            "timeTo"
+          ],
+          "optional": false,
+          "dialogItems": [
+            {
+              "type": "date_time",
+              "uploadId": "dateWorked",
+              "repeatId": "timesheetHours",
+              "key": "dfeWorkItems",
+              "title": "Items",
+              "optional": false
+            },
+            {
+              "type": "dropdown",
+              "uploadId": "timeTypeActivityId",
+              "repeatId": "timesheetHours",
+              "key": "dfeWorkItems",
+              "title": "Items",
+              "optional": false
+            },
+            {
+              "type": "time_selector",
+              "uploadId": "timeFrom",
+              "repeatId": "timesheetHours",
+              "key": "dfeWorkItems",
+              "title": "Items",
+              "optional": false
+            },
+            {
+              "type": "time_selector",
+              "uploadId": "timeTo",
+              "repeatId": "timesheetHours",
+              "key": "dfeWorkItems",
+              "title": "Items",
+              "optional": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

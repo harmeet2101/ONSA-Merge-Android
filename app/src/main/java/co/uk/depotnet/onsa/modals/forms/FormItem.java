@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import java.util.ArrayList;
 
+import co.uk.depotnet.onsa.modals.httpresponses.BaseTask;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 
 public class FormItem implements Parcelable {
@@ -27,7 +28,6 @@ public class FormItem implements Parcelable {
     public static final int TYPE_NUMBER = 15;
     public static final int TYPE_ET_SHORT_TEXT = 16;
     public static final int TYPE_DROPDOWN_NUMBER = 17;
-    public static final int TYPE_TASK_SITE_CLEAR = 18;
     public static final int TYPE_LOCATION = 19;
     public static final int TYPE_STORE_ITEM = 20;
     public static final int TYPE_FORK_CARD = 21;
@@ -49,6 +49,35 @@ public class FormItem implements Parcelable {
     public static final int TYPE_ADD_NEG_DFE = 37;
     public static final int TYPE_ADD_LOG_MEASURE = 38;
     public static final int TYPE_LOG_MEASURE = 39;
+    public static final int TYPE_TASK_LOG_BACKFILL = 40;
+    public static final int TYPE_TASK_LOG_BACKFILL_ITEM = 41;
+    public static final int TYPE_TASK_LOG_REINSTATEMENT = 42;
+    public static final int TYPE_LOG_REINSTATEMENT_ITEM = 43;
+    public static final int TYPE_TASK_LOG_MUCKAWAY = 44;
+    public static final int TYPE_TASK_LOG_MUCKAWAY_ITEM = 45;
+    public static final int TYPE_TASK_LOG_SERVICE = 46;
+    public static final int TYPE_TASK_LOG_SERVICE_ITEM = 47;
+    public static final int TYPE_TASK_VIEW_DIG_MEASURES = 48;
+    public static final int TYPE_TASK_VIEW_DIG_MEASUERS_ITEM = 49;
+    public static final int TYPE_TASK_VIEW_BACKFILL_MEASURES = 50;
+    public static final int TYPE_TASK_VIEW_BACKFILL_MEASUERS_ITEM = 51;
+    public static final int TYPE_TASK_VIEW_REINST_MEASURES = 52;
+    public static final int TYPE_TASK_VIEW_REINST_MEASUERS_ITEM = 53;
+    public static final int TYPE_ADD_DIG_MEASURE = 57;
+    public static final int TYPE_LIST_DIG_MEASURE = 58;
+    public static final int TYPE_TASK_SITE_CLEAR = 59;
+    public static final int TYPE_TASK_SITE_CLEAR_ITEM = 60;
+    public static final int TYPE_SIGN_BRIEFING = 61;
+    public static final int TYPE_LIST_BREIFDOC = 62;
+    public static final int TYPE_TV_BRIEFING_TEXT = 63;
+    public static final int TYPE_ET_SEARCH_ESTIMATE = 64;
+    public static final int TYPE_YES_NO_NA_tooltip = 65;
+    public static final int TYPE_YES_NO_tooltip = 66;
+    public static final int TYPE_RFNA_TOGGLE = 67;
+    public static final int TYPE_ADD_LOG_HOURS = 68;
+    public static final int TYPE_ITEM_LOG_HOURS = 69;
+
+
 
     private String type;
     private String uploadId;
@@ -80,6 +109,9 @@ public class FormItem implements Parcelable {
 
     private MyStore myStore;
     private int myStoreQuantity;
+    private int taskId;
+    private BaseTask task;
+    private String toolTip;
 
 
     public FormItem(FormItem formItem) {
@@ -111,6 +143,10 @@ public class FormItem implements Parcelable {
         this.myStore = formItem.myStore;
         this.myStoreQuantity = formItem.myStoreQuantity;
         this.isStoackLevelCheck = formItem.isStoackLevelCheck;
+        this.taskId = formItem.taskId;
+        this.task = formItem.task;
+        this.toolTip = formItem.toolTip;
+
     }
 
     public void setMyStore(MyStore myStore) {
@@ -135,6 +171,13 @@ public class FormItem implements Parcelable {
         this.optional = true;
     }
 
+    public FormItem(String type, BaseTask task, boolean selectable) {
+        this.type = type;
+        this.task = task;
+        this.task.setSelectable(selectable);
+        this.optional = true;
+    }
+
 
     protected FormItem(Parcel in) {
         type = in.readString();
@@ -154,6 +197,7 @@ public class FormItem implements Parcelable {
         naEnables = in.createTypedArrayList(FormItem.CREATOR);
         dialogItems = in.createTypedArrayList(FormItem.CREATOR);
         getURL = in.readString();
+
         signatureUrl = in.readString();
         photoSize = in.readInt();
         photoRequired = in.readInt();
@@ -167,6 +211,9 @@ public class FormItem implements Parcelable {
         myStore = in.readParcelable(MyStore.class.getClassLoader());
         myStoreQuantity = in.readInt();
         isStoackLevelCheck = in.readByte() != 0;
+        taskId = in.readInt();
+        task = in.readParcelable(BaseTask.class.getClassLoader());
+        toolTip = in.readString();
     }
 
     @Override
@@ -200,6 +247,9 @@ public class FormItem implements Parcelable {
         dest.writeParcelable(myStore, flags);
         dest.writeInt(myStoreQuantity);
         dest.writeByte((byte) (isStoackLevelCheck ? 1 : 0));
+        dest.writeInt(taskId);
+        dest.writeParcelable(task, flags);
+        dest.writeString(toolTip);
     }
 
     @Override
@@ -347,6 +397,22 @@ public class FormItem implements Parcelable {
         return isStoackLevelCheck;
     }
 
+    public int getTaskId() {
+        return taskId;
+    }
+
+    public BaseTask getTask() {
+        return task;
+    }
+
+    public String getToolTip() {
+        return toolTip;
+    }
+
+    public void setToolTip(String toolTip) {
+        this.toolTip = toolTip;
+    }
+
     public int getFormType() {
         if (type.equalsIgnoreCase("yes_no")) {
             return TYPE_YES_NO;
@@ -374,9 +440,7 @@ public class FormItem implements Parcelable {
             return TYPE_PASS_FAIL;
         } else if (type.equalsIgnoreCase("switch_layout")) {
             return TYPE_SWITCH;
-        } else if (type.equalsIgnoreCase("add_dig_measure")) {
-            return TYPE_LOG_AND_DIG_FORK;
-        } else if (type.equalsIgnoreCase("number")) {
+        }else if (type.equalsIgnoreCase("number")) {
             return TYPE_NUMBER;
         } else if (type.equalsIgnoreCase("et_short_text")) {
             return TYPE_ET_SHORT_TEXT;
@@ -426,7 +490,66 @@ public class FormItem implements Parcelable {
             return TYPE_ADD_LOG_MEASURE;
         }else if (type.equalsIgnoreCase("log_measure_item")) {
             return TYPE_LOG_MEASURE;
+        }else if (type.equalsIgnoreCase("item_log_measure")) {
+            return TYPE_LOG_MEASURE;
+        }else if (type.equalsIgnoreCase("add_dig_measure")) {
+            return TYPE_ADD_DIG_MEASURE;
+        }else if (type.equalsIgnoreCase("item_dig_measure")) {
+            return TYPE_LIST_DIG_MEASURE;
+        } else if (type.equalsIgnoreCase("task_list_backfill")) {
+            return TYPE_TASK_LOG_BACKFILL;
+        }else if (type.equalsIgnoreCase("task_list_backfill_item")) {
+            return TYPE_TASK_LOG_BACKFILL_ITEM;
+        }else if (type.equalsIgnoreCase("task_list_reinstatement")) {
+            return TYPE_TASK_LOG_REINSTATEMENT;
+        }else if (type.equalsIgnoreCase("task_list_reinstatement_item")) {
+            return TYPE_LOG_REINSTATEMENT_ITEM;
+        }else if (type.equalsIgnoreCase("task_view_dig_measures")) {
+            return TYPE_TASK_VIEW_DIG_MEASURES;
+        }else if (type.equalsIgnoreCase("task_view_dig_measures_item")) {
+            return TYPE_TASK_VIEW_DIG_MEASUERS_ITEM;
+        }else if (type.equalsIgnoreCase("task_view_backfill_measures")) {
+            return TYPE_TASK_VIEW_BACKFILL_MEASURES;
+        }else if (type.equalsIgnoreCase("task_view_backfill_measures_item")) {
+            return TYPE_TASK_VIEW_BACKFILL_MEASUERS_ITEM;
+        }else if (type.equalsIgnoreCase("task_view_reinstatement_measures")) {
+            return TYPE_TASK_VIEW_REINST_MEASURES;
+        }else if (type.equalsIgnoreCase("task_view_reinstatement_measures_item")) {
+            return TYPE_TASK_VIEW_REINST_MEASUERS_ITEM;
+        }else if (type.equalsIgnoreCase("task_list_muckaway")) {
+            return TYPE_TASK_LOG_MUCKAWAY;
+        }else if (type.equalsIgnoreCase("task_list_muckaway_item")) {
+            return TYPE_TASK_LOG_MUCKAWAY_ITEM;
+        }else if (type.equalsIgnoreCase("task_list_service_material")) {
+            return TYPE_TASK_LOG_SERVICE;
+        }else if (type.equalsIgnoreCase("task_list_service_material_item")) {
+            return TYPE_TASK_LOG_SERVICE_ITEM;
+        }else if (type.equalsIgnoreCase("task_list_site_clear")) {
+            return TYPE_TASK_LOG_SERVICE;
+        }else if (type.equalsIgnoreCase("task_list_site_clear_item")) {
+            return TYPE_TASK_LOG_SERVICE_ITEM;
+        }else if (type.equalsIgnoreCase("yes_no_tooltip")) {
+            return TYPE_YES_NO_tooltip;
+        }else if (type.equalsIgnoreCase("yes_no_na_tooltip")) {
+            return TYPE_YES_NO_NA_tooltip;
+        }else if (type.equalsIgnoreCase("log_measure_item")) {
+            return TYPE_LOG_MEASURE;
+        }else if (type.equalsIgnoreCase("log_briefing_sign")) {
+            return TYPE_SIGN_BRIEFING;
+        }else if (type.equalsIgnoreCase("log_list_briefing")) {
+            return TYPE_LIST_BREIFDOC;
+        }else if (type.equalsIgnoreCase("tv_briefing_text")) {
+            return TYPE_TV_BRIEFING_TEXT;
+        }else if (type.equalsIgnoreCase("et_search_text")) {
+            return TYPE_ET_SEARCH_ESTIMATE;
+        }else if (type.equalsIgnoreCase("rfna_toggle")) {
+            return TYPE_RFNA_TOGGLE;
+        }else if (type.equalsIgnoreCase("add_log_hours")) {
+            return TYPE_ADD_LOG_HOURS;
+        }else if (type.equalsIgnoreCase("log_hours_item")) {
+            return TYPE_ITEM_LOG_HOURS;
         }
+
 
 
         return TYPE_TXT_BOLD_HEAD;
@@ -451,6 +574,11 @@ public class FormItem implements Parcelable {
 
     public void setPhotoRequired(int photoRequired) {
         this.photoRequired = photoRequired;
+        if(photos!= null){
+            for (int i = 0 ; i < photoRequired && i < photos.size(); i++){
+                photos.get(i).setOptional(false);
+            }
+        }
     }
 
     public int getPhotoSize() {
@@ -467,6 +595,11 @@ public class FormItem implements Parcelable {
 
     public void setPhotoId(String photoId) {
         this.photoId = photoId;
+        if(photos != null){
+            for (Photo photo : photos){
+                photo.setPhoto_id(photoId);
+            }
+        }
     }
 
     public void setSignatureUrl(String signatureUrl) {
@@ -529,6 +662,19 @@ public class FormItem implements Parcelable {
 
     public boolean isMultiSelection() {
         return isMultiSelection;
+    }
+
+    public String getTaskType(int formType){
+        switch (formType) {
+            case TYPE_TASK_LOG_BACKFILL:
+            case TYPE_TASK_LOG_REINSTATEMENT:
+            case TYPE_TASK_LOG_MUCKAWAY:
+            case TYPE_TASK_LOG_SERVICE:
+            case TYPE_TASK_SITE_CLEAR:
+                return type + "_item";
+            default:
+                return null;
+        }
     }
 
 

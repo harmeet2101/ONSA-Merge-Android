@@ -1,0 +1,61 @@
+{
+  "title": "Get Sign-off",
+  "isProgressVisible": false,
+  "themeColor": "#FDC357",
+  "screens": [
+    {
+      "title": "Confirmation",
+      "index": 0,
+      "url": "apphseq/briefings/read",
+      "photoUrl": "app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Please confirm you have briefed the following Operatives:",
+          "optional": true
+        },
+        {
+          "type": "add_pos_dfe",
+          "uploadId": "",
+          "repeatId": "operatives",
+          "title": "Add another Operative",
+          "listItemType": "log_briefing_sign",
+          "fields": [
+            "operativeId",
+            "briefingIds",
+            "signatureFileBytes"
+          ],
+          "optional": false,
+          "dialogItems": [
+            {
+              "type": "dropdown",
+              "uploadId": "operativeId",
+              "repeatId": "operatives",
+              "isMultiSelection": false,
+              "isConcatDisplayText": false,
+              "key": "OperativesHseq",
+              "title": "Select Operative",
+              "optional": false
+            },
+            {
+              "type": "log_list_briefing",
+              "uploadId": "briefingIds",
+              "title": "I agree that i have received and\nunderstood the following briefing(s):\n",
+              "listItemType": "tv_briefing_text",
+              "optional": true
+            },
+            {
+              "type": "signature",
+              "uploadId": "signatureFileBytes",
+              "repeatId": "operatives",
+              "signatureUrl": "signatureFileBytes",
+              "title": "Inspector Signature",
+              "optional": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

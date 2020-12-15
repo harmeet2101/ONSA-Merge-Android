@@ -10,8 +10,20 @@
     "status": false
   },
   {
+    "title": "Service/Material",
+    "json": "service_material.json",
+    "taskId": 1,
+    "isIndicatorVisible": true,
+    "status": false
+  },
+  {
     "title": "In Progress",
     "json": "job_in_progress.json",
+    "status": false
+  },
+  {
+    "title": "Log Measure",
+    "json": "log_measure.json",
     "status": false
   },
   {
@@ -20,8 +32,24 @@
     "status": false
   },
   {
-    "title": "Log Measure",
-    "json": "log_measure.json",
+    "title": "Muckaway",
+    "json": "log_muckaway.json",
+    "isIndicatorVisible": true,
+    "taskId": 3,
+    "status": false
+  },
+  {
+    "title": "Log BackFill",
+    "json": "log_back_fill.json",
+    "isIndicatorVisible": true,
+    "taskId": 4,
+    "status": false
+  },
+  {
+    "title": "Log Reinstatement",
+    "json": "log_reinstatement.json",
+    "isIndicatorVisible": true,
+    "taskId": 5,
     "status": false
   },
   {
@@ -35,18 +63,30 @@
     "status": false
   },
   {
+    "title": "Record Return",
+    "json": "record_return.json",
+    "status": false
+  },
+  {
     "title": "Eng Comp",
     "json": "eng_comp.json",
     "status": false
   },
   {
     "title": "Site Clear",
-    "json": "site_clear.json",
+    "json": "log_site_clear.json",
+    "isIndicatorVisible": true,
+    "taskId": 6,
     "status": false
   },
   {
     "title": "Abandon",
     "json": "abandon.json",
+    "status": false
+  },
+  {
+    "title": "Log Dig & Request Task",
+    "json": "dig_measure_request_task.json",
     "status": false
   }
 ]

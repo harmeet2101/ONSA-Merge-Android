@@ -30,7 +30,6 @@ import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 public class RequestItemsFragment extends Fragment {
 
     private static final String ARG_REQUEST = "Request";
-    private static final String ARG_USER = "User";
     private ArrayList<RequestItem> requestItems;
     private AdapterRequestItems adapterRequestItems;
     private Context context;
@@ -40,11 +39,10 @@ public class RequestItemsFragment extends Fragment {
     }
 
 
-    public static RequestItemsFragment newInstance(MyRequest request, User user) {
+    public static RequestItemsFragment newInstance(MyRequest request) {
         RequestItemsFragment fragment = new RequestItemsFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_REQUEST , request);
-        args.putParcelable(ARG_USER , user);
         fragment.setArguments(args);
         return fragment;
     }

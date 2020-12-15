@@ -26,7 +26,7 @@
               "uploadId": "itemCode",
               "repeatId": "items",
               "key": "dfeWorkItems",
-              "title": "DFE Item",
+              "title": "Items",
               "optional": false
             },
             {
@@ -55,7 +55,7 @@
               "uploadId": "itemCode",
               "repeatId": "negItems",
               "key": "JobWorkItem",
-              "title": "DFE Item",
+              "title": "Items",
               "optional": false
             },
             {

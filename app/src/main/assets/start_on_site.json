@@ -38,6 +38,14 @@
           "title": "Comments",
           "hint": "Please enter any comment",
           "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Start On Site",
+          "photoSize": 100,
+          "photoRequired": 1,
+          "photoId": "65"
+
         }
 
       ]

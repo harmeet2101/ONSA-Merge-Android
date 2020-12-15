@@ -13,9 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tonyodev.fetch2.AbstractFetchListener;
+import com.tonyodev.fetch2.DefaultFetchNotificationManager;
 import com.tonyodev.fetch2.Download;
 import com.tonyodev.fetch2.Error;
+import com.tonyodev.fetch2.Fetch;
+import com.tonyodev.fetch2.FetchConfiguration;
 import com.tonyodev.fetch2.FetchListener;
+import com.tonyodev.fetch2core.Downloader;
+import com.tonyodev.fetch2okhttp.OkHttpDownloader;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +40,7 @@ public class FragmentJobPackList extends Fragment implements
     private static final int UNKNOWN_DOWNLOADED_BYTES_PER_SECOND = 0;
     private Context context;
     private JobPackAdapter adapter;
+    private Fetch fetch;
     private final FetchListener fetchListener = new AbstractFetchListener() {
         @Override
         public void onAdded(@NotNull Download download) {
@@ -110,8 +116,17 @@ public class FragmentJobPackList extends Fragment implements
 
         String jobId = args.getString(ARG_JOBID);
         List<Document> jobPacks = DBHandler.getInstance().getDocument(jobId);
-        adapter = new JobPackAdapter(context, jobPacks, this);
-        ((MainActivity) context).getFetch().addListener(fetchListener);
+
+        final FetchConfiguration fetchConfiguration = new FetchConfiguration.Builder(context)
+                .setDownloadConcurrentLimit(4)
+                .setHttpDownloader(new OkHttpDownloader(Downloader.FileDownloaderType.PARALLEL))
+                .setNamespace("OptinonsDownloader")
+                .setNotificationManager(new DefaultFetchNotificationManager(context))
+                .build();
+//        fetch = Fetch.Impl.getInstance(fetchConfiguration);
+        fetch = Fetch.Impl.getDefaultInstance();
+        fetch.addListener(fetchListener);
+        adapter = new JobPackAdapter(context, jobPacks, this , fetch);
     }
 
     @Nullable
@@ -165,6 +180,7 @@ public class FragmentJobPackList extends Fragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ((MainActivity) context).getFetch().removeListener(fetchListener);
+        fetch.removeListener(fetchListener);
+        fetch.close();
     }
 }

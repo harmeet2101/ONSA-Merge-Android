@@ -40,7 +40,6 @@
         android:layout_toLeftOf="@id/img_selected"
         android:layout_toStartOf="@id/img_selected"
         android:text="@string/accept"
-        android:maxLines="1"
         android:layout_marginTop="@dimen/_12sdp"
         android:layout_marginLeft="@dimen/_12sdp"
         android:layout_marginStart="@dimen/_12sdp"

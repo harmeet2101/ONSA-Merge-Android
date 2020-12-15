@@ -15,6 +15,9 @@ public class Screen implements Parcelable {
     private int index;
     private ArrayList<FormItem> items;
 
+    public Screen() {
+    }
+
     protected Screen(Parcel in) {
         title = in.readString();
         url = in.readString();
@@ -76,11 +79,17 @@ public class Screen implements Parcelable {
         this.items = items;
     }
 
-
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Override

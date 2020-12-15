@@ -16,30 +16,20 @@ import co.uk.depotnet.onsa.activities.CurrentStoreActivity;
 import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
-import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Submission;
-import co.uk.depotnet.onsa.modals.store.DataMyRequests;
-import co.uk.depotnet.onsa.networking.APICalls;
-import co.uk.depotnet.onsa.views.MaterialAlertDialog;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class FragmentStore extends Fragment implements
          View.OnClickListener{
 
-    private static final String ARG_USER = "User";
 
     private Context context;
     private FragmentActionListener listener;
-    private User user;
     private TextView txtRequestNoti;
 
 
-    public static FragmentStore newInstance(User user) {
+    public static FragmentStore newInstance() {
         FragmentStore fragment = new FragmentStore();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,10 +37,6 @@ public class FragmentStore extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        if (args != null) {
-            user = args.getParcelable(ARG_USER);
-        }
     }
 
     @Override
@@ -128,48 +114,8 @@ public class FragmentStore extends Fragment implements
         submission.setId(submissionID);
 
         Intent intent = new Intent(context, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, DBHandler.getInstance().getUser());
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivityForResult(intent, 1000);
 
-    }
-
-
-    private void getMyRequests(){
-        listener.showProgressBar();
-        APICalls.getMyRequests(user.gettoken()).enqueue(new Callback<DataMyRequests>() {
-            @Override
-            public void onResponse(@NonNull Call<DataMyRequests> call, @NonNull Response<DataMyRequests> response) {
-                if(response.isSuccessful()){
-
-                    DataMyRequests dataMyRequests = response.body();
-                    if(dataMyRequests != null){
-                        DBHandler.getInstance().resetMyRequest();
-                        dataMyRequests.toContentValues();
-                        txtRequestNoti.setText(String.valueOf(dataMyRequests.getCount()));
-                    }
-                }
-                listener.hideProgressBar();
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<DataMyRequests> call, @NonNull Throwable t) {
-                listener.hideProgressBar();
-            }
-        });
-
-    }
-
-
-    public void showErrorDialog(String title, String message) {
-
-        MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositive(getString(R.string.ok), (dialog1, i) -> dialog1.dismiss())
-                .build();
-
-        dialog.setCancelable(false);
-        dialog.show(getChildFragmentManager(), "_ERROR_DIALOG");
     }
 }

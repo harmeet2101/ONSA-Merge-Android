@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    android:fitsSystemWindows="true"
+    tools:context="com.co.depotnet.uk.co.depotnet.activities.ui.EditShareActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/edit_share_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_56sdp"
+            android:background="?attr/selected_background_color"
+            app:popupTheme="@style/AppTheme.PopupOverlay" >
+            <TextView
+                android:id="@+id/editshare_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_activity_edit_share"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textSize="@dimen/_16sdp"
+                android:textColor="@color/white" />
+            <ImageView
+                android:id="@+id/editshare_shareview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="@dimen/_12sdp"
+                app:srcCompat="@android:drawable/ic_menu_set_as"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:tint="@color/bg_white"
+                android:layout_marginRight="@dimen/_12sdp" />
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <include layout="@layout/content_edit_share"/>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_editshare"
+        style="@style/Widget.MaterialComponents.BottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:labelVisibilityMode="auto"
+        app:itemTextColor="@color/white"
+        android:background="?attr/selected_background_color"
+        app:itemRippleColor="@color/colorAccent"
+        app:itemIconTint="@drawable/nav_editshare_color"
+        app:menu="@menu/nav_menu_editshare"
+        app:itemIconSize="@dimen/_22sdp"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import androidx.fragment.app.Fragment;
@@ -17,43 +16,43 @@ import java.util.ArrayList;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.CameraActivity;
+import co.uk.depotnet.onsa.activities.SignatureActivity;
 import co.uk.depotnet.onsa.adapters.FrokFormAdapter;
 import co.uk.depotnet.onsa.listeners.FormAdapterListener;
 import co.uk.depotnet.onsa.listeners.FromActivityListener;
 import co.uk.depotnet.onsa.listeners.LocationListener;
-import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
-import co.uk.depotnet.onsa.modals.forms.Photo;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 import co.uk.depotnet.onsa.views.MaterialAlertDialog;
 
 
 public class ForkFormFragment extends Fragment implements FormAdapterListener {
-    public static final String ARGS_FORM = "form";
-    public static final String ARGS_REPEAT_COUNT = "repeat_count";
-    private static final String ARG_SUBMISSION = "Submission";
-    private static final String ARG_USER = "User";
 
+    private static final int SIGNATURE_REQUEST = 2;
+    private static final String ARGS_FORM = "form";
+    private static final String ARGS_REPEAT_COUNT = "repeat_count";
+    private static final String ARG_SUBMISSION = "Submission";
+    private static final String ARG_COLOR = "Color";
+    private static final String ARG_RECIPIENTS = "ARG_RECIPIENTS";
     private Context context;
     private FormItem formItem;
     private FromActivityListener listener;
-    private User user;
     private FrokFormAdapter formAdapter;
     private Submission submission;
-    private Handler handler;
+    private String themeColor;
     private int repeatCount;
+    private ArrayList<String> recipients;
 
-
-    public static ForkFormFragment newInstance(Submission submission,
-                                               User user, FormItem formItem,
-                                               int index) {
+    public static ForkFormFragment newInstance(Submission submission, FormItem formItem,
+                                               int index , String themeColor , ArrayList<String> recipients) {
         ForkFormFragment fragment = new ForkFormFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_SUBMISSION, submission);
-        args.putParcelable(ARG_USER, user);
         args.putParcelable(ARGS_FORM, formItem);
         args.putInt(ARGS_REPEAT_COUNT, index);
+        args.putString(ARG_COLOR, themeColor);
+        args.putStringArrayList(ARG_RECIPIENTS, recipients);
         fragment.setArguments(args);
         return fragment;
     }
@@ -72,13 +71,13 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             submission = getArguments().getParcelable(ARG_SUBMISSION);
-            user = getArguments().getParcelable(ARG_USER);
             formItem = getArguments().getParcelable(ARGS_FORM);
             repeatCount = getArguments().getInt(ARGS_REPEAT_COUNT);
+            themeColor=getArguments().getString(ARG_COLOR);
+            recipients=getArguments().getStringArrayList(ARG_RECIPIENTS);
         }
 
-        this.handler = new Handler();
-        formAdapter = new FrokFormAdapter(context, submission , formItem , repeatCount , this);
+        formAdapter = new FrokFormAdapter(context, submission , formItem , repeatCount , this, themeColor , recipients);
     }
 
     @Override
@@ -86,14 +85,7 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_form_fork, container, false);
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
-        rootView.findViewById(R.id.btn_add).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                submit();
-
-            }
-        });
+        rootView.findViewById(R.id.btn_add).setOnClickListener(view -> submit());
         VerticalSpaceItemDecoration itemDecoration = new VerticalSpaceItemDecoration(10);
         recyclerView.addItemDecoration(itemDecoration);
         recyclerView.setAdapter(formAdapter);
@@ -102,7 +94,7 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
 
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
         if (context instanceof FromActivityListener) {
@@ -130,18 +122,24 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
         intent.putExtra(CameraActivity.ARG_FORM_ITEM, formItem);
         intent.putExtra(CameraActivity.ARG_SUBMISSION_ID, submissionId);
         intent.putExtra(CameraActivity.ARG_REPEAT, repeatCount);
+        intent.putExtra(CameraActivity.ARG_COLOR, themeColor);
         startActivityForResult(intent, CAMERA_REQUEST);
     }
 
     @Override
     public void openSignature(FormItem formItem, long submissionId, int repeatCount) {
-
+        Intent intent = new Intent(context, SignatureActivity.class);
+        intent.putExtra(SignatureActivity.ARG_FORM_ITEM, formItem);
+        intent.putExtra(SignatureActivity.ARG_SUBMISSION_ID, submissionId);
+        intent.putExtra(SignatureActivity.ARG_REPEAT_COUNT, repeatCount);
+        intent.putExtra(SignatureActivity.ARG_COLOR, themeColor);
+        startActivityForResult(intent, SIGNATURE_REQUEST);
     }
 
     @Override
     public void openForkFragment(FormItem formItem, long submissionId, int repeatCount) {
         listener.showBtnContainer(false);
-        ForkFormFragment fragment = ForkFormFragment.newInstance(submission, user, formItem, repeatCount);
+        ForkFormFragment fragment = ForkFormFragment.newInstance(submission, formItem, repeatCount , themeColor , recipients);
         listener.addFragment(fragment);
 
     }
@@ -188,6 +186,23 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
 
     @Override
     public void startActivityForResultFromAdapter(Intent intent, int requestCode) {
+
+    }
+
+    @Override
+    public void showErrorDialog(String title, String message, boolean shouldActivityFinished) {
+
+    }
+
+    @Override
+    public void openTaskAmendment(FormItem formItem, long submissionId, int repeatCount) {
+        listener.showBtnContainer(false);
+        ForkFormFragment fragment = ForkFormFragment.newInstance(submission, formItem, repeatCount , themeColor , recipients);
+        listener.addFragment(fragment);
+    }
+
+    @Override
+    public void getEstimateOperative(String estno, int position) {
 
     }
 }

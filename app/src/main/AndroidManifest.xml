@@ -27,14 +27,20 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
         <service
             android:name=".RefreshDatasetService"
             android:exported="false"></service>
 
-        <activity android:name=".activities.VerificationActivity" />
-        <activity android:name=".activities.PhotoActivity" />
-        <activity android:name=".activities.CurrentStoreActivity" />
+        <activity android:name=".activities.VerificationActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.PhotoActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.CurrentStoreActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.WelcomeActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.AssetDataActivity"
             android:screenOrientation="portrait" />
@@ -76,6 +82,9 @@
             android:name=".activities.KeywordListActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".activities.ui.BriefingsActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".activities.FormActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -111,16 +120,28 @@
         <activity
             android:name=".barcode.ScannedBarcodeActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.ListStoreItemActivity" />
-        <activity android:name=".fragments.store.StoreDetailActivity" />
-        <activity android:name=".activities.ListStockItemActivity" />
+        <activity android:name=".activities.ListStoreItemActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".fragments.store.StoreDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.ListStockItemActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.ui.HSEQActivity"
+                    android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.ui.ScheduleInspectionActivity"
+            android:screenOrientation="portrait" />
+
+        <service android:name=".fcm.NotifyJobService"
+            android:label="Notify service"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
         <activity
             android:name=".activities.ImageAnnotationActivity"
             android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCtGrtvhw3fQ7-PQuE-EUDCRnDl8dErW94" />
+            android:value="AIzaSyBLKDtWvQrOdrDdd_j9mvJAbjm3scldwrM" />
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="barcode" />
@@ -142,6 +163,52 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/icon_login" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="default_channel_id" />
+        <service
+            android:name=".fcm.OnsaFirebaseMessagingService"
+            android:enabled="true"
+            android:exported="false"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <activity android:name=".activities.ui.Briefings_Received"
+            android:theme="@style/AppTheme.Briefings"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.ui.Briefings_Issued"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Briefings"/>
+        <activity android:name=".activities.ui.BriefingReadActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Briefings"/>
+        <activity
+            android:name=".activities.ui.PdfWorkActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Briefings"/>
+        <activity
+            android:name=".activities.ui.PhotoCommentsActivity"
+            android:label="@string/photo_comment"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.ui.EditShareActivity"
+            android:label="@string/title_activity_edit_share"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.ui.ActionsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ui.NotificationsActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

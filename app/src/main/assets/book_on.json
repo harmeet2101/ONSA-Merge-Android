@@ -34,12 +34,12 @@
           "isMultiSelection": true,
           "isConcatDisplayText": true,
           "title": "Pick Your Crew",
-          "optional": false
+          "optional": true
         },
         {
           "type": "photo",
           "title": "Book On",
-          "photoSize": 1,
+          "photoSize": 100,
           "photoRequired": 1,
           "photoId": "83"
 

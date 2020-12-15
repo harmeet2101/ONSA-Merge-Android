@@ -28,6 +28,7 @@ public class Notice implements Parcelable , DropDownItem {
     private String worksAddress;
     private String endDate;
     private String noticeType;
+    private String noticeLocation;
     private String comment;
     private String startDate;
     private String worksReference;
@@ -39,6 +40,7 @@ public class Notice implements Parcelable , DropDownItem {
         worksAddress = in.readString();
         endDate = in.readString();
         noticeType = in.readString();
+        noticeLocation = in.readString();
         comment = in.readString();
         startDate = in.readString();
         worksReference = in.readString();
@@ -52,6 +54,7 @@ public class Notice implements Parcelable , DropDownItem {
         worksAddress = cursor.getString(cursor.getColumnIndex(DBTable.worksAddress));
         endDate = cursor.getString(cursor.getColumnIndex(DBTable.endDate));
         noticeType = cursor.getString(cursor.getColumnIndex(DBTable.noticeType));
+        noticeLocation = cursor.getString(cursor.getColumnIndex(DBTable.noticeLocation));
         comment = cursor.getString(cursor.getColumnIndex(DBTable.comment));
         startDate = cursor.getString(cursor.getColumnIndex(DBTable.startDate));
         worksReference = cursor.getString(cursor.getColumnIndex(DBTable.worksReference));
@@ -146,6 +149,7 @@ public class Notice implements Parcelable , DropDownItem {
         parcel.writeString(worksAddress);
         parcel.writeString(endDate);
         parcel.writeString(noticeType);
+        parcel.writeString(noticeLocation);
         parcel.writeString(comment);
         parcel.writeString(startDate);
         parcel.writeString(worksReference);
@@ -165,6 +169,7 @@ public class Notice implements Parcelable , DropDownItem {
         cv.put(DBTable.endDate, this.endDate);
 
         cv.put(DBTable.noticeType, this.noticeType);
+        cv.put(DBTable.noticeLocation, this.noticeLocation);
 
         cv.put(DBTable.comment, this.comment);
 
@@ -181,6 +186,7 @@ public class Notice implements Parcelable , DropDownItem {
         public static final String jobId = "jobId";
         public static final String permitConditions = "permitConditions";
         public static final String worksAddress = "worksAddress";
+        public static final String noticeLocation = "noticeLocation";
         public static final String endDate = "endDate";
         public static final String noticeType = "noticeType";
         public static final String comment = "comment";
@@ -193,7 +199,7 @@ public class Notice implements Parcelable , DropDownItem {
     @Override
     public String getDisplayItem() {
         StringBuilder builder = new StringBuilder();
-        if(!TextUtils.isEmpty(worksReference)) {
+       /* if(!TextUtils.isEmpty(worksReference)) {
             builder.append("Work Reference : ");
             builder.append(worksReference+"\n");
         }
@@ -201,14 +207,14 @@ public class Notice implements Parcelable , DropDownItem {
         if(!TextUtils.isEmpty(worksAddress)) {
             builder.append("Work Address : ");
             builder.append(worksAddress+"\n");
-        }
+        }*/
 
         if(!TextUtils.isEmpty(noticeType)) {
             builder.append("Notice Type : ");
             builder.append(noticeType+"\n");
         }
 
-        if(!TextUtils.isEmpty(comment)) {
+       /* if(!TextUtils.isEmpty(comment)) {
             builder.append("Comment : ");
             builder.append(comment+"\n");
         }
@@ -219,8 +225,12 @@ public class Notice implements Parcelable , DropDownItem {
         if(!TextUtils.isEmpty(endDate)) {
             builder.append("End Date : ");
             builder.append(endDate+"\n");
-        }
+        }*/
         return builder.toString();
+    }
+
+    public String getNoticeLocation() {
+        return noticeLocation;
     }
 
     @Override

@@ -23,4 +23,9 @@ public interface FormAdapterListener extends LocationPermissionListener {
     void startActivityForResultFromAdapter(Intent intent, int requestCode);
 
     void showValidationDialog(String title, String message);
+
+    void showErrorDialog(String title, String message , boolean shouldActivityFinished);
+
+    void openTaskAmendment(FormItem formItem, long submissionId , int repeatCount);
+    void getEstimateOperative(String estno, int position);
 }

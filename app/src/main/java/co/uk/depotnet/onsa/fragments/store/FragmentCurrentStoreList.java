@@ -25,7 +25,6 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.adapters.store.AdapterStore;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.listeners.DropDownItem;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.listeners.OnItemClickListener;
@@ -47,8 +46,6 @@ public class FragmentCurrentStoreList extends Fragment
         implements OnItemClickListener<MyStore>, View.OnClickListener,
         AdapterStore.CurrentStoreListener , CurrentStoreFilterBottomSheet.FilterListener {
 
-
-    private static final String ARG_USER = "user";
 
     private User user;
     private Context context;
@@ -73,7 +70,6 @@ public class FragmentCurrentStoreList extends Fragment
     public static FragmentCurrentStoreList newInstance(User user) {
         FragmentCurrentStoreList fragment = new FragmentCurrentStoreList();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,10 +86,7 @@ public class FragmentCurrentStoreList extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        if (args != null) {
-            user = args.getParcelable(ARG_USER);
-        }
+        user = DBHandler.getInstance().getUser();
 
         stores = new ArrayList<>();
         adapter = new AdapterStore(context, stores, this, this);
@@ -306,6 +299,7 @@ public class FragmentCurrentStoreList extends Fragment
                 MyStore store = (MyStore) map.get(key);
                 if(store != null) {
                     if(!title.equalsIgnoreCase("Request") && qty > store.getquantity()){
+                        showErrorDialog("Validation Error" , "Entered quantity must not be greater then "+store.getquantity());
                         return false;
                     }
 
@@ -335,10 +329,13 @@ public class FragmentCurrentStoreList extends Fragment
         submission.setId(submissionID);
 
         Intent intent = new Intent(context, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, DBHandler.getInstance().getUser());
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         intent.putExtra(FormActivity.ARG_MY_STORE_ITEMS, map);
-        startActivityForResult(intent, 1000);
+        int requestCode = 1000;
+        if(title != null && title.equalsIgnoreCase("Estimate")){
+            requestCode = 1001;
+        }
+        startActivityForResult(intent, requestCode);
 
     }
 
@@ -349,7 +346,6 @@ public class FragmentCurrentStoreList extends Fragment
         submission.setId(submissionID);
 
         Intent intent = new Intent(context, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, DBHandler.getInstance().getUser());
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivityForResult(intent, 1000);
     }
@@ -381,7 +377,9 @@ public class FragmentCurrentStoreList extends Fragment
             adapter.reset(stores);
             return;
         }
-
+        if(!CommonUtils.validateToken(context)){
+            return;
+        }
         listener.showProgressBar();
         APICalls.getMyStore(user.gettoken()).enqueue(new Callback<DataMyStores>() {
 
@@ -395,6 +393,7 @@ public class FragmentCurrentStoreList extends Fragment
                 }
 
                 if (response.isSuccessful()) {
+                    DBHandler.getInstance().resetMyStores();//to reset my store
                     DataMyStores dataMyStores = response.body();
                     if (dataMyStores != null) {
                         dataMyStores.toContentValues();
@@ -420,10 +419,16 @@ public class FragmentCurrentStoreList extends Fragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         adapter.cancelMultiSelect();
+        if(resultCode == Activity.RESULT_OK && requestCode == 1001){
+            getCurrentStoreList();
+        }
     }
 
     public void showErrorDialog(String title, String message) {
 
+        if(getChildFragmentManager().isStateSaved()){
+            return;
+        }
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)

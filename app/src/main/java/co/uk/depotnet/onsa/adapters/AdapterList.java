@@ -65,7 +65,7 @@ public class AdapterList extends
         final HashMap<String, String> itemType = items.get(position);
         String type = itemType.get("type");
         String text = itemType.get("value");
-        if(!TextUtils.isEmpty(type) && type.equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems) ) {
+        if(!TextUtils.isEmpty(type) && (type.equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)) ) {
             holder.txtItemId.setText(text);
         }else{
             holder.txtItemId.setText("");
@@ -74,32 +74,29 @@ public class AdapterList extends
 
         holder.imgSelected.setSelected(itemType.containsKey("selected"));
 
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.view.setOnClickListener(v -> {
 
-                if(!isMultiSelection){
-                    if(lastSelected != null){
-                        lastSelected.remove("selected");
-                    }
-
-                    itemType.put("selected", "true");
-                    lastSelected = itemType;
-                    notifyDataSetChanged();
-                }else {
-                    if (itemType.containsKey("selected")) {
-                        itemType.remove("selected");
-                    } else {
-                        itemType.put("selected", "true");
-                    }
-                    holder.imgSelected.setSelected(itemType.containsKey("selected"));
-                    notifyItemChanged(position);
+            if(!isMultiSelection){
+                if(lastSelected != null){
+                    lastSelected.remove("selected");
                 }
 
-
-
-
+                itemType.put("selected", "true");
+                lastSelected = itemType;
+                notifyDataSetChanged();
+            }else {
+                if (itemType.containsKey("selected")) {
+                    itemType.remove("selected");
+                } else {
+                    itemType.put("selected", "true");
+                }
+                holder.imgSelected.setSelected(itemType.containsKey("selected"));
+                notifyItemChanged(position);
             }
+
+
+
+
         });
     }
 

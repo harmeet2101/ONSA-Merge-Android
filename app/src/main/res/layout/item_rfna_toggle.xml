@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:padding="@dimen/_6sdp">
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/radio_button_rfna1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Activity is complete and site is ready for the next activity to proceed"
+            android:checked="false" />
+        <RadioButton
+            android:id="@+id/radio_button_rfna2"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ready for next activity is not applicable - Eng Comp Fail, unable to complete works/additional works required" />
+    </RadioGroup>
+
+</RelativeLayout>

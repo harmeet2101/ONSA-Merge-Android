@@ -61,8 +61,7 @@ public class Submission implements Parcelable {
         this.jobID = jobID;
         this.queued = 0;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss",
-                Locale.ENGLISH);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         date = sdf.format(new Date());
     }
 
@@ -109,6 +108,14 @@ public class Submission implements Parcelable {
 
     public void setQueued(int queued) {
         this.queued = queued;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public String getJobID() {

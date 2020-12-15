@@ -22,8 +22,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -57,11 +55,11 @@ import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.AssetDataActivity;
 import co.uk.depotnet.onsa.activities.CameraActivity;
+import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.activities.SignatureActivity;
 import co.uk.depotnet.onsa.adapters.FormAdapter;
 import co.uk.depotnet.onsa.barcode.ScannedBarcodeActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.fragments.store.StoreDetailActivity;
 import co.uk.depotnet.onsa.listeners.FormAdapterListener;
 import co.uk.depotnet.onsa.listeners.FromActivityListener;
@@ -75,7 +73,9 @@ import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
 import co.uk.depotnet.onsa.modals.forms.Screen;
 import co.uk.depotnet.onsa.modals.forms.Submission;
+import co.uk.depotnet.onsa.modals.hseq.ToolTipModel;
 import co.uk.depotnet.onsa.modals.responses.JobResponse;
+import co.uk.depotnet.onsa.modals.schedule.JobEstimate;
 import co.uk.depotnet.onsa.modals.store.ReceiptItems;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
@@ -104,32 +104,38 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     private static final int STORE_DETAIL_REQUEST = 3;
     private static final String ARG_SUBMISSION = "Submission";
     private static final String ARG_REPEAT_COUNT = "repeatCount";
-    private static final String ARG_USER = "User";
+    private static final String ARGS_IS_SCHEDULED_INSPECTION = "isScheduledInspection";
+    private static final String ARG_RECIPIENTS = "ARG_RECIPIENTS";
     private static final int INTENT_PERMISSION = 1000;
+    private static final String ARG_COLOR = "Color";
+
     private Context context;
     private Screen screen;
     private FromActivityListener listener;
-    private User user;
     private String jobID;
     private FormAdapter formAdapter;
     private Submission submission;
     private Handler handler;
     private int repeatCount;
     private String formTitle;
+    private String themeColor;
+    private boolean isScheduledInspection;
+    private ArrayList<String> recipients;
+    private FusedLocationProviderClient mFusedLocationClient;
 
-    private FusedLocationProviderClient mFusedLocationClient ;
 
-
-    public static FormFragment newInstance(Submission submission, User user,
+    public static FormFragment newInstance(Submission submission,
                                            Screen screen, String formTitle, int index,
-                                           int repeatCount) {
+                                           int repeatCount, String themeColor, boolean isScheduledInspection, ArrayList<String> recipients) {
         FormFragment fragment = new FormFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_SUBMISSION, submission);
-        args.putParcelable(ARG_USER, user);
         args.putString(ARGS_FORM_TITLE, formTitle);
         args.putParcelable(ARGS_SCREEN, screen);
         args.putInt(ARGS_INDEX, index);
+        args.putBoolean(ARGS_IS_SCHEDULED_INSPECTION, isScheduledInspection);
+        args.putString(ARG_COLOR, themeColor);
+        args.putStringArrayList(ARG_RECIPIENTS, recipients);
         if (repeatCount != -1) {
             args.putInt(ARG_REPEAT_COUNT, repeatCount);
         }
@@ -143,14 +149,19 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         Bundle args = getArguments();
         if (args != null) {
             submission = args.getParcelable(ARG_SUBMISSION);
-            user = args.getParcelable(ARG_USER);
             screen = args.getParcelable(ARGS_SCREEN);
             formTitle = args.getString(ARGS_FORM_TITLE);
+            themeColor = args.getString(ARG_COLOR);
+            isScheduledInspection = args.getBoolean(ARGS_IS_SCHEDULED_INSPECTION);
+            recipients = args.getStringArrayList(ARG_RECIPIENTS);
+
 
             if (args.containsKey(ARG_REPEAT_COUNT)) {
                 repeatCount = args.getInt(ARG_REPEAT_COUNT);
             }
         }
+
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
         jobID = submission.getJobID();
         this.handler = new Handler();
@@ -167,7 +178,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             screen.getItems().remove(1);
         }
 
-        formAdapter = new FormAdapter(context, submission, screen, this, this);
+        formAdapter = new FormAdapter(context, submission, screen, themeColor, isScheduledInspection, this, this);
         if (repeatCount != -1) {
             formAdapter.setRepeatCount(repeatCount);
         }
@@ -253,10 +264,15 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             return;
         }
 
+        formAdapter.removeUnnecessaryTasks();
         String url = screen.getUrl();
         if (screen.isUpload() && !TextUtils.isEmpty(url)) {
             if (url.equalsIgnoreCase("appstores/logtojob")) {
                 sendLogJobRequest();
+                return;
+            }
+            if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("schedule_inspection.json")) {
+                getInsQue();//getting inspection question here and call formactivity
             } else {
                 sendToServer();
             }
@@ -273,7 +289,6 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             ((Activity) context).finish();
         } else if (submission.getJsonFileName().equalsIgnoreCase("poling_asset_data.json")) {
             Intent intent = new Intent(context, AssetDataActivity.class);
-            intent.putExtra(AssetDataActivity.ARG_USER, user);
             intent.putExtra(AssetDataActivity.ARG_SUBMISSION, submission);
             startActivityForResult(intent, ASSET_DATA_RESULT);
         } else {
@@ -305,6 +320,10 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             return;
         }
 
+        if (!CommonUtils.validateToken(context)) {
+            return;
+        }
+
         listener.showProgressBar();
         new Thread(() -> {
             ArrayList<ReceiptItems> receiptItems = receipts.getItems();
@@ -321,8 +340,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
 
                 Answer qty = new Answer(submission.getID(), "Quantity");
-                qty.setDisplayAnswer(String.valueOf((int) items.getquantity()));
-                qty.setAnswer(String.valueOf((int) items.getquantity()));
+                qty.setDisplayAnswer(String.valueOf(items.getquantity()));
+                qty.setAnswer(String.valueOf(items.getquantity()));
                 qty.setRepeatID(null);
                 qty.setRepeatCount(0);
 
@@ -521,12 +540,29 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             return;
         }
 
+        if (!CommonUtils.validateToken(context)) {
+            return;
+        }
+
         listener.showProgressBar();
         new Thread(() -> {
-            final Response response = new ConnectionHelper(context).
-                    submitForm(screen.getUrl(), screen.getPhotoUrl(),
-                            submission, getChildFragmentManager());
+            Response response = null;
 
+            if (submission.getJsonFileName().equalsIgnoreCase("corrective_measure.json")
+                    || submission.getJsonFileName().equalsIgnoreCase("cannot_rectify.json")) {
+                //for actions calls
+                response = new ConnectionHelper(context).
+                        submitActions(screen.getUrl(),
+                                submission, getChildFragmentManager());
+            } else if (submission.getJsonFileName().equalsIgnoreCase("slg_inspection.json")) {
+                response = new ConnectionHelper(context).
+                        submitInspections(screen.getUrl(), screen.getPhotoUrl(),
+                                submission, getChildFragmentManager());
+            } else {  //final Response response =
+                response = new ConnectionHelper(context).
+                        submitForm(screen.getUrl(), screen.getPhotoUrl(),
+                                submission, getChildFragmentManager());
+            }
 
             if (response == null || !response.isSuccessful()) {
                 DBHandler.getInstance().setSubmissionQueued(submission);
@@ -549,7 +585,10 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
 
                 }
             }
-            DBHandler.getInstance().removeAnswers(submission);
+
+            if (response != null && response.isSuccessful()) {
+                DBHandler.getInstance().removeAnswers(submission);
+            }
             JobModuleStatus jobModuleStatus = new JobModuleStatus();
             jobModuleStatus.setStatus(true);
             jobModuleStatus.setJobId(jobID);
@@ -557,25 +596,25 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
                     jobModuleStatus.toContentValues());
 
-
+            Response finalResponse = response;
             handler.post(() -> {
                 listener.hideProgressBar();
                 String title = "Success";
                 String message = "Submission was successful";
-                if (response != null && response.isSuccessful()) {
+                if (finalResponse != null && finalResponse.isSuccessful()) {
                     if (submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json")) {
                         getJobs();
                     }
                 }
 
                 if (!submission.getJsonFileName().equalsIgnoreCase("take_photo.json") &&
-                        (response == null || !response.isSuccessful())) {
+                        (finalResponse == null || !finalResponse.isSuccessful())) {
                     title = "Submission Error";
                     message = "Submission Error, your submission has been added to the queue";
                 }
 
-                if (response != null && response.code() == 400) {
-                    ResponseBody body = response.body();
+                if (finalResponse != null && finalResponse.code() == 400) {
+                    ResponseBody body = finalResponse.body();
                     if (body != null) {
                         try {
                             String data = body.string();
@@ -594,19 +633,22 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                         }
                     }
                 }
-                showErrorDialog(title, message, response != null && response.isSuccessful());
+                showErrorDialog(title, message, finalResponse != null && finalResponse.isSuccessful());
             });
         }).start();
     }
 
     private void getJobs() {
-
+        if (!CommonUtils.validateToken(context)) {
+            return;
+        }
+        User user = DBHandler.getInstance().getUser();
         listener.showProgressBar();
         APICalls.getJobList(user.gettoken()).enqueue(new Callback<JobResponse>() {
             @Override
             public void onResponse(@NonNull Call<JobResponse> call, @NonNull retrofit2.Response<JobResponse> response) {
 
-                if(CommonUtils.onTokenExpired(context , response.code())){
+                if (CommonUtils.onTokenExpired(context, response.code())) {
                     return;
                 }
                 if (response.isSuccessful() && response.body() != null) {
@@ -634,6 +676,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         intent.putExtra(CameraActivity.ARG_FORM_ITEM, formItem);
         intent.putExtra(CameraActivity.ARG_SUBMISSION_ID, submissionId);
         intent.putExtra(CameraActivity.ARG_REPEAT, repeatCount);
+        intent.putExtra(CameraActivity.ARG_COLOR, themeColor);
         startActivityForResult(intent, CAMERA_REQUEST);
     }
 
@@ -643,13 +686,14 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         intent.putExtra(SignatureActivity.ARG_FORM_ITEM, formItem);
         intent.putExtra(SignatureActivity.ARG_SUBMISSION_ID, submissionId);
         intent.putExtra(SignatureActivity.ARG_REPEAT_COUNT, repeatCount);
+        intent.putExtra(SignatureActivity.ARG_COLOR, themeColor);
         startActivityForResult(intent, SIGNATURE_REQUEST);
     }
 
     @Override
     public void openForkFragment(FormItem formItem, long submissionId, int repeatCount) {
         listener.showBtnContainer(false);
-        ForkFormFragment fragment = ForkFormFragment.newInstance(submission, user, formItem, repeatCount);
+        ForkFormFragment fragment = ForkFormFragment.newInstance(submission, formItem, repeatCount, themeColor, recipients);
         listener.addFragment(fragment);
     }
 
@@ -722,8 +766,6 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                             "Items", count);
                     if (StaId == null) {
                         StaId = new Answer(submission.getID(), "StaId");
-
-
                     }
                     StaId.setRepeatID("Items");
                     StaId.setRepeatCount(count);
@@ -741,15 +783,18 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     }
 
     public void showErrorDialog(String title, String message, boolean isSuccessful) {
+        if (getChildFragmentManager().isStateSaved()) {
+            ((Activity) context).setResult(Activity.RESULT_OK);
+            ((Activity) context).finish();
+            return;
+        }
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
                 .setPositive(getString(R.string.ok), (dialog1, i) -> {
                     dialog1.dismiss();
-
                     ((Activity) context).setResult(Activity.RESULT_OK);
                     ((Activity) context).finish();
-
                 })
                 .build();
 
@@ -855,29 +900,22 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         SettingsClient client = LocationServices.getSettingsClient(context);
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
-        task.addOnSuccessListener((Activity) context, new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                System.out.println("test navin getLocation ");
-                startLocationUpdates(listener);
-            }
+        task.addOnSuccessListener((Activity) context, locationSettingsResponse -> {
+            startLocationUpdates(listener);
         });
 
-        task.addOnFailureListener((Activity)context, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    // Location settings are not satisfied, but this can be fixed
-                    // by showing the user a dialog.
-                    try {
-                        // Show the dialog by calling startResolutionForResult(),
-                        // and check the result in onActivityResult().
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult((Activity) context,
-                                11);
-                    } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
-                    }
+        task.addOnFailureListener((Activity) context, e -> {
+            if (e instanceof ResolvableApiException) {
+                // Location settings are not satisfied, but this can be fixed
+                // by showing the user a dialog.
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    ResolvableApiException resolvable = (ResolvableApiException) e;
+                    resolvable.startResolutionForResult((Activity) context,
+                            11);
+                } catch (IntentSender.SendIntentException sendEx) {
+                    // Ignore the error.
                 }
             }
         });
@@ -893,7 +931,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 .addLocationRequest(locationRequest);
 
         mFusedLocationClient.requestLocationUpdates(locationRequest,
-                new LocationCallback(){
+                new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
                         super.onLocationResult(locationResult);
@@ -901,7 +939,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                             return;
                         }
                         for (Location location : locationResult.getLocations()) {
-                            if(location != null){
+                            if (location != null) {
                                 listener.onSuccess(location);
                                 mFusedLocationClient.removeLocationUpdates(this);
                                 break;
@@ -938,5 +976,100 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     @Override
     public void startActivityForResultFromAdapter(Intent intent, int requestCode) {
         startActivityForResult(intent, requestCode);
+    }
+
+
+    @Override
+    public void openTaskAmendment(FormItem formItem, long submissionId, int repeatCount) {
+        listener.showBtnContainer(false);
+        ForkFormFragment fragment = ForkFormFragment.newInstance(submission, formItem, repeatCount, themeColor, recipients);
+        listener.addFragment(fragment);
+    }
+
+    @Override
+    public void getEstimateOperative(String estno, int position) {
+        if (!CommonUtils.isNetworkAvailable(context) || (estno.isEmpty() && position == -1)) {
+            showErrorDialog("Internet Connection", "Internet connection is not available. Please check your internet connection.", false);
+            return;
+        }
+        listener.showProgressBar();
+        APICalls.GetJobEstimateDetail(estno, DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<JobEstimate>() {
+            @Override
+            public void onResponse(@NonNull Call<JobEstimate> call, @NonNull retrofit2.Response<JobEstimate> response) {
+                if (CommonUtils.onTokenExpired(context, response.code())) {
+                    return;
+                }
+                if (response.isSuccessful()) {
+                    JobEstimate jobEstimate = response.body();
+                    if (jobEstimate != null) {
+                        formAdapter.showEstimateOperative(jobEstimate, position);
+                    } else {
+                        showValidationDialog("Estimate No Error", "Unfortunately the entered estimate number does not exist or it has no data. Please input a different or contact support.");
+                    }
+                } else {
+                    showValidationDialog("Estimate No Error", "Unfortunately the entered estimate number does not exist or it has no data. Please input a different or contact support.");
+                }
+                listener.hideProgressBar();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JobEstimate> call, @NonNull Throwable t) {
+                listener.hideProgressBar();
+                showValidationDialog("Estimate No Error", "Unfortunately the entered estimate number does not exist or it has no data. Please input a different or contact support.");
+            }
+        });
+    }
+
+    private void getInsQue() {
+        listener.showProgressBar();
+        String latestTemplateVersionId = submission.getJobID();
+        ArrayList<Answer> answersinspections = DBHandler.getInstance().getAnswers(submission.getID());
+        for (int c = 0; c < answersinspections.size(); c++) {
+            Answer answer = answersinspections.get(c);
+            if (!TextUtils.isEmpty(answer.getUploadID()) && answer.getUploadID().equalsIgnoreCase("inspectionId")) {
+                latestTemplateVersionId = DBHandler.getInstance().getLatestInspectionTemplateId(answer.getAnswer());
+            }
+        }
+        String finalLatestTemplateVersionId = latestTemplateVersionId;
+        if (!CommonUtils.isNetworkAvailable(context)) {
+            listener.hideProgressBar();
+            showValidationDialog("Start Inspection  Error", "Internet connection is not available. Please check your internet connection.");
+            return;
+        }
+        User user = DBHandler.getInstance().getUser();
+        APICalls.GetInspectionToolTipList(finalLatestTemplateVersionId, user.gettoken()).enqueue(new Callback<ArrayList<ToolTipModel>>() {
+            @Override
+            public void onResponse(@NonNull Call<ArrayList<ToolTipModel>> call, @NonNull retrofit2.Response<ArrayList<ToolTipModel>> response) {
+                if (CommonUtils.onTokenExpired(context, response.code())) {
+                    return;
+                }
+                if (response.isSuccessful()) {
+                    ArrayList<ToolTipModel> models = response.body();
+                    if (models != null && models.size() > 0) {
+                        AppPreferences.setTheme(1);//setting hseq theme.
+                        String jsonFileName = "slg_inspection.json";
+                        submission.setJsonFile(jsonFileName);
+                        long submissionID = DBHandler.getInstance().replaceData(Submission.DBTable.NAME, submission.toContentValues());
+                        submission.setJobID(finalLatestTemplateVersionId); // for tempplate
+                        Intent intent = new Intent(context, FormActivity.class);
+                        intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+                        intent.putParcelableArrayListExtra(FormActivity.ARG_QUESTIONS, models);
+                        startActivity(intent);
+                        requireActivity().finish();
+                    } else {
+                        showValidationDialog("Inspection Error", "Unfortunately the selected inspection version does not exist or it has no questions. Please select a different inspection or contact support.");
+                    }
+                } else {
+                    showValidationDialog("Inspection Error", "Unfortunately the selected inspection version does not exist or it has no questions. Please select a different inspection or contact support.");
+                }
+                listener.hideProgressBar();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ArrayList<ToolTipModel>> call, @NonNull Throwable t) {
+                listener.hideProgressBar();
+                showValidationDialog("Inspection Error", "Unfortunately the selected inspection version does not exist or it has no questions. Please select a different inspection or contact support.");
+            }
+        });
     }
 }

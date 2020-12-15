@@ -5,7 +5,7 @@
     {
       "title": "Eng Comp",
       "index": 0,
-      "url":"app/jobs/{jobId}/eng-comp-record-returns",
+      "url":"app/jobs/{jobId}/eng-comp",
       "photoUrl":"app/jobs/{jobId}/photos",
       "upload": true,
       "items": [
@@ -17,17 +17,10 @@
           "optional": false
         },
         {
-          "type": "dropdown",
-          "uploadId": "recordReturnsType",
-          "key": "recordReturn",
-          "title": "Record Return",
-          "optional": false
-        },
-        {
           "type": "et_long_text",
           "uploadId": "comment",
           "title": "Comments",
-          "optional": true
+          "optional": false
         },
         {
           "type": "photo",

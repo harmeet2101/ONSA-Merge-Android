@@ -30,7 +30,6 @@ import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
-import co.uk.depotnet.onsa.views.MaterialAlertDialog;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,10 +48,10 @@ public class DisclaimerActivity extends AppCompatActivity
     private int apiCounter;
 
 
-    public void startMainActivity() {
+    public void startWelcomeActivity() {
         hideProgressBar();
-        Intent intent = new Intent(DisclaimerActivity.this, MainActivity.class);
-        intent.putExtra("User", DBHandler.getInstance().getUser());
+        Intent intent = new Intent(DisclaimerActivity.this, WelcomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
@@ -135,8 +134,9 @@ public class DisclaimerActivity extends AppCompatActivity
         user = DBHandler.getInstance().getUser();
         showProgressBar();
         if(CommonUtils.isNetworkAvailable(this)){
-            RefreshDatasetService.startAction(this , user.gettoken());
-            if (user != null && !TextUtils.isEmpty(user.gettoken())) {
+
+            if (CommonUtils.validateToken(DisclaimerActivity.this) && user != null && !TextUtils.isEmpty(user.gettoken())) {
+                RefreshDatasetService.startAction(this , user.gettoken());
                 APICalls.getDisclaimer(user.gettoken()).enqueue(disclaimerCallback);
                 APICalls.getDisclaimerLogo(user.gettoken(), disclaimerCallbackLogo);
                 getFeatures();
@@ -178,10 +178,11 @@ public class DisclaimerActivity extends AppCompatActivity
     private void onAccept() {
         user.setDisclaimerAccepted(true);
         DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
-        startMainActivity();
+        startWelcomeActivity();
     }
 
     private void getFeatures() {
+
         APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
             @Override
             public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
@@ -196,14 +197,16 @@ public class DisclaimerActivity extends AppCompatActivity
                         featureResult.toContentValues();
                     }
                 }
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
+                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
+                Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
                 showButtons();
             }
 
             @Override
             public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
                 apiCounter++;
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
+                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
+                Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
                 showButtons();
             }
         });
@@ -215,22 +218,5 @@ public class DisclaimerActivity extends AppCompatActivity
             btnDecline.setVisibility(View.VISIBLE);
             hideProgressBar();
         }
-    }
-
-
-    public void showErrorDialog(String title, String message) {
-        MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(DisclaimerActivity.this)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositive(getString(R.string.ok), (dialog1, i) -> {
-                    dialog1.dismiss();
-                    Intent intent = new Intent(DisclaimerActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
-                })
-                .build();
-
-        dialog.setCancelable(false);
-        dialog.show(getSupportFragmentManager(), "_ERROR_DIALOG");
     }
 }

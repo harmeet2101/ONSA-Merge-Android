@@ -16,7 +16,7 @@
           "repeatId": "Items",
           "fields": ["StaStockItemId" , "StaId" , "Quantity"],
           "listItemType": "stock_item",
-          "isStoackLevelCheck": false,
+          "isStoackLevelCheck": true,
           "isMultiSelection": false,
           "isConcatDisplayText": false,
           "title": "Store Item",

@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.6"
             android:gravity="end"
+            android:justificationMode="inter_word"
             android:text=""
             android:textColor="@color/txt_color_dark"
             android:textSize="@dimen/_12sdp" />

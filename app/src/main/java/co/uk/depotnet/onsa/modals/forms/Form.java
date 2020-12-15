@@ -10,11 +10,13 @@ public class Form implements Parcelable {
     private String title;
     private ArrayList<Screen> screens;
     private boolean isProgressVisible;
+    private String themeColor;
 
     protected Form(Parcel in) {
         title = in.readString();
         screens = in.createTypedArrayList(Screen.CREATOR);
         isProgressVisible = in.readByte() != 0;
+        themeColor=in.readString();
     }
 
     public static final Creator<Form> CREATOR = new Creator<Form>() {
@@ -51,6 +53,14 @@ public class Form implements Parcelable {
 
     public void setProgressVisible(boolean progressVisible) {
         isProgressVisible = progressVisible;
+    }
+
+    public String getThemeColor() {
+        return themeColor;
+    }
+
+    public void setThemeColor(String themeColor) {
+        this.themeColor = themeColor;
     }
 
     @Override

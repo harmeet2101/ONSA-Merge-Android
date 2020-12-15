@@ -19,9 +19,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import co.uk.depotnet.onsa.R;
-import co.uk.depotnet.onsa.activities.VerificationActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.fragments.store.RequestItemsFragment;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.modals.User;
@@ -74,7 +72,7 @@ public class AdapterMyRequests extends RecyclerView.Adapter<AdapterMyRequests.Vi
         holder.txtRequestStatus.setText(String.format("Request Status: %s", holder.item.getrequestStatusName()));
 
 
-        holder.btnView.setOnClickListener(v -> listener.addFragment(RequestItemsFragment.newInstance(holder.item , user),
+        holder.btnView.setOnClickListener(v -> listener.addFragment(RequestItemsFragment.newInstance(holder.item),
                 false));
 
         if(holder.item.getrequestStatusName().equalsIgnoreCase("rejected") ||
@@ -88,6 +86,9 @@ public class AdapterMyRequests extends RecyclerView.Adapter<AdapterMyRequests.Vi
                     return;
                 }
 
+                if(!CommonUtils.validateToken(context)){
+                    return;
+                }
                 listener.showProgressBar();
                 APICalls.hideReequest(user.gettoken(),holder.item.getrequestId()).enqueue(new Callback<Void>() {
 

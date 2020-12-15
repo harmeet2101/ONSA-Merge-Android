@@ -1,0 +1,20 @@
+{
+  "title": "Add Notes",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Add Notes",
+      "index": 0,
+      "url": "app/jobs/{jobId}/add-note",
+      "upload": true,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "text",
+          "title": "Notes",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/_8sdp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:animateLayoutChanges="true">
+    <TextView
+        android:id="@+id/briefing_signs_operative"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/briefings"
+        android:textSize="@dimen/_14sdp"
+        android:textStyle="bold"
+        android:drawableStart="@drawable/ic_user_new"
+        android:drawablePadding="@dimen/_8sdp"
+        android:drawableLeft="@drawable/ic_user_new"
+        android:padding="@dimen/_4sdp"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/briefing_signs_delete"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/signsvieee"/>
+    <ImageButton
+        android:id="@+id/briefing_signs_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_bin"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/briefing_signs_operative"
+        app:layout_constraintBottom_toTopOf="@+id/signsvieee"
+        android:contentDescription="@string/briefings" />
+    <View
+        android:id="@+id/signsvieee"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_1sdp"
+        android:background="?attr/selected_background_color"
+        android:layout_marginStart="@dimen/_4sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/briefing_signs_operative"
+        android:layout_marginLeft="@dimen/_4sdp"
+        android:layout_marginRight="@dimen/_12sdp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

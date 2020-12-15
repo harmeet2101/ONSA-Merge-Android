@@ -9,42 +9,45 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.fragments.FragmentA75;
 import co.uk.depotnet.onsa.fragments.FragmentChildJobDetails;
+import co.uk.depotnet.onsa.fragments.FragmentNotes;
 import co.uk.depotnet.onsa.fragments.FragmentNotices;
+import co.uk.depotnet.onsa.fragments.FragmentTasks;
 import co.uk.depotnet.onsa.fragments.FragmentWorkItems;
 import co.uk.depotnet.onsa.modals.Job;
-import co.uk.depotnet.onsa.modals.User;
 
 
 public class JobDetailsPagerAdapter extends FragmentPagerAdapter {
 
     private Context context;
-    private User user;
     private Job job;
 
-    public JobDetailsPagerAdapter(Context context , User user , Job job , FragmentManager fm) {
+    public JobDetailsPagerAdapter(Context context, Job job , FragmentManager fm) {
         super(fm);
         this.context = context;
-        this.user = user;
         this.job = job;
     }
 
 
     @Override
     public int getCount() {
-        return 4;
+        return 6;
     }
 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return FragmentChildJobDetails.newInstance(user , job);
+                return FragmentChildJobDetails.newInstance(job);
             case 1:
-                return FragmentWorkItems.newInstance(user , job);
+                return FragmentWorkItems.newInstance(job);
             case 2:
-                return FragmentNotices.newInstance(user , job);
+                return FragmentNotices.newInstance(job);
             case 3:
-                return FragmentA75.newInstance(user , job);
+                return FragmentNotes.newInstance(job);
+            case 4:
+                return FragmentA75.newInstance(job);
+            case 5:
+                return FragmentTasks.newInstance(job);
             default:
                 return null;
         }
@@ -61,7 +64,11 @@ public class JobDetailsPagerAdapter extends FragmentPagerAdapter {
             case 2:
                 return context.getString(R.string.notice);
             case 3:
+                return context.getString(R.string.notes);
+            case 4:
                 return context.getString(R.string.a75);
+            case 5:
+                return context.getString(R.string.task);
         }
         return null;
     }

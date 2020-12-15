@@ -216,6 +216,9 @@ public class ListStoreItemActivity extends AppCompatActivity {
     }
 
     public void showErrorDialog(String title, String message) {
+        if(getSupportFragmentManager().isStateSaved()){
+            return;
+        }
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)

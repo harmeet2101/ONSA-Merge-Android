@@ -120,7 +120,7 @@
           "fields": [
             "type"
           ],
-          "optional": false,
+          "optional": true,
           "dialogItems": [
             {
               "type": "dropdown",

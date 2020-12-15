@@ -192,7 +192,6 @@ public class FragmentCurrentStoreDetail extends Fragment implements View.OnClick
 
 
                 Intent intent = new Intent(context, FormActivity.class);
-                intent.putExtra(FormActivity.ARG_USER, DBHandler.getInstance().getUser());
                 intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
                 intent.putExtra(FormActivity.ARG_MY_STORE_ITEMS, map);
                 startActivityForResult(intent, 1000);

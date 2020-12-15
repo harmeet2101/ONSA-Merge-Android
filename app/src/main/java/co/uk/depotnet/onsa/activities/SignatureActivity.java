@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -12,6 +13,8 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.github.gcacace.signaturepad.views.SignaturePad;
@@ -26,16 +29,18 @@ import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
 import co.uk.depotnet.onsa.utils.Utils;
 
-public class SignatureActivity extends AppCompatActivity {
+public class SignatureActivity extends ThemeBaseActivity {
     public static final String ARG_SUBMISSION_ID = "SubmissionID";
     public static final String ARG_FORM_ITEM = "FormItem";
     public static final String ARG_REPEAT_COUNT = "RepeatCount";
+    public static final String ARG_COLOR = "color";
     private static final int MY_PERMISSIONS_REQUEST_WRITE = 1;
 
     private SignaturePad signaturePad;
     private long submissionID;
     private FormItem formItem;
     private int repeatCount;
+    private String themeColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +50,17 @@ public class SignatureActivity extends AppCompatActivity {
         submissionID = intent.getLongExtra(ARG_SUBMISSION_ID , -1);
         formItem = intent.getParcelableExtra(ARG_FORM_ITEM);
         repeatCount = intent.getIntExtra(ARG_REPEAT_COUNT, 0);
+        themeColor = intent.getStringExtra(ARG_COLOR);
 
 
         setContentView(R.layout.activity_signature);
+        if (themeColor != null && !themeColor.isEmpty()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(Color.parseColor(themeColor));
+            }
+        }
 
         signaturePad = findViewById(R.id.signature_pad);
 

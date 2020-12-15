@@ -17,12 +17,8 @@ import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.RefreshDatasetService;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
-import co.uk.depotnet.onsa.modals.Constant;
 import co.uk.depotnet.onsa.modals.User;
-import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.store.FeatureResult;
-import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
@@ -36,11 +32,8 @@ public class SplashActivity extends AppCompatActivity {
 
     private User user;
 
-
-
-    private void startMainActivity(){
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-        intent.putExtra("User", user);
+    private void startWelcomeActivity(){
+        Intent intent = new Intent(SplashActivity.this, WelcomeActivity.class);
         startActivity(intent);
         finish();
     }
@@ -75,7 +68,6 @@ public class SplashActivity extends AppCompatActivity {
 
             if (!user.isDisclaimerAccepted()) {
                 intent = new Intent(SplashActivity.this, DisclaimerActivity.class);
-                intent.putExtra("User", user);
                 startActivity(intent);
                 finish();
                 return;
@@ -84,9 +76,9 @@ public class SplashActivity extends AppCompatActivity {
 
             DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
             if (!CommonUtils.isNetworkAvailable(SplashActivity.this)) {
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
-                intent = new Intent(SplashActivity.this, MainActivity.class);
-                intent.putExtra("User", user);
+                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
+                Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
+                intent = new Intent(SplashActivity.this, WelcomeActivity.class);
                 startActivity(intent);
                 finish();
                 return;
@@ -101,7 +93,9 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void getFeatures() {
-
+        if(!CommonUtils.validateToken(SplashActivity.this)){
+            return;
+        }
         APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
             @Override
             public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
@@ -116,21 +110,23 @@ public class SplashActivity extends AppCompatActivity {
                     }
                 }
 
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
-                startMainActivity();
+                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
+                Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
+                startWelcomeActivity();
             }
 
             @Override
             public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_NAME);
-                startMainActivity();
+                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
+                Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
+                startWelcomeActivity();
             }
         });
     }
 
 
     private boolean isLogin() {
-        return user != null && !TextUtils.isEmpty(user.gettoken());
+        return user != null && !TextUtils.isEmpty(user.gettoken()) && user.isLoggedIn();
     }
 
     private boolean isVerifiedOTP() {

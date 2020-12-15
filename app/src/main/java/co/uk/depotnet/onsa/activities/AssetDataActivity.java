@@ -21,7 +21,6 @@ import co.uk.depotnet.onsa.adapters.AdapterAssets;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.OnItemClickListener;
 import co.uk.depotnet.onsa.modals.JobModuleStatus;
-import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
 import co.uk.depotnet.onsa.modals.forms.Screen;
@@ -32,13 +31,11 @@ import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 public class AssetDataActivity extends AppCompatActivity
         implements View.OnClickListener, OnItemClickListener<FormItem> {
 
-    public static final String ARG_USER = "User";
     public static final String ARG_SUBMISSION = "Submission";
 
 
     private ArrayList<FormItem> poleItems;
     private AdapterAssets adapter;
-    private User user;
     private RelativeLayout rlWarning;
     private RecyclerView recyclerView;
     private LinearLayout llBtnContainer;
@@ -51,7 +48,6 @@ public class AssetDataActivity extends AppCompatActivity
         setContentView(R.layout.activity_asset_data);
 
         Intent intent = getIntent();
-        user = intent.getParcelableExtra(ARG_USER);
         submission = intent.getParcelableExtra(ARG_SUBMISSION);
 
         poleItems = new ArrayList<>();
@@ -184,7 +180,6 @@ public class AssetDataActivity extends AppCompatActivity
     public void onItemClick(FormItem formItem, int position) {
         submission.setJsonFile("asset_survey.json");
         Intent intent = new Intent(this, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         intent.putExtra(FormActivity.ARG_REPEAT_COUNT, position);
         startActivityForResult(intent, 1234);

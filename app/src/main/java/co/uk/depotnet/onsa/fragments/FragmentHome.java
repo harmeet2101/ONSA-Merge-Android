@@ -64,6 +64,8 @@ import co.uk.depotnet.onsa.modals.ItemType;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Submission;
+import co.uk.depotnet.onsa.modals.httpresponses.BaseTask;
+import co.uk.depotnet.onsa.modals.httpresponses.SiteActivityModel;
 import co.uk.depotnet.onsa.modals.responses.JobResponse;
 import co.uk.depotnet.onsa.modals.store.DataMyRequests;
 import co.uk.depotnet.onsa.modals.store.DataMyStores;
@@ -86,9 +88,9 @@ import retrofit2.Response;
 public class FragmentHome extends Fragment implements HomeJobListListener,
         OnDateSelectedListener, View.OnClickListener{
 
-    private static final String ARG_USER = "User";
     private static final int STORAGE_PERMISSION_CODE = 1;
     private final DateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
+
     private List<Job> jobs;
     private List<Job> originalJobs;
     private HomeAdapter adapter;
@@ -106,17 +108,13 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     private ArrayList<ItemType> jobTags;
     private Date selectedDate;
     private boolean isRefreshing;
+    private int taskCounter;
 
 
-    public FragmentHome() {
-
-    }
-
-
-    public static FragmentHome newInstance(User user) {
+    public static FragmentHome newInstance() {
         FragmentHome fragment = new FragmentHome();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_USER, user);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -124,10 +122,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle args = getArguments();
-        if (args != null) {
-            user = args.getParcelable(ARG_USER);
-        }
+        user = DBHandler.getInstance().getUser();
         originalJobs = new ArrayList<>();
         jobs = new ArrayList<>();
 
@@ -135,7 +130,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
 
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-
         selectedDate = calendar.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         try {
@@ -195,7 +189,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
         closeButton.setOnClickListener(v -> closeSearch());
 
-
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         VerticalSpaceItemDecoration itemDecoration = new VerticalSpaceItemDecoration(20);
         recyclerView.addItemDecoration(itemDecoration);
@@ -225,8 +218,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                 fetchData();
             }
         });
-
-
 
         return view;
     }
@@ -314,12 +305,16 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             txtToolbarTitle.setText(title);
         }
 
-
-        if (jobs.isEmpty()) {
+        if (jobs!=null && jobs.size()>0)
+        {
+            jobs.clear();
+        }
+        fetchData();// to refresh auto
+        /*if (jobs.isEmpty()) {
             fetchData();
         }else{
             getJobsFromDb();
-        }
+        }*/
         listener.onFragmentHomeVisible(true);
     }
 
@@ -340,17 +335,34 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
     @Override
     public void openJobDetail(Job job) {
-        FragmentJobDetail fragmentJobDetail = FragmentJobDetail.newInstance(user, job);
+
+        FragmentJobDetail fragmentJobDetail = FragmentJobDetail.newInstance(job);
         listener.addFragment(fragmentJobDetail, false);
+
+//        if(taskCounter == 0) {
+//            getSiteActivityTasks(job, Constants.TYPE_ID_SERVICE_MATERAL , true);
+//            getSiteActivityTasks(job, Constants.TYPE_ID_MUCKAWAY, true);
+//            getSiteActivityTasks(job, Constants.TYPE_ID_BACKFILL, true);
+//            getSiteActivityTasks(job, Constants.TYPE_ID_REINSTATEMENT, true);
+//            getSiteActivityTasks(job, Constants.TYPE_ID_SITE_CLEAR, true);
+//        }
     }
 
     @Override
     public void openWorkLog(final Job job) {
+
         Intent intent = new Intent(context, WorkLogActivity.class);
-        intent.putExtra(WorkLogActivity.ARG_USER, user);
         intent.putExtra(WorkLogActivity.ARG_JOB_ID, job.getjobId());
         intent.putExtra(WorkLogActivity.ARG_JOB_REFERENCE_NUMBER, job.getjobNumber());
         startActivity(intent);
+//        if(taskCounter == 0) {
+//            getSiteActivityTasks(job, Constants.TYPE_ID_SERVICE_MATERAL, false);
+//            getSiteActivityTasks(job, Constants.TYPE_ID_MUCKAWAY, false);
+//            getSiteActivityTasks(job, Constants.TYPE_ID_BACKFILL, false);
+//            getSiteActivityTasks(job, Constants.TYPE_ID_REINSTATEMENT, false);
+//            getSiteActivityTasks(job, Constants.TYPE_ID_SITE_CLEAR, false);
+//        }
+
     }
 
     @Override
@@ -386,7 +398,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     @Override
     public void openSurvey(Job job) {
         Intent intent = new Intent(context, SurveyActivity.class);
-        intent.putExtra(SurveyActivity.ARG_USER, user);
         intent.putExtra(SurveyActivity.ARG_JOB_ID, job.getjobId());
         intent.putExtra(SurveyActivity.ARG_JOB_REFERENCE_NUMBER, job.getjobNumber());
         startActivity(intent);
@@ -399,7 +410,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivity(intent);
     }
@@ -410,7 +420,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivity(intent);
     }
@@ -420,7 +429,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     public void openRiskAssessment(final Job job) {
         Intent intent = new Intent(context, RiskAssessmentActivity.class);
         intent.putExtra(RiskAssessmentActivity.ARG_JOB, job);
-        intent.putExtra(RiskAssessmentActivity.ARG_USER, user);
         startActivity(intent);
     }
 
@@ -430,7 +438,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivity(intent);
     }
@@ -596,7 +603,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                 break;
             case R.id.btn_img_settings:
                 Intent intent = new Intent(getActivity(), SettingsActivity.class);
-                intent.putExtra("User", user);
                 startActivity(intent);
                 break;
             case R.id.btn_img_cancel:
@@ -651,6 +657,10 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 //        isRefreshing = true;
 //        listener.showProgressBar();
 
+        if(!CommonUtils.validateToken(context)){
+            return;
+        }
+
         APICalls.getJobList(user.gettoken()).enqueue(new Callback<JobResponse>() {
             @Override
             public void onResponse(@NonNull Call<JobResponse> call, @NonNull Response<JobResponse> response) {
@@ -704,6 +714,9 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
 
     private void getReceipts(){
+        if(!CommonUtils.validateToken(context)){
+            return;
+        }
         APICalls.getReceipts(user.gettoken()).enqueue(new Callback<DataReceipts>() {
             @Override
             public void onResponse(@NonNull Call<DataReceipts> call,@NonNull Response<DataReceipts> response) {
@@ -727,6 +740,9 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
 
     private void getMyRequests(){
+        if(!CommonUtils.validateToken(context)){
+            return;
+        }
         APICalls.getMyRequests(user.gettoken()).enqueue(new Callback<DataMyRequests>() {
             @Override
             public void onResponse(@NonNull Call<DataMyRequests> call, @NonNull Response<DataMyRequests> response) {
@@ -760,6 +776,16 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             FragmentHome.this.originalJobs.addAll(jobs);
         }
         filterOnDate(selectedDate);
+    }
+
+    @Override
+    public void openAddNotes(Job job) {
+        Submission submission = new Submission("add_notes.json", "Add Notes", job.getjobId());
+        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        submission.setId(submissionID);
+        Intent intent = new Intent(context, FormActivity.class);
+        intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+        startActivity(intent);
     }
 
     private void closeSearch() {
@@ -858,7 +884,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivity(intent);
     }
@@ -870,6 +895,9 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             return;
         }
 
+        if(!CommonUtils.validateToken(context)){
+            return;
+        }
         listener.showProgressBar();
         APICalls.getMyStore(user.gettoken()).enqueue(new Callback<DataMyStores>() {
 
@@ -883,6 +911,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                 }
 
                 if (response.isSuccessful()) {
+                    DBHandler.getInstance().resetMyStores();//to reset my store
                     DataMyStores dataMyStores = response.body();
                     if (dataMyStores != null) {
                         dataMyStores.toContentValues();
@@ -909,6 +938,10 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             String title = "Submission Error";
             String message = "Internet connection is not available. Please check your internet connection. Your request is submitted in Queue.";
             showErrorDialog(title, message);
+            return;
+        }
+
+        if(!CommonUtils.validateToken(context)){
             return;
         }
 
@@ -972,7 +1005,21 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         }).start();
     }
 
+    @Override
+    public void openRequestTask(Job job) {
+        String jsonFileName = "request_task.json";
+        Submission submission = new Submission(jsonFileName, "Request Task", job.getjobId());
+        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        submission.setId(submissionID);
+        Intent intent = new Intent(context, FormActivity.class);
+        intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+        startActivity(intent);
+    }
+
     public void showErrorDialog(String title, String message) {
+        if(getChildFragmentManager().isStateSaved()){
+            return;
+        }
 
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
                 .setTitle(title)
@@ -988,6 +1035,69 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     public void openPhotoGallery(Job job) {
         Intent intent = new Intent(context , PhotoActivity.class);
         intent.putExtra("Job" , job);
+        startActivity(intent);
+    }
+
+    private void getSiteActivityTasks(Job job , final int siteActivityTypeId, boolean isFromJobDetail){
+        final String jobID = job.getjobId();
+        if(!CommonUtils.isNetworkAvailable(context)){
+            taskCounter++;
+            if(taskCounter == 5){
+                onSiteActivityTaskLoaded(job , isFromJobDetail);
+                listener.hideProgressBar();
+                taskCounter = 0;
+            }
+            return;
+        }
+
+        listener.showProgressBar();
+        APICalls.GetSiteActivityTasks(user.gettoken() , jobID , siteActivityTypeId).enqueue(new Callback<SiteActivityModel>() {
+            @Override
+            public void onResponse(@NonNull Call<SiteActivityModel> call, @NonNull Response<SiteActivityModel> response) {
+                SiteActivityModel siteActivityModel = response.body();
+                taskCounter++;
+                if (siteActivityModel != null) {
+                    DBHandler.getInstance().deleteBaseTasks(jobID , siteActivityTypeId);
+                    List<BaseTask> tasks = siteActivityModel.getResult();
+                    if(tasks != null && !tasks.isEmpty()){
+
+                        for (BaseTask task : tasks){
+                            DBHandler.getInstance().replaceData(BaseTask.DBTable.NAME , task.toContentValues());
+                        }
+                    }
+                }
+//                getTasks(jobID , siteActivityTypeId);
+
+                if(taskCounter == 5){
+                    onSiteActivityTaskLoaded(job , isFromJobDetail);
+                    listener.hideProgressBar();
+                    taskCounter = 0;
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<SiteActivityModel> call, @NonNull Throwable t) {
+                taskCounter++;
+
+                if(taskCounter == 5){
+                    onSiteActivityTaskLoaded(job , isFromJobDetail);
+                    listener.hideProgressBar();
+                    taskCounter = 0;
+                }
+            }
+        });
+    }
+
+    private void onSiteActivityTaskLoaded(Job job , boolean isFromJobDetail){
+        if(isFromJobDetail){
+            FragmentJobDetail fragmentJobDetail = FragmentJobDetail.newInstance(job);
+            listener.addFragment(fragmentJobDetail, false);
+            return;
+        }
+
+        Intent intent = new Intent(context, WorkLogActivity.class);
+        intent.putExtra(WorkLogActivity.ARG_JOB_ID, job.getjobId());
+        intent.putExtra(WorkLogActivity.ARG_JOB_REFERENCE_NUMBER, job.getjobNumber());
         startActivity(intent);
     }
 }

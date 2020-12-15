@@ -24,6 +24,8 @@ public class JobWorkItem implements Parcelable , DropDownItem {
     private String jobId;
     private String unitType;
     private float quantity;
+    private float measuredQuantity;
+    private float availableToMeasureQuantity;
     private String itemCode;
     private String description;
 
@@ -31,6 +33,8 @@ public class JobWorkItem implements Parcelable , DropDownItem {
         jobId = in.readString();
         unitType = in.readString();
         quantity = in.readFloat();
+        measuredQuantity = in.readFloat();
+        availableToMeasureQuantity = in.readFloat();
         itemCode = in.readString();
         description = in.readString();
 
@@ -40,6 +44,8 @@ public class JobWorkItem implements Parcelable , DropDownItem {
         jobId = cursor.getString(cursor.getColumnIndex(DBTable.jobId));
         unitType = cursor.getString(cursor.getColumnIndex(DBTable.unitType));
         quantity = cursor.getFloat(cursor.getColumnIndex(DBTable.quantity));
+        measuredQuantity = cursor.getFloat(cursor.getColumnIndex(DBTable.measuredQuantity));
+        availableToMeasureQuantity = cursor.getFloat(cursor.getColumnIndex(DBTable.availableToMeasureQuantity));
         itemCode = cursor.getString(cursor.getColumnIndex(DBTable.itemCode));
         description = cursor.getString(cursor.getColumnIndex(DBTable.description));
 
@@ -90,11 +96,21 @@ public class JobWorkItem implements Parcelable , DropDownItem {
         return 0;
     }
 
+    public float getAvailableToMeasureQuantity() {
+        return availableToMeasureQuantity;
+    }
+
+    public float getMeasuredQuantity() {
+        return measuredQuantity;
+    }
+
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(jobId);
         parcel.writeString(unitType);
         parcel.writeFloat(quantity);
+        parcel.writeFloat(measuredQuantity);
+        parcel.writeFloat(availableToMeasureQuantity);
         parcel.writeString(itemCode);
         parcel.writeString(description);
 
@@ -108,6 +124,8 @@ public class JobWorkItem implements Parcelable , DropDownItem {
         cv.put(DBTable.unitType, this.unitType);
 
         cv.put(DBTable.quantity, this.quantity);
+        cv.put(DBTable.measuredQuantity, this.measuredQuantity);
+        cv.put(DBTable.availableToMeasureQuantity, this.availableToMeasureQuantity);
 
         cv.put(DBTable.itemCode, this.itemCode);
 
@@ -118,7 +136,7 @@ public class JobWorkItem implements Parcelable , DropDownItem {
 
     @Override
     public String getDisplayItem() {
-        return description+"("+quantity+")";
+        return itemCode+"- "+description;
     }
 
     @Override
@@ -131,6 +149,8 @@ public class JobWorkItem implements Parcelable , DropDownItem {
         public static final String jobId = "jobId";
         public static final String unitType = "unitType";
         public static final String quantity = "quantity";
+        public static final String measuredQuantity = "measuredQuantity";
+        public static final String availableToMeasureQuantity = "availableToMeasureQuantity";
         public static final String itemCode = "itemCode";
         public static final String description = "description";
 

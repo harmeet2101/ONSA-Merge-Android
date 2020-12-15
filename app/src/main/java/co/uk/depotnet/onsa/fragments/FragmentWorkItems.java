@@ -27,26 +27,22 @@ import java.util.List;
 
 
 public class FragmentWorkItems extends Fragment {
-    private static final String ARG_USER = "User";
     private static final String ARG_JOB = "Job";
     private Context context;
-    private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private AdapterWorkItems adapter;
     private List<JobWorkItem> workItems;
-    private User user;
     private Job job;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
     }
 
-    public static FragmentWorkItems newInstance(User user , Job job){
+    public static FragmentWorkItems newInstance(Job job){
         FragmentWorkItems fragmentWorkItems = new FragmentWorkItems();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_USER , user);
         args.putParcelable(ARG_JOB , job);
         fragmentWorkItems.setArguments(args);
         return fragmentWorkItems;
@@ -56,7 +52,6 @@ public class FragmentWorkItems extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-        user = args.getParcelable(ARG_USER);
         job = args.getParcelable(ARG_JOB);
         workItems = new ArrayList<>();
         adapter = new AdapterWorkItems(context , workItems);
@@ -66,7 +61,7 @@ public class FragmentWorkItems extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_work_item, container , false);
-        recyclerView = view.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         progressBar = view.findViewById(R.id.progress_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(context , LinearLayoutManager.VERTICAL , false));
         recyclerView.setAdapter(adapter);

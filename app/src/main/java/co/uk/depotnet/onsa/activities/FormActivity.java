@@ -1,12 +1,21 @@
 package co.uk.depotnet.onsa.activities;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.PersistableBundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -23,11 +32,14 @@ import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.FormFragment;
 import co.uk.depotnet.onsa.listeners.FromActivityListener;
 import co.uk.depotnet.onsa.modals.User;
+import co.uk.depotnet.onsa.modals.briefings.BriefingsDocument;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.Form;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
 import co.uk.depotnet.onsa.modals.forms.Screen;
 import co.uk.depotnet.onsa.modals.forms.Submission;
+import co.uk.depotnet.onsa.modals.hseq.ToolTipModel;
+import co.uk.depotnet.onsa.modals.schedule.Schedule;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.utils.JsonReader;
@@ -40,8 +52,11 @@ public class FormActivity extends AppCompatActivity implements
     public static final String ARG_RECEIPT = "Receipt";
     public static final String ARG_MY_STORE_ITEMS = "MyStoreItems";
     public static final String ARG_REPEAT_COUNT = "repeatCount";
-    public static final String ARG_USER = "User";
-
+    public static final String ARG_SCHEDULE = "Schedule";
+    public static final String ARG_DOCS = "docsread";
+    public static final String ARG_QUESTIONS = "Questions";
+    public static final String Doc_Recipient = "Doc_Recipient";
+    private Toolbar toolbar;
     private TextView txtToolbarTitle;
     private LinearLayout llBtnContainer;
     private TextView btnBack;
@@ -56,12 +71,17 @@ public class FormActivity extends AppCompatActivity implements
     private Form form;
     private int repeatCount;
     private Receipts receipts;
-
+    private Schedule schedule;
+    private ArrayList<BriefingsDocument> briefingsDocument;
+    public ArrayList<ToolTipModel> toolTipModels;
+    private ArrayList<String> recipients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
+        toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
         llUiBlocker = findViewById(R.id.ll_ui_blocker);
         progressContainer = findViewById(R.id.ll_progress_container);
         txtToolbarTitle = findViewById(R.id.txt_toolbar_title);
@@ -78,13 +98,17 @@ public class FormActivity extends AppCompatActivity implements
 
         Intent intent = getIntent();
         submission = intent.getParcelableExtra(ARG_SUBMISSION);
-        user = intent.getParcelableExtra(ARG_USER);
+        user = DBHandler.getInstance().getUser();
         repeatCount = intent.getIntExtra(ARG_REPEAT_COUNT, -1);
-        if(intent.hasExtra(ARG_RECEIPT)){
+        if (intent.hasExtra(ARG_RECEIPT)) {
             receipts = intent.getParcelableExtra(ARG_RECEIPT);
         }
         repeatCount = intent.getIntExtra(ARG_REPEAT_COUNT, -1);
         jsonFileName = submission.getJsonFileName();
+        schedule = intent.getParcelableExtra(ARG_SCHEDULE);
+        toolTipModels = intent.getParcelableArrayListExtra(ARG_QUESTIONS);
+        briefingsDocument = intent.getParcelableArrayListExtra(ARG_DOCS);
+        recipients = intent.getStringArrayListExtra(Doc_Recipient);
         startFromFragment();
     }
 
@@ -103,30 +127,33 @@ public class FormActivity extends AppCompatActivity implements
                 popFragmentImmediate();
                 break;
             case R.id.btn_submit:
-
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FormFragment fragment = (FormFragment) fragmentManager.findFragmentById(R.id.container);
                 if (fragment != null) {
-                    if(receipts != null){
-                        Answer answer = DBHandler.getInstance().getAnswer(submission.getID() ,"MyReceiptID" ,
-                                null , 0);
+                    if (receipts != null) {
+                        Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "MyReceiptID",
+                                null, 0);
 
-                        if(answer == null) {
+                        if (answer == null) {
                             answer = new Answer(submission.getID(), "MyReceiptID");
                         }
                         answer.setShouldUpload(false);
                         answer.setRepeatID(null);
                         answer.setRepeatCount(0);
                         answer.setAnswer(receipts.getbatchRef());
-                        DBHandler.getInstance().replaceData(Answer.DBTable.NAME , answer.toContentValues());
+                        DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
                         fragment.sendReceipts(receipts);
-                    }else {
+                    } else {
                         fragment.submit();
                     }
                 }
-
                 break;
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     @Override
@@ -184,8 +211,31 @@ public class FormActivity extends AppCompatActivity implements
 
     private void startFromFragment() {
         form = JsonReader.loadForm(FormActivity.this, jsonFileName);
-
         addMyStoreItems(form);
+
+        if (toolTipModels != null && !toolTipModels.isEmpty()) {
+            AddQuestions(form);
+        }
+        if (schedule != null) {
+            addScheduleData(form);
+        }
+        if (briefingsDocument != null && briefingsDocument.size() > 0) {
+            addBriefingsread(form);
+        }
+        try {
+            if (!TextUtils.isEmpty(form.getThemeColor())) {
+                int themeColor = Color.parseColor(form.getThemeColor());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    toolbar.setBackgroundColor(themeColor);
+                    linearProgressBar.setProgressTintList(ColorStateList.valueOf(themeColor));
+                    btnBack.setBackgroundTintList(ColorStateList.valueOf(themeColor));
+                    btnSubmit.setBackgroundTintList(ColorStateList.valueOf(themeColor));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         DBHandler.getInstance().replaceData(Submission.DBTable.NAME, submission.toContentValues());
         if (form.isProgressVisible()) {
             linearProgressBar.setMax(form.getScreens().size());
@@ -195,7 +245,127 @@ public class FormActivity extends AppCompatActivity implements
         }
         txtToolbarTitle.setText(form.getTitle());
 
-        addFragment(FormFragment.newInstance(submission, user, form.getScreens().get(0), form.getTitle(), 0, repeatCount));
+        addFragment(FormFragment.newInstance(submission, form.getScreens().get(0), form.getTitle(), 0, repeatCount, form.getThemeColor() ,schedule != null , recipients));
+    }
+
+
+    private void addScheduleData(Form form) {
+        if (form == null) {
+            return;
+        }
+        Screen screen = form.getScreens().get(0);
+        ArrayList<FormItem> formItems = screen.getItems();
+        for (FormItem fm : formItems) {
+            Answer answer = DBHandler.getInstance().getAnswer(submission.getID(),
+                    fm.getUploadId(),
+                    null, 0);
+            if (answer == null) {
+                answer = new Answer(submission.getID(), fm.getUploadId());
+            }
+
+            if (formItems.get(0).getUploadId().equals(fm.getUploadId())) {
+                answer.setAnswer(schedule.getJobEstimateNumber());
+                answer.setDisplayAnswer(schedule.getJobEstimateNumber());
+                answer.setRepeatID(null);
+                answer.setRepeatCount(0);
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+            }
+            if (formItems.get(3).getUploadId().equals(fm.getUploadId())) {
+                answer.setAnswer(schedule.getInspectionTemplateId());// upload value to server on behalf post param
+                answer.setDisplayAnswer(schedule.getInspectionTemplateName());
+                answer.setRepeatID(null); // always check if not
+                answer.setRepeatCount(0);// always check
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+            }
+        }
+    }
+
+    private void addBriefingsread(Form form) {
+        if (form == null) {
+            return;
+        }
+        Screen screen = form.getScreens().get(0);
+        ArrayList<FormItem> formItems = screen.getItems().get(1).getDialogItems();
+        if (formItems == null || formItems.isEmpty()) {
+            return;
+        }
+        Answer answerItemId = DBHandler.getInstance().getAnswer(submission.getID(),
+                formItems.get(1).getUploadId(),
+                formItems.get(1).getRepeatId(), formItems.get(1).getRepeatCount());
+        if (answerItemId == null) {
+            answerItemId = new Answer(submission.getID(), formItems.get(1).getUploadId());
+        }
+        if (answerItemId != null) {
+            int repeatCount = 0;
+            for (BriefingsDocument document : briefingsDocument) {
+                answerItemId.setAnswer(document.getBriefingId());
+                answerItemId.setDisplayAnswer(document.getBriefingName());
+                answerItemId.setRepeatID(formItems.get(1).getRepeatId());
+                answerItemId.setRepeatCount(repeatCount);
+                answerItemId.setIsMultiList(1);
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answerItemId.toContentValues());
+                repeatCount++;
+            }
+        }
+
+    }
+
+    private void AddQuestions(Form form) {
+        if (form == null) {
+            return;
+        }
+        int index = 0;
+        ArrayList<Screen> screenArrayList = new ArrayList<>();
+        for (ToolTipModel tipModel : toolTipModels) {
+            Screen screen = new Screen();
+            screen.setIndex(index);
+            index++;
+            screen.setTitle("SLG Questions");
+            screen.setUpload(false);
+            ArrayList<FormItem> formItems;
+            //it will return all dialogitem of item
+            formItems = JsonReader.loadAmends(FormActivity.this, "questions_item.json").getDialogItems();
+            //FormItem(String type, String title, String uploadID, String repeatID, boolean optional)
+            if (tipModel.getQuestionIsMandatory()) {
+                formItems.get(0).setType("yes_no_tooltip");
+            } else {
+                formItems.get(0).setType("yes_no_na_tooltip");
+            }
+            formItems.get(0).setUploadId(tipModel.getQuestionId());
+            formItems.get(0).setTitle(tipModel.getQuestionText());
+            formItems.get(0).setToolTip(tipModel.getTooltip() == null ? "This question does not have a tool tip" : tipModel.getTooltip());
+            formItems.get(0).setOptional(false);// !tipModel.getQuestionIsMandatory() imp to have que ans
+            //form yes no repeat id is questions for getting data
+            //yes option
+            formItems.get(0).getEnables().get(0).setRepeatId(tipModel.getQuestionId());
+            formItems.get(0).getEnables().get(0).setOptional(!tipModel.getCommentIsMandatory());
+            formItems.get(0).getEnables().get(1).setUploadId(tipModel.getQuestionId());
+            formItems.get(0).getEnables().get(1).setPhotoId(tipModel.getQuestionId());
+            formItems.get(0).getEnables().get(1).setPhotoRequired(tipModel.getMinimumPhotoCount());
+            // na options
+            formItems.get(0).getFalseEnables().get(0).setRepeatId(tipModel.getQuestionId());
+            // na checkbox true
+            formItems.get(0).getFalseEnables().get(0).getEnables().get(0).setRepeatId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getEnables().get(1).setRepeatId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getEnables().get(2).setUploadId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getEnables().get(2).setPhotoId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getEnables().get(2).setPhotoRequired(tipModel.getMinimumPhotoCount());
+            // na checkbox false
+            formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(0).setRepeatId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(1).setRepeatId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(2).setRepeatId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(3).setUploadId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(3).setPhotoId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(3).setPhotoRequired(tipModel.getMinimumPhotoCount());
+          /*  formItems.get(1).setUploadId(tipModel.getQuestionId());//setting photos uploadid to question
+            formItems.get(1).setPhotoId(tipModel.getQuestionId());//setting photosid
+            formItems.get(1).setPhotoRequired(tipModel.getMinimumPhotoCount());*/
+            screen.setItems(formItems);//setting formitems
+            screenArrayList.add(screen); //adding screen
+        }
+        form.getScreens().addAll(0, screenArrayList);//passing all screens
+        form.getScreens().get(form.getScreens().size() - 1).setIndex(index);// setting last screen index
+        form.setThemeColor("#243d4d");//setting theme
     }
 
     private void addMyStoreItems(Form form) {
@@ -211,8 +381,8 @@ public class FormActivity extends AppCompatActivity implements
         }
 
         String repeatId = "Items";
-        if(submission.getJsonFileName().
-                equalsIgnoreCase("store_log_issue.json")){
+        if (submission.getJsonFileName().
+                equalsIgnoreCase("store_log_issue.json")) {
             repeatId = null;
         }
 
@@ -294,7 +464,7 @@ public class FormActivity extends AppCompatActivity implements
     @Override
     public void goToNextScreen(int currentScreen) {
         if (currentScreen < form.getScreens().size() - 1) {
-            addFragment(FormFragment.newInstance(submission, user, form.getScreens().get(currentScreen + 1), form.getTitle(), currentScreen + 1, repeatCount));
+            addFragment(FormFragment.newInstance(submission, form.getScreens().get(currentScreen + 1), form.getTitle(), currentScreen + 1, repeatCount, form.getThemeColor() , schedule !=null , recipients));
         }
     }
 

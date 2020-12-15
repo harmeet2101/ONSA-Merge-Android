@@ -17,29 +17,24 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.JobDetailAdapter;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobDetailItem;
-import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 
 public class FragmentChildJobDetails extends Fragment {
-    private static final String ARG_USER = "User";
     private static final String ARG_JOB = "Job";
-    JobDetailItem jobDetailItem;
-    ArrayList<JobDetailItem> arrayList;
-    JobDetailAdapter adapter;
+    private ArrayList<JobDetailItem> arrayList;
     private Context context;
     private Job job;
 
-    public static FragmentChildJobDetails newInstance(User user, Job job) {
+    public static FragmentChildJobDetails newInstance(Job job) {
         FragmentChildJobDetails fragmentChildJobDetails = new FragmentChildJobDetails();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_USER, user);
         args.putParcelable(ARG_JOB, job);
         fragmentChildJobDetails.setArguments(args);
         return fragmentChildJobDetails;
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
     }
@@ -60,7 +55,7 @@ public class FragmentChildJobDetails extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         getJobDetail();
 
-        adapter = new JobDetailAdapter(context, arrayList);
+        JobDetailAdapter adapter = new JobDetailAdapter(context, arrayList);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.addItemDecoration(new VerticalSpaceItemDecoration(10));
         recyclerView.setAdapter(adapter);
@@ -71,7 +66,7 @@ public class FragmentChildJobDetails extends Fragment {
     private void getJobDetail() {
         arrayList = new ArrayList<>();
 
-        jobDetailItem = new JobDetailItem();
+        JobDetailItem jobDetailItem = new JobDetailItem();
         jobDetailItem.setTitle("Contract");
         jobDetailItem.setValue(job.getcontract());
         arrayList.add(jobDetailItem);
@@ -111,6 +106,12 @@ public class FragmentChildJobDetails extends Fragment {
         jobDetailItem = new JobDetailItem();
         jobDetailItem.setTitle("Post Code");
         jobDetailItem.setValue(job.getpostCode());
+        arrayList.add(jobDetailItem);
+
+        jobDetailItem = new JobDetailItem();
+        jobDetailItem.setTitle("Job Order Notes");
+        jobDetailItem.setValue(job.getJobOrderNotes());
+        jobDetailItem.setValue("Davey! duration=1625ms; Flags=1, IntendedVsync=1051003645747431, Vsync=1051004962414045, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=1051004987255201, AnimationStart=1051004987375513, PerformTraversalsStart=1051004987935669, DrawStart=1051005232797909, SyncQueued=1051005259265148, SyncStart=1051005259340200, IssueDrawCommandsStart=1051005260600930, SwapBuffers=1051005268199575, FrameCompleted=1051005271197596, DequeueBufferDuration=289000, QueueBufferDuration=715000, Davey! duration=1625ms; Flags=1, IntendedVsync=1051003645747431, Vsync=1051004962414045, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=1051004987255201, AnimationStart=1051004987375513, PerformTraversalsStart=1051004987935669, DrawStart=1051005232797909, SyncQueued=1051005259265148, SyncStart=1051005259340200, IssueDrawCommandsStart=1051005260600930, SwapBuffers=1051005268199575, FrameCompleted=1051005271197596, DequeueBufferDuration=289000, QueueBufferDuration=715000, Davey! duration=1625ms; Flags=1, IntendedVsync=1051003645747431, Vsync=1051004962414045, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=1051004987255201, AnimationStart=1051004987375513, PerformTraversalsStart=1051004987935669, DrawStart=1051005232797909, SyncQueued=1051005259265148, SyncStart=1051005259340200, IssueDrawCommandsStart=1051005260600930, SwapBuffers=1051005268199575, FrameCompleted=1051005271197596, DequeueBufferDuration=289000, QueueBufferDuration=715000, Davey! duration=1625ms; Flags=1, IntendedVsync=1051003645747431, Vsync=1051004962414045, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=1051004987255201, AnimationStart=1051004987375513, PerformTraversalsStart=1051004987935669, DrawStart=1051005232797909, SyncQueued=1051005259265148, SyncStart=1051005259340200, IssueDrawCommandsStart=1051005260600930, SwapBuffers=1051005268199575, FrameCompleted=1051005271197596, DequeueBufferDuration=289000, QueueBufferDuration=715000, Davey! duration=1625ms; Flags=1, IntendedVsync=1051003645747431, Vsync=1051004962414045, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=1051004987255201, AnimationStart=1051004987375513, PerformTraversalsStart=1051004987935669, DrawStart=1051005232797909, SyncQueued=1051005259265148, SyncStart=1051005259340200, IssueDrawCommandsStart=1051005260600930, SwapBuffers=1051005268199575, FrameCompleted=1051005271197596, DequeueBufferDuration=289000, QueueBufferDuration=715000,");
         arrayList.add(jobDetailItem);
 
         jobDetailItem = new JobDetailItem();

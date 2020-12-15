@@ -15,21 +15,22 @@ public class Note implements Parcelable {
         @Override
         public Note[] newArray(int size) {
             return new Note[size];
-
         }
 
     };
+
     private String jobId;
     private String dateTime;
     private String userFullName;
     private String text;
+    private String type;
 
     protected Note(Parcel in) {
         jobId = in.readString();
         dateTime = in.readString();
         userFullName = in.readString();
         text = in.readString();
-
+        type = in.readString();
     }
 
     public Note(Cursor cursor) {
@@ -37,6 +38,7 @@ public class Note implements Parcelable {
         dateTime = cursor.getString(cursor.getColumnIndex(DBTable.dateTime));
         userFullName = cursor.getString(cursor.getColumnIndex(DBTable.userFullName));
         text = cursor.getString(cursor.getColumnIndex(DBTable.text));
+        type = cursor.getString(cursor.getColumnIndex(DBTable.type));
 
     }
 
@@ -83,20 +85,16 @@ public class Note implements Parcelable {
         parcel.writeString(dateTime);
         parcel.writeString(userFullName);
         parcel.writeString(text);
-
+        parcel.writeString(type);
     }
 
     public ContentValues toContentValues() {
-
         ContentValues cv = new ContentValues();
-
         cv.put(DBTable.jobId, this.jobId);
         cv.put(DBTable.dateTime, this.dateTime);
-
         cv.put(DBTable.userFullName, this.userFullName);
-
         cv.put(DBTable.text, this.text);
-
+        cv.put(DBTable.type, this.type);
         return cv;
     }
 
@@ -106,6 +104,11 @@ public class Note implements Parcelable {
         public static final String dateTime = "dateTime";
         public static final String userFullName = "userFullName";
         public static final String text = "text";
+        public static final String type = "type";
 
+    }
+
+    public String getType() {
+        return type;
     }
 }

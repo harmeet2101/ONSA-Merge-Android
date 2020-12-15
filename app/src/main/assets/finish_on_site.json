@@ -17,12 +17,6 @@
 
         },
         {
-          "type": "switch_layout",
-          "uploadId": "rfna",
-          "title": "RFNA",
-          "optional": true
-        },
-        {
           "type": "et_long_text",
           "uploadId": "comment",
           "title": "Comments",

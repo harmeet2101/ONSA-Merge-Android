@@ -1,0 +1,53 @@
+{
+  "dialogItems": [
+    {
+      "type": "number",
+      "uploadId": "cones",
+      "repeatId": "amendments",
+      "title": "Cones",
+      "optional": false
+    },
+    {
+      "type": "number",
+      "uploadId": "barriers",
+      "repeatId": "amendments",
+      "title": "Barriers",
+      "optional": false
+    },
+    {
+      "type": "number",
+      "uploadId": "chpt8",
+      "repeatId": "amendments",
+      "title": "Chpt8",
+      "optional": false
+    },
+    {
+      "type": "number",
+      "uploadId": "fwBoards",
+      "repeatId": "amendments",
+      "title": "FwBoards",
+      "optional": false
+    },
+    {
+      "type": "number",
+      "uploadId": "bags",
+      "repeatId": "amendments",
+      "title": "Bags",
+      "optional": false
+    },
+    {
+      "type": "number",
+      "uploadId": "sand",
+      "repeatId": "amendments",
+      "title": "Sand",
+      "optional": false
+    },
+    {
+      "type": "number",
+      "uploadId": "stone",
+      "repeatId": "amendments",
+      "title": "Stone",
+      "optional": false
+    }
+  ]
+}

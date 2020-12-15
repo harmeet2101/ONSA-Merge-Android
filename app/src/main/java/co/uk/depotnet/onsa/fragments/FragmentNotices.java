@@ -19,16 +19,13 @@ import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.modals.Job;
 
 import co.uk.depotnet.onsa.modals.Notice;
-import co.uk.depotnet.onsa.modals.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentNotices extends Fragment {
-    private static final String ARG_USER = "User";
     private static final String ARG_JOB = "Job";
     private Context context;
-    private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private AdapterNotice adapter;
 
@@ -36,15 +33,14 @@ public class FragmentNotices extends Fragment {
     private List<Notice> jobNotices;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
     }
 
-    public static FragmentNotices newInstance(User user , Job job){
+    public static FragmentNotices newInstance(Job job){
         FragmentNotices fragmentNotices = new FragmentNotices();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_USER , user);
         args.putParcelable(ARG_JOB , job);
         fragmentNotices.setArguments(args);
         return fragmentNotices;
@@ -63,7 +59,7 @@ public class FragmentNotices extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_work_item, container , false);
-        recyclerView = view.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         progressBar = view.findViewById(R.id.progress_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(context , LinearLayoutManager.VERTICAL , false));
         recyclerView.setAdapter(adapter);

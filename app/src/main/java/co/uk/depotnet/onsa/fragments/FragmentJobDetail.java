@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import com.google.android.material.tabs.TabLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
+
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,20 +25,19 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
+import java.util.Locale;
+
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.JobDetailsPagerAdapter;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.modals.Job;
-import co.uk.depotnet.onsa.modals.User;
-
-import java.util.List;
-import java.util.Locale;
 
 
 public class FragmentJobDetail extends Fragment
         implements OnMapReadyCallback, View.OnClickListener {
 
-    private static final String ARG_USER = "User";
     private static final String ARG_JOB = "Job";
     private Context context;
     private MapView mapView;
@@ -45,17 +46,11 @@ public class FragmentJobDetail extends Fragment
     private Handler handler;
 
     private FragmentActionListener listener;
-    private User user;
+//52.293060 -1.779800
 
-    public FragmentJobDetail() {
-        // Required empty public constructor
-    }
-
-
-    public static FragmentJobDetail newInstance(User user, Job job) {
+    public static FragmentJobDetail newInstance(Job job) {
         FragmentJobDetail fragment = new FragmentJobDetail();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_USER, user);
         args.putParcelable(ARG_JOB, job);
         fragment.setArguments(args);
         return fragment;
@@ -65,7 +60,6 @@ public class FragmentJobDetail extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
-        user = args.getParcelable(ARG_USER);
         job = args.getParcelable(ARG_JOB);
         handler = new Handler();
         listener.setTitle("Job ID: " + job.getjobNumber());
@@ -83,7 +77,7 @@ public class FragmentJobDetail extends Fragment
 
         ViewPager vpPager = view.findViewById(R.id.view_pager);
         TabLayout tabStrip = view.findViewById(R.id.pager_header);
-        JobDetailsPagerAdapter adapter = new JobDetailsPagerAdapter(context, user, job, getChildFragmentManager());
+        JobDetailsPagerAdapter adapter = new JobDetailsPagerAdapter(context, job, getChildFragmentManager());
         vpPager.setAdapter(adapter);
         tabStrip.setupWithViewPager(vpPager);
         mapView.onCreate(savedInstanceState);
@@ -118,7 +112,7 @@ public class FragmentJobDetail extends Fragment
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
         if (context instanceof FragmentActionListener) {
@@ -135,70 +129,67 @@ public class FragmentJobDetail extends Fragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        googleMap.getUiSettings().setAllGesturesEnabled(false);
+        googleMap.getUiSettings().setAllGesturesEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(false);
+        googleMap.getUiSettings().setZoomGesturesEnabled(true);
+        googleMap.getUiSettings().setScrollGesturesEnabled(true);
         googleMap.getUiSettings().setTiltGesturesEnabled(false);
 
         handleMap();
     }
 
     private void handleMap() {
-        boolean attemptToGeocode = false;
-        if (job != null) {
-            if (job.getpostCode() != null) {
-                attemptToGeocode = true;
-            }
-        }
+        Thread geoThread = new Thread(() -> {
+            Geocoder geocoder = new Geocoder(getActivity(), Locale.UK);
+            String postCode = job.getpostCode();
 
-        if (!attemptToGeocode) return;
+            try {
 
-        Thread geoThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Geocoder geocoder = new Geocoder(getActivity(), Locale.UK);
-                try {
-                    List<Address> addresses = geocoder.getFromLocationName(job.getpostCode(), 1);
-
-                    if (addresses.size() > 0) {
-                        final LatLng latLng = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                // create marker
-                                MarkerOptions marker = new MarkerOptions().position(
-                                        latLng).title("Location");
-
-                                // Changing marker icon
-                                marker.icon(BitmapDescriptorFactory
-                                        .defaultMarker(BitmapDescriptorFactory.HUE_RED));
-
-                                // adding marker
-                                googleMap.addMarker(marker);
-                                CameraPosition cameraPosition = new CameraPosition.Builder()
-                                        .target(latLng).zoom(12).build();
-                                googleMap.animateCamera(CameraUpdateFactory
-                                        .newCameraPosition(cameraPosition));
-
-
-                            }
-                        });
+                if(!TextUtils.isEmpty(postCode)){
+                    List<Address> addresses = geocoder.getFromLocationName(postCode, 1);
+                    if(addresses != null && !addresses.isEmpty()){
+                        LatLng latLng = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                        setPosition(latLng);
+                        return;
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+                LatLng latLng = new LatLng(52.293060, -1.779800);
+                setPosition(latLng);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
         geoThread.start();
+    }
+
+    private void setPosition(final LatLng latLng){
+
+        handler.post(() -> {
+            MarkerOptions marker = new MarkerOptions().position(
+                    latLng).title("Location");
+
+            marker.icon(BitmapDescriptorFactory
+                    .defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
+            // adding marker
+            googleMap.addMarker(marker);
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(latLng).zoom(12).build();
+            googleMap.animateCamera(CameraUpdateFactory
+                    .newCameraPosition(cameraPosition));
+        });
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_directions:
+                String geoUri = "http://maps.google.com/maps?q=loc: 52.293060 , -1.779800 ( "+job.getlocationAddress()+" )";
+                if(!TextUtils.isEmpty(job.getpostCode())){
+                    geoUri = "http://maps.google.com/maps?daddr=" + job.getpostCode();
+                }
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                        Uri.parse("http://maps.google.com/maps?daddr=" + job.getpostCode()));
+                        Uri.parse(geoUri));
                 startActivity(intent);
                 break;
         }

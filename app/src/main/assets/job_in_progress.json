@@ -14,7 +14,7 @@
           "uploadId": "comment",
           "title": "Comments",
           "hint": "Please enter any comment",
-          "optional": true
+          "optional": false
         },
         {
           "type": "photo",

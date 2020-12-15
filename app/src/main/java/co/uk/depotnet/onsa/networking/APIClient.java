@@ -1,14 +1,25 @@
 package co.uk.depotnet.onsa.networking;
 
+import android.content.Context;
 import android.os.Build;
+import android.text.TextUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
 import co.uk.depotnet.onsa.BuildConfig;
+import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
+import co.uk.depotnet.onsa.modals.User;
 import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -23,6 +34,11 @@ public class APIClient {
     private static Retrofit retrofit = null;
     private static OkHttpClient.Builder httpClientBuilder;
 
+    private static Context context;
+
+    public void initContext(Context context){
+        APIClient.context = context;
+    }
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
                     .baseUrl(BuildConfig.BASE_URL)
@@ -87,6 +103,8 @@ public class APIClient {
                 .writeTimeout(150, TimeUnit.SECONDS);
         httpClientBuilder.addInterceptor(interceptor);
 
+
+
         final String basic =
                 "Bearer " + userToken;
 
@@ -105,6 +123,7 @@ public class APIClient {
         Retrofit retrofit = builder.client(client).build();
         return retrofit.create(serviceClass);
     }
+
 
 
 }

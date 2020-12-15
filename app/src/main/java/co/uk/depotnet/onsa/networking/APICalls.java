@@ -1,15 +1,26 @@
 package co.uk.depotnet.onsa.networking;
 
+import android.text.TextUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.modals.Disclaimer;
-import co.uk.depotnet.onsa.modals.MeasureItems;
-import co.uk.depotnet.onsa.modals.MenSplit;
+import co.uk.depotnet.onsa.modals.actions.OutstandingAction;
+import co.uk.depotnet.onsa.modals.briefings.BriefingsDocModal;
+import co.uk.depotnet.onsa.modals.briefings.BriefingsDocument;
+import co.uk.depotnet.onsa.modals.briefings.IssuedModel;
+import co.uk.depotnet.onsa.modals.briefings.ReceivedModel;
+import co.uk.depotnet.onsa.modals.hseq.ToolTipModel;
 import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
 import co.uk.depotnet.onsa.modals.httprequests.ResetPassword;
 import co.uk.depotnet.onsa.modals.httprequests.VerificationRequest;
+import co.uk.depotnet.onsa.modals.httpresponses.SiteActivityModel;
 import co.uk.depotnet.onsa.modals.httpresponses.VerificationResult;
+import co.uk.depotnet.onsa.modals.notify.NotifyModel;
+import co.uk.depotnet.onsa.modals.notify.NotifyReadPush;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.responses.JobResponse;
 import co.uk.depotnet.onsa.modals.User;
@@ -18,6 +29,8 @@ import co.uk.depotnet.onsa.modals.httprequests.UserRequest;
 
 import co.uk.depotnet.onsa.modals.responses.MeasureItemResponse;
 import co.uk.depotnet.onsa.modals.responses.MenSplitResponse;
+import co.uk.depotnet.onsa.modals.schedule.JobEstimate;
+import co.uk.depotnet.onsa.modals.schedule.Schedule;
 import co.uk.depotnet.onsa.modals.store.DataMyRequests;
 import co.uk.depotnet.onsa.modals.store.DataMyStores;
 import co.uk.depotnet.onsa.modals.store.DataReceipts;
@@ -33,8 +46,13 @@ import retrofit2.Call;
 
 public class APICalls {
 
-    public static Call<User> callLogin(UserRequest user){
-        APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
+    public static Call<User> callLogin(UserRequest user , String authToken){
+        APIInterface apiInterface;
+        if(!TextUtils.isEmpty(authToken)){
+            apiInterface = APIClient.createService(APIInterface.class , authToken);
+        }else{
+            apiInterface = APIClient.getClient().create(APIInterface.class);
+        }
         return apiInterface.login(user);
     }
 
@@ -63,6 +81,8 @@ public class APICalls {
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getDisclaimer();
     }
+
+
     public static void getDisclaimerLogo(String authToken , Callback callback){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -147,6 +167,65 @@ public class APICalls {
     public static Call<MeasureItemResponse> getMeasureItems(String authToken){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getMeasureItems();
+    }
+
+    public static Call<SiteActivityModel> GetSiteActivityTasks(String authToken , String jobId , int siteActivityTypeID) {
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.GetSiteActivityTasks(jobId , siteActivityTypeID);
+    }
+
+    public static Call<List<Schedule>> getHseqScheduleList(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.getHSEQScheduleInspection();
+    }
+
+    public static Call<List<BriefingsDocModal>> getBriefingsList(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.getBriefings();
+    }
+    public static Call<BriefingsDocument> GetBriefingsDocData(String briefingId, String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.GetBriefingsDoc(briefingId);
+    }
+    public static Call<List<IssuedModel>> getBriefingsIssuedList(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.getBriefingsIssued();
+    }
+    public static Call<List<ReceivedModel>> getBriefingsReceivedList(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.getBriefingsReceived();
+    }
+    public static Call<List<OutstandingAction>> getActionsOutstandingList(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.getActionsOutstanding();
+    }
+    public static Call<List<OutstandingAction>> getActionsClearedList(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.getActionsCleared();
+    }
+    public static Call<ArrayList<String>> getTags(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.methodReturnsTags();
+    }
+    public static Call<JobEstimate> GetJobEstimateDetail(String estimateNo, String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.GetJobEstimate(estimateNo);
+    }
+    public static Call<ArrayList<ToolTipModel>> GetInspectionToolTipList(String templateId, String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.GetInspectionToolTip(templateId);
+    }
+    public static Call<ArrayList<NotifyModel>> getNotifications(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.GetAllNotification();
+    }
+    public static Call<NotifyReadPush> callNotificationMarkRead(NotifyReadPush readPush, String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class, authToken);
+        return apiInterface.notificationRead(readPush);
+    }
+    public static Call<NotifyReadPush> callNotificationMarkPush(NotifyReadPush readPush,String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class, authToken);
+        return apiInterface.notificationpush(readPush);
     }
 
 }

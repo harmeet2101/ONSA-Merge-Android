@@ -8,15 +8,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.MainActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.listeners.GetFetchListener;
 import co.uk.depotnet.onsa.modals.KitBagDocument;
-import co.uk.depotnet.onsa.networking.Constants;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import co.uk.depotnet.onsa.utils.GenericFileProvider;
 import co.uk.depotnet.onsa.utils.Utils;
@@ -32,11 +35,13 @@ public class AdapterKitBag extends RecyclerView.Adapter<AdapterKitBag.ViewHolder
     private List<KitBagDocument> kitBagItems;
     private Context context;
     private Fetch fetch;
+    private GetFetchListener getFetchListener;
 
-    public AdapterKitBag(Context context, List<KitBagDocument> kitBagItems) {
+    public AdapterKitBag(Context context, List<KitBagDocument> kitBagItems , Fetch fetch , GetFetchListener getFetchListener) {
         this.context = context;
         this.kitBagItems = kitBagItems;
-        fetch = ((MainActivity) context).getFetch();
+        this.fetch = fetch;
+        this.getFetchListener = getFetchListener;
     }
 
     @NonNull
@@ -50,17 +55,40 @@ public class AdapterKitBag extends RecyclerView.Adapter<AdapterKitBag.ViewHolder
     public void onBindViewHolder(@NonNull final AdapterKitBag.ViewHolder holder, int position) {
         final KitBagDocument kitBagItem = kitBagItems.get(position);
         holder.txtDocTitle.setText(kitBagItem.getText());
-        final int id = AppPreferences.getInt("KitbagDoc" + kitBagItem.getId(), -1);
+        final int id = AppPreferences.getInt("KitbagDoc" + kitBagItem.getDocumentId(), -1);
+
+        if(!kitBagItem.isDocument()){
+            holder.imgIcon.setImageResource(R.drawable.ic_folder);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!kitBagItem.isDocument()){
+                        getFetchListener.openKitbagFolder(kitBagItem.getId());
+                    }
+                }
+            });
+            holder.btnCancel.setVisibility(View.GONE);
+            holder.progressBar.setVisibility(View.GONE);
+            holder.btnDownload.setVisibility(View.GONE);
+            return;
+        }
+
+        holder.imgIcon.setImageResource(R.drawable.ic_job_details);
+
         if (id == -1) {
             holder.btnCancel.setVisibility(View.GONE);
             holder.progressBar.setVisibility(View.GONE);
             holder.btnDownload.setVisibility(View.VISIBLE);
             holder.btnDownload.setText(R.string.download);
             holder.btnDownload.setOnClickListener(view -> {
+                if(!CommonUtils.isNetworkAvailable(context)){
+                    Toast.makeText(context , "Plaese enable your internet connection" , Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                String fileDir = Utils.getSaveDir(context) + "KitbagDoc/" + "KitbagDoc_" + kitBagItem.getId() +".pdf";
+                String fileDir = Utils.getSaveDir(context) + "KitbagDoc/" + "KitbagDoc_" + kitBagItem.getDocumentId() +".pdf";
 
-                String url = BuildConfig.BASE_URL+"app/kitbag-documents/"+kitBagItem.getId()+"/download";
+                String url = BuildConfig.BASE_URL+"app/kitbag-documents/"+kitBagItem.getDocumentId()+"/download";
 
                 Request request = new Request(url, fileDir);
                 request.addHeader("Authorization", "Bearer "+DBHandler.getInstance().getUser().gettoken());
@@ -68,7 +96,7 @@ public class AdapterKitBag extends RecyclerView.Adapter<AdapterKitBag.ViewHolder
 
                 fetch.enqueue(request, result -> {
                     notifyDataSetChanged();
-                    AppPreferences.putInt("KitbagDoc" + kitBagItem.getId(), result.getId());
+                    AppPreferences.putInt("KitbagDoc" + kitBagItem.getDocumentId(), result.getId());
                 }, result -> {});
             });
 
@@ -179,7 +207,7 @@ public class AdapterKitBag extends RecyclerView.Adapter<AdapterKitBag.ViewHolder
 
     public void update(Download download, long unknownRemainingTime, long unknownDownloadedBytesPerSecond) {
         for (int position = 0; position < kitBagItems.size(); position++) {
-            final int id = AppPreferences.getInt("KitbagDoc" + kitBagItems.get(position).getId(), -1);
+            final int id = AppPreferences.getInt("KitbagDoc" + kitBagItems.get(position).getDocumentId(), -1);
             if (id == download.getId()) {
                 switch (download.getStatus()) {
                     case REMOVED:
@@ -198,6 +226,7 @@ public class AdapterKitBag extends RecyclerView.Adapter<AdapterKitBag.ViewHolder
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         final View view;
+        final ImageView imgIcon;
         final TextView txtDocTitle;
         final TextView btnDownload;
         final TextView btnCancel;
@@ -206,6 +235,7 @@ public class AdapterKitBag extends RecyclerView.Adapter<AdapterKitBag.ViewHolder
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.view = itemView;
+            this.imgIcon = itemView.findViewById(R.id.img_icon);
             this.txtDocTitle = itemView.findViewById(R.id.txt_doc_title);
             this.progressBar = itemView.findViewById(R.id.progress_bar);
             this.btnDownload = itemView.findViewById(R.id.btn_download);

@@ -95,6 +95,10 @@ public class FragmentMyRequests extends Fragment {
             adapter.notifyDataSetChanged();
             return;
         }
+
+        if(!CommonUtils.validateToken(context)){
+            return;
+        }
         listener.showProgressBar();
         APICalls.getMyRequests(user.gettoken()).enqueue(new Callback<DataMyRequests>() {
             @Override

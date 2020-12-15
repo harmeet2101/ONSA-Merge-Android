@@ -15,17 +15,15 @@ import co.uk.depotnet.onsa.modals.forms.Submission;
 
 public class RiskAssessmentActivity extends AppCompatActivity implements View.OnClickListener{
 
-    public static final String ARG_USER = "user";
+
     public static final String ARG_JOB = "job";
 
-    private User user;
     private Job job;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        user = intent.getParcelableExtra(ARG_USER);
         job = intent.getParcelableExtra(ARG_JOB);
         setContentView(R.layout.activity_risk_assessment);
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
@@ -60,7 +58,6 @@ public class RiskAssessmentActivity extends AppCompatActivity implements View.On
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(this, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivity(intent);
     }
@@ -74,7 +71,6 @@ public class RiskAssessmentActivity extends AppCompatActivity implements View.On
         submission.setId(submissionID);
 
         Intent intent = new Intent(this, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_USER, user);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivity(intent);
     }

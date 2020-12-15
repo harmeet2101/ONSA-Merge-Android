@@ -37,7 +37,7 @@ public class DatasetResponse implements Parcelable {
     private ArrayList<ItemType> surfaceTypes;
     private ArrayList<WorkItem> dfeWorkItems;
     private ArrayList<ItemType> stayTypes;
-    private ArrayList<KitBagDocument> kitbagDocuments;
+    private ArrayList<KitBagDocument> kitbagFolders;
     private ArrayList<ItemType> materialTypes;
     private ArrayList<ItemType> jobCategories;
     private ArrayList<ItemType> lowestWireTypes;
@@ -68,7 +68,7 @@ public class DatasetResponse implements Parcelable {
         surfaceTypes = in.createTypedArrayList(ItemType.CREATOR);
         dfeWorkItems = in.createTypedArrayList(WorkItem.CREATOR);
         stayTypes = in.createTypedArrayList(ItemType.CREATOR);
-        kitbagDocuments = in.createTypedArrayList(KitBagDocument.CREATOR);
+        kitbagFolders = in.createTypedArrayList(KitBagDocument.CREATOR);
         materialTypes = in.createTypedArrayList(ItemType.CREATOR);
         jobCategories = in.createTypedArrayList(ItemType.CREATOR);
         lowestWireTypes = in.createTypedArrayList(ItemType.CREATOR);
@@ -100,7 +100,7 @@ public class DatasetResponse implements Parcelable {
         dest.writeTypedList(surfaceTypes);
         dest.writeTypedList(dfeWorkItems);
         dest.writeTypedList(stayTypes);
-        dest.writeTypedList(kitbagDocuments);
+        dest.writeTypedList(kitbagFolders);
         dest.writeTypedList(materialTypes);
         dest.writeTypedList(jobCategories);
         dest.writeTypedList(lowestWireTypes);
@@ -124,13 +124,13 @@ public class DatasetResponse implements Parcelable {
     }
 
     private void insertRecordReturn(){
-        DBHandler dbHandler = DBHandler.getInstance();
-        ItemType itemType0 = new ItemType("No Return Required" , "recordReturn", "KC40");
-        dbHandler.replaceData(ItemType.DBTable.NAME, itemType0.toContentValues());
-        ItemType itemType1 = new ItemType("Works Executed as Planned" , "recordReturn", "KC41");
-        dbHandler.replaceData(ItemType.DBTable.NAME, itemType1.toContentValues());
-        ItemType itemType2 = new ItemType("Works Executed with Changes" , "recordReturn", "KC42");
-        dbHandler.replaceData(ItemType.DBTable.NAME, itemType2.toContentValues());
+//        DBHandler dbHandler = DBHandler.getInstance();
+//        ItemType itemType0 = new ItemType("No Return Required" , "recordReturn", "KC40");
+//        dbHandler.replaceData(ItemType.DBTable.NAME, itemType0.toContentValues());
+//        ItemType itemType1 = new ItemType("Works Executed as Planned" , "recordReturn", "KC41");
+//        dbHandler.replaceData(ItemType.DBTable.NAME, itemType1.toContentValues());
+//        ItemType itemType2 = new ItemType("Works Executed with Changes" , "recordReturn", "KC42");
+//        dbHandler.replaceData(ItemType.DBTable.NAME, itemType2.toContentValues());
 
 
     }
@@ -243,9 +243,11 @@ public class DatasetResponse implements Parcelable {
             }
         }
 
-        if (this.kitbagDocuments != null && !this.kitbagDocuments.isEmpty()) {
-            for (KitBagDocument item : this.kitbagDocuments) {
-                dbHandler.replaceData(KitBagDocument.DBTable.NAME, item.toContentValues());
+        dbHandler.clearTable(KitBagDocument.DBTable.NAME);
+        if (this.kitbagFolders != null && !this.kitbagFolders.isEmpty()) {
+
+            for (KitBagDocument item : this.kitbagFolders) {
+                item.toContentValues();
             }
         }
 

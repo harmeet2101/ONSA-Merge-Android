@@ -1,0 +1,50 @@
+{
+  "title": "New Inspection",
+  "isProgressVisible": false,
+  "themeColor": "#243d4d",
+  "screens": [
+    {
+      "title": "INSPECTION",
+      "index": 0,
+      "url":"apphseq/inspections/template-versions/{inspectionTemplateVersionId}/questions",
+      "photoUrl":"",
+      "upload": true,
+      "items": [
+        {
+          "type": "et_search_text",
+          "uploadId": "estimateNo",
+          "title": "Estimate Number",
+          "hint": "Insert Estimate Number",
+          "optional": false
+        },
+        {
+          "type": "location",
+          "uploadId": "location",
+          "title": "Locate Me",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "operativeId",
+          "key": "OperativesHseq",
+          "isMultiSelection": true,
+          "isConcatDisplayText": true,
+          "title": "Operative(s)",
+          "hint": "Select Operative(s)",
+          "repeatId": "operativeIds",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "inspectionId",
+          "key": "InspectionHseq",
+          "isMultiSelection": false,
+          "isConcatDisplayText": false,
+          "title": "Add Inspection",
+          "hint": "Select Inspection Type",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

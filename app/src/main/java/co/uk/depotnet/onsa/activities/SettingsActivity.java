@@ -7,9 +7,11 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +21,7 @@ import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.modals.User;
+import co.uk.depotnet.onsa.networking.Constants;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 
 import co.uk.depotnet.onsa.views.ContactBottomSheet;
@@ -26,6 +29,7 @@ import co.uk.depotnet.onsa.views.ContactBottomSheet;
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView imgQrCode;
+    private LinearLayout llCompetencies;
     private User user;
     private ProgressBar progressBar;
 
@@ -34,9 +38,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        Intent intent = getIntent();
-        user = intent.getParcelableExtra("User");
-
+        user = DBHandler.getInstance().getUser();
+        llCompetencies = findViewById(R.id.ll_competencies);
         imgQrCode = findViewById(R.id.img_qr_code);
         TextView txtUserName = findViewById(R.id.txt_user_name);
         TextView txtVersion = findViewById(R.id.txt_version_code);
@@ -55,17 +58,23 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         txtUserName.setText(userName.toString());
         txtVersion.setText(String.valueOf(BuildConfig.VERSION_NAME));
         txtBuild.setText("BUILD("+String.valueOf(BuildConfig.VERSION_CODE)+")");
-
-        String url = null;
-        if(url != null){
-            Glide.with(this).load(url).into(imgQrCode);
+        if(Constants.isHSEQEnabled) {
+            if (user.getQrCodeBase64() != null) {
+                byte[] imageByteArray = Base64.decode(user.getQrCodeBase64(), Base64.DEFAULT);
+                Glide.with(this)
+                        .asBitmap().load(imageByteArray).into(imgQrCode);
+            }
+        }else{
+            llCompetencies.setVisibility(View.GONE);
         }
+
 
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
         findViewById(R.id.btn_contact_support).setOnClickListener(this);
         findViewById(R.id.btn_logout).setOnClickListener(this);
         findViewById(R.id.btn_user_profile).setOnClickListener(this);
-        findViewById(R.id.btn_password_reset).setOnClickListener(this);
+//        findViewById(R.id.btn_password_reset).setOnClickListener(this);
+        findViewById(R.id.btn_password_reset).setVisibility(View.GONE);
     }
 
 
@@ -89,6 +98,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 break;
         }
     }
+
+
     private void callUserProfile(){
         Intent intent=new Intent(SettingsActivity.this,UserProfileActivity.class);
         startActivity(intent);
@@ -143,6 +154,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private void logout(){
         showProgressBar();
         AppPreferences.clear();
+        user.setLoggedIn(false);
+        DBHandler.getInstance().replaceData(User.DBTable.NAME , user.toContentValues());
         DBHandler.getInstance().resetDatabase();
         hideProgressBar();
         Intent intent = new Intent(this , LoginActivity.class);
