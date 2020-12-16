@@ -38,6 +38,7 @@ public class Job implements Parcelable, DropDownItem {
     private String scheduledEndDate;
     private String icon;
     private boolean isHotJob;
+    private int riskAssessmentTypeId;
     private boolean hasRecordReturns;
     private boolean rfnaNotRequired;
     private boolean isSiteClear;
@@ -79,6 +80,7 @@ public class Job implements Parcelable, DropDownItem {
         scheduledEndDate = cursor.getString(cursor.getColumnIndex(DBTable.scheduledEndDate));
         icon = cursor.getString(cursor.getColumnIndex(DBTable.icon));
         isHotJob = cursor.getInt(cursor.getColumnIndex(DBTable.isHotJob)) == 1;
+        riskAssessmentTypeId = cursor.getInt(cursor.getColumnIndex(DBTable.riskAssessmentTypeId));
         hasRecordReturns = cursor.getInt(cursor.getColumnIndex(DBTable.hasRecordReturns)) == 1;
         rfnaNotRequired = cursor.getInt(cursor.getColumnIndex(DBTable.rfnaNotRequired)) == 1;
         isSiteClear = cursor.getInt(cursor.getColumnIndex(DBTable.isSiteClear)) == 1;
@@ -115,6 +117,7 @@ public class Job implements Parcelable, DropDownItem {
         scheduledEndDate = in.readString();
         icon = in.readString();
         isHotJob = in.readByte() != 0;
+        riskAssessmentTypeId = in.readInt();
         hasRecordReturns = in.readByte() != 0;
         rfnaNotRequired = in.readByte() != 0;
         isSiteClear = in.readByte() != 0;
@@ -152,6 +155,7 @@ public class Job implements Parcelable, DropDownItem {
         dest.writeString(scheduledEndDate);
         dest.writeString(icon);
         dest.writeByte((byte) (isHotJob ? 1 : 0));
+        dest.writeInt(riskAssessmentTypeId);
         dest.writeByte((byte) (rfnaNotRequired ? 1 : 0));
         dest.writeByte((byte) (hasRecordReturns ? 1 : 0));
         dest.writeByte((byte) (isSiteClear ? 1 : 0));
@@ -357,6 +361,10 @@ public class Job implements Parcelable, DropDownItem {
         this.scheduledEndDate = scheduledEndDate;
     }
 
+    public int getRiskAssessmentTypeId() {
+        return riskAssessmentTypeId;
+    }
+
     public String getIcon() {
         return icon;
     }
@@ -485,6 +493,7 @@ public class Job implements Parcelable, DropDownItem {
         cv.put(DBTable.scheduledEndDate, this.scheduledEndDate);
         cv.put(DBTable.icon, this.icon);
         cv.put(DBTable.isHotJob, this.isHotJob);
+        cv.put(DBTable.riskAssessmentTypeId, this.riskAssessmentTypeId);
         cv.put(DBTable.rfnaNotRequired, this.rfnaNotRequired);
         cv.put(DBTable.hasRecordReturns, this.hasRecordReturns);
         cv.put(DBTable.isSiteClear, this.isSiteClear);
@@ -541,6 +550,7 @@ public class Job implements Parcelable, DropDownItem {
         public static final String scheduledEndDate = "scheduledEndDate";
         public static final String icon = "icon";
         public static final String isHotJob = "isHotJob";
+        public static final String riskAssessmentTypeId = "riskAssessmentTypeId";
         public static final String hasRecordReturns = "hasRecordReturns";
         public static final String rfnaNotRequired = "rfnaNotRequired";
         public static final String isSiteClear = "isSiteClear";

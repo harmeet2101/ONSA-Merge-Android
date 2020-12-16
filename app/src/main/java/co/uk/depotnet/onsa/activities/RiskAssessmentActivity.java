@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
+import android.widget.TextView;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
@@ -26,10 +27,15 @@ public class RiskAssessmentActivity extends AppCompatActivity implements View.On
         Intent intent = getIntent();
         job = intent.getParcelableExtra(ARG_JOB);
         setContentView(R.layout.activity_risk_assessment);
+        TextView tvRiskAssessmentType =findViewById(R.id.tv_risk_assessment_select);
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
         findViewById(R.id.btn_risk_assessment).setOnClickListener(this);
         findViewById(R.id.btn_visitor_log).setOnClickListener(this);
-
+        if (job.getRiskAssessmentTypeId() == 1) {
+            tvRiskAssessmentType.setText(getString(R.string.risk_assessment));
+        } else if (job.getRiskAssessmentTypeId() == 2) {
+            tvRiskAssessmentType.setText(getString(R.string.hoist_only_risk_assessment));
+        }
     }
 
     @Override
@@ -65,8 +71,9 @@ public class RiskAssessmentActivity extends AppCompatActivity implements View.On
 
     public void openRiskAssessment() {
 
-        String jsonFileName = "risk_assessment.json";
-        Submission submission = new Submission(jsonFileName, "Risk Assessment", job.getjobId());
+        String jsonFileName = job.getRiskAssessmentTypeId() == 1 ? "risk_assessment.json" : "hoist_risk_assessment.json";
+        String title = job.getRiskAssessmentTypeId() == 1 ? "Risk Assessment" : "Hoist Only Risk Assessment";
+        Submission submission = new Submission(jsonFileName, title, job.getjobId());
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
 

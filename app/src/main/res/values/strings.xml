@@ -299,4 +299,7 @@
     <string name="date">Date</string>
     <string name="time_type">Time Type</string>
 
+    <string name="risk_assessment_selected">Risk Assessment Selected :</string>
+    <string name="hoist_only_risk_assessment">Hoist Only Risk Assessment</string>
+
 </resources>

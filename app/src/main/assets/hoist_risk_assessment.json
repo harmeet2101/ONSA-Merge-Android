@@ -1,0 +1,719 @@
+{
+  "title": "Hoist Only Risk Assessment",
+  "isProgressVisible": true,
+  "screens": [
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "weatherConditionId",
+          "key": "weatherConditions",
+          "title": "Weather Conditions",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 1,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "twoTrainedPeopleOnSite",
+          "title": "2 trained people onsite, operator acting as GSP understands limit of role (SFY/HSH/D039)?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "twoTrainedPeopleOnSiteComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 2,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "trafficSurveyCompleted",
+          "title": "Traffic survey completed (including road width, traffic make-up and volume) confirms minimum widths can be maintained (specify 1 or 2 way working).",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "trafficSurveyCompletedComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Traffic survey completed",
+          "photoSize": 20,
+          "photoRequired": 0,
+          "photoId": "124"
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 3,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "hospitalsSchoolsInVicinity",
+          "title": "Are there hospitals, schools, clinics, shops, etc. in the vicinity of the works.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "yes_no",
+              "uploadId": "additionalPrecautionsRequired",
+              "title": "Additional precautions required?",
+              "optional": false,
+              "enables": [
+                {
+                  "type": "et_long_text",
+                  "uploadId": "additionalPrecautionsRequiredComments",
+                  "title": "Please Specify",
+                  "optional": true
+                },
+                {
+                  "type": "photo",
+                  "title": "Additional precautions required?",
+                  "photoSize": 20,
+                  "photoRequired": 0,
+                  "photoId": "125"
+                }
+              ],
+              "falseEnables": [
+                {
+                  "type": "et_long_text",
+                  "uploadId": "additionalPrecautionsRequiredComments",
+                  "title": "Comments if applicable",
+                  "optional": true
+                }
+              ]
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hospitalsSchoolsInVicinityComments",
+              "title": "Comments if applicable",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 4,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "protectionForKnuckle",
+          "title": "Protection for knuckle (specifically PE8) considered in RWG set up.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "photo",
+              "title": "Protection for knuckle",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "127"
+            }
+          ]
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "protectionForKnuckleComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 5,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "pedestriansFootpathsClosed",
+          "title": "Pedestrians; footpaths closed when working across footpath barriered safe area around pole when not crossing footpath.",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "pedestriansFootpathsClosedComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Pedestrians footpaths closed when working across footpath",
+          "photoSize": 20,
+          "photoRequired": 0,
+          "photoId": "128"
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 6,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Ground conditions checked for safe operation"
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "inclinometerConfirmsSlope",
+          "title": "Inclinometer confirms slope hoist within operating envelope",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "inclinometerConfirmsSlopeComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Inclinometer confirms slope hoist ",
+          "photoSize": 20,
+          "photoRequired": 0,
+          "photoId": "129"
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 7,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Ground conditions checked for safe operation"
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "hoistLevelAcrossWidth",
+          "title": "Hoist level across width i.e. doesn’t have one side up kerb.",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "hoistLevelAcrossWidthComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Hoist level across width",
+          "photoSize": 20,
+          "photoRequired": 0,
+          "photoId": "130"
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 8,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Ground conditions checked for safe operation"
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "stabilityConfirmOperatingSurface",
+          "title": "Stability confirm operating surface Road/Pavement/private drive/un-metalled track/soft ground.",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "stabilityConfirmOperatingSurfaceComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Stability confirm operating surface",
+          "photoSize": 20,
+          "photoRequired": 0,
+          "photoId": "131"
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 9,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "softGroundChecks",
+          "title": "For soft ground what checks have been carried out to confirm stability of ground",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "softGroundChecksComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 10,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "serviceCoversAndUndergroundStructures",
+          "title": "Service covers and underground structures 1mtr from stabilisers.",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "serviceCoversAndUndergroundStructuresComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Service covers and underground structures",
+          "photoSize": 20,
+          "photoRequired": 0,
+          "photoId": "133"
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 11,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "onPrivateDrivesServiceCovers",
+          "title": "On private drives service covers checked for weigh limit before driving over them. \n",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "onPrivateDrivesServiceCoversComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 12,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "windSpeedChecked",
+          "title": "Wind speed checked to confirm within operating limits – anemometer (if available) used at ground level and observation for work position wind speed carried out from ground (Beaufort scale) record wind speed and observed Beaufort level. ",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "windSpeedCheckedComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 13,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Is there Overhead power in vicinity? "
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "hvWithin25m",
+          "title": "HV within 25m – exclusion zone marked appropriate for power level",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "hvWithin25mComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "lvWithin25m",
+          "title": "LV within 25m – refer to overhead power glovebox guide",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "lvWithin25mComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 14,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "methodToAccessPolesAgreed",
+          "title": "Method to access pole agreed – route the bucket will follow to access the WP discussed and agreed.",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "methodToAccessPolesAgreedComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "overheadObstructionsOnRoute",
+          "title": "Overhead obstructions on route and at WP considered – precautions understood by both operators.\n",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "overheadObstructionsOnRouteComments",
+          "title": "Comments if applicable",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 15,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "onAerialCableRoutes",
+          "title": "On Aerial Cable routes all works will be on from outside the angle of the Pull On Pole.",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "onAerialCableRoutesComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "poleTestCarriedOut",
+          "title": "Pole test carried out?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "poleTestCarriedOutComments",
+          "title": "Comments if applicable",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 16,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "forWorkOnADPole",
+          "title": "For work on a D pole are the works within the limits allowed for the category of D pole?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "forWorkOnADPoleComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "isThePoleLeaning",
+          "title": "Is the pole leaning, overloaded, congested, missing stay, POP?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "isThePoleLeaningComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Is the pole leaning, overloaded, congested, missing stay",
+          "photoSize": 20,
+          "photoRequired": 0,
+          "photoId": "142"
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 17,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "willWorksAdverselyAffectOverheadWires",
+          "title": "Will the works adversely affect overhead wires crossing a road? ",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "willWorksAdverselyAffectOverheadWiresComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 18,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "willWorksRequireAccessingJUP",
+          "title": "Will the works require accessing a Joint User Pole and if so, is the Joint User Pole Risk Aassessment pad completed? ",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "willWorksRequireAccessingJUPComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 19,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "areThereAnyPowerConflicts",
+          "title": "Are there any power conflicts within the spans connecting the pole?\n (Can conflict be resolved during the visit and has an A1024 raised?)",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "areThereAnyPowerConflictsComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 20,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "verbalAndVisualCommunication",
+          "title": "Verbal and visual communication can be maintained at all times?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "verbalAndVisualCommunicationComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "operatorsUnderstandTheWork",
+          "title": "Operators understand the work to be performed. Lifting plan raising/lift wires and equipment discussed and understood by everyone involved?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "operatorsUnderstandTheWorkComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 21,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "equipmentCheckedBeforeUse",
+          "title": "Equipment (including PE) checked before use, LOLER tests certificate/labels, general condition.?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "equipmentCheckedBeforeUseComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "areYouFollowingHygeine",
+          "title": "Are you following hygiene & respiratory procedures required onsite?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "areYouFollowingHygeineComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 22,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "appropriatePPEOnSite",
+          "title": "Appropriate PPE on site? ",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "appropriatePPEOnSiteComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "riskAssessmentAndMethodStatement",
+          "title": "Risk assessment and method statement briefed to all gang members and fully understood?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "riskAssessmentAndMethodStatementComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 23,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isThereAMeansForWashing",
+          "title": "Is there a means for washing onsite?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "isThereAMeansForWashingComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 24,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "anyTreeCuttingRequired",
+          "title": "Any tree cutting required? ",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "anyTreeCuttingRequiredComments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "anyOtherEnvironmentalIssues",
+          "title": "Are there any other environmental issues?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "anyOtherEnvironmentalIssuesComments",
+          "title": "Comments",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 25,
+      "upload": true,
+      "url": "app/jobs/{jobId}/hoist-risk-assessment",
+      "photoUrl": "app/jobs/{jobId}/photos",
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Sign below to acknowledge that you have fully read, understood and assume all responsibility for all the conditions of this Hoist Risk Assessment (HRA)."
+        },
+        {
+          "type": "signature",
+          "uploadId": "signatureId",
+          "signatureUrl": "app/jobs/{jobId}/upload-signature",
+          "title": "Signature:",
+          "photoId": "26",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "name",
+          "title": "Name:",
+          "optional": true
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "cssid",
+          "title": "CSS Id:",
+          "optional": false
+        },
+        {
+          "type": "calender",
+          "uploadId": "submittedDateTime",
+          "title": "Date",
+          "hint": "Date",
+          "optional": true
+        }
+      ]
+    }
+  ]
+}

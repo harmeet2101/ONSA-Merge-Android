@@ -57,6 +57,7 @@ public class WorkLogActivity extends AppCompatActivity
     private RelativeLayout rlWarning;
     private RecyclerView recyclerView;
     private LinearLayout llUiBlocker;
+    private Job job;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +68,9 @@ public class WorkLogActivity extends AppCompatActivity
         user = DBHandler.getInstance().getUser();
         jobID = intent.getStringExtra(ARG_JOB_ID);
         jobReferenceNumber = intent.getStringExtra(ARG_JOB_REFERENCE_NUMBER);
-        Job job = DBHandler.getInstance().getJob(jobID);
-        if(job != null){
-            TextView txtToolbarTitle = findViewById(R.id.txt_toolbar_title);
-            txtToolbarTitle.setText(String.format("%s: %s", getString(R.string.work_log), job.getestimateNumber()));
-        }
+        job = DBHandler.getInstance().getJob(jobID);
+        TextView txtToolbarTitle = findViewById(R.id.txt_toolbar_title);
+        txtToolbarTitle.setText(String.format("%s: %s", getString(R.string.work_log), job.getestimateNumber()));
         llUiBlocker = findViewById(R.id.ll_ui_blocker);
 
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
@@ -168,8 +167,9 @@ public class WorkLogActivity extends AppCompatActivity
                     w.getTitle()));
         }
 
+        String title = job.getRiskAssessmentTypeId() == 1 ? "Risk Assessment" : "Hoist Only Risk Assessment";
         boolean status =
-                DBHandler.getInstance().getJobModuleStatus(jobID , "Risk Assessment");
+                DBHandler.getInstance().getJobModuleStatus(jobID , title);
 //        status = true;
         if(status){
             recyclerView.setVisibility(View.VISIBLE);
@@ -199,19 +199,18 @@ public class WorkLogActivity extends AppCompatActivity
                 finish();
                 break;
             case R.id.btn_risk_assessment:
-                openRiskAssessment(jobID);
+                openRiskAssessment();
                 break;
         }
     }
 
-    public void openRiskAssessment(String jobID) {
-        String jsonFileName = "risk_assessment.json";
-        Submission submission = new Submission(jsonFileName, "Risk Assessment", jobID);
-
+    public void openRiskAssessment() {
+        String jsonFileName = job.getRiskAssessmentTypeId() == 1 ? "risk_assessment.json" : "hoist_risk_assessment.json";
+        String title = job.getRiskAssessmentTypeId() == 1 ? "Risk Assessment" : "Hoist Only Risk Assessment";
+        Submission submission = new Submission(jsonFileName, title, job.getjobId());
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
 
-//        Submission submission = DBHandler.getInstance().getSubmissionsByJobAndTitle("Risk Assessment" , jobID).get(0);
         Intent intent = new Intent(this, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         startActivity(intent);
