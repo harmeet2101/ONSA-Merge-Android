@@ -7,8 +7,8 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         // as per client requirement keeping all store same version of build
-        versionCode 64
-        versionName "2.3.9"
+        versionCode 69
+        versionName "2.3.14"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -21,7 +21,7 @@ android {
 // signin key - onsa_store@1234
     buildTypes {
 
-        debug {
+        /*debug {
             initWith debug
             //android.defaultConfig.versionName "2.2.2"
             //android.defaultConfig.versionCode 51
@@ -29,7 +29,7 @@ android {
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
             resValue "string", "app_name", "Onsa-HSEQ-dev"
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-        }
+        }*/
 
         /*uat {
             initWith debug
@@ -84,13 +84,13 @@ android {
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
 
-        /*store_uat_oroh {
+        store_uat_oroh {
             initWith debug
             applicationIdSuffix ".store.oroh.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-oroh-api.depotnet.co.uk/"')
             resValue "string", "app_name", "OROH-ONSA-STORE-UAT"
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-        }*/
+        }
 
         /*store_live_oroh {
             initWith debug
@@ -189,6 +189,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
 
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    implementation 'com.gu.android:toolargetool:0.2.1@aar'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }

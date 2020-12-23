@@ -7,9 +7,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -57,6 +59,8 @@ public class WorkLogActivity extends AppCompatActivity
     private RelativeLayout rlWarning;
     private RecyclerView recyclerView;
     private LinearLayout llUiBlocker;
+    private Button btnRiskAssessment;
+    private TextView tv_riskAssessment_heading;
     private Job job;
 
     @Override
@@ -75,6 +79,8 @@ public class WorkLogActivity extends AppCompatActivity
 
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
         findViewById(R.id.btn_risk_assessment).setOnClickListener(this);
+        btnRiskAssessment = findViewById(R.id.btn_risk_assessment);
+        tv_riskAssessment_heading = findViewById(R.id.tv_risk_assessment_heading);
         recyclerView = findViewById(R.id.recycler_view);
         rlWarning = findViewById(R.id.rl_warning);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -84,49 +90,49 @@ public class WorkLogActivity extends AppCompatActivity
         String fileName = "work_log.json";
         workLogs = JsonReader.loadFormJSON(this, WorkLog.class, fileName);
 
-        if(!user.isReinstatement()){
-            for(int i = 0 ; i< workLogs.size() ; i++) {
-                if(workLogs.get(i).getJson().equalsIgnoreCase("log_reinstatement.json")) {
+        if (!user.isReinstatement()) {
+            for (int i = 0; i < workLogs.size(); i++) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase("log_reinstatement.json")) {
                     workLogs.remove(i);
                 }
             }
         }
 
-        if(!user.isBackfill()){
-            for(int i = 0 ; i< workLogs.size() ; i++) {
-                if(workLogs.get(i).getJson().equalsIgnoreCase("log_back_fill.json")) {
+        if (!user.isBackfill()) {
+            for (int i = 0; i < workLogs.size(); i++) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase("log_back_fill.json")) {
                     workLogs.remove(i);
                 }
             }
         }
 
-        if(!user.isSiteClear()){
-            for(int i = 0 ; i< workLogs.size() ; i++) {
-                if(workLogs.get(i).getJson().equalsIgnoreCase("log_site_clear.json")) {
+        if (!user.isSiteClear()) {
+            for (int i = 0; i < workLogs.size(); i++) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase("log_site_clear.json")) {
                     workLogs.remove(i);
                 }
             }
         }
 
-        if(!user.isMuckaway()){
-            for(int i = 0 ; i< workLogs.size() ; i++) {
-                if(workLogs.get(i).getJson().equalsIgnoreCase("log_muckaway.json")) {
+        if (!user.isMuckaway()) {
+            for (int i = 0; i < workLogs.size(); i++) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase("log_muckaway.json")) {
                     workLogs.remove(i);
                 }
             }
         }
 
-        if(!user.isServiceMaterialDrop()){
-            for(int i = 0 ; i< workLogs.size() ; i++) {
-                if(workLogs.get(i).getJson().equalsIgnoreCase("service_material.json")) {
+        if (!user.isServiceMaterialDrop()) {
+            for (int i = 0; i < workLogs.size(); i++) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase("service_material.json")) {
                     workLogs.remove(i);
                 }
             }
         }
 
-        if(!TextUtils.isEmpty(user.getroleName()) && !user.getroleName().equalsIgnoreCase("Supervisor")){
-            for(int i = 0 ; i< workLogs.size() ; i++) {
-                if(workLogs.get(i).getJson().equalsIgnoreCase("request_task.json")) {
+        if (!TextUtils.isEmpty(user.getroleName()) && !user.getroleName().equalsIgnoreCase("Supervisor")) {
+            for (int i = 0; i < workLogs.size(); i++) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase("request_task.json")) {
                     workLogs.remove(i);
                 }
             }
@@ -152,7 +158,7 @@ public class WorkLogActivity extends AppCompatActivity
             return false;
         }
 
-        if(date == null || currentDate == null){
+        if (date == null || currentDate == null) {
             return false;
         }
         return date.compareTo(currentDate) == 0;
@@ -168,10 +174,17 @@ public class WorkLogActivity extends AppCompatActivity
         }
 
         String title = job.getRiskAssessmentTypeId() == 1 ? "Risk Assessment" : "Hoist Only Risk Assessment";
+        if (title.equals("Risk Assessment")) {
+            btnRiskAssessment.setText(R.string.go_to_risk_assessment);
+            tv_riskAssessment_heading.setText(R.string.wraning_risk_assessment);
+        } else {
+            btnRiskAssessment.setText(R.string.go_to_hoist_risk_assessment);
+            tv_riskAssessment_heading.setText(R.string.wraning_hoist_risk_assessment);
+        }
         boolean status =
-                DBHandler.getInstance().getJobModuleStatus(jobID , title);
+                DBHandler.getInstance().getJobModuleStatus(jobID, title);
 //        status = true;
-        if(status){
+        if (status) {
             recyclerView.setVisibility(View.VISIBLE);
             rlWarning.setVisibility(View.GONE);
             boolean isBookOn = isBookOn();
@@ -186,7 +199,7 @@ public class WorkLogActivity extends AppCompatActivity
             }
             adapter.setBookOn(isBookOn);
             adapter.notifyDataSetChanged();
-        }else{
+        } else {
             recyclerView.setVisibility(View.GONE);
             rlWarning.setVisibility(View.VISIBLE);
         }
@@ -250,7 +263,7 @@ public class WorkLogActivity extends AppCompatActivity
             return;
         }
 
-        if(jsonName.equalsIgnoreCase("log_measure.json")){
+        if (jsonName.equalsIgnoreCase("log_measure.json")) {
             openLogMeasure(workLog);
             return;
         }
@@ -271,7 +284,7 @@ public class WorkLogActivity extends AppCompatActivity
     }
 
     private void openLogMeasure(WorkLog workLog) {
-        if(!CommonUtils.isNetworkAvailable(WorkLogActivity.this)){
+        if (!CommonUtils.isNetworkAvailable(WorkLogActivity.this)) {
             Submission submission = new Submission(workLog.getJson(), workLog.getTitle(), jobID);
             long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
             submission.setId(submissionID);
@@ -280,7 +293,7 @@ public class WorkLogActivity extends AppCompatActivity
             startActivity(intent);
             return;
         }
-        if(!CommonUtils.validateToken(WorkLogActivity.this)){
+        if (!CommonUtils.validateToken(WorkLogActivity.this)) {
             return;
         }
 
@@ -290,9 +303,9 @@ public class WorkLogActivity extends AppCompatActivity
         APICalls.getMenSplits(user.gettoken()).enqueue(new Callback<MenSplitResponse>() {
             @Override
             public void onResponse(@NonNull Call<MenSplitResponse> call, @NonNull Response<MenSplitResponse> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     MenSplitResponse menSplits = response.body();
-                    if(menSplits != null ){
+                    if (menSplits != null) {
                         menSplits.toContentValues();
                     }
 
@@ -303,9 +316,9 @@ public class WorkLogActivity extends AppCompatActivity
                     public void onResponse(@NonNull Call<MeasureItemResponse> call, @NonNull Response<MeasureItemResponse> response) {
                         hideProgressBar();
 
-                        if(response.isSuccessful()){
+                        if (response.isSuccessful()) {
                             MeasureItemResponse measureItemResponse = response.body();
-                            if(measureItemResponse!= null){
+                            if (measureItemResponse != null) {
                                 measureItemResponse.toContentValues();
                                 Submission submission = new Submission(workLog.getJson(), workLog.getTitle(), jobID);
                                 long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
@@ -334,7 +347,7 @@ public class WorkLogActivity extends AppCompatActivity
     }
 
     public void showErrorDialog(String title, String message) {
-        if(getSupportFragmentManager().isStateSaved()){
+        if (getSupportFragmentManager().isStateSaved()) {
             return;
         }
         final MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
@@ -363,7 +376,7 @@ public class WorkLogActivity extends AppCompatActivity
         dialog.show(getSupportFragmentManager(), "_ERROR_DIALOG");
     }
 
-    private void sendRFNA(){
+    private void sendRFNA() {
         String jsonFileName = "rfna.json";
         Submission submission = new Submission(jsonFileName, "Ready For Next Activity", jobID);
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
@@ -386,24 +399,24 @@ public class WorkLogActivity extends AppCompatActivity
             return;
         }
 
-        if(!CommonUtils.validateToken(WorkLogActivity.this)){
+        if (!CommonUtils.validateToken(WorkLogActivity.this)) {
             return;
         }
 
         showProgressBar();
 
 
-        APICalls.sendRfna(jobID , user.gettoken()).enqueue(new Callback<Void>() {
+        APICalls.sendRfna(jobID, user.gettoken()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
 
-                if(CommonUtils.onTokenExpired(WorkLogActivity.this , response.code())){
+                if (CommonUtils.onTokenExpired(WorkLogActivity.this, response.code())) {
                     return;
                 }
 
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     showErrorDialog("Success", "Submission was successful");
-                }else{
+                } else {
                     DBHandler.getInstance().setSubmissionQueued(submission);
                     showErrorDialog("Submission Error", "Submission Error, your submission has not been succeed");
                 }

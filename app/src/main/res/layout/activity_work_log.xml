@@ -98,6 +98,7 @@
                     app:srcCompat="@drawable/ic_warning"/>
 
                 <TextView
+                    android:id="@+id/tv_risk_assessment_heading"
                     android:layout_marginTop="@dimen/_16sdp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

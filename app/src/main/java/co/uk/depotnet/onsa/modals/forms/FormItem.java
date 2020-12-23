@@ -76,7 +76,7 @@ public class FormItem implements Parcelable {
     public static final int TYPE_RFNA_TOGGLE = 67;
     public static final int TYPE_ADD_LOG_HOURS = 68;
     public static final int TYPE_ITEM_LOG_HOURS = 69;
-
+    public static final int TYPE_YES_NO_NA_OPTIONAL = 70;
 
 
     private String type;
@@ -84,6 +84,8 @@ public class FormItem implements Parcelable {
     private String title;
     private String hint;
     private boolean optional;
+    private boolean isYesNotVisible;
+    private boolean isNoNotVisible;
     private boolean isChecked;
     private String imagePath;
     private String assetType;
@@ -120,6 +122,8 @@ public class FormItem implements Parcelable {
         this.title = formItem.title;
         this.hint = formItem.hint;
         this.optional = formItem.optional;
+        this.isYesNotVisible = formItem.isYesNotVisible;
+        this.isNoNotVisible = formItem.isNoNotVisible;
         this.isChecked = formItem.isChecked;
         this.imagePath = formItem.imagePath;
         this.assetType = formItem.assetType;
@@ -165,7 +169,6 @@ public class FormItem implements Parcelable {
         this.optional = optional;
     }
 
-
     public FormItem(String type) {
         this.type = type;
         this.optional = true;
@@ -185,6 +188,8 @@ public class FormItem implements Parcelable {
         title = in.readString();
         hint = in.readString();
         optional = in.readByte() != 0;
+        isYesNotVisible = in.readByte() != 0;
+        isNoNotVisible = in.readByte() != 0;
         isChecked = in.readByte() != 0;
         imagePath = in.readString();
         assetType = in.readString();
@@ -223,6 +228,8 @@ public class FormItem implements Parcelable {
         dest.writeString(title);
         dest.writeString(hint);
         dest.writeByte((byte) (optional ? 1 : 0));
+        dest.writeByte((byte) (isYesNotVisible ? 1 : 0));
+        dest.writeByte((byte) (isNoNotVisible ? 1 : 0));
         dest.writeByte((byte) (isChecked ? 1 : 0));
         dest.writeString(imagePath);
         dest.writeString(assetType);
@@ -305,8 +312,24 @@ public class FormItem implements Parcelable {
         return optional;
     }
 
+    public boolean isYesNotVisible() {
+        return isYesNotVisible;
+    }
+
+    public boolean isNoNotVisible() {
+        return isNoNotVisible;
+    }
+
     public void setOptional(boolean optional) {
         this.optional = optional;
+    }
+
+    public void setisYesNotVisible(boolean isYesNotVisible) {
+        this.isYesNotVisible = isYesNotVisible;
+    }
+
+    public void setisNoNotVisible(boolean isNoNotVisible) {
+        this.isNoNotVisible = isNoNotVisible;
     }
 
     public boolean isChecked() {
@@ -440,7 +463,7 @@ public class FormItem implements Parcelable {
             return TYPE_PASS_FAIL;
         } else if (type.equalsIgnoreCase("switch_layout")) {
             return TYPE_SWITCH;
-        }else if (type.equalsIgnoreCase("number")) {
+        } else if (type.equalsIgnoreCase("number")) {
             return TYPE_NUMBER;
         } else if (type.equalsIgnoreCase("et_short_text")) {
             return TYPE_ET_SHORT_TEXT;
@@ -448,108 +471,109 @@ public class FormItem implements Parcelable {
             return TYPE_DROPDOWN_NUMBER;
         } else if (type.equalsIgnoreCase("task_site_clear")) {
             return TYPE_TASK_SITE_CLEAR;
-        }else if (type.equalsIgnoreCase("location")) {
+        } else if (type.equalsIgnoreCase("location")) {
             return TYPE_LOCATION;
-        }else if (type.equalsIgnoreCase("store-item")) {
+        } else if (type.equalsIgnoreCase("store-item")) {
             return TYPE_STORE_ITEM;
-        }else if (type.equalsIgnoreCase("card_fork")) {
+        } else if (type.equalsIgnoreCase("card_fork")) {
             return TYPE_FORK_CARD;
-        }else if (type.equalsIgnoreCase("dialog_screen")) {
+        } else if (type.equalsIgnoreCase("dialog_screen")) {
             return TYPE_DIALOG_SCREEN;
-        }else if (type.equalsIgnoreCase("log_dfe_item")) {
+        } else if (type.equalsIgnoreCase("log_dfe_item")) {
             return TYPE_DFE_ITEM;
-        }else if (type.equalsIgnoreCase("calender")) {
+        } else if (type.equalsIgnoreCase("calender")) {
             return TYPE_CALENDER;
-        }else if (type.equalsIgnoreCase("yes_no_na")) {
+        } else if (type.equalsIgnoreCase("yes_no_na")) {
             return TYPE_YES_NO_NA;
-        }else if (type.equalsIgnoreCase("stopWatch")) {
+        } else if (type.equalsIgnoreCase("yes_no_na_optional")) {
+            return TYPE_YES_NO_NA_OPTIONAL;
+        } else if (type.equalsIgnoreCase("stopWatch")) {
             return TYPE_STOP_WATCH;
-        }else if (type.equalsIgnoreCase("visitor_signature")) {
+        } else if (type.equalsIgnoreCase("visitor_signature")) {
             return TYPE_VISITOR_SIGN;
-        }else if (type.equalsIgnoreCase("date_time")) {
+        } else if (type.equalsIgnoreCase("date_time")) {
             return TYPE_DATE_TIME;
-        }else if (type.equalsIgnoreCase("txt_description")) {
+        } else if (type.equalsIgnoreCase("txt_description")) {
             return TYPE_TXT_DESC;
-        }else if (type.equalsIgnoreCase("risk_element")) {
+        } else if (type.equalsIgnoreCase("risk_element")) {
             return TYPE_RISK_ELEMENT;
-        }else if (type.equalsIgnoreCase("take_photo")) {
+        } else if (type.equalsIgnoreCase("take_photo")) {
             return TYPE_TAKE_PHOTO;
-        }else if (type.equalsIgnoreCase("current_store")) {
+        } else if (type.equalsIgnoreCase("current_store")) {
             return TYPE_CURRENT_STORE;
-        }else if (type.equalsIgnoreCase("add_store_item")) {
+        } else if (type.equalsIgnoreCase("add_store_item")) {
             return TYPE_ADD_STORE_ITEM;
-        }else if (type.equalsIgnoreCase("stock_item")) {
+        } else if (type.equalsIgnoreCase("stock_item")) {
             return TYPE_STOCK_ITEM;
-        }else if (type.equalsIgnoreCase("bar_code")) {
+        } else if (type.equalsIgnoreCase("bar_code")) {
             return TYPE_BAR_CODE;
-        }else if (type.equalsIgnoreCase("add_pos_dfe")) {
+        } else if (type.equalsIgnoreCase("add_pos_dfe")) {
             return TYPE_ADD_POS_DFE;
-        }else if (type.equalsIgnoreCase("add_neg_dfe")) {
+        } else if (type.equalsIgnoreCase("add_neg_dfe")) {
             return TYPE_ADD_NEG_DFE;
-        }else if (type.equalsIgnoreCase("add_log_measure")) {
+        } else if (type.equalsIgnoreCase("add_log_measure")) {
             return TYPE_ADD_LOG_MEASURE;
-        }else if (type.equalsIgnoreCase("log_measure_item")) {
+        } else if (type.equalsIgnoreCase("log_measure_item")) {
             return TYPE_LOG_MEASURE;
-        }else if (type.equalsIgnoreCase("item_log_measure")) {
+        } else if (type.equalsIgnoreCase("item_log_measure")) {
             return TYPE_LOG_MEASURE;
-        }else if (type.equalsIgnoreCase("add_dig_measure")) {
+        } else if (type.equalsIgnoreCase("add_dig_measure")) {
             return TYPE_ADD_DIG_MEASURE;
-        }else if (type.equalsIgnoreCase("item_dig_measure")) {
+        } else if (type.equalsIgnoreCase("item_dig_measure")) {
             return TYPE_LIST_DIG_MEASURE;
         } else if (type.equalsIgnoreCase("task_list_backfill")) {
             return TYPE_TASK_LOG_BACKFILL;
-        }else if (type.equalsIgnoreCase("task_list_backfill_item")) {
+        } else if (type.equalsIgnoreCase("task_list_backfill_item")) {
             return TYPE_TASK_LOG_BACKFILL_ITEM;
-        }else if (type.equalsIgnoreCase("task_list_reinstatement")) {
+        } else if (type.equalsIgnoreCase("task_list_reinstatement")) {
             return TYPE_TASK_LOG_REINSTATEMENT;
-        }else if (type.equalsIgnoreCase("task_list_reinstatement_item")) {
+        } else if (type.equalsIgnoreCase("task_list_reinstatement_item")) {
             return TYPE_LOG_REINSTATEMENT_ITEM;
-        }else if (type.equalsIgnoreCase("task_view_dig_measures")) {
+        } else if (type.equalsIgnoreCase("task_view_dig_measures")) {
             return TYPE_TASK_VIEW_DIG_MEASURES;
-        }else if (type.equalsIgnoreCase("task_view_dig_measures_item")) {
+        } else if (type.equalsIgnoreCase("task_view_dig_measures_item")) {
             return TYPE_TASK_VIEW_DIG_MEASUERS_ITEM;
-        }else if (type.equalsIgnoreCase("task_view_backfill_measures")) {
+        } else if (type.equalsIgnoreCase("task_view_backfill_measures")) {
             return TYPE_TASK_VIEW_BACKFILL_MEASURES;
-        }else if (type.equalsIgnoreCase("task_view_backfill_measures_item")) {
+        } else if (type.equalsIgnoreCase("task_view_backfill_measures_item")) {
             return TYPE_TASK_VIEW_BACKFILL_MEASUERS_ITEM;
-        }else if (type.equalsIgnoreCase("task_view_reinstatement_measures")) {
+        } else if (type.equalsIgnoreCase("task_view_reinstatement_measures")) {
             return TYPE_TASK_VIEW_REINST_MEASURES;
-        }else if (type.equalsIgnoreCase("task_view_reinstatement_measures_item")) {
+        } else if (type.equalsIgnoreCase("task_view_reinstatement_measures_item")) {
             return TYPE_TASK_VIEW_REINST_MEASUERS_ITEM;
-        }else if (type.equalsIgnoreCase("task_list_muckaway")) {
+        } else if (type.equalsIgnoreCase("task_list_muckaway")) {
             return TYPE_TASK_LOG_MUCKAWAY;
-        }else if (type.equalsIgnoreCase("task_list_muckaway_item")) {
+        } else if (type.equalsIgnoreCase("task_list_muckaway_item")) {
             return TYPE_TASK_LOG_MUCKAWAY_ITEM;
-        }else if (type.equalsIgnoreCase("task_list_service_material")) {
+        } else if (type.equalsIgnoreCase("task_list_service_material")) {
             return TYPE_TASK_LOG_SERVICE;
-        }else if (type.equalsIgnoreCase("task_list_service_material_item")) {
+        } else if (type.equalsIgnoreCase("task_list_service_material_item")) {
             return TYPE_TASK_LOG_SERVICE_ITEM;
-        }else if (type.equalsIgnoreCase("task_list_site_clear")) {
+        } else if (type.equalsIgnoreCase("task_list_site_clear")) {
             return TYPE_TASK_LOG_SERVICE;
-        }else if (type.equalsIgnoreCase("task_list_site_clear_item")) {
+        } else if (type.equalsIgnoreCase("task_list_site_clear_item")) {
             return TYPE_TASK_LOG_SERVICE_ITEM;
-        }else if (type.equalsIgnoreCase("yes_no_tooltip")) {
+        } else if (type.equalsIgnoreCase("yes_no_tooltip")) {
             return TYPE_YES_NO_tooltip;
-        }else if (type.equalsIgnoreCase("yes_no_na_tooltip")) {
+        } else if (type.equalsIgnoreCase("yes_no_na_tooltip")) {
             return TYPE_YES_NO_NA_tooltip;
-        }else if (type.equalsIgnoreCase("log_measure_item")) {
+        } else if (type.equalsIgnoreCase("log_measure_item")) {
             return TYPE_LOG_MEASURE;
-        }else if (type.equalsIgnoreCase("log_briefing_sign")) {
+        } else if (type.equalsIgnoreCase("log_briefing_sign")) {
             return TYPE_SIGN_BRIEFING;
-        }else if (type.equalsIgnoreCase("log_list_briefing")) {
+        } else if (type.equalsIgnoreCase("log_list_briefing")) {
             return TYPE_LIST_BREIFDOC;
-        }else if (type.equalsIgnoreCase("tv_briefing_text")) {
+        } else if (type.equalsIgnoreCase("tv_briefing_text")) {
             return TYPE_TV_BRIEFING_TEXT;
-        }else if (type.equalsIgnoreCase("et_search_text")) {
+        } else if (type.equalsIgnoreCase("et_search_text")) {
             return TYPE_ET_SEARCH_ESTIMATE;
-        }else if (type.equalsIgnoreCase("rfna_toggle")) {
+        } else if (type.equalsIgnoreCase("rfna_toggle")) {
             return TYPE_RFNA_TOGGLE;
-        }else if (type.equalsIgnoreCase("add_log_hours")) {
+        } else if (type.equalsIgnoreCase("add_log_hours")) {
             return TYPE_ADD_LOG_HOURS;
-        }else if (type.equalsIgnoreCase("log_hours_item")) {
+        } else if (type.equalsIgnoreCase("log_hours_item")) {
             return TYPE_ITEM_LOG_HOURS;
         }
-
 
 
         return TYPE_TXT_BOLD_HEAD;
@@ -574,8 +598,8 @@ public class FormItem implements Parcelable {
 
     public void setPhotoRequired(int photoRequired) {
         this.photoRequired = photoRequired;
-        if(photos!= null){
-            for (int i = 0 ; i < photoRequired && i < photos.size(); i++){
+        if (photos != null) {
+            for (int i = 0; i < photoRequired && i < photos.size(); i++) {
                 photos.get(i).setOptional(false);
             }
         }
@@ -595,8 +619,8 @@ public class FormItem implements Parcelable {
 
     public void setPhotoId(String photoId) {
         this.photoId = photoId;
-        if(photos != null){
-            for (Photo photo : photos){
+        if (photos != null) {
+            for (Photo photo : photos) {
                 photo.setPhoto_id(photoId);
             }
         }
@@ -630,30 +654,30 @@ public class FormItem implements Parcelable {
         this.myStoreQuantity = myStoreQuantity;
     }
 
-    public int getAssetNumber(){
-        if(TextUtils.isEmpty(assetType)){
+    public int getAssetNumber() {
+        if (TextUtils.isEmpty(assetType)) {
             return -1;
         }
 
-        if(assetType.equalsIgnoreCase("pole")){
+        if (assetType.equalsIgnoreCase("pole")) {
             return 0;
-        }else if(assetType.equalsIgnoreCase("blockTerminal")){
+        } else if (assetType.equalsIgnoreCase("blockTerminal")) {
             return 1;
-        }else if(assetType.equalsIgnoreCase("anchor")){
+        } else if (assetType.equalsIgnoreCase("anchor")) {
             return 2;
-        }else if(assetType.equalsIgnoreCase("jointClosure")){
+        } else if (assetType.equalsIgnoreCase("jointClosure")) {
             return 3;
-        }else if(assetType.equalsIgnoreCase("aerialCable")){
+        } else if (assetType.equalsIgnoreCase("aerialCable")) {
             return 4;
-        }else if(assetType.equalsIgnoreCase("ugCable")){
+        } else if (assetType.equalsIgnoreCase("ugCable")) {
             return 5;
-        }else if(assetType.equalsIgnoreCase("dropWire")){
+        } else if (assetType.equalsIgnoreCase("dropWire")) {
             return 6;
-        }else if(assetType.equalsIgnoreCase("surfaceTypes")){
+        } else if (assetType.equalsIgnoreCase("surfaceTypes")) {
             return 7;
-        }else if(assetType.equalsIgnoreCase("materialTypes")){
+        } else if (assetType.equalsIgnoreCase("materialTypes")) {
             return 8;
-        }else if(assetType.equalsIgnoreCase("dacs")){
+        } else if (assetType.equalsIgnoreCase("dacs")) {
             return 9;
         }
         return -1;
@@ -664,7 +688,7 @@ public class FormItem implements Parcelable {
         return isMultiSelection;
     }
 
-    public String getTaskType(int formType){
+    public String getTaskType(int formType) {
         switch (formType) {
             case TYPE_TASK_LOG_BACKFILL:
             case TYPE_TASK_LOG_REINSTATEMENT:

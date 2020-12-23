@@ -44,20 +44,22 @@
           "type": "yes_no",
           "uploadId": "trafficSurveyCompleted",
           "title": "Traffic survey completed (including road width, traffic make-up and volume) confirms minimum widths can be maintained (specify 1 or 2 way working).",
-          "optional": false
+          "optional": false,
+          "enables": [
+            {
+              "type": "photo",
+              "title": "Traffic survey completed",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "124"
+            }
+          ]
         },
         {
           "type": "et_long_text",
           "uploadId": "trafficSurveyCompletedComments",
           "title": "Comments",
           "optional": true
-        },
-        {
-          "type": "photo",
-          "title": "Traffic survey completed",
-          "photoSize": 20,
-          "photoRequired": 0,
-          "photoId": "124"
         }
       ]
     },
@@ -72,6 +74,12 @@
           "title": "Are there hospitals, schools, clinics, shops, etc. in the vicinity of the works.",
           "optional": false,
           "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hospitalsSchoolsInVicinityComments",
+              "title": "Please Specify",
+              "optional": true
+            },
             {
               "type": "yes_no",
               "uploadId": "additionalPrecautionsRequired",
@@ -88,7 +96,7 @@
                   "type": "photo",
                   "title": "Additional precautions required?",
                   "photoSize": 20,
-                  "photoRequired": 0,
+                  "photoRequired": 1,
                   "photoId": "125"
                 }
               ],
@@ -122,16 +130,7 @@
           "type": "yes_no",
           "uploadId": "protectionForKnuckle",
           "title": "Protection for knuckle (specifically PE8) considered in RWG set up.",
-          "optional": false,
-          "enables": [
-            {
-              "type": "photo",
-              "title": "Protection for knuckle",
-              "photoSize": 20,
-              "photoRequired": 0,
-              "photoId": "127"
-            }
-          ]
+          "optional": false
         },
         {
           "type": "et_long_text",
@@ -150,20 +149,22 @@
           "type": "yes_no",
           "uploadId": "pedestriansFootpathsClosed",
           "title": "Pedestrians; footpaths closed when working across footpath barriered safe area around pole when not crossing footpath.",
-          "optional": false
+          "optional": false,
+          "enables": [
+            {
+              "type": "photo",
+              "title": "Pedestrians footpaths closed when working across footpath",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "128"
+            }
+          ]
         },
         {
           "type": "et_long_text",
           "uploadId": "pedestriansFootpathsClosedComments",
           "title": "Comments",
           "optional": true
-        },
-        {
-          "type": "photo",
-          "title": "Pedestrians footpaths closed when working across footpath",
-          "photoSize": 20,
-          "photoRequired": 0,
-          "photoId": "128"
         }
       ]
     },
@@ -180,20 +181,22 @@
           "type": "yes_no",
           "uploadId": "inclinometerConfirmsSlope",
           "title": "Inclinometer confirms slope hoist within operating envelope",
-          "optional": false
+          "optional": false,
+          "enables": [
+            {
+              "type": "photo",
+              "title": "Inclinometer confirms slope hoist ",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "129"
+            }
+          ]
         },
         {
           "type": "et_long_text",
           "uploadId": "inclinometerConfirmsSlopeComments",
           "title": "Comments",
           "optional": true
-        },
-        {
-          "type": "photo",
-          "title": "Inclinometer confirms slope hoist ",
-          "photoSize": 20,
-          "photoRequired": 0,
-          "photoId": "129"
         }
       ]
     },
@@ -210,20 +213,22 @@
           "type": "yes_no",
           "uploadId": "hoistLevelAcrossWidth",
           "title": "Hoist level across width i.e. doesn’t have one side up kerb.",
-          "optional": false
+          "optional": false,
+          "enables": [
+            {
+              "type": "photo",
+              "title": "Hoist level across width",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "130"
+            }
+          ]
         },
         {
           "type": "et_long_text",
           "uploadId": "hoistLevelAcrossWidthComments",
           "title": "Comments",
           "optional": true
-        },
-        {
-          "type": "photo",
-          "title": "Hoist level across width",
-          "photoSize": 20,
-          "photoRequired": 0,
-          "photoId": "130"
         }
       ]
     },
@@ -240,20 +245,22 @@
           "type": "yes_no",
           "uploadId": "stabilityConfirmOperatingSurface",
           "title": "Stability confirm operating surface Road/Pavement/private drive/un-metalled track/soft ground.",
-          "optional": false
+          "optional": false,
+          "enables": [
+            {
+              "type": "photo",
+              "title": "Stability confirm operating surface",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "131"
+            }
+          ]
         },
         {
           "type": "et_long_text",
           "uploadId": "stabilityConfirmOperatingSurfaceComments",
           "title": "Comments",
           "optional": true
-        },
-        {
-          "type": "photo",
-          "title": "Stability confirm operating surface",
-          "photoSize": 20,
-          "photoRequired": 0,
-          "photoId": "131"
         }
       ]
     },
@@ -263,16 +270,18 @@
       "upload": false,
       "items": [
         {
-          "type": "yes_no_na",
+          "type": "yes_no_na_optional",
           "uploadId": "softGroundChecks",
           "title": "For soft ground what checks have been carried out to confirm stability of ground",
-          "optional": false
+          "optional": true,
+          "isYesNotVisible": true,
+          "isNoNotVisible": true
         },
         {
           "type": "et_long_text",
           "uploadId": "softGroundChecksComments",
           "title": "Comments",
-          "optional": true
+          "optional": false
         }
       ]
     },
@@ -285,20 +294,22 @@
           "type": "yes_no_na",
           "uploadId": "serviceCoversAndUndergroundStructures",
           "title": "Service covers and underground structures 1mtr from stabilisers.",
-          "optional": false
+          "optional": false,
+          "enables": [
+            {
+              "type": "photo",
+              "title": "Service covers and underground structures",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "133"
+            }
+          ]
         },
         {
           "type": "et_long_text",
           "uploadId": "serviceCoversAndUndergroundStructuresComments",
           "title": "Comments",
           "optional": true
-        },
-        {
-          "type": "photo",
-          "title": "Service covers and underground structures",
-          "photoSize": 20,
-          "photoRequired": 0,
-          "photoId": "133"
         }
       ]
     },
@@ -311,7 +322,8 @@
           "type": "yes_no_na",
           "uploadId": "onPrivateDrivesServiceCovers",
           "title": "On private drives service covers checked for weigh limit before driving over them. \n",
-          "optional": false
+          "optional": false,
+          "isNoNotVisible": true
         },
         {
           "type": "et_long_text",
@@ -458,20 +470,22 @@
           "type": "yes_no_na",
           "uploadId": "isThePoleLeaning",
           "title": "Is the pole leaning, overloaded, congested, missing stay, POP?",
-          "optional": false
+          "optional": false,
+          "enables": [
+            {
+              "type": "photo",
+              "title": "Is the pole leaning, overloaded, congested, missing stay",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "142"
+            }
+          ]
         },
         {
           "type": "et_long_text",
           "uploadId": "isThePoleLeaningComments",
           "title": "Comments",
           "optional": true
-        },
-        {
-          "type": "photo",
-          "title": "Is the pole leaning, overloaded, congested, missing stay",
-          "photoSize": 20,
-          "photoRequired": 0,
-          "photoId": "142"
         }
       ]
     },
@@ -502,7 +516,7 @@
         {
           "type": "yes_no",
           "uploadId": "willWorksRequireAccessingJUP",
-          "title": "Will the works require accessing a Joint User Pole and if so, is the Joint User Pole Risk Aassessment pad completed? ",
+          "title": "Will the works require accessing a Joint User Pole and if so, is the Joint User Pole Risk Assessment pad completed? ",
           "optional": false
         },
         {
@@ -521,8 +535,16 @@
         {
           "type": "yes_no",
           "uploadId": "areThereAnyPowerConflicts",
-          "title": "Are there any power conflicts within the spans connecting the pole?\n (Can conflict be resolved during the visit and has an A1024 raised?)",
-          "optional": false
+          "title": "Are there any power conflicts within the spans connecting the pole?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "yes_no",
+              "uploadId": "canConflictsBeResolved",
+              "title": "Can conflict be resolved during the visit and has an A1024 raised?",
+              "optional": false
+            }
+          ]
         },
         {
           "type": "et_long_text",

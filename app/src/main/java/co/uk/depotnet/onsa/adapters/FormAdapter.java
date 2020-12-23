@@ -478,6 +478,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 return new DFEItemHolder(LayoutInflater.from(context).inflate(R.layout.item_dfe, viewGroup, false));
             case FormItem.TYPE_YES_NO_NA:
                 return new YesNoNAHolder(LayoutInflater.from(context).inflate(R.layout.item_yes_no_na, viewGroup, false));
+            case FormItem.TYPE_YES_NO_NA_OPTIONAL:
+                return new YesNoNAHolder(LayoutInflater.from(context).inflate(R.layout.item_yes_no_na, viewGroup, false));
             case FormItem.TYPE_STOP_WATCH:
                 return new StopWatchHolder(LayoutInflater.from(context).inflate(R.layout.item_stop_watch, viewGroup, false));
             case FormItem.TYPE_VISITOR_SIGN:
@@ -601,6 +603,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 break;
             case FormItem.TYPE_YES_NO_NA:
                 bindYesNoNAHolder((YesNoNAHolder) holder, position);
+                break;
+            case FormItem.TYPE_YES_NO_NA_OPTIONAL:
+                bindYesNoNAOptionalHolder((YesNoNAHolder) holder, position);
                 break;
             case FormItem.TYPE_STOP_WATCH:
                 bindStopWatchHolder((StopWatchHolder) holder, position);
@@ -2413,6 +2418,17 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.btnYes.setSelected(false);
         holder.btnNo.setSelected(false);
         holder.btnNA.setSelected(false);
+        if (formItem.isYesNotVisible()) {
+            holder.btnYes.setVisibility(View.GONE);
+        } else {
+            holder.btnYes.setVisibility(View.VISIBLE);
+        }
+
+        if (formItem.isNoNotVisible()) {
+            holder.btnNo.setVisibility(View.GONE);
+        } else {
+            holder.btnNo.setVisibility(View.VISIBLE);
+        }
 
         if (answer != null) {
             String value = answer.getAnswer();
@@ -2475,7 +2491,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
-
         });
 
         holder.btnNA.setOnClickListener(view -> {
@@ -2498,7 +2513,126 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
+        });
+    }
 
+    private void bindYesNoNAOptionalHolder(final YesNoNAHolder holder, int position) {
+        boolean selectNaValue = true;
+        final FormItem formItem = formItems.get(position);
+        holder.txtQuestion.setText(formItem.getTitle());
+
+        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                formItem.getRepeatId(), repeatCount);
+
+        holder.btnYes.setSelected(false);
+        holder.btnNo.setSelected(false);
+        holder.btnNA.setSelected(false);
+        if (formItem.isYesNotVisible()) {
+            holder.btnYes.setVisibility(View.GONE);
+        } else {
+            holder.btnYes.setVisibility(View.VISIBLE);
+        }
+
+        if (formItem.isNoNotVisible()) {
+            holder.btnNo.setVisibility(View.GONE);
+        } else {
+            holder.btnNo.setVisibility(View.VISIBLE);
+        }
+
+        if (answer != null) {
+            String value = answer.getAnswer();
+            if (value != null) {
+                if (value.equals("1")) {
+                    holder.btnYes.setSelected(true);
+                    holder.btnNo.setSelected(false);
+                    holder.btnNA.setSelected(false);
+                } else if (value.equals("2")) {
+                    holder.btnYes.setSelected(false);
+                    holder.btnNo.setSelected(true);
+                    holder.btnNA.setSelected(false);
+                } else if (value.equals("3")) {
+                    holder.btnYes.setSelected(false);
+                    holder.btnNo.setSelected(false);
+                    holder.btnNA.setSelected(true);
+                }
+            }
+        } else if (missingAnswerMode && !formItem.isOptional()) {
+            holder.view.setBackground(redBG);
+        }
+
+        holder.btnYes.setOnClickListener(view -> {
+
+            holder.btnYes.setSelected(true);
+            holder.btnNo.setSelected(false);
+            holder.btnNA.setSelected(false);
+            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                    formItem.getRepeatId(), repeatCount);
+            if (answer1 == null) {
+                answer1 = new Answer(submissionID, formItem.getUploadId());
+            }
+            answer1.setAnswer("1");
+            answer1.setRepeatID(formItem.getRepeatId());
+            answer1.setRepeatCount(repeatCount);
+            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+
+            if (needToBeNotified(formItem)) {
+                reInflateItems(true);
+            }
+
+        });
+
+        holder.btnNo.setOnClickListener(view -> {
+
+            holder.btnYes.setSelected(false);
+            holder.btnNo.setSelected(true);
+            holder.btnNA.setSelected(false);
+            Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                    formItem.getRepeatId(), repeatCount);
+            if (answer12 == null) {
+                answer12 = new Answer(submissionID, formItem.getUploadId());
+            }
+
+            answer12.setAnswer("2");
+            answer12.setRepeatID(formItem.getRepeatId());
+            answer12.setRepeatCount(repeatCount);
+
+            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+            if (needToBeNotified(formItem)) {
+                reInflateItems(true);
+            }
+        });
+
+        holder.btnNA.setOnClickListener(view -> {
+            holder.btnYes.setSelected(false);
+            holder.btnNo.setSelected(false);
+            holder.btnNA.setSelected(true);
+
+
+            Answer answer13 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                    formItem.getRepeatId(), repeatCount);
+
+            if (answer13 == null) {
+                answer13 = new Answer(submissionID, formItem.getUploadId());
+                answer13.setAnswer("3");
+                answer13.setRepeatID(formItem.getRepeatId());
+                answer13.setRepeatCount(repeatCount);
+                if (formItems.get(position + 1) != null) {
+                    formItems.get(position + 1).setOptional(true);
+                }
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer13.toContentValues());
+            } else {
+                if (formItem.isYesNotVisible() && formItem.isNoNotVisible()) {
+                    holder.btnNA.setSelected(false);
+                    DBHandler.getInstance().removeAnswer(answer13);
+                    if (formItems.get(position + 1) != null) {
+                        formItems.get(position + 1).setOptional(false);
+                    }
+                }
+            }
+
+            if (needToBeNotified(formItem)) {
+                reInflateItems(true);
+            }
         });
     }
 
@@ -2872,16 +3006,16 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 for (int i = 0; i < outComes.size(); i++) {
                     String displayItems = outComes.get(i).getDisplayItem();
                     boolean isSuccessMessage = displayItems.startsWith("01") || displayItems.startsWith("02");
-                    String prefKey = AppPreferences.getString("RadioButton_"+submission.getJobID() , null);
-                    if(isSuccessMessage){
-                        if(!rfnaNotRequired && (hasRFNA || (!TextUtils.isEmpty(prefKey) && prefKey.equalsIgnoreCase("true")))){
+                    String prefKey = AppPreferences.getString("RadioButton_" + submission.getJobID(), null);
+                    if (isSuccessMessage) {
+                        if (!rfnaNotRequired && (hasRFNA || (!TextUtils.isEmpty(prefKey) && prefKey.equalsIgnoreCase("true")))) {
                             items.add(outComes.get(i));
                         }
-                    }else if(rfnaNotRequired || (!hasRFNA && (!TextUtils.isEmpty(prefKey) && prefKey.equalsIgnoreCase("false")))){
-                            items.add(outComes.get(i));
+                    } else if (rfnaNotRequired || (!hasRFNA && (!TextUtils.isEmpty(prefKey) && prefKey.equalsIgnoreCase("false")))) {
+                        items.add(outComes.get(i));
                     }
                 }
-            }else if (formItem.getKey().equalsIgnoreCase(RecordReturnReason.DBTable.NAME)) {
+            } else if (formItem.getKey().equalsIgnoreCase(RecordReturnReason.DBTable.NAME)) {
                 ArrayList<RecordReturnReason> recordReturnReasons = DBHandler.getInstance().getRecordReturnReasons(submission.getJobID());
                 items.addAll(recordReturnReasons);
             } else {
@@ -3085,7 +3219,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer1.setRepeatID(formItem.getRepeatId());
             answer1.setRepeatCount(repeatCount);
 
-            AppPreferences.putString("RadioButton_"+submission.getJobID(), value);
+            AppPreferences.putString("RadioButton_" + submission.getJobID(), value);
             DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
         });
     }
@@ -3107,10 +3241,10 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         if (answer != null) {
             String value = answer.getAnswer();
-            if (value != null && value.equals("true")) {
+            if (value != null && (value.equals("true") || value.equals("1"))) {
                 holder.btnYes.setSelected(true);
                 holder.btnNo.setSelected(false);
-            } else if (value != null && value.equals("false")) {
+            } else if (value != null && (value.equals("false") || value.equals("2"))) {
                 holder.btnYes.setSelected(false);
                 holder.btnNo.setSelected(true);
             }
@@ -3129,7 +3263,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItem.getUploadId());
             }
-            answer1.setAnswer("true");
+            if (submission.getJsonFileName().equalsIgnoreCase("hoist_risk_assessment.json")) {
+                answer1.setAnswer("1");
+            } else {
+                answer1.setAnswer("true");
+            }
+
             answer1.setRepeatID(formItem.getRepeatId());
             answer1.setRepeatCount(repeatCount);
             DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
@@ -3156,7 +3295,13 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answer12 = new Answer(submissionID, formItem.getUploadId());
             }
 
-            answer12.setAnswer("false");
+            if (submission.getJsonFileName().equalsIgnoreCase("hoist_risk_assessment.json")) {
+                answer12.setAnswer("2");
+            } else {
+                answer12.setAnswer("false");
+            }
+
+
             answer12.setRepeatID(formItem.getRepeatId());
             answer12.setRepeatCount(repeatCount);
 
@@ -3228,6 +3373,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             addEnableItems(item, value);
         } else if (item.getFormType() == FormItem.TYPE_YES_NO ||
                 item.getFormType() == FormItem.TYPE_YES_NO_NA ||
+                item.getFormType() == FormItem.TYPE_YES_NO_NA_OPTIONAL ||
                 item.getFormType() == FormItem.TYPE_YES_NO_tooltip ||
                 item.getFormType() == FormItem.TYPE_YES_NO_NA_tooltip ||
                 item.getFormType() == FormItem.TYPE_SWITCH) {

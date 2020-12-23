@@ -116,7 +116,9 @@
     <string name="photo_upload_damage">Take up to %1$d photographs of damage</string>
 
     <string name="go_to_risk_assessment">Go To Risk Assessment</string>
+    <string name="go_to_hoist_risk_assessment">Go To Hoist Risk Assessment</string>
     <string name="wraning_risk_assessment">You can not go into the work log before completing your risk assessment!</string>
+    <string name="wraning_hoist_risk_assessment">You can not go into the work log before completing your hoist risk assessment!</string>
     <string name="asset_survey_message">You have entered an asset. Please complete the asset survey Information</string>
     <string name="go_to_asset_Survey">Go to asset survey</string>
     <string name="signature">Signature</string>
