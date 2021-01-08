@@ -41,6 +41,7 @@ public class User implements Parcelable {
     private boolean muckaway;
     private boolean serviceMaterialDrop;
     private boolean siteClear;
+    private boolean completeTimesheets;
     private String qrCodeBase64;
 
     public void setTwoFactorMandatory(boolean twoFactorMandatory) {
@@ -68,6 +69,7 @@ public class User implements Parcelable {
         muckaway = in.readInt() == 1;
         serviceMaterialDrop = in.readInt() == 1;
         siteClear = in.readInt() == 1;
+        completeTimesheets = in.readInt() == 1;
         qrCodeBase64 = in.readString();
     }
 
@@ -96,6 +98,7 @@ public class User implements Parcelable {
         muckaway = cursor.getInt(cursor.getColumnIndex(DBTable.muckaway)) == 1;
         serviceMaterialDrop = cursor.getInt(cursor.getColumnIndex(DBTable.serviceMaterialDrop)) == 1;
         siteClear = cursor.getInt(cursor.getColumnIndex(DBTable.siteClear)) == 1;
+        completeTimesheets = cursor.getInt(cursor.getColumnIndex(DBTable.completeTimesheets)) == 1;
         qrCodeBase64 = cursor.getString(cursor.getColumnIndex(DBTable.qrCodeBase64));
 
     }
@@ -196,6 +199,14 @@ public class User implements Parcelable {
         return twoFactorMandatory;
     }
 
+    public boolean isCompleteTimesheets() {
+        return completeTimesheets;
+    }
+
+    public void setCompleteTimesheets(boolean completeTimesheets) {
+        this.completeTimesheets = completeTimesheets;
+    }
+
     public boolean isBackfill() {
         return backfill;
     }
@@ -251,6 +262,7 @@ public class User implements Parcelable {
         dest.writeInt(muckaway ? 1 : 0);
         dest.writeInt(serviceMaterialDrop ? 1 : 0);
         dest.writeInt(siteClear ? 1 : 0);
+        dest.writeInt(completeTimesheets ? 1 : 0);
         dest.writeString(qrCodeBase64);
     }
 
@@ -289,7 +301,7 @@ public class User implements Parcelable {
         cv.put(DBTable.muckaway, this.muckaway);
         cv.put(DBTable.serviceMaterialDrop, this.serviceMaterialDrop);
         cv.put(DBTable.siteClear, this.siteClear);
-        cv.put(DBTable.siteClear, this.siteClear);
+        cv.put(DBTable.completeTimesheets, this.completeTimesheets);
         cv.put(DBTable.qrCodeBase64, this.qrCodeBase64);
 
         return cv;
@@ -317,6 +329,7 @@ public class User implements Parcelable {
         public static final String muckaway = "muckaway";
         public static final String serviceMaterialDrop = "serviceMaterialDrop";
         public static final String siteClear = "siteClear";
+        public static final String completeTimesheets = "completeTimesheets";
         public static final String qrCodeBase64 = "qrCodeBase64";
 
     }

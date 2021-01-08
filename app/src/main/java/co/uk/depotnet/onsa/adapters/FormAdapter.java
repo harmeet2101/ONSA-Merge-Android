@@ -87,6 +87,9 @@ import co.uk.depotnet.onsa.formholders.StopWatchHolder;
 import co.uk.depotnet.onsa.formholders.StoreHolder;
 import co.uk.depotnet.onsa.formholders.SwitchHolder;
 import co.uk.depotnet.onsa.formholders.TakePhotoHolder;
+import co.uk.depotnet.onsa.formholders.TimePickerHolder;
+import co.uk.depotnet.onsa.formholders.TimeSheetItemHolder;
+import co.uk.depotnet.onsa.formholders.TimeTotalWorkedHoursHolder;
 import co.uk.depotnet.onsa.formholders.VisitorSignHolder;
 import co.uk.depotnet.onsa.formholders.YesNoHolder;
 import co.uk.depotnet.onsa.formholders.YesNoNAHolder;
@@ -95,6 +98,7 @@ import co.uk.depotnet.onsa.formholders.YesNoToolTipHolder;
 import co.uk.depotnet.onsa.fragments.FragmentStopWork;
 import co.uk.depotnet.onsa.listeners.DropDownItem;
 import co.uk.depotnet.onsa.listeners.FormAdapterListener;
+import co.uk.depotnet.onsa.listeners.FromActivityListener;
 import co.uk.depotnet.onsa.listeners.LocationListener;
 import co.uk.depotnet.onsa.listeners.OnChangeChamberCount;
 import co.uk.depotnet.onsa.listeners.PhotoAdapterListener;
@@ -121,11 +125,17 @@ import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.schedule.JobEstimate;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.StockItems;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
+import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import co.uk.depotnet.onsa.utils.JsonReader;
 import co.uk.depotnet.onsa.views.DropdownMenu;
 import co.uk.depotnet.onsa.views.DropdownNumberBottomSheet;
 import co.uk.depotnet.onsa.views.DropdownTimer;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements PhotoAdapterListener, AdapterLogMeasure.AdapterListener {
@@ -249,6 +259,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         boolean ifNegDFEAdded = false;
         boolean isLogMeasureAdded = false;
         boolean isDigMeasureAdded = false;
+        boolean isLogHoursAdded = false;
         int repeatCount = 0;
         DBHandler dbHandler = DBHandler.getInstance();
         ArrayList<FormItem> listItems = new ArrayList<>();
@@ -348,6 +359,27 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     if (answers != null && !answers.isEmpty()) {
                         for (int i = 0; i < answers.size(); i++) {
                             FormItem qItem = new FormItem("item_dig_measure", "", "", item.getRepeatId(), true);
+                            qItem.setFields(fields);
+                            qItem.setRepeatCount(answers.get(i).getRepeatCount());
+                            qItem.setDialogItems(item.getDialogItems());
+                            toBeAdded.add(qItem);
+                        }
+
+                        formItems.addAll(c, toBeAdded);
+                    }
+
+
+                }
+            }else if (!isLogHoursAdded && item.getFormType() == FormItem.TYPE_ADD_LOG_HOURS) {
+                isLogHoursAdded = true;
+                ArrayList<String> fields = item.getFields();
+                if (fields != null && !fields.isEmpty()) {
+                    ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+
+                    ArrayList<FormItem> toBeAdded = new ArrayList<>();
+                    if (answers != null && !answers.isEmpty()) {
+                        for (int i = 0; i < answers.size(); i++) {
+                            FormItem qItem = new FormItem("log_hours_item", "", "", item.getRepeatId(), true);
                             qItem.setFields(fields);
                             qItem.setRepeatCount(answers.get(i).getRepeatCount());
                             qItem.setDialogItems(item.getDialogItems());
@@ -473,6 +505,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_ADD_LOG_HOURS:
                 return new ForkCardHolder(LayoutInflater.from(context).inflate(R.layout.item_fork_card, viewGroup, false));
             case FormItem.TYPE_CALENDER:
+            case FormItem.TYPE_ITEM_WEEK_COMMENCING:
                 return new CalenderHolder(LayoutInflater.from(context).inflate(R.layout.item_calender, viewGroup, false));
             case FormItem.TYPE_DFE_ITEM:
                 return new DFEItemHolder(LayoutInflater.from(context).inflate(R.layout.item_dfe, viewGroup, false));
@@ -521,6 +554,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 return new RFNAToggleHolder(LayoutInflater.from(context).inflate(R.layout.item_rfna_toggle, viewGroup, false));
             case FormItem.TYPE_ITEM_LOG_HOURS:
                 return new LogHoursItemHolder(LayoutInflater.from(context).inflate(R.layout.item_log_hours, viewGroup, false));
+            case FormItem.TYPE_TASK_TIMESHEET_ITEM:
+                return new TimeSheetItemHolder(LayoutInflater.from(context).inflate(R.layout.item_timesheet, viewGroup, false));
+            case FormItem.TYPE_TOTAL_WORKED_HOURS:
+                return new TimeTotalWorkedHoursHolder(LayoutInflater.from(context).inflate(R.layout.item_total_worked_hour, viewGroup, false));
+            case FormItem.TYPE_ITEM_TIME_PICKER:
+                return new TimePickerHolder(LayoutInflater.from(context).inflate(R.layout.item_time_picker, viewGroup, false));
         }
         return new BoldTextHolder(LayoutInflater.from(context).inflate(R.layout.item_txt_bold_head, viewGroup, false));
     }
@@ -598,6 +637,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_CALENDER:
                 bindCalender((CalenderHolder) holder, position);
                 break;
+            case FormItem.TYPE_ITEM_WEEK_COMMENCING:
+                bindWeekCommencing((CalenderHolder) holder, position);
+                break;
             case FormItem.TYPE_DFE_ITEM:
                 bindDFEHolder((DFEItemHolder) holder, position);
                 break;
@@ -674,7 +716,89 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_ITEM_LOG_HOURS:
                 bindLogHoursHolder((LogHoursItemHolder) holder, position);
                 break;
+            case FormItem.TYPE_TASK_TIMESHEET_ITEM:
+                bindTimeSheetHolder((TimeSheetItemHolder) holder, position);
+                break;
+            case FormItem.TYPE_TOTAL_WORKED_HOURS:
+                bindTotalWorkedHourHolder((TimeTotalWorkedHoursHolder) holder, position);
+                break;
+            case FormItem.TYPE_ITEM_TIME_PICKER:
+                bindTimePickerHolder((TimePickerHolder) holder, position);
+                break;
         }
+    }
+
+
+    private void bindTimePickerHolder(final TimePickerHolder holder, int position) {
+        final FormItem formItem = formItems.get(position);
+        holder.txtTitle.setText(formItem.getTitle());
+        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                formItem.getRepeatId(), repeatCount);
+        if (answer != null) {
+            String value = answer.getAnswer();
+            if (value != null && !value.isEmpty()) {
+                holder.txtTime.setText(answer.getDisplayAnswer());
+            }
+        } else if (missingAnswerMode && !formItem.isOptional()) {
+            holder.view.setBackground(redBG);
+        }
+
+        holder.txtTime.setOnClickListener(v -> {
+            final Calendar myCalendar = Calendar.getInstance();
+
+            TimePickerDialog.OnTimeSetListener date = (view, hourOfDay, minute) -> {
+                Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                        formItem.getRepeatId(), repeatCount);
+
+                myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                myCalendar.set(Calendar.MINUTE, minute);
+
+
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH);
+                String time = sdf.format(myCalendar.getTime());
+                holder.txtTime.setText(time);
+
+
+                if (answer12 == null) {
+                    answer12 = new Answer(submissionID, formItem.getUploadId());
+                }
+
+                answer12.setAnswer(time);
+                answer12.setDisplayAnswer(time);
+                answer12.setRepeatID(formItem.getRepeatId());
+                answer12.setRepeatCount(repeatCount);
+
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+            };
+
+
+            new TimePickerDialog(context, date, myCalendar
+                    .get(Calendar.HOUR_OF_DAY), myCalendar.get(Calendar.MINUTE),
+                    true).show();
+
+        });
+    }
+
+    private void bindTotalWorkedHourHolder(TimeTotalWorkedHoursHolder holder, int position) {
+        final FormItem formItem = formItems.get(position);
+        holder.txtTime.setText(formItem.getTitle());
+//        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+//                formItem.getRepeatId(), repeatCount);
+//        if (answer != null) {
+//
+//            String value = answer.getAnswer();
+//            if (value != null && !value.isEmpty()) {
+//                holder.editText.setText(value);
+//                if (estFlag) {
+//                    // position is imp to update items list particular  value.
+//                    listener.getEstimateOperative(value.trim(), 2);
+//                    estFlag = false;
+//                }
+//            }
+//        } else if (missingAnswerMode && !formItem.isOptional()) {
+//            holder.view.setBackground(redBG);
+//        }
+
     }
 
     private void bindEstimateSearchHolder(EstimateSearchHolder holder, int position) {
@@ -1384,7 +1508,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (timeFrom != null && !TextUtils.isEmpty(timeFrom.getAnswer()) && timeTo != null && !TextUtils.isEmpty(timeTo.getAnswer())) {
             holder.txtTime.setText("Time From-To: " + timeFrom.getDisplayAnswer() + "-" + timeTo.getDisplayAnswer());
         } else {
-            holder.txtTimeType.setText("");
+            holder.txtTime.setText("");
         }
 
 
@@ -1399,6 +1523,62 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 }
             }
 
+            reInflateItems(true);
+        });
+    }
+    private void bindTimeSheetHolder(@NonNull final TimeSheetItemHolder holder, int position) {
+        final FormItem formItem = formItems.get(position);
+
+        TimeSheetHour timeSheetHour = formItem.getTimeSheetHour();
+
+        Answer day = DBHandler.getInstance().getAnswer(submissionID, TimeSheetHour.DBTable.day, formItem.getRepeatId(), formItem.getRepeatCount());
+        if (day != null && !TextUtils.isEmpty(day.getAnswer())) {
+            holder.txtDay.setText(day.getDisplayAnswer());
+            timeSheetHour.setDay(day.getDisplayAnswer());
+        } else {
+            holder.txtDay.setText("");
+        }
+
+        Answer timeType = DBHandler.getInstance().getAnswer(submissionID, TimeSheetHour.DBTable.timeTypeActivityId, formItem.getRepeatId(), formItem.getRepeatCount());
+        if (timeType != null && !TextUtils.isEmpty(timeType.getAnswer())) {
+            holder.txtTimeType.setText("Time Type: " + timeType.getDisplayAnswer());
+        } else {
+            holder.txtTimeType.setText("");
+        }
+
+        Answer dateWorked = DBHandler.getInstance().getAnswer(submissionID, TimeSheetHour.DBTable.dateWorked, formItem.getRepeatId(), formItem.getRepeatCount());
+        if (dateWorked != null && !TextUtils.isEmpty(dateWorked.getAnswer())) {
+            holder.txtDate.setText("Date: " + dateWorked.getDisplayAnswer());
+            timeSheetHour.setDateWorked(dateWorked.getAnswer());
+        } else {
+            holder.txtDate.setText("");
+        }
+
+        Answer timeFrom = DBHandler.getInstance().getAnswer(submissionID, TimeSheetHour.DBTable.timeFrom, formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer timeTo = DBHandler.getInstance().getAnswer(submissionID, TimeSheetHour.DBTable.timeTo, formItem.getRepeatId(), formItem.getRepeatCount());
+
+        if (timeFrom != null && !TextUtils.isEmpty(timeFrom.getAnswer()) && timeTo != null && !TextUtils.isEmpty(timeTo.getAnswer())) {
+            timeSheetHour.setTimeFrom(timeFrom.getAnswer());
+            timeSheetHour.setTimeTo(timeTo.getAnswer());
+            if(timeFrom.getAnswer().equalsIgnoreCase("00:00") && timeTo.getAnswer().equalsIgnoreCase("00:00")){
+                holder.rlTimeContainer.setVisibility(View.GONE);
+                holder.txtNoHoursLogged.setVisibility(View.VISIBLE);
+
+            }else {
+                holder.rlTimeContainer.setVisibility(View.VISIBLE);
+                holder.txtNoHoursLogged.setVisibility(View.GONE);
+                holder.txtTime.setText("Time From-To: " + timeFrom.getDisplayAnswer() + "-" + timeTo.getDisplayAnswer());
+            }
+        } else {
+            holder.rlTimeContainer.setVisibility(View.GONE);
+            holder.txtNoHoursLogged.setVisibility(View.VISIBLE);
+        }
+
+
+        holder.llBtnEdit.setOnClickListener(v -> listener.openForkFragment(formItem, submissionID, formItem.getRepeatCount()));
+
+        holder.llBtnDelete.setOnClickListener(view -> {
+            timeSheetHour.resetAnswers(submissionID, "timesheetHours" ,formItem.getRepeatCount());
             reInflateItems(true);
         });
     }
@@ -1965,6 +2145,82 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
     }
 
+    private void bindWeekCommencing(final CalenderHolder holder, int position) {
+        final FormItem formItem = formItems.get(position);
+        final Calendar myCalendar = Calendar.getInstance();
+        long timeInMiliSeconds = myCalendar.getTimeInMillis();
+        holder.txtTitle.setText(formItem.getTitle());
+        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                formItem.getRepeatId(), repeatCount);
+        if (answer != null) {
+            String value = answer.getAnswer();
+            if (value != null && !value.isEmpty()) {
+                holder.txtDate.setText(answer.getDisplayAnswer());
+            }
+        } else if (missingAnswerMode && !formItem.isOptional()) {
+            holder.view.setBackground(redBG);
+        }
+
+        holder.view.setOnClickListener(v -> {
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            SimpleDateFormat displaySdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                    formItem.getRepeatId(), repeatCount);
+            if (answer1 != null && !TextUtils.isEmpty(answer1.getAnswer())) {
+                String value = answer1.getAnswer();
+                try {
+                    Date selectedDate = sdf.parse(value);
+                    if (selectedDate != null) {
+                        myCalendar.setTime(selectedDate);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                if(myCalendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
+                    listener.showValidationDialog("Validation" , "Please select week commencing date starting from Monday.");
+                    return;
+                }
+
+
+                String date1 = sdf.format(myCalendar.getTime());
+                String dispayDate = displaySdf.format(myCalendar.getTime());
+                holder.txtDate.setText(dispayDate);
+
+
+                Answer answer11 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                        formItem.getRepeatId(), repeatCount);
+                if(answer11 != null && !TextUtils.isEmpty(answer11.getAnswer())){
+                    ArrayList<TimeSheetHour> hours = DBHandler.getInstance().getTimeHours(answer11.getAnswer());
+                    for(int i = 0 ; i < hours.size() ; i++){
+                        hours.get(i).deleteAnswers(submissionID, "timesheetHours" ,formItem.getRepeatCount());
+                    }
+                }
+
+                if (answer11 == null) {
+                    answer11 = new Answer(submissionID, formItem.getUploadId() , formItem.getRepeatId() , repeatCount);
+                }
+
+                answer11.setAnswer(date1);
+                answer11.setDisplayAnswer(dispayDate);
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer11.toContentValues());
+                getTimeSheetHours();
+            };
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(context, date, myCalendar
+                    .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    myCalendar.get(Calendar.DAY_OF_MONTH));
+            datePickerDialog.getDatePicker().setMaxDate(timeInMiliSeconds);
+            datePickerDialog.show();
+        });
+    }
+
 
     private void bindStoreItem(final StoreHolder holder, int position) {
 
@@ -2128,6 +2384,18 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     }
 
                     holder.txtLocation.setText(addressLine);
+
+                    Answer location1 = DBHandler.getInstance().getAnswer(submissionID, "location",
+                            formItem.getRepeatId(), repeatCount);
+                    if (location1 == null) {
+                        location1 = new Answer(submissionID, "location");
+                    }
+
+                    location1.setAnswer(String.valueOf(addressLine));
+                    location1.setDisplayAnswer(addressLine);
+                    location1.setRepeatID(formItem.getRepeatId());
+                    location1.setRepeatCount(repeatCount);
+                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, location1.toContentValues());
 
                     Answer address = DBHandler.getInstance().getAnswer(submissionID, "address",
                             formItem.getRepeatId(), repeatCount);
@@ -3460,9 +3728,58 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             int formType = item.getFormType();
             String type = item.getTaskType(formType);
             if (!TextUtils.isEmpty(type)) {
+                if(type.equalsIgnoreCase("task_list_timesheet_item")){
+                    addTimeSheetTasksAt(item, c, type);
+                    return;
+                }
                 addTasksAt(item, c, type);
                 return;
             }
+        }
+    }
+
+    private void addTimeSheetTasksAt(final FormItem item, final int position, final String type) {
+
+        int formType = item.getFormType();
+        if (formType == FormItem.TYPE_TASK_LIST_TIMESHEET) {
+            Answer answer = DBHandler.getInstance().getAnswer(submissionID , "weekCommencing" , null , 0);
+            if(answer == null){
+                return;
+            }
+
+            String weekCommencing = answer.getAnswer();
+            if(TextUtils.isEmpty(weekCommencing)){
+                return;
+            }
+            ArrayList<TimeSheetHour> timeSheetHours = DBHandler.getInstance().getTimeHours(weekCommencing);
+            ArrayList<FormItem> list = new ArrayList<>();
+            long totalTime = 0;
+            for (int i = 0; i < timeSheetHours.size(); i++) {
+                TimeSheetHour timeSheetHour = timeSheetHours.get(i);
+                timeSheetHour.saveAnswers(submissionID , "timesheetHours" , i);
+//                selectableTasks.add(task);
+                totalTime += timeSheetHour.getTimeSheetHours(submissionID , "timesheetHours" , i);
+                FormItem formItem = new FormItem(type, timeSheetHour, true);
+                formItem.setRepeatCount(i);
+                Amends amends = JsonReader.loadAmends(context, "ammend_task_timesheet.json");
+                formItem.setDialogItems(amends.getDialogItems());
+                list.add(formItem);
+            }
+
+            String time = (totalTime/60)+"h"+(totalTime%60)+"m";
+            String title  = "Total Hours Worked : "+time;
+            FormItem formItem = new FormItem("total_worked_hours",  title , "total_worked_hours" , null , true);
+            Answer timeWorked = DBHandler.getInstance().getAnswer(submissionID , "total_worked_hours" , null , 0);
+            if(timeWorked == null){
+                timeWorked = new Answer(submissionID , "total_worked_hours" , null , 0);
+
+            }
+            timeWorked.setAnswer(time);
+            DBHandler.getInstance().replaceData(Answer.DBTable.NAME , timeWorked.toContentValues());
+            list.add(formItem);
+
+            formItems.addAll(position + 1, list);
+            notifyDataSetChanged();
         }
     }
 
@@ -3690,6 +4007,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         boolean ifDFEAdded = false;
         boolean isBackFillSelected = false;
         boolean isSerMatbase = false;
+        boolean isTotalHoursValid = false;
         for (int c = 0; c < formItems.size(); c++) {
             FormItem item = formItems.get(c);
             if (item.getFormType() == FormItem.TYPE_PHOTO) {
@@ -3754,6 +4072,20 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             missingCount++;
                         }
                     }
+                }else if (item.getFormType() == FormItem.TYPE_ADD_LOG_HOURS) {
+                    ArrayList<String> fields = item.getFields();
+                    if (fields != null && !fields.isEmpty()) {
+                        ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                        if (answers == null || answers.isEmpty()) {
+                            missingCount++;
+                        }
+                    }
+                }else if (item.getFormType() == FormItem.TYPE_TOTAL_WORKED_HOURS) {
+                    Answer answer = DBHandler.getInstance().getAnswer(submissionID, item.getUploadId(), item.getRepeatId(), repeatCount);
+                    if (answer == null || TextUtils.isEmpty(answer.getAnswer()) || answer.getAnswer().equalsIgnoreCase("0h0m")) {
+                        missingCount++;
+                        isTotalHoursValid = true;
+                    }
                 } else {
                     if (!item.isOptional() && item.getUploadId() != null) {
                         Answer answer = DBHandler.getInstance().getAnswer(submissionID, item.getUploadId(), item.getRepeatId(), repeatCount);
@@ -3774,6 +4106,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             listener.showValidationDialog("Validation Error", "Please select Log BackFill amendment!");
         } else if (submission.getJsonFileName().equalsIgnoreCase("service_material.json") && !isSerMatbase) {
             listener.showValidationDialog("Validation Error", "Please select Service/Material amendment!");
+        }else if(isTotalHoursValid){
+            listener.showValidationDialog("Validation Error", "No hours have been logged for this week. Please log hours.");
         } else if (isPhotoMissing) {
             listener.showValidationDialog("Validation Error", "Photos are missing");
         }
@@ -3897,5 +4231,52 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answerjobID.toContentValues());
             }
         }
+    }
+
+    private void getTimeSheetHours(){
+        Answer answer = DBHandler.getInstance().getAnswer(submissionID , "weekCommencing" , null , 0);
+        if(answer == null){
+            return;
+        }
+
+        String weekCommencing = answer.getAnswer();
+        if(TextUtils.isEmpty(weekCommencing)){
+            return;
+        }
+
+        ((FromActivityListener)context).showProgressBar();
+        User user = DBHandler.getInstance().getUser();
+
+        APICalls.getTimesheetHours(user.gettoken() , weekCommencing).enqueue(new Callback<TimeSheetHours>() {
+            @Override
+            public void onResponse(Call<TimeSheetHours> call, Response<TimeSheetHours> response) {
+                if(response.isSuccessful()){
+
+                    TimeSheetHours timeSheetHours = response.body();
+                    if(timeSheetHours != null && !timeSheetHours.isEmpty()) {
+                        if(!timeSheetHours.isWaitingApproval() && !timeSheetHours.isApproved()){
+                            timeSheetHours.setWeekCommencing();
+                            timeSheetHours.toContentValues();
+                            reInflateItems(true);
+                        }else if(timeSheetHours.isWaitingApproval()){
+                            String time = timeSheetHours.getFormatedTotalTimeSheetHours();
+                            listener.showErrorDialog("Timesheets" , "Hours have been sent for approval of a total of the "+time+" hrs" , true);
+                        }else if(timeSheetHours.isApproved()){
+                            String time = timeSheetHours.getFormatedTotalTimeSheetHours();
+                            listener.showErrorDialog("Timesheets" , "Hours have been approved of a total of "+time+" hrs" , true);
+                        }
+
+                    }else{
+                        listener.showErrorDialog("Timesheets" , "There are no Timesheets to submit for this selected week" , false);
+                    }
+                }
+                ((FromActivityListener)context).hideProgressBar();
+            }
+
+            @Override
+            public void onFailure(Call<TimeSheetHours> call, Throwable t) {
+                ((FromActivityListener)context).hideProgressBar();
+            }
+        });
     }
 }

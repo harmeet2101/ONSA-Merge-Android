@@ -304,4 +304,9 @@
     <string name="risk_assessment_selected">Risk Assessment Selected :</string>
     <string name="hoist_only_risk_assessment">Hoist Only Risk Assessment</string>
 
+    <string name="log_hours">Log Hours</string>
+    <string name="submit_timesheet">Submit Timesheet</string>
+    <string name="timesheet">TimeSheets</string>
+    <string name="book_off">Book Off</string>
+
 </resources>

@@ -1,0 +1,46 @@
+{
+  "title": "TimeSheet Book Off",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "TimeSheet Book Off",
+      "index": 0,
+      "url":"app/timesheets/book-off",
+      "upload": true,
+      "items": [
+
+        {
+          "type": "txt_bold_head",
+          "title": "Book off for the day to say you are finishing",
+          "optional": true
+        },
+        {
+          "type": "location",
+          "uploadId": "location",
+          "title": "Locate Me",
+          "optional": false
+        },
+
+        {
+          "type": "txt_bold_head",
+          "title": "Log who have been working with today?",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "operativeIds",
+          "key": "bookOperatives",
+          "isMultiSelection": true,
+          "title": "Pick Your Crew",
+          "optional": true
+        },
+        {
+          "type": "time_picker",
+          "uploadId": "time",
+          "title": "Time From",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

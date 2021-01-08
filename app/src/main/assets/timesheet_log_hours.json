@@ -23,35 +23,32 @@
           "optional": false,
           "dialogItems": [
             {
-              "type": "date_time",
+              "type": "calender",
               "uploadId": "dateWorked",
               "repeatId": "timesheetHours",
-              "key": "dfeWorkItems",
-              "title": "Items",
+              "title": "Date Worked",
               "optional": false
             },
             {
               "type": "dropdown",
               "uploadId": "timeTypeActivityId",
               "repeatId": "timesheetHours",
-              "key": "dfeWorkItems",
-              "title": "Items",
+              "key": "TimeTypeActivity",
+              "title": "Time Type",
               "optional": false
             },
             {
-              "type": "time_selector",
+              "type": "time_picker",
               "uploadId": "timeFrom",
               "repeatId": "timesheetHours",
-              "key": "dfeWorkItems",
-              "title": "Items",
+              "title": "Time From",
               "optional": false
             },
             {
-              "type": "time_selector",
+              "type": "time_picker",
               "uploadId": "timeTo",
               "repeatId": "timesheetHours",
-              "key": "dfeWorkItems",
-              "title": "Items",
+              "title": "Time To",
               "optional": false
             }
           ]

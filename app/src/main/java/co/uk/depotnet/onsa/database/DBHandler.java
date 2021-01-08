@@ -54,6 +54,8 @@ import co.uk.depotnet.onsa.modals.store.ReceiptItems;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.modals.store.RequestItem;
 import co.uk.depotnet.onsa.modals.store.StockItems;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
+import co.uk.depotnet.onsa.modals.timesheet.TimeTypeActivity;
 import co.uk.depotnet.onsa.networking.Constants;
 
 public class DBHandler {
@@ -1918,5 +1920,62 @@ public class DBHandler {
             cursor.close();
         }
         return ans;
+    }
+
+    public ArrayList<TimeTypeActivity> getTimeTypeActivities() {
+        ArrayList<TimeTypeActivity> timeTypeActivities = new ArrayList<>();
+        String whereClause = null;
+        String[] whereArgs = null;
+        Cursor cursor = db.query(TimeTypeActivity.DBTable.NAME, null, whereClause, whereArgs, null, null, TimeTypeActivity.DBTable.timeTypeActivityName + " DESC");
+        if (cursor.moveToFirst()) {
+            do {
+                TimeTypeActivity timeTypeActivity =new TimeTypeActivity(cursor);
+                timeTypeActivities.add(timeTypeActivity);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return timeTypeActivities;
+    }
+
+    public TimeTypeActivity getTimeTypeActivity(String timeTypeActivityId) {
+        TimeTypeActivity timeTypeActivity = null;
+        String whereClause = TimeTypeActivity.DBTable.timeTypeActivityId + " = ? ";
+        String[] whereArgs = new String[]{timeTypeActivityId};
+        Cursor cursor = db.query(TimeTypeActivity.DBTable.NAME, null, whereClause, whereArgs,
+                null, null, TimeTypeActivity.DBTable.timeTypeActivityName + " DESC");
+        if (cursor.moveToFirst()) {
+            timeTypeActivity = new TimeTypeActivity(cursor);
+        }
+        cursor.close();
+        return timeTypeActivity;
+    }
+
+
+    public ArrayList<TimeSheetHour> getTimeHours(String weekCommencing) {
+        ArrayList<TimeSheetHour> timeSheetHours = new ArrayList<>();
+
+        String whereClause = TimeSheetHour.DBTable.weekCommencing + " = ? ";
+        String[] whereArgs = new String[]{weekCommencing};
+
+        Cursor cursor = db.query(TimeSheetHour.DBTable.NAME, null, whereClause, whereArgs, null, null, TimeSheetHour.DBTable.dateWorked + " ASC");
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                timeSheetHours.add(new TimeSheetHour(cursor));
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        return timeSheetHours;
+    }
+
+    public void removeTimeHours(String weekCommencing) {
+        String whereClause = TimeSheetHour.DBTable.weekCommencing + " = ? ";
+        String[] whereArgs = new String[]{weekCommencing};
+
+        db.delete(TimeSheetHour.DBTable.NAME, whereClause, whereArgs);
+
     }
 }

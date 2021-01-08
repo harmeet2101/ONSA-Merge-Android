@@ -15,6 +15,7 @@ import co.uk.depotnet.onsa.modals.hseq.HseqDataset;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
+import co.uk.depotnet.onsa.modals.timesheet.TimeTypeActivities;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.ConnectionHelper;
 import okhttp3.Call;
@@ -55,6 +56,7 @@ public class RefreshDatasetService extends IntentService {
         }).start();
 
         getStoreDataset(token);
+        getTimeSheetShours(token);
     }
 
     private void getDataset(String token) {
@@ -139,6 +141,38 @@ public class RefreshDatasetService extends IntentService {
             }
         } catch (Exception ee) {
             ee.printStackTrace();
+        }
+    }
+
+    private void getTimeSheetShours(String token) {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(150, TimeUnit.SECONDS)
+                .readTimeout(150, TimeUnit.SECONDS)
+                .writeTimeout(150, TimeUnit.SECONDS)
+                .addInterceptor(logging)
+                .build();
+        Gson gson = new Gson();
+        String url = BuildConfig.BASE_URL + "app/timesheets/time-type-activities";
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Accept", "application/json")
+                .build();
+        Call call = okHttpClient.newCall(request);
+        try {
+            okhttp3.Response response = call.execute();
+            if (response != null && response.isSuccessful()) {
+                ResponseBody body = response.body();
+                if (body != null) {
+                    TimeTypeActivities activities = gson.fromJson(body.string(), TimeTypeActivities.class);
+                    activities.toContentValues();
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

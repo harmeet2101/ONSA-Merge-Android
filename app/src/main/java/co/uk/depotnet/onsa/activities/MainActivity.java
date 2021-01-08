@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -235,6 +236,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onBookOff() {
+        Submission submission = new Submission("my_work_book_off.json","Timesheet Book Off", "");
+        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        submission.setId(submissionID);
+        Intent intent = new Intent(this, FormActivity.class);
+        intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+        startActivityForResult(intent , 1000);
+    }
+
+    @Override
     public void openKitbagFolder(int parentId) {
         FragmentKitBag fragmentKitBag = FragmentKitBag.newInstance(parentId);
         addFragment(fragmentKitBag, false);
@@ -352,5 +363,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public Fetch getFetch() {
         return fetch;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK && requestCode == 1000){
+            finish();
+        }
     }
 }

@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.uk.depotnet.onsa.R;
+import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.WelcomeHomeModal;
 import co.uk.depotnet.onsa.networking.Constants;
 
@@ -29,6 +31,7 @@ public class WelcomeHomeAdapter extends RecyclerView.Adapter<WelcomeHomeAdapter.
         this.context = context;
         this.listener = listener;
         items = new ArrayList<>();
+        User user = DBHandler.getInstance().getUser();
         items.add(new WelcomeHomeModal(1,"My Work",R.drawable.ic_my_work,R.color.ColorMyWork));
 
         if(Constants.isHSEQEnabled) {
@@ -37,6 +40,9 @@ public class WelcomeHomeAdapter extends RecyclerView.Adapter<WelcomeHomeAdapter.
         }
         if(Constants.isStoreEnabled) {
             items.add(new WelcomeHomeModal(3, "STORES", R.drawable.ic_stores, R.color.ColorStore));
+        }
+        if(user != null && user.isCompleteTimesheets()) {
+            items.add(new WelcomeHomeModal(5, "TIMESHEETS", R.drawable.ic_timesheet_icon, R.color.ColorTimeSheet));
         }
 
     }

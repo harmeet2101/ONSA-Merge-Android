@@ -1,0 +1,41 @@
+{
+  "title": "Submit Timesheet",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Submit Timesheet",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "week_commencing",
+          "uploadId": "weekCommencing",
+          "title": "Week Commencing",
+          "optional": false
+        },
+        {
+          "type": "task_list_timesheet",
+          "title": "Timesheet Hours",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Submit Timesheet",
+      "index": 1,
+      "url": "app/timesheets/log-hours",
+      "upload": true,
+      "items": [
+        {
+          "type": "signature",
+          "uploadId": "signatureFileBytes",
+          "signatureUrl":"signatureFileBytes",
+          "photoId": "26",
+          "title": "Signature",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,47 @@
+{
+  "title": "TimeSheet Book On",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "TimeSheet Book On",
+      "index": 0,
+      "url":"app/timesheets/book-on",
+      "upload": true,
+      "items": [
+
+        {
+          "type": "txt_bold_head",
+          "title": "Book on the day to say you are starting",
+          "optional": true
+        },
+        {
+          "type": "location",
+          "uploadId": "location",
+          "title": "Locate Me",
+          "optional": false
+        },
+
+        {
+          "type": "txt_bold_head",
+          "title": "Log who are working with Today?",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "operativeIds",
+          "key": "bookOperatives",
+          "isMultiSelection": true,
+          "isConcatDisplayText": true,
+          "title": "Pick Your Crew",
+          "optional": true
+        },
+        {
+          "type": "time_picker",
+          "uploadId": "time",
+          "title": "Time From",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

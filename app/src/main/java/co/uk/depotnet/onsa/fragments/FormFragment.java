@@ -79,6 +79,8 @@ import co.uk.depotnet.onsa.modals.schedule.JobEstimate;
 import co.uk.depotnet.onsa.modals.store.ReceiptItems;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.ConnectionHelper;
@@ -271,6 +273,11 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 sendLogJobRequest();
                 return;
             }
+            if (submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")) {
+                updateLogHours();
+                return;
+            }
+
             if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("schedule_inspection.json")) {
                 getInsQue();//getting inspection question here and call formactivity
             } else {
@@ -305,6 +312,165 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         jobModuleStatus.setSubmissionId(submission.getID());
         DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
                 jobModuleStatus.toContentValues());
+    }
+
+    private void updateLogHours() {
+
+        if (!CommonUtils.isNetworkAvailable(context)) {
+            String title = "Submission Error";
+            String message = "Internet connection is not available. Please check your internet connection. Your request is submitted in Queue.";
+            DBHandler.getInstance().setSubmissionQueued(submission);
+            showErrorDialog(title, message, false);
+            return;
+        }
+
+        if (!CommonUtils.validateToken(context)) {
+            return;
+        }
+
+        Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "weekCommencing" , null , 0);
+        if(answer == null || TextUtils.isEmpty(answer.getAnswer())){
+            return;
+        }
+
+        String weekCommencing = answer.getAnswer();
+
+        ArrayList<TimeSheetHour> hours = DBHandler.getInstance().getTimeHours(weekCommencing);
+        boolean isEdited = false;
+        for(int i = 0 ; i < hours.size() ; i++){
+            if(hours.get(i).isEdited()){
+                isEdited = true;
+                break;
+            }
+        }
+
+        if(!isEdited){
+            submitTimeSheet(weekCommencing);
+            return;
+        }
+
+        listener.showProgressBar();
+        new Thread(() -> {
+            Response response = new ConnectionHelper(context).
+                    submitForm(screen.getUrl(), screen.getPhotoUrl(),
+                            submission, getChildFragmentManager());
+
+
+            if (response == null || !response.isSuccessful()) {
+                DBHandler.getInstance().setSubmissionQueued(submission);
+            }
+
+            handler.post(() -> {
+                listener.hideProgressBar();
+                String title = "Success";
+                String message = "Submission was successful";
+                if(response == null){
+                    title = "Submission Error";
+                    message = "Internet connection is not available. Please check your internet connection. Your request is submitted in Queue.";
+                    showErrorDialog(title, message, false);
+                    return;
+                }
+
+                if(response.isSuccessful()){
+                    getTimeSheetHours(weekCommencing);
+                }else if (response.code() == 400) {
+                    ResponseBody body = response.body();
+                    if (body != null) {
+                        try {
+                            String data = body.string();
+                            if (!TextUtils.isEmpty(data)) {
+                                JSONObject jsonObject = new JSONObject(data);
+                                if (jsonObject.has("status")) {
+                                    title = jsonObject.getString("status");
+                                }
+
+                                if (jsonObject.has("message")) {
+                                    message = jsonObject.getString("message");
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    showErrorDialog(title, message, response != null && response.isSuccessful());
+                }
+
+            });
+        }).start();
+    }
+
+    private void submitTimeSheet(String weekCommencing){
+        ArrayList<TimeSheetHour> hours = DBHandler.getInstance().getTimeHours(weekCommencing);
+
+        Answer signatureFileBytes = DBHandler.getInstance().getAnswer(submission.getID(), "signatureFileBytes",
+                null, 0);
+
+
+        DBHandler.getInstance().removeAnswers(submission);
+
+
+
+        Answer weekAnswer = new Answer(submission.getID(), "weekCommencing",
+                null, 0);
+
+
+        weekAnswer.setAnswer(weekCommencing);
+        weekAnswer.setDisplayAnswer(weekCommencing);
+        DBHandler.getInstance().replaceData(Answer.DBTable.NAME , weekAnswer.toContentValues());
+
+        for(int i = 0 ; i < hours.size() ; i++){
+            if(!TextUtils.isEmpty(hours.get(i).getTimesheetHoursId())){
+                Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "timesheetHoursIds",
+                        null, i);
+                if (answer == null) {
+                    answer = new Answer(submission.getID(), "timesheetHoursIds",
+                            null, i);
+                }
+
+                answer.setAnswer(hours.get(i).getTimesheetHoursId());
+                answer.setDisplayAnswer("");
+                answer.setIsMultiList(1);
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+            }
+        }
+
+        Answer answer = new Answer(submission.getID(), "signatureFileBytes",
+                null, 0);
+        answer.setAnswer(signatureFileBytes.getAnswer());
+        answer.setIsPhoto(1);
+        answer.setDisplayAnswer(signatureFileBytes.getDisplayAnswer());
+        DBHandler.getInstance().replaceData(Answer.DBTable.NAME , answer.toContentValues());
+
+        screen.setUrl("app/timesheets/submit");
+
+        sendToServer();
+    }
+
+    private void getTimeSheetHours(String weekCommencing){
+
+        ((FromActivityListener)context).showProgressBar();
+        User user = DBHandler.getInstance().getUser();
+
+        APICalls.getTimesheetHours(user.gettoken() , weekCommencing).enqueue(new Callback<TimeSheetHours>() {
+            @Override
+            public void onResponse(Call<TimeSheetHours> call, retrofit2.Response<TimeSheetHours> response) {
+                if(response.isSuccessful()){
+                    TimeSheetHours timeSheetHours = response.body();
+                    if(timeSheetHours != null && !timeSheetHours.isEmpty()) {
+                        timeSheetHours.setWeekCommencing();
+                        timeSheetHours.toContentValues();
+                    }
+                }
+
+                submitTimeSheet(weekCommencing);
+            }
+
+            @Override
+            public void onFailure(Call<TimeSheetHours> call, Throwable t) {
+                ((FromActivityListener)context).hideProgressBar();
+                submitTimeSheet(weekCommencing);
+            }
+        });
     }
 
 
@@ -526,6 +692,15 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             AppPreferences.putString(jobID + "_" + Constants.IS_BOOK_ON, sdf.format(d));
         }
     }
+    private void setTimeSheetBookOffOnStatus() {
+        if (screen.getTitle().equalsIgnoreCase("Timesheet Book Off")) {
+            AppPreferences.putString("TimeSheet_" + Constants.IS_BOOK_ON, null);
+        } else if (screen.getTitle().equalsIgnoreCase("Timesheet Book On")) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            Date d = new Date();
+            AppPreferences.putString("TimeSheet_" + Constants.IS_BOOK_ON, sdf.format(d));
+        }
+    }
 
 
     private void sendToServer() {
@@ -536,6 +711,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             DBHandler.getInstance().setSubmissionQueued(submission);
             setJobModuleStatus(submission);
             setBookOffOnStatus();
+            setTimeSheetBookOffOnStatus();
             showErrorDialog(title, message, false);
             return;
         }
@@ -569,7 +745,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             }
 
             setBookOffOnStatus();
-
+            setTimeSheetBookOffOnStatus();
             if (submission.getJsonFileName().equalsIgnoreCase("finish_on_site.json")) {
                 Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "rfna", null, 0);
                 if (answer != null && !TextUtils.isEmpty(answer.getAnswer()) && answer.getAnswer().equalsIgnoreCase("true")) {

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import co.uk.depotnet.onsa.modals.httpresponses.BaseTask;
 import co.uk.depotnet.onsa.modals.store.MyStore;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
 
 public class FormItem implements Parcelable {
 
@@ -74,9 +75,14 @@ public class FormItem implements Parcelable {
     public static final int TYPE_YES_NO_NA_tooltip = 65;
     public static final int TYPE_YES_NO_tooltip = 66;
     public static final int TYPE_RFNA_TOGGLE = 67;
-    public static final int TYPE_ADD_LOG_HOURS = 68;
-    public static final int TYPE_ITEM_LOG_HOURS = 69;
-    public static final int TYPE_YES_NO_NA_OPTIONAL = 70;
+    public static final int TYPE_YES_NO_NA_OPTIONAL = 68;
+    public static final int TYPE_ADD_LOG_HOURS = 69;
+    public static final int TYPE_ITEM_LOG_HOURS = 70;
+    public static final int TYPE_ITEM_TIME_PICKER = 71;
+    public static final int TYPE_ITEM_WEEK_COMMENCING = 72;
+    public static final int TYPE_TASK_LIST_TIMESHEET = 73;
+    public static final int TYPE_TASK_TIMESHEET_ITEM = 74;
+    public static final int TYPE_TOTAL_WORKED_HOURS = 75;
 
 
     private String type;
@@ -114,6 +120,7 @@ public class FormItem implements Parcelable {
     private int taskId;
     private BaseTask task;
     private String toolTip;
+    private TimeSheetHour timeSheetHour;
 
 
     public FormItem(FormItem formItem) {
@@ -150,37 +157,9 @@ public class FormItem implements Parcelable {
         this.taskId = formItem.taskId;
         this.task = formItem.task;
         this.toolTip = formItem.toolTip;
+        this.timeSheetHour = formItem.timeSheetHour;
 
     }
-
-    public void setMyStore(MyStore myStore) {
-        this.myStore = myStore;
-    }
-
-    public MyStore getMyStore() {
-        return myStore;
-    }
-
-    public FormItem(String type, String title, String uploadID, String repeatID, boolean optional) {
-        this.type = type;
-        this.title = title;
-        this.repeatId = repeatID;
-        this.uploadId = uploadID;
-        this.optional = optional;
-    }
-
-    public FormItem(String type) {
-        this.type = type;
-        this.optional = true;
-    }
-
-    public FormItem(String type, BaseTask task, boolean selectable) {
-        this.type = type;
-        this.task = task;
-        this.task.setSelectable(selectable);
-        this.optional = true;
-    }
-
 
     protected FormItem(Parcel in) {
         type = in.readString();
@@ -202,7 +181,6 @@ public class FormItem implements Parcelable {
         naEnables = in.createTypedArrayList(FormItem.CREATOR);
         dialogItems = in.createTypedArrayList(FormItem.CREATOR);
         getURL = in.readString();
-
         signatureUrl = in.readString();
         photoSize = in.readInt();
         photoRequired = in.readInt();
@@ -210,15 +188,15 @@ public class FormItem implements Parcelable {
         key = in.readString();
         isMultiSelection = in.readByte() != 0;
         isConcatDisplayText = in.readByte() != 0;
-
         stopWork = in.readInt();
         listItemType = in.readString();
+        isStoackLevelCheck = in.readByte() != 0;
         myStore = in.readParcelable(MyStore.class.getClassLoader());
         myStoreQuantity = in.readInt();
-        isStoackLevelCheck = in.readByte() != 0;
         taskId = in.readInt();
         task = in.readParcelable(BaseTask.class.getClassLoader());
         toolTip = in.readString();
+        timeSheetHour = in.readParcelable(TimeSheetHour.class.getClassLoader());
     }
 
     @Override
@@ -251,12 +229,13 @@ public class FormItem implements Parcelable {
         dest.writeByte((byte) (isConcatDisplayText ? 1 : 0));
         dest.writeInt(stopWork);
         dest.writeString(listItemType);
+        dest.writeByte((byte) (isStoackLevelCheck ? 1 : 0));
         dest.writeParcelable(myStore, flags);
         dest.writeInt(myStoreQuantity);
-        dest.writeByte((byte) (isStoackLevelCheck ? 1 : 0));
         dest.writeInt(taskId);
         dest.writeParcelable(task, flags);
         dest.writeString(toolTip);
+        dest.writeParcelable(timeSheetHour, flags);
     }
 
     @Override
@@ -275,6 +254,41 @@ public class FormItem implements Parcelable {
             return new FormItem[size];
         }
     };
+
+    public void setMyStore(MyStore myStore) {
+        this.myStore = myStore;
+    }
+
+    public MyStore getMyStore() {
+        return myStore;
+    }
+
+    public FormItem(String type, String title, String uploadID, String repeatID, boolean optional) {
+        this.type = type;
+        this.title = title;
+        this.repeatId = repeatID;
+        this.uploadId = uploadID;
+        this.optional = optional;
+    }
+
+    public FormItem(String type) {
+        this.type = type;
+        this.optional = true;
+    }
+
+    public FormItem(String type, BaseTask task, boolean selectable) {
+        this.type = type;
+        this.task = task;
+        this.task.setSelectable(selectable);
+        this.optional = true;
+    }
+
+    public FormItem(String type, TimeSheetHour timeSheetHour, boolean selectable) {
+        this.type = type;
+        this.timeSheetHour = timeSheetHour;
+        this.optional = true;
+    }
+
 
     public String getType() {
         return type;
@@ -436,6 +450,14 @@ public class FormItem implements Parcelable {
         this.toolTip = toolTip;
     }
 
+    public TimeSheetHour getTimeSheetHour() {
+        return timeSheetHour;
+    }
+
+    public void setTimeSheetHour(TimeSheetHour timeSheetHour) {
+        this.timeSheetHour = timeSheetHour;
+    }
+
     public int getFormType() {
         if (type.equalsIgnoreCase("yes_no")) {
             return TYPE_YES_NO;
@@ -571,8 +593,18 @@ public class FormItem implements Parcelable {
             return TYPE_RFNA_TOGGLE;
         } else if (type.equalsIgnoreCase("add_log_hours")) {
             return TYPE_ADD_LOG_HOURS;
-        } else if (type.equalsIgnoreCase("log_hours_item")) {
+        }else if (type.equalsIgnoreCase("log_hours_item")) {
             return TYPE_ITEM_LOG_HOURS;
+        }else if (type.equalsIgnoreCase("time_picker")) {
+            return TYPE_ITEM_TIME_PICKER;
+        }else if (type.equalsIgnoreCase("week_commencing")) {
+            return TYPE_ITEM_WEEK_COMMENCING;
+        }else if (type.equalsIgnoreCase("task_list_timesheet")) {
+            return TYPE_TASK_LIST_TIMESHEET;
+        }else if (type.equalsIgnoreCase("task_list_timesheet_item")) {
+            return TYPE_TASK_TIMESHEET_ITEM;
+        }else if (type.equalsIgnoreCase("total_worked_hours")) {
+            return TYPE_TOTAL_WORKED_HOURS;
         }
 
 
@@ -695,6 +727,7 @@ public class FormItem implements Parcelable {
             case TYPE_TASK_LOG_MUCKAWAY:
             case TYPE_TASK_LOG_SERVICE:
             case TYPE_TASK_SITE_CLEAR:
+            case TYPE_TASK_LIST_TIMESHEET:
                 return type + "_item";
             default:
                 return null;

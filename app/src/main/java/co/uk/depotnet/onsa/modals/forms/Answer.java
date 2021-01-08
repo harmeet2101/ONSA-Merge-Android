@@ -69,6 +69,13 @@ public class Answer implements Parcelable {
         this.isPhoto = isPhoto;
     }
 
+    public Answer(long submissionID, String uploadID , String repeatID , int repeatCounter) {
+        this.submissionID = submissionID;
+        this.uploadID = uploadID;
+        this.repeatID = repeatID;
+        this.repeatCounter = repeatCounter;
+    }
+
     public Answer(long submissionID, String uploadID,
                   int isPhoto, int isMultiList) {
         this.submissionID = submissionID;

@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.listeners.HomeBottomBarListener;
 import co.uk.depotnet.onsa.networking.Constants;
@@ -21,16 +20,20 @@ public class HomeBottomBarHandler implements View.OnClickListener {
 
     private LinearLayout llBtnMyWork;
     private LinearLayout llBtnKitBag;
+    private LinearLayout llBtnBookOff;
     private LinearLayout llBtnOnsaStore;
     private LinearLayout llBtnOfflineCheck;
 
+
     private ImageView imgMyWork;
     private ImageView imgKitBag;
+    private ImageView imgBookOff;
     private ImageView imgOnsaStore;
     private ImageView imgOfflineQueue;
 
     private TextView txtMyWork;
     private TextView txtKitBag;
+    private TextView txtBookOff;
     private TextView txtOnsaStore;
     private TextView txtOfflineQueue;
 
@@ -56,6 +59,7 @@ public class HomeBottomBarHandler implements View.OnClickListener {
 
         llBtnMyWork = view.findViewById(R.id.ll_btn_my_work);
         llBtnKitBag = view.findViewById(R.id.ll_btn_kit_bag);
+        llBtnBookOff = view.findViewById(R.id.ll_btn_book_off);
         llBtnOnsaStore = view.findViewById(R.id.ll_btn_onsa_store);
         llBtnOfflineCheck = view.findViewById(R.id.ll_btn_offline_queue);
 
@@ -63,14 +67,17 @@ public class HomeBottomBarHandler implements View.OnClickListener {
 
         llBtnMyWork.setOnClickListener(this);
         llBtnKitBag.setOnClickListener(this);
+        llBtnBookOff.setOnClickListener(this);
         llBtnOnsaStore.setOnClickListener(this);
         llBtnOfflineCheck.setOnClickListener(this);
 
         imgMyWork = view.findViewById(R.id.img_my_work);
         imgKitBag = view.findViewById(R.id.img_kit_bag);
+        imgBookOff = view.findViewById(R.id.img_book_off);
         imgOnsaStore = view.findViewById(R.id.img_vehicle_check);
         imgOfflineQueue = view.findViewById(R.id.img_offline_queue);
         txtMyWork = view.findViewById(R.id.txt_my_work);
+        txtBookOff = view.findViewById(R.id.txt_book_off);
         txtKitBag = view.findViewById(R.id.txt_kit_bag);
         txtOnsaStore = view.findViewById(R.id.txt_onsa_store);
         txtOfflineQueue = view.findViewById(R.id.txt_offline_queue);
@@ -110,6 +117,15 @@ public class HomeBottomBarHandler implements View.OnClickListener {
                         ColorStateList.valueOf(colorSelected));
                 txtLastSelected.setTextColor(colorSelected);
                 listener.onMyWorkClick();
+                break;
+            case R.id.ll_btn_book_off:
+                llLastSelected = llBtnBookOff;
+                imgLastSelected = imgBookOff;
+                txtLastSelected = txtBookOff;
+                ImageViewCompat.setImageTintList(imgLastSelected,
+                        ColorStateList.valueOf(colorSelected));
+                txtLastSelected.setTextColor(colorSelected);
+                listener.onBookOff();
                 break;
             case R.id.ll_btn_kit_bag:
                 llLastSelected = llBtnKitBag;

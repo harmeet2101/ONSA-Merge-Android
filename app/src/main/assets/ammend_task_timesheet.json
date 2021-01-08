@@ -1,0 +1,26 @@
+{
+  "dialogItems": [
+    {
+      "type": "dropdown",
+      "uploadId": "timeTypeActivityId",
+      "repeatId": "timesheetHours",
+      "key": "TimeTypeActivity",
+      "title": "Time Type",
+      "optional": false
+    },
+    {
+      "type": "time_picker",
+      "uploadId": "timeFrom",
+      "repeatId": "timesheetHours",
+      "title": "Time From",
+      "optional": false
+    },
+    {
+      "type": "time_picker",
+      "uploadId": "timeTo",
+      "repeatId": "timesheetHours",
+      "title": "Time To",
+      "optional": false
+    }
+  ]
+}

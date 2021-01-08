@@ -634,9 +634,21 @@ public class ConnectionHelper {
             }
         }
 
+
         if (isBookOn && !containsUserIds) {
             requestMap.put("userIds", new ArrayList<>());
         }
+        if(!TextUtils.isEmpty(submission.getJsonFileName()) &&
+                submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json") ){
+            if( endPoint.equalsIgnoreCase("app/timesheets/submit") && !requestMap.containsKey("timesheetHoursIds")){
+                requestMap.put("timesheetHoursIds" , new ArrayList<String>());
+            }
+
+            if( endPoint.equalsIgnoreCase("app/timesheets/log-hours")){
+                requestMap.remove("signatureFileBytes");
+            }
+        }
+
 
 
         if (!signatures.isEmpty()) {

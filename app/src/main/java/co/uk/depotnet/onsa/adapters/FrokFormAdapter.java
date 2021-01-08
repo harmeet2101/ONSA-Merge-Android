@@ -1,5 +1,7 @@
 package co.uk.depotnet.onsa.adapters;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -15,12 +17,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.ListActivity;
@@ -28,7 +34,9 @@ import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.formholders.BoldTextHolder;
 import co.uk.depotnet.onsa.formholders.BriefingSignHolder;
 import co.uk.depotnet.onsa.formholders.Briefingtextholder;
+import co.uk.depotnet.onsa.formholders.CalenderHolder;
 import co.uk.depotnet.onsa.formholders.DFEItemHolder;
+import co.uk.depotnet.onsa.formholders.DateTimeHolder;
 import co.uk.depotnet.onsa.formholders.DescTextHolder;
 import co.uk.depotnet.onsa.formholders.DropDownHolder;
 import co.uk.depotnet.onsa.formholders.ForkCardHolder;
@@ -37,6 +45,7 @@ import co.uk.depotnet.onsa.formholders.NumberHolder;
 import co.uk.depotnet.onsa.formholders.PhotoHolder;
 import co.uk.depotnet.onsa.formholders.ShortTextHolder;
 import co.uk.depotnet.onsa.formholders.SignatureHolder;
+import co.uk.depotnet.onsa.formholders.TimePickerHolder;
 import co.uk.depotnet.onsa.formholders.YesNoHolder;
 import co.uk.depotnet.onsa.fragments.FragmentStopWork;
 import co.uk.depotnet.onsa.listeners.DropDownItem;
@@ -50,6 +59,8 @@ import co.uk.depotnet.onsa.modals.forms.FormItem;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.modals.hseq.HseqDataset;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
+import co.uk.depotnet.onsa.modals.timesheet.TimeTypeActivity;
 import co.uk.depotnet.onsa.utils.JsonReader;
 import co.uk.depotnet.onsa.views.DropdownMenu;
 
@@ -239,6 +250,12 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 return new BriefingSignHolder(LayoutInflater.from(context).inflate(R.layout.item_briefing_signs, viewGroup, false));
             case FormItem.TYPE_TV_BRIEFING_TEXT:
                 return new Briefingtextholder(LayoutInflater.from(context).inflate(R.layout.briefings_read_item, viewGroup, false));
+            case FormItem.TYPE_DATE_TIME:
+                return new DateTimeHolder(LayoutInflater.from(context).inflate(R.layout.item_date_time, viewGroup, false));
+            case FormItem.TYPE_ITEM_TIME_PICKER:
+                return new TimePickerHolder(LayoutInflater.from(context).inflate(R.layout.item_time_picker, viewGroup, false));
+            case FormItem.TYPE_CALENDER:
+                return new CalenderHolder(LayoutInflater.from(context).inflate(R.layout.item_calender, viewGroup, false));
 
         }
         return null;
@@ -290,7 +307,277 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case FormItem.TYPE_TV_BRIEFING_TEXT:
                 bindBRIEFINGTEXTHolder((Briefingtextholder) holder, position);
                 break;
+            case FormItem.TYPE_DATE_TIME:
+                bindDateTimeHolder((DateTimeHolder) holder, position);
+                break;
+            case FormItem.TYPE_ITEM_TIME_PICKER:
+                bindTimePickerHolder((TimePickerHolder) holder, position);
+                break;
+            case FormItem.TYPE_CALENDER:
+                bindCalender((CalenderHolder) holder, position);
+                break;
         }
+    }
+
+    private void bindCalender(final CalenderHolder holder, int position) {
+        final FormItem formItem = formItems.get(position);
+        holder.txtTitle.setText(formItem.getTitle());
+        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                formItem.getRepeatId(), repeatCount);
+        if (answer != null) {
+            String value = answer.getAnswer();
+            if (value != null && !value.isEmpty()) {
+                holder.txtDate.setText(answer.getDisplayAnswer());
+            }
+        } else if (missingAnswerMode && !formItem.isOptional()) {
+            holder.view.setBackground(redBG);
+        }
+
+        holder.view.setOnClickListener(v -> {
+            final Calendar myCalendar = Calendar.getInstance();
+            long timeInMil = myCalendar.getTimeInMillis();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
+            SimpleDateFormat displaySDF = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+            DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
+
+                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                        formItem.getRepeatId(), repeatCount);
+
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+
+                String date1 = sdf.format(myCalendar.getTime());
+                String displayDate = displaySDF.format(myCalendar.getTime());
+                holder.txtDate.setText(displayDate);
+
+
+                if (answer1 == null) {
+                    answer1 = new Answer(submissionID, formItem.getUploadId());
+                }
+
+                answer1.setAnswer(date1);
+                answer1.setDisplayAnswer(displayDate);
+                answer1.setRepeatID(formItem.getRepeatId());
+                answer1.setRepeatCount(repeatCount);
+
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            };
+
+            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                    formItem.getRepeatId(), repeatCount);
+            if (answer1 != null && !TextUtils.isEmpty(answer1.getAnswer())) {
+                String value = answer1.getAnswer();
+
+                try {
+                    Date selectedDate = sdf.parse(value);
+                    if (selectedDate != null) {
+                        myCalendar.setTime(selectedDate);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(context, date, myCalendar
+                    .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    myCalendar.get(Calendar.DAY_OF_MONTH));
+            datePickerDialog.getDatePicker().setMaxDate(timeInMil);
+            datePickerDialog.show();
+
+        });
+    }
+
+    private void bindTimePickerHolder(final TimePickerHolder holder, int position) {
+        final FormItem formItem = formItems.get(position);
+        holder.txtTitle.setText(formItem.getTitle());
+        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                formItem.getRepeatId(), repeatCount);
+        if (answer != null) {
+            String value = answer.getAnswer();
+            if (value != null && !value.isEmpty()) {
+                holder.txtTime.setText(answer.getDisplayAnswer());
+            }
+        } else if (missingAnswerMode && !formItem.isOptional()) {
+            holder.view.setBackground(redBG);
+        }
+
+        holder.txtTime.setOnClickListener(v -> {
+            final Calendar myCalendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+            if(answer != null && !TextUtils.isEmpty(answer.getAnswer())){
+                try {
+                    Date date = sdf.parse(answer.getAnswer());
+                    myCalendar.setTime(date);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            TimePickerDialog.OnTimeSetListener date = (view, hourOfDay, minute) -> {
+                Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                        formItem.getRepeatId(), repeatCount);
+
+                myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                myCalendar.set(Calendar.MINUTE, minute);
+
+
+
+                String time = sdf.format(myCalendar.getTime());
+                holder.txtTime.setText(time);
+
+
+                if (answer12 == null) {
+                    answer12 = new Answer(submissionID, formItem.getUploadId());
+                }
+
+                answer12.setAnswer(time);
+                answer12.setDisplayAnswer(time);
+                answer12.setRepeatID(formItem.getRepeatId());
+                answer12.setRepeatCount(repeatCount);
+
+                if(submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")){
+                    TimeSheetHour timeSheetHour = parentFormItem.getTimeSheetHour();
+                    if(timeSheetHour != null){
+                        if(formItem.getUploadId().equalsIgnoreCase("timeFrom")){
+                            timeSheetHour.setTimeFrom(time);
+                        }else if(formItem.getUploadId().equalsIgnoreCase("timeTo")){
+                            timeSheetHour.setTimeTo(time);
+                        }
+
+                        timeSheetHour.setEdited(true);
+                        DBHandler.getInstance().replaceData(TimeSheetHour.DBTable.NAME , timeSheetHour.toContentValues());
+                    }
+                }
+
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+            };
+
+
+            new TimePickerDialog(context, date, myCalendar
+                    .get(Calendar.HOUR_OF_DAY), myCalendar.get(Calendar.MINUTE),
+                    true).show();
+
+        });
+    }
+
+
+    private void bindDateTimeHolder(final DateTimeHolder holder, int position) {
+        final FormItem formItem = formItems.get(position);
+        holder.txtTitle.setText(formItem.getTitle());
+        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                formItem.getRepeatId(), repeatCount);
+        if (answer != null) {
+            String value = answer.getAnswer();
+            if (value != null && !value.isEmpty()) {
+                holder.txtDate.setText(answer.getDisplayAnswer());
+            }
+        } else if (missingAnswerMode && !formItem.isOptional()) {
+            holder.view.setBackground(redBG);
+        }
+
+        holder.txtDate.setOnClickListener(v -> {
+            final Calendar myCalendar = Calendar.getInstance();
+
+            DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
+
+                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                        formItem.getRepeatId(), repeatCount);
+
+
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss", Locale.ENGLISH);
+                String date1 = sdf.format(myCalendar.getTime());
+                holder.txtDate.setText(date1.split("T")[0]);
+
+                if (answer1 == null) {
+                    answer1 = new Answer(submissionID, formItem.getUploadId());
+                }
+
+                answer1.setAnswer(date1);
+                answer1.setDisplayAnswer(date1);
+                answer1.setRepeatID(formItem.getRepeatId());
+                answer1.setRepeatCount(repeatCount);
+
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            };
+
+            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                    formItem.getRepeatId(), repeatCount);
+            if (answer1 != null && !TextUtils.isEmpty(answer1.getAnswer())) {
+                String value = answer1.getAnswer();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss", Locale.ENGLISH);
+
+                try {
+                    Date selectedDate = sdf.parse(value);
+                    if (selectedDate != null) {
+                        myCalendar.setTime(selectedDate);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            new DatePickerDialog(context, date, myCalendar
+                    .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+
+        });
+
+        holder.txtTime.setOnClickListener(v -> {
+            final Calendar myCalendar = Calendar.getInstance();
+
+            TimePickerDialog.OnTimeSetListener date = (view, hourOfDay, minute) -> {
+                Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                        formItem.getRepeatId(), repeatCount);
+
+                myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                myCalendar.set(Calendar.MINUTE, minute);
+
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss", Locale.ENGLISH);
+                String date12 = sdf.format(myCalendar.getTime());
+                holder.txtTime.setText(date12.split("T")[1]);
+
+
+                if (answer12 == null) {
+                    answer12 = new Answer(submissionID, formItem.getUploadId());
+                }
+
+                answer12.setAnswer(date12);
+                answer12.setDisplayAnswer(date12);
+                answer12.setRepeatID(formItem.getRepeatId());
+                answer12.setRepeatCount(repeatCount);
+
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+            };
+
+            Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                    formItem.getRepeatId(), repeatCount);
+            if (answer12 != null && !TextUtils.isEmpty(answer12.getAnswer())) {
+                String value = answer12.getAnswer();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss", Locale.ENGLISH);
+
+                try {
+                    Date selectedDate = sdf.parse(value);
+                    if (selectedDate != null) {
+                        myCalendar.setTime(selectedDate);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+            new TimePickerDialog(context, date, myCalendar
+                    .get(Calendar.HOUR_OF_DAY), myCalendar.get(Calendar.MINUTE),
+                    true).show();
+
+        });
     }
 
     private void bindBRIEFINGSignHolder(BriefingSignHolder holder, final int position) {
@@ -765,6 +1052,8 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     items.addAll(DBHandler.getInstance().getRiskElementType(formItem.getKey()));
                 }if (formItem.getKey().equalsIgnoreCase(MeasureItems.DBTable.NAME)) {
                     items.addAll(DBHandler.getInstance().getMeasures());
+                }else if (formItem.getKey().equalsIgnoreCase(TimeTypeActivity.DBTable.NAME)) {
+                    items.addAll(DBHandler.getInstance().getTimeTypeActivities());
                 } else {
                     items.addAll(DBHandler.getInstance().getItemTypes(formItem.getKey()));
                 }
@@ -785,6 +1074,16 @@ public class FrokFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     answer1.setRepeatCount(repeatCount);
 
                     DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                    if(submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")){
+                        TimeSheetHour timeSheetHour = parentFormItem.getTimeSheetHour();
+                        if(timeSheetHour != null){
+                            if(formItem.getUploadId().equalsIgnoreCase("timeTypeActivityId")){
+                                timeSheetHour.setTimeTypeActivityId(items.get(position1).getUploadValue());
+                                timeSheetHour.setEdited(true);
+                            }
+                            DBHandler.getInstance().replaceData(TimeSheetHour.DBTable.NAME , timeSheetHour.toContentValues());
+                        }
+                    }
 
                     if (formItem.getUploadId().equalsIgnoreCase("type") && formItem.getRepeatId().equalsIgnoreCase("riskElements")) {
                         if (items.get(position1).getUploadValue().equalsIgnoreCase("dorSPoles")) {

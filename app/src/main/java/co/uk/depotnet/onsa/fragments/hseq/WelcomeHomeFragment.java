@@ -1,8 +1,10 @@
 package co.uk.depotnet.onsa.fragments.hseq;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +15,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import co.uk.depotnet.onsa.R;
+import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.activities.MainActivity;
 import co.uk.depotnet.onsa.activities.SettingsActivity;
+import co.uk.depotnet.onsa.activities.timesheet.TimeSheetActivity;
 import co.uk.depotnet.onsa.activities.ui.BriefingsActivity;
 import co.uk.depotnet.onsa.activities.ui.HSEQActivity;
 import co.uk.depotnet.onsa.activities.WelcomeActivity;
@@ -24,6 +33,7 @@ import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.store.FragmentStore;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.modals.User;
+import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.modals.store.DataMyRequests;
 import co.uk.depotnet.onsa.modals.store.DataReceipts;
 import co.uk.depotnet.onsa.networking.APICalls;
@@ -31,6 +41,7 @@ import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import co.uk.depotnet.onsa.utils.Utils;
+import co.uk.depotnet.onsa.views.MaterialAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -99,9 +110,13 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
         switch (WH_id)
         {
             case 1:
-                AppPreferences.setTheme(5);// setting to wrong value for depotnet theme
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
+                if(isBookOn()) {
+                    AppPreferences.setTheme(5);
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    startActivity(intent);
+                }else{
+                    showBookOnDialog();
+                }
                 break;
             case 2:
                 AppPreferences.setTheme(1);
@@ -118,10 +133,65 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
                 Intent brief = new Intent(context, BriefingsActivity.class);
                 startActivity(brief);
                 break;
+            case 5:
+                AppPreferences.setTheme(5);
+                Intent timeSheet = new Intent(context, TimeSheetActivity.class);
+                startActivity(timeSheet);
+                break;
             default:
                 break;
         }
     }
+
+    private boolean isBookOn() {
+        if(user != null && !user.isCompleteTimesheets()){
+            return true;
+        }
+        String book_on_date = AppPreferences.getString( "TimeSheet_" + Constants.IS_BOOK_ON, null);
+        if (TextUtils.isEmpty(book_on_date)) {
+            return false;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        Date date;
+        Date currentDate;
+        try {
+            date = sdf.parse(book_on_date);
+            currentDate = sdf.parse(sdf.format(new Date()));
+        } catch (ParseException e) {
+            return false;
+        }
+
+        if(date == null || currentDate == null){
+            return false;
+        }
+        return date.compareTo(currentDate) == 0;
+    }
+
+    private void showBookOnDialog(){
+        String title = "Book On";
+        String message = "Please Book on before viewing any jobs";
+        MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositive(getString(R.string.ok), (dialog1, i) -> {
+                    listener.hideProgressBar();
+                    dialog1.dismiss();
+                    Submission submission = new Submission("my_work_book_on.json","Timesheet Book On", "");
+                    long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+                    submission.setId(submissionID);
+                    Intent intent = new Intent(context, FormActivity.class);
+                    intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+                    startActivityForResult(intent , 1000);
+                }).setNegative(getString(R.string.generic_cancel), (dialog12, which) -> {
+                    dialog12.dismiss();
+                })
+                .build();
+
+        dialog.setCancelable(false);
+        dialog.show(getChildFragmentManager(), "_ERROR_DIALOG");
+
+    }
+
 
     private void getReceipts(){
         if(!CommonUtils.validateToken(context)){
@@ -182,6 +252,18 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
                 onApiCallResponse();
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1000 && resultCode == Activity.RESULT_OK){
+            if(isBookOn()) {
+                AppPreferences.setTheme(5);
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
+            }
+        }
     }
 
 }

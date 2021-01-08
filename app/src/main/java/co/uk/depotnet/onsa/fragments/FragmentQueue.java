@@ -33,6 +33,7 @@ import co.uk.depotnet.onsa.adapters.OfflineQueueAdapter;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.store.ReceiptItemsFragment;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
+import co.uk.depotnet.onsa.listeners.FromActivityListener;
 import co.uk.depotnet.onsa.modals.JobModuleStatus;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Answer;
@@ -42,6 +43,8 @@ import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.modals.hseq.ToolTipModel;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.Receipts;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.ConnectionHelper;
@@ -248,7 +251,7 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
     }
 
 
-    private void sendToServer(int position, Submission submission) {
+    private void sendToServer(Submission submission) {
         String jobID = submission.getJobID();
         String jsonFileName = submission.getJsonFileName();
 
@@ -297,6 +300,9 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
                     submitInspections(screen.getUrl(), screen.getPhotoUrl(),
                             submission, getChildFragmentManager());
         }
+        else if (submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")) {
+            screen.setUrl("app/timesheets/submit");
+        }
         else
         {
             response = new ConnectionHelper(context).
@@ -344,6 +350,140 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
             }
 
         }
+    }
+
+    private void updateLogHours( Submission submission) {
+
+        if (!CommonUtils.isNetworkAvailable(context)) {
+            DBHandler.getInstance().setSubmissionQueued(submission);
+            return;
+        }
+
+        if (!CommonUtils.validateToken(context)) {
+            return;
+        }
+
+        String jsonFileName = submission.getJsonFileName();
+
+        if (TextUtils.isEmpty(jsonFileName)) {
+            return;
+        }
+        Form form = JsonReader.loadForm(context, submission.getJsonFileName());
+        if (form == null) {
+            return;
+        }
+
+        ArrayList<Screen> screens = form.getScreens();
+        if(screens == null || screens.isEmpty()){
+            return;
+        }
+
+        Screen screen = screens.get(screens.size() - 1);
+
+        Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "weekCommencing" , null , 0);
+        if(answer == null || TextUtils.isEmpty(answer.getAnswer())){
+            return;
+        }
+
+        String weekCommencing = answer.getAnswer();
+
+        ArrayList<TimeSheetHour> hours = DBHandler.getInstance().getTimeHours(weekCommencing);
+        boolean isEdited = false;
+        for(int i = 0 ; i < hours.size() ; i++){
+            if(hours.get(i).isEdited()){
+                isEdited = true;
+                break;
+            }
+        }
+
+        if(!isEdited){
+            submitTimeSheet(submission , weekCommencing);
+            return;
+        }
+
+
+        new Thread(() -> {
+            Response response = new ConnectionHelper(context).
+                    submitForm(screen.getUrl(), screen.getPhotoUrl(),
+                            submission, getChildFragmentManager());
+
+
+            if (response == null || !response.isSuccessful()) {
+                DBHandler.getInstance().setSubmissionQueued(submission);
+            }
+
+            handler.post(() -> {
+                if(response == null){
+                    return;
+                }
+
+                if(response.isSuccessful()){
+                    getTimeSheetHours(submission , weekCommencing);
+                }
+
+            });
+        }).start();
+    }
+
+    private void submitTimeSheet(Submission submission , String weekCommencing){
+        ArrayList<TimeSheetHour> hours = DBHandler.getInstance().getTimeHours(weekCommencing);
+
+        Answer signatureFileBytes = DBHandler.getInstance().getAnswer(submission.getID(), "signatureFileBytes",
+                null, 0);
+
+        DBHandler.getInstance().removeAnswers(submission);
+
+        for(int i = 0 ; i < hours.size() ; i++){
+            if(!TextUtils.isEmpty(hours.get(i).getTimesheetHoursId())){
+                Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "timesheetHoursIds",
+                        null, i);
+                if (answer == null) {
+                    answer = new Answer(submission.getID(), "timesheetHoursIds",
+                            null, i);
+                }
+
+                answer.setAnswer(hours.get(i).getTimesheetHoursId());
+                answer.setDisplayAnswer("");
+                answer.setIsMultiList(1);
+                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+            }
+        }
+
+        Answer answer = new Answer(submission.getID(), "signatureFileBytes",
+                null, 0);
+        answer.setAnswer(signatureFileBytes.getAnswer());
+        answer.setIsPhoto(1);
+        answer.setDisplayAnswer(signatureFileBytes.getDisplayAnswer());
+        DBHandler.getInstance().replaceData(Answer.DBTable.NAME , answer.toContentValues());
+
+        sendToServer(submission);
+    }
+
+    private void getTimeSheetHours(Submission submission , String weekCommencing){
+
+
+        User user = DBHandler.getInstance().getUser();
+
+        APICalls.getTimesheetHours(user.gettoken() , weekCommencing).enqueue(new Callback<TimeSheetHours>() {
+            @Override
+            public void onResponse(Call<TimeSheetHours> call, retrofit2.Response<TimeSheetHours> response) {
+                if(response.isSuccessful()){
+                    TimeSheetHours timeSheetHours = response.body();
+                    if(timeSheetHours != null && !timeSheetHours.isEmpty()) {
+                        timeSheetHours.setWeekCommencing();
+                        timeSheetHours.toContentValues();
+                    }
+                }
+
+                submitTimeSheet(submission , weekCommencing);
+            }
+
+            @Override
+            public void onFailure(Call<TimeSheetHours> call, Throwable t) {
+                ((FromActivityListener)context).hideProgressBar();
+                submitTimeSheet(submission , weekCommencing);
+            }
+        });
     }
 
     private void sendPollingSurvey(int position, Submission submission) {
@@ -467,10 +607,11 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
                     sendPollingSurvey(i, submission);
                 } else if (!TextUtils.isEmpty(jsonFileName) && (jsonFileName.startsWith("store_log_"))) {
                     sendLogJobRequest(i , submission);
+                }else if (submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")) {
+                    updateLogHours(submission);
                 } else {
-                    sendToServer(i, submission);
+                    sendToServer( submission);
                 }
-
             }
 
             handler.post(() -> {listener.hideProgressBar();

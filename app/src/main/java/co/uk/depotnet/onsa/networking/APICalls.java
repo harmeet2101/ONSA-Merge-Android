@@ -38,6 +38,7 @@ import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.modals.store.StockItems;
 import co.uk.depotnet.onsa.modals.store.StockLevel;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -80,6 +81,11 @@ public class APICalls {
     public static Call<Disclaimer> getDisclaimer(String authToken){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getDisclaimer();
+    }
+
+    public static Call<TimeSheetHours> getTimesheetHours(String authToken , String weekCommencing){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.getTimesheetHours(weekCommencing);
     }
 
 
