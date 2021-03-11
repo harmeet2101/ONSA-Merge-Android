@@ -1,9 +1,9 @@
 {
-  "title": "Take Photo/Video",
+  "title": "Take Photo or Video",
   "isProgressVisible": false,
   "screens": [
     {
-      "title": "Take Photo/Video",
+      "title": "Take Photo or Video",
       "index": 0,
       "photoUrl":"app/jobs/{jobId}/photos",
       "upload": true,
@@ -25,7 +25,7 @@
             },
             {
               "type": "photo",
-              "title": "Take Photo/Video",
+              "title": "Take Photo or Video",
               "photoSize": 5,
               "photoRequired": 1,
               "photoId": "ac751054-4621-42b4-848e-b854ac6eedf9"

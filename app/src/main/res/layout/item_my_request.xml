@@ -24,7 +24,7 @@
             android:visibility="visible"
             android:padding="@dimen/_4sdp"
             android:background="@drawable/badge_background"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:backgroundTint="@color/depotnet_color"
             app:srcCompat="@drawable/ic_close" />
 
@@ -95,7 +95,7 @@
                     android:layout_height="@dimen/_24sdp"
                     app:srcCompat="@drawable/ic_warning"
                     android:layout_marginEnd="@dimen/_8sdp"
-                    android:tint="@color/yellow"
+                    app:tint="@color/yellow"
                     android:layout_marginRight="@dimen/_8sdp"/>
 
                 <TextView

@@ -13,8 +13,6 @@
           "type": "dropdown",
           "uploadId": "JobId",
           "key": "Job",
-          "isMultiSelection": false,
-          "isConcatDisplayText": false,
           "title": "Estimate",
           "optional": false
         },

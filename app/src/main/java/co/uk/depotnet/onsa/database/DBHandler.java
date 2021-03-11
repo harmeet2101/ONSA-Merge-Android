@@ -10,9 +10,13 @@ import androidx.annotation.Nullable;
 
 import android.os.Parcel;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import co.uk.depotnet.onsa.listeners.DropDownItem;
 import co.uk.depotnet.onsa.modals.A75Groups;
@@ -31,7 +35,7 @@ import co.uk.depotnet.onsa.modals.RecordReturnReason;
 import co.uk.depotnet.onsa.modals.RiskElementType;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.WorkItem;
-import co.uk.depotnet.onsa.modals.actions.OutstandingAction;
+import co.uk.depotnet.onsa.modals.actions.Action;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsData;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsDocModal;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsRecipient;
@@ -45,6 +49,11 @@ import co.uk.depotnet.onsa.modals.hseq.OperativeTemplate;
 import co.uk.depotnet.onsa.modals.hseq.PhotoComments;
 import co.uk.depotnet.onsa.modals.hseq.PhotoTags;
 import co.uk.depotnet.onsa.modals.httpresponses.BaseTask;
+import co.uk.depotnet.onsa.modals.incident.IncidentCategory;
+import co.uk.depotnet.onsa.modals.incident.IncidentSeverity;
+import co.uk.depotnet.onsa.modals.incident.IncidentSource;
+import co.uk.depotnet.onsa.modals.incident.IncidentSubCategory;
+import co.uk.depotnet.onsa.modals.incident.UniqueIncident;
 import co.uk.depotnet.onsa.modals.notify.NotifyModel;
 import co.uk.depotnet.onsa.modals.schedule.Schedule;
 import co.uk.depotnet.onsa.modals.store.MyRequest;
@@ -54,8 +63,12 @@ import co.uk.depotnet.onsa.modals.store.ReceiptItems;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.modals.store.RequestItem;
 import co.uk.depotnet.onsa.modals.store.StockItems;
+import co.uk.depotnet.onsa.modals.timesheet.LogHourItem;
+import co.uk.depotnet.onsa.modals.timesheet.LogHourTime;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheet;
 import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
 import co.uk.depotnet.onsa.modals.timesheet.TimeTypeActivity;
+import co.uk.depotnet.onsa.modals.timesheet.TimesheetOperative;
 import co.uk.depotnet.onsa.networking.Constants;
 
 public class DBHandler {
@@ -68,6 +81,7 @@ public class DBHandler {
     }
 
     public static DBHandler getInstance() {
+//        Log.d("Database" , "dbHandler =  "+dbHandler);
         if (dbHandler == null) {
             synchronized (DBHandler.class) {
                 if (dbHandler == null) {
@@ -75,9 +89,25 @@ public class DBHandler {
                 }
             }
         }
-
+//        Log.d("Database" , "dbHandler.db =  "+dbHandler.db);
         if (dbHandler.db == null) {
             dbHandler.openDatabase();
+        }
+        return dbHandler;
+    }
+
+    public static DBHandler getInstance(Context context) {
+//        Log.d("Database" , "dbHandler =  "+dbHandler);
+        if (dbHandler == null) {
+            synchronized (DBHandler.class) {
+                if (dbHandler == null) {
+                    dbHandler = new DBHandler();
+                }
+            }
+        }
+//        Log.d("Database" , "dbHandler.db =  "+dbHandler.db);
+        if (dbHandler.db == null) {
+            dbHandler.openDatabase(context);
         }
         return dbHandler;
     }
@@ -88,11 +118,27 @@ public class DBHandler {
     }
 
     private void openDatabase() {
+        Log.d("Database" , "openDatabase dbHelper =  "+dbHelper);
         if (dbHelper == null) {
             return;
         }
         try {
             dbHelper.openDatabase();
+            Log.d("Database" , "openDatabase dbHelper db =  "+db);
+            db = dbHelper.getWritableDatabase();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void openDatabase(Context context) {
+        Log.d("Database" , "openDatabase dbHelper =  "+dbHelper);
+        if (dbHelper == null) {
+            init(context);
+        }
+        try {
+            dbHelper.openDatabase();
+            Log.d("Database" , "openDatabase dbHelper db =  "+db);
             db = dbHelper.getWritableDatabase();
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,6 +152,29 @@ public class DBHandler {
     public long replaceData(String tableName, ContentValues values) {
         return db.replace(tableName, null, values);
     }
+
+    public void replaceDataDFEWorkItems(ArrayList<WorkItem> workItems , String type) {
+        db.beginTransaction();
+        for(int i = 0 ; i < workItems.size() ; i++) {
+            WorkItem item = workItems.get(i);
+            item.settype(type);
+            db.replace(WorkItem.DBTable.NAME, null, item.toContentValues());
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void replaceItemTypes(ArrayList<ItemType> itemTypes , String type) {
+        db.beginTransaction();
+        for(int i = 0 ; i < itemTypes.size() ; i++) {
+            ItemType item = itemTypes.get(i);
+            item.settype(type);
+            db.replace(ItemType.DBTable.NAME, null, item.toContentValues());
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
 
     public User getUser() {
         User user = null;
@@ -195,9 +264,18 @@ public class DBHandler {
                     IssuedModel.DBTable.NAME,
                     BriefingsDocModal.DBTable.NAME,
                     BriefingsRecipient.DBTable.Name,
-                    OutstandingAction.DBTable.NAME,
+                    Action.DBTable.NAME,
+                    IncidentCategory.DBTable.NAME,
+                    IncidentSeverity.DBTable.NAME,
+                    IncidentSource.DBTable.NAME,
+                    IncidentSubCategory.DBTable.NAME,
+                    UniqueIncident.DBTable.NAME,
                     Schedule.DBTable.NAME,
                     PhotoComments.DBTable.NAME,
+                    TimeSheet.DBTable.NAME,
+                    TimeSheetHour.DBTable.NAME,
+                    TimeTypeActivity.DBTable.NAME
+
             };
 
             db.beginTransaction();
@@ -278,26 +356,6 @@ public class DBHandler {
         }
     }
 
-    public void resetDatasetTable() {
-        String[] tables = {
-                KitBagDocument.DBTable.NAME,
-                WorkItem.DBTable.NAME,
-                ItemType.DBTable.NAME,
-                RiskElementType.DBTable.NAME,
-                StockItems.DBTable.NAME,
-        };
-        try {
-            db.beginTransaction();
-            for (String table : tables) {
-                db.delete(table, null, null);
-            }
-            db.setTransactionSuccessful();
-            db.endTransaction();
-        } catch (Exception e) {
-
-        }
-    }
-
     public void clearTable(String tableName) {
         db.execSQL("delete from " + tableName);
     }
@@ -333,6 +391,40 @@ public class DBHandler {
         } else {
             whereClause = Answer.DBTable.submissionID + " = ? AND " + Answer.DBTable.uploadID + " = ? AND " + Answer.DBTable.repeatCounter + " = ?";
             whereArgs = new String[]{String.valueOf(submissionID), uploadID, String.valueOf(repeatCount)};
+        }
+
+        Cursor cursor = db.query(Answer.DBTable.NAME, null,
+                whereClause, whereArgs, null, null,
+                Answer.DBTable.id + " ASC", "1");
+        if (cursor.moveToFirst()) {
+            out = new Answer(cursor);
+        }
+
+        cursor.close();
+        return out;
+    }
+
+    @Nullable
+    public Answer getAnswer(long submissionID, String uploadID, String repeatID, int repeatCount , int arrayRepeatCounter) {
+        Answer out = null;
+        String whereClause;
+        String[] whereArgs;
+
+        if(!TextUtils.isEmpty(repeatID)){
+            whereClause = Answer.DBTable.submissionID + " = ? AND " +
+                    Answer.DBTable.uploadID + " = ? AND " +
+                    Answer.DBTable.repeatID + " = ? AND " +
+                    Answer.DBTable.repeatCounter + " = ? AND " +
+                    Answer.DBTable.arrayRepeatCounter + " = ?";
+            whereArgs = new String[]{String.valueOf(submissionID), uploadID, repeatID,
+                    String.valueOf(repeatCount), String.valueOf(arrayRepeatCounter)};
+        }else{
+            whereClause = Answer.DBTable.submissionID + " = ? AND " +
+                    Answer.DBTable.uploadID + " = ? AND " +
+                    Answer.DBTable.repeatCounter + " = ? " +
+                    Answer.DBTable.arrayRepeatCounter + " = ?";
+            whereArgs = new String[]{String.valueOf(submissionID), uploadID,
+                    String.valueOf(repeatCount), String.valueOf(arrayRepeatCounter)};
         }
 
         Cursor cursor = db.query(Answer.DBTable.NAME, null,
@@ -398,6 +490,38 @@ public class DBHandler {
                     Answer.DBTable.repeatID + " = ?";
             whereArgs = new String[]{String.valueOf(submissionId),
                     uploadID, repeatID};
+        }
+
+
+        Cursor cursor = db.query(Answer.DBTable.NAME, null, whereClause, whereArgs, null, null, Answer.DBTable.repeatCounter + " ASC");
+        ArrayList<Answer> answers = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                answers.add(new Answer(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return answers;
+    }
+
+    public ArrayList<Answer> getRepeatedMultiArrayAnswers(long submissionId,
+                                                String uploadID, String repeatID , int repeatCounter) {
+
+        String whereClause;
+        String[] whereArgs;
+
+        if (TextUtils.isEmpty(repeatID)) {
+            whereClause = Answer.DBTable.submissionID + " = ? AND " +
+                    Answer.DBTable.uploadID + " = ?";
+            whereArgs = new String[]{String.valueOf(submissionId),
+                    uploadID};
+        } else {
+            whereClause = Answer.DBTable.submissionID + " = ? AND " +
+                    Answer.DBTable.uploadID + " = ? AND " +
+                    Answer.DBTable.repeatID + " = ? AND " +
+                    Answer.DBTable.repeatCounter + " = ?";
+            whereArgs = new String[]{String.valueOf(submissionId),
+                    uploadID, repeatID, String.valueOf(repeatCounter)};
         }
 
 
@@ -678,6 +802,17 @@ public class DBHandler {
         return affectedRows > 0;
     }
 
+    public boolean removeMultiAnswersByUploadID(long submissionID , String uploadID) {
+        String whereClause = Submission.DBTable.id + " = ?";
+        String[] whereArgs = {String.valueOf(submissionID)};
+
+
+        whereClause = Answer.DBTable.submissionID + " = ? AND " + Answer.DBTable.uploadID + " = ?";
+        whereArgs = new String[]{String.valueOf(submissionID), uploadID};
+        int affectedRows = db.delete(Answer.DBTable.NAME, whereClause, whereArgs);
+        return affectedRows > 0;
+    }
+
     public boolean setSubmissionQueued(Submission submission) {
         submission.setQueued(1);
         String whereClause = Submission.DBTable.id + " = ?";
@@ -845,6 +980,14 @@ public class DBHandler {
         return submissions;
     }
 
+
+    public void deleteItemTypes(String type) {
+
+        String whereClause = ItemType.DBTable.type + " = ?";
+        String[] whereArgs = {type};
+        db.delete(ItemType.DBTable.NAME,
+                whereClause, whereArgs);
+    }
 
     public ArrayList<ItemType> getItemTypes(String type) {
 
@@ -1491,12 +1634,7 @@ public class DBHandler {
         int affectedRows = db.delete(PhotoTags.DBTable.NAME, whereClause, whereArgs);
         return affectedRows > 0;
     }
-    public boolean removeAnswerPhotoTags(int answerId) {
-        String whereClause = PhotoTags.DBTable.answerId + " = ?";
-        String[] whereArgs = {String.valueOf(answerId)};
-        int affectedRows = db.delete(PhotoTags.DBTable.NAME, whereClause, whereArgs);
-        return affectedRows > 0;
-    }
+
     public ArrayList<PhotoTags> getPhotoTags(int answerId) {
         String whereClause = PhotoTags.DBTable.answerId + " = ? ";
         String[] whereArgs = new String[]{String.valueOf(answerId)};
@@ -1526,12 +1664,7 @@ public class DBHandler {
         }
         return count;
     }
-    public boolean removePhotoComments(int answerId) {
-        String whereClause = PhotoComments.DBTable.answerId + " = ?";
-        String[] whereArgs = {String.valueOf(answerId)};
-        int affectedRows = db.delete(PhotoComments.DBTable.NAME, whereClause, whereArgs);
-        return affectedRows > 0;
-    }
+
     public ArrayList<PhotoComments> getPhotoComments(String answerId) {
         String whereClause = PhotoComments.DBTable.answerId + " = ? ";
         String[] whereArgs = new String[]{answerId};
@@ -1582,75 +1715,37 @@ public class DBHandler {
         return jobs;
     }
 
-
-    public void resetSchedule() {
-        try {
-            String[] tables = {
-                    Schedule.DBTable.NAME
-            };
-
-            db.beginTransaction();
-
-            for (String table : tables) {
-                db.delete(table, null, null);
-            }
-
-            db.setTransactionSuccessful();
-            db.endTransaction();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public void resetBriefings() {
-        try {
-            String[] tables = {
-                    BriefingsDocModal.DBTable.NAME
-            };
-
-            db.beginTransaction();
-
-            for (String table : tables) {
-                db.delete(table, null, null);
-            }
-
-            db.setTransactionSuccessful();
-            db.endTransaction();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public void resetActions() {
-        try {
-            String[] tables = {
-                    OutstandingAction.DBTable.NAME
-            };
-
-            db.beginTransaction();
-
-            for (String table : tables) {
-                db.delete(table, null, null);
-            }
-
-            db.setTransactionSuccessful();
-            db.endTransaction();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    public ArrayList<OutstandingAction> getActions(String actionType) {
-        ArrayList<OutstandingAction> notify = new ArrayList<>();
-        String whereClause = OutstandingAction.DBTable.actionType + " = ?";
-        String[] whereArgs = {String.valueOf(actionType)};
-        Cursor cursor = db.query(OutstandingAction.DBTable.NAME, null, whereClause, whereArgs, null, null, OutstandingAction.DBTable.dueDate + " DESC");
+    public ArrayList<Action> getActions(String actionType , String dueDate) {
+        ArrayList<Action> actions = new ArrayList<>();
+        String whereClause = Action.DBTable.actionType + " = ? AND "+Action.DBTable.dueDate + " = ?";
+        String[] whereArgs = {String.valueOf(actionType), dueDate};
+        Cursor cursor = db.query(Action.DBTable.NAME, null, whereClause, whereArgs, null, null, Action.DBTable.dueDate + " DESC");
         if (cursor.moveToFirst()) {
             do {
-                OutstandingAction menSplit = new OutstandingAction(cursor);
-                notify.add(menSplit);
+                Action action = new Action(cursor);
+                actions.add(action);
             } while (cursor.moveToNext());
         }
         cursor.close();
-        return notify;
+
+        return actions;
     }
+
+    public ArrayList<String> getActionDueDates(String actionType) {
+        ArrayList<String> actions = new ArrayList<>();
+        String whereClause = Action.DBTable.actionType + " = ?";
+        String[] whereArgs = {String.valueOf(actionType)};
+        Cursor cursor = db.query(true , Action.DBTable.NAME, new String[]{Action.DBTable.dueDate}, whereClause, whereArgs, null, null, Action.DBTable.dueDate + " DESC", null);
+        if (cursor.moveToFirst()) {
+            do {
+                actions.add(cursor.getString(cursor.getColumnIndex(Action.DBTable.dueDate)));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return actions;
+    }
+
     public ArrayList<BriefingsRecipient> getBriefingsRecipient(String briefingId) {
         ArrayList<BriefingsRecipient> notify = new ArrayList<>();
         String whereClause = BriefingsData.DBTable.briefingId + " = ?";
@@ -1824,10 +1919,7 @@ public class DBHandler {
 
     public ArrayList<OperativeTemplate> getOperativeTemplateByGangId(String gangid) {
         ArrayList<OperativeTemplate> gangOperative = new ArrayList<>();
-        //String whereClause = OperativeTemplate.DBTable.gangIds + " LIKE ? ";
         String whereClause = "(',' || gangIds || ',') LIKE '%,"+gangid+",%'";
-        //String query = "SELECT  * FROM " + OperativeTemplate.DBTable.NAME+" ORDER BY "+ whereClause + " DESC ";
-        //Cursor cursor = db.rawQuery(query, whereArgs);
         Cursor cursor = db.query(OperativeTemplate.DBTable.NAME, null, null,
                 null, null, null, whereClause + " DESC");
         if (cursor.moveToFirst()) {
@@ -1971,11 +2063,289 @@ public class DBHandler {
         return timeSheetHours;
     }
 
+    public ArrayList<TimeSheet> getTimeSheets() {
+        ArrayList<TimeSheet> timeSheets = new ArrayList<>();
+
+        String whereClause = null;
+        String[] whereArgs = null;
+
+        Cursor cursor = db.query(TimeSheet.DBTable.NAME, null, whereClause, whereArgs, null, null, TimeSheet.DBTable.weekCommencing + " ASC");
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                timeSheets.add(new TimeSheet(cursor));
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        return timeSheets;
+    }
+
+    public String getTimeSheetsStatus(String weekCommencing) {
+
+        if(TextUtils.isEmpty(weekCommencing)){
+            return null;
+        }
+        if(!weekCommencing.contains("00:00:00")){
+            weekCommencing +="T00:00:00";
+        }
+        TimeSheet timeSheet = null;
+
+        String whereClause = TimeSheet.DBTable.weekCommencing+" = ?";
+        String[] whereArgs = new String[]{weekCommencing};
+
+        Cursor cursor = db.query(TimeSheet.DBTable.NAME, null, whereClause, whereArgs, null, null, TimeSheet.DBTable.weekCommencing + " ASC");
+
+        if (cursor != null && cursor.moveToFirst()) {
+            timeSheet = new TimeSheet(cursor);
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+        if(timeSheet != null){
+            return timeSheet.getTimesheetStatus();
+        }
+
+        return null;
+    }
+
+
+
     public void removeTimeHours(String weekCommencing) {
         String whereClause = TimeSheetHour.DBTable.weekCommencing + " = ? ";
         String[] whereArgs = new String[]{weekCommencing};
-
         db.delete(TimeSheetHour.DBTable.NAME, whereClause, whereArgs);
+    }
 
+    public ArrayList<TimesheetOperative> getTimeSheetOperatives() {
+        ArrayList<TimesheetOperative> timesheetOperatives = new ArrayList<>();
+        String whereClause = null;
+        String[] whereArgs = null;
+        Cursor cursor = db.query(TimesheetOperative.DBTable.NAME, null, whereClause, whereArgs, null, null, TimesheetOperative.DBTable.operativeId + " DESC");
+        if (cursor.moveToFirst()) {
+            do {
+                TimesheetOperative timesheetOperative = new TimesheetOperative(cursor);
+                timesheetOperatives.add(timesheetOperative);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return timesheetOperatives;
+    }
+
+    public boolean removeTimesheetHour(String timesheetHoursId) {
+        if(TextUtils.isEmpty(timesheetHoursId)){
+            return false;
+        }
+        String whereClause = TimeSheetHour.DBTable.timesheetHoursId + " = ?";
+        String[] whereArgs = {timesheetHoursId};
+        int affectedRows = db.delete(TimeSheetHour.DBTable.NAME, whereClause, whereArgs);
+        return affectedRows > 0;
+    }
+
+    public LinkedHashMap<String , ArrayList<LogHourItem>> getTimeSheetLogHoursByWeek(String weekCommencing) {
+
+        String whereClause = TimeSheetHour.DBTable.weekCommencing + " = ?";
+        String[] whereArgs = new String[]{weekCommencing};
+        String[] columns = new String[]{TimeSheetHour.DBTable.dateWorked};
+
+        Cursor cursor = db.query(true, TimeSheetHour.DBTable.NAME, columns, whereClause, whereArgs,null, null, TimeSheetHour.DBTable.dateWorked + " ASC", null);
+
+        LinkedHashMap<String , ArrayList<LogHourItem>> dayMap = new LinkedHashMap<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String date = cursor.getString(cursor.getColumnIndex(TimeSheetHour.DBTable.dateWorked));
+                if(!dayMap.containsKey(date)){
+                    ArrayList<LogHourItem> items = new ArrayList<>();
+                    items.addAll(getTimeSheetLogHours(date));
+                    dayMap.put(date , items);
+                }else{
+                    ArrayList<LogHourItem> items = dayMap.get(date);
+                    items.addAll(getTimeSheetLogHours(date));
+                }
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return dayMap;
+    }
+
+    public LinkedHashMap<String , String> getTimeSheetLogHoursStatusByWeek(String weekCommencing) {
+        weekCommencing = weekCommencing.split("T")[0];
+        String whereClause = TimeSheetHour.DBTable.weekCommencing + " = ?";
+        String[] whereArgs = new String[]{weekCommencing};
+        String[] columns = new String[]{TimeSheetHour.DBTable.dateWorked};
+
+        Cursor cursor = db.query(true, TimeSheetHour.DBTable.NAME, columns, whereClause, whereArgs,null, null, TimeSheetHour.DBTable.dateWorked + " ASC", null);
+
+        LinkedHashMap<String , String> dayMap = new LinkedHashMap<>();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String date = cursor.getString(cursor.getColumnIndex(TimeSheetHour.DBTable.dateWorked));
+                if(!dayMap.containsKey(date)){
+                    ArrayList<LogHourItem> items = getTimeSheetLogHours(date);
+                    if(!items.isEmpty()){
+                        dayMap.put(date , items.get(0).getStatus());
+                    }
+                }
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return dayMap;
+    }
+
+    public ArrayList<LogHourItem> getTimeSheetLogHours(String dateWorked) {
+        HashMap<String , HashMap<String , LogHourTime>> logHourTimeHashMap = new HashMap<>();
+
+        HashMap<String , LogHourItem> logHourItemHashMap = new HashMap<>();
+
+        String whereClause = TimeSheetHour.DBTable.dateWorked + " = ?";
+        String[] whereArgs = new String[]{dateWorked};
+
+        Cursor cursor = db.query(TimeSheetHour.DBTable.NAME, null, whereClause, whereArgs, null, null, TimeSheetHour.DBTable.dateWorked + " ASC");
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                TimeSheetHour timeSheetHour = new TimeSheetHour(cursor);
+                if(!logHourTimeHashMap.containsKey(timeSheetHour.getUniqueKey())) {
+                    logHourItemHashMap.put(timeSheetHour.getUniqueKey() , new LogHourItem(timeSheetHour ,
+                            null));
+                    HashMap<String , LogHourTime> timeHashMap = new HashMap<>();
+                    timeHashMap.put(timeSheetHour.getHourKey() , new LogHourTime(timeSheetHour.getTimesheetHoursId(), timeSheetHour.getTimeTypeActivityId(), timeSheetHour.getTimeTypeActivityName() , timeSheetHour.getNormalTimeMinutes() , timeSheetHour.getOvertimeMinutes()));
+                    logHourTimeHashMap.put(timeSheetHour.getUniqueKey(), timeHashMap);
+                }else{
+                    HashMap<String , LogHourTime> timeHashMap = logHourTimeHashMap.get(timeSheetHour.getUniqueKey());
+                    timeHashMap.put(timeSheetHour.getHourKey() , new LogHourTime(timeSheetHour.getTimesheetHoursId(), timeSheetHour.getTimeTypeActivityId(), timeSheetHour.getTimeTypeActivityName() , timeSheetHour.getNormalTimeMinutes() , timeSheetHour.getOvertimeMinutes()));
+                }
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        ArrayList<LogHourItem> logHourItems = new ArrayList<>();
+        Set<String> keySet = logHourItemHashMap.keySet();
+        if(!keySet.isEmpty()){
+            for(String key : keySet){
+                LogHourItem logHourItem = logHourItemHashMap.get(key);
+                ArrayList<LogHourTime> times = new ArrayList<>();
+                HashMap<String , LogHourTime> logHourTimeHashMap1 = logHourTimeHashMap.get(key);
+                Set<String> timeKeySet = logHourTimeHashMap1.keySet();
+                if(!timeKeySet.isEmpty()){
+                    for(String timeKey : timeKeySet) {
+                        times.add(logHourTimeHashMap1.get(timeKey));
+                    }
+                }
+                logHourItem.setLogHourTimes(times);
+                logHourItems.add(logHourItem);
+            }
+        }
+
+        return logHourItems;
+    }
+
+    public ArrayList<IncidentSource> getIncidentSources() {
+        ArrayList<IncidentSource> incidentSources = new ArrayList<>();
+        String selection = null;
+        String[] selectionArgs = null;
+
+        Cursor cursor = db.query(IncidentSource.DBTable.NAME,
+                null, selection, selectionArgs,
+                null, null, IncidentSource.DBTable.incidentSourceId + " ASC");
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                incidentSources.add(new IncidentSource(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return incidentSources;
+    }
+
+    public ArrayList<IncidentSeverity> getIncidentSeverities() {
+        ArrayList<IncidentSeverity> incidentSeverities = new ArrayList<>();
+        String selection = null;
+        String[] selectionArgs = null;
+
+        Cursor cursor = db.query(IncidentSeverity.DBTable.NAME,
+                null, selection, selectionArgs,
+                null, null, IncidentSeverity.DBTable.incidentSeverityName + " ASC");
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                incidentSeverities.add(new IncidentSeverity(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return incidentSeverities;
+    }
+
+    public ArrayList<IncidentSubCategory> getIncidentSubCategories(String incidentCategoryId) {
+        ArrayList<IncidentSubCategory> incidentSubCategories = new ArrayList<>();
+        String selection = IncidentSubCategory.DBTable.incidentCategoryId + " = ?";
+        String[] selectionArgs = new String[]{String.valueOf(incidentCategoryId)};
+
+        Cursor cursor = db.query(IncidentSubCategory.DBTable.NAME,
+                null, selection, selectionArgs,
+                null, null, IncidentSubCategory.DBTable.incidentSubcategoryName + " ASC");
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                incidentSubCategories.add(new IncidentSubCategory(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return incidentSubCategories;
+    }
+
+    public ArrayList<IncidentCategory> getIncidentCategories() {
+        ArrayList<IncidentCategory> incidentCategories = new ArrayList<>();
+        String selection = null;
+        String[] selectionArgs = null;
+
+        Cursor cursor = db.query(IncidentCategory.DBTable.NAME,
+                null, selection, selectionArgs,
+                null, null, IncidentCategory.DBTable.incidentCategoryName + " ASC");
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                incidentCategories.add(new IncidentCategory(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return incidentCategories;
+    }
+
+    public ArrayList<UniqueIncident> getUniqueIncident() {
+        ArrayList<UniqueIncident> uniqueIncidents = new ArrayList<>();
+        String selection = null;
+        String[] selectionArgs = null;
+
+        Cursor cursor = db.query(UniqueIncident.DBTable.NAME,
+                null, selection, selectionArgs,
+                null, null, UniqueIncident.DBTable.incidentTitle + " ASC");
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                uniqueIncidents.add(new UniqueIncident(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return uniqueIncidents;
     }
 }

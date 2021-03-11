@@ -1,0 +1,94 @@
+{
+  "title": "Log Hours",
+  "isProgressVisible": false,
+  "themeColor":"#1795FA",
+  "screens": [
+    {
+      "title": "Log Hours",
+      "index": 0,
+      "url": "app/timesheets/log-hours",
+      "upload": true,
+      "items": [
+        {
+          "type": "add_log_hours",
+          "uploadId": "",
+          "repeatId": "timesheetHours",
+          "title": "Click to Log Hours",
+          "listItemType": "log_hours_item",
+          "fields": [
+            "dateWorked",
+            "timeTypeActivityId",
+            "jobId",
+            "normalTimeMinutes",
+            "overtimeMinutes"
+          ],
+          "optional": false,
+          "dialogItems": [
+            {
+              "type": "calender",
+              "uploadId": "dateWorked",
+              "repeatId": "timesheetHours",
+              "title": "Date Worked",
+              "optional": false
+            },
+            {
+              "type": "dropdown",
+              "uploadId": "timeTypeActivityId",
+              "repeatId": "timesheetHours",
+              "key": "TimeTypeActivity",
+              "title": "Add Time Type Activity",
+              "optional": false,
+              "enables": [
+                {
+                  "type": "dropdown",
+                  "uploadId": "jobId",
+                  "repeatId": "timesheetHours",
+                  "key": "Job",
+                  "title": "Job Number",
+                  "optional": false
+                },
+                {
+                  "type": "et_time_sheet_hours",
+                  "uploadId": "normalTimeMinutes",
+                  "repeatId": "timesheetHours",
+                  "isOverTimeVisible": true,
+                  "title": "Normal Time",
+                  "optional": false
+                }
+              ],
+              "falseEnables": [
+                {
+                  "type": "dropdown",
+                  "uploadId": "jobId",
+                  "repeatId": "timesheetHours",
+                  "key": "Job",
+                  "title": "Job Number",
+                  "optional": false
+                },
+                {
+                  "type": "et_time_sheet_hours",
+                  "uploadId": "normalTimeMinutes",
+                  "repeatId": "timesheetHours",
+                  "isOverTimeVisible": false,
+                  "title": "Normal Time",
+                  "optional": false
+                }
+              ],
+              "naEnables": [
+                {
+                  "type": "et_time_sheet_hours",
+                  "uploadId": "normalTimeMinutes",
+                  "repeatId": "timesheetHours",
+                  "isOverTimeVisible": false,
+                  "title": "Normal Time",
+                  "optional": false
+                }
+              ]
+            }
+
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -22,7 +22,7 @@
                 <ImageButton
                     android:id="@+id/imgBtnInfo"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:tint="?attr/selected_background_color"
+                    app:tint="?attr/selected_background_color"
                     android:background="@drawable/ic_info"
                     android:layout_width="@dimen/_30sdp"
                     android:layout_height="@dimen/_30sdp"

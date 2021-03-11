@@ -34,7 +34,7 @@
             android:layout_gravity="right|end"
             android:layout_marginEnd="@dimen/_12sdp"
             android:layout_marginRight="@dimen/_12sdp"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_close" />
 
@@ -73,7 +73,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:tint="@color/txt_color_light_grey"
+                app:tint="@color/txt_color_light_grey"
                 app:srcCompat="@drawable/ic_chevron_right" />
 
             <TextView
@@ -119,7 +119,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:tint="@color/txt_color_light_grey"
+                app:tint="@color/txt_color_light_grey"
                 app:srcCompat="@drawable/ic_chevron_right" />
 
             <TextView
@@ -139,6 +139,53 @@
                 android:textColor="@color/txt_color_dark"
                 android:textSize="@dimen/_10sdp" />
         </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/btn_goods2go_survey"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_below="@id/btn_poling_survey"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:background="@color/white"
+            android:padding="@dimen/_8sdp">
+
+            <ImageView
+                android:id="@+id/img_icon_goods2go"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:padding="@dimen/_2sdp"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/poling_survey_icon" />
+
+
+            <ImageView
+                android:id="@+id/img_arrow_goods2go"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                app:tint="@color/txt_color_light_grey"
+                app:srcCompat="@drawable/ic_chevron_right" />
+
+            <TextView
+                android:id="@+id/txt_title_goods2go"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:layout_marginLeft="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_marginRight="@dimen/_8sdp"
+                android:layout_toStartOf="@id/img_arrow_goods2go"
+                android:layout_toLeftOf="@id/img_arrow_goods2go"
+                android:layout_toEndOf="@id/img_icon_goods2go"
+                android:layout_toRightOf="@id/img_icon_goods2go"
+                android:layout_centerVertical="true"
+                android:text="@string/goodstogo_survey"
+                android:textColor="@color/txt_color_dark"
+                android:textSize="@dimen/_10sdp" />
+        </RelativeLayout>
+
     </RelativeLayout>
 
 

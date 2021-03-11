@@ -11,7 +11,6 @@ import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.Crashes;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
@@ -28,7 +27,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends BaseActivity {
 
     private User user;
 
@@ -44,8 +43,8 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         AppCenter.start(getApplication(), "135e3d47-d004-4619-8ba3-da341e88b408",
                 Analytics.class, Crashes.class);
-        DBHandler.getInstance().init(getApplicationContext());
-        user = DBHandler.getInstance().getUser();
+        dbHandler.init(getApplicationContext());
+        user = dbHandler.getUser();
 
         TextView textView = findViewById(R.id.txt_version_code);
         textView.setText(BuildConfig.VERSION_NAME);
@@ -74,10 +73,12 @@ public class SplashActivity extends AppCompatActivity {
             }
 
 
-            DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
+            dbHandler.replaceData(User.DBTable.NAME, user.toContentValues());
             if (!CommonUtils.isNetworkAvailable(SplashActivity.this)) {
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
-                Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
+                Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
+                Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
+                Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
+                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
                 intent = new Intent(SplashActivity.this, WelcomeActivity.class);
                 startActivity(intent);
                 finish();
@@ -110,15 +111,19 @@ public class SplashActivity extends AppCompatActivity {
                     }
                 }
 
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
-                Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
+                Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
+                Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
+                Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
+                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
                 startWelcomeActivity();
             }
 
             @Override
             public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
-                Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
+                Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
+                Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
+                Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
+                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
                 startWelcomeActivity();
             }
         });

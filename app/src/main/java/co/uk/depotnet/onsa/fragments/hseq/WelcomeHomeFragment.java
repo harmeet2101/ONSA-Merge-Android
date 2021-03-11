@@ -17,7 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import co.uk.depotnet.onsa.R;
@@ -32,10 +34,15 @@ import co.uk.depotnet.onsa.adapters.WelcomeHomeAdapter;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.store.FragmentStore;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
+import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.User;
+import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.Submission;
+import co.uk.depotnet.onsa.modals.responses.JobResponse;
 import co.uk.depotnet.onsa.modals.store.DataMyRequests;
 import co.uk.depotnet.onsa.modals.store.DataReceipts;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheet;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetResponse;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
@@ -52,6 +59,7 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
     private int apiCounter;
     private Context context;
     private FragmentActionListener listener;
+    private DBHandler dbHandler;
 
     public static WelcomeHomeFragment newInstance() {
         WelcomeHomeFragment fragment = new WelcomeHomeFragment();
@@ -70,9 +78,11 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user = DBHandler.getInstance().getUser();
-
+        dbHandler = DBHandler.getInstance(context);
+        user = dbHandler.getUser();
     }
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -98,6 +108,7 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
     public void onResume() {
         super.onResume();
         apiCounter = 0;
+        getJobs();
         if(Constants.isStoreEnabled && CommonUtils.isNetworkAvailable(context)) {
             listener.showProgressBar();
             getMyRequests();
@@ -105,18 +116,55 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
         }
     }
 
+    private void getJobs() {
+        if(!CommonUtils.validateToken(context)){
+            return;
+        }
+
+        APICalls.getJobList(user.gettoken()).enqueue(new Callback<JobResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<JobResponse> call, @NonNull Response<JobResponse> response) {
+                apiCounter++;
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    return;
+                }
+                if (response.isSuccessful()) {
+                    dbHandler.resetJobs();
+                    JobResponse jobResponse = response.body();
+                    if (jobResponse != null){
+                        List<Job> jobs = jobResponse.getJobs();
+                        if (jobs != null && !jobs.isEmpty()) {
+                            for (Job j : jobs) {
+                                dbHandler.replaceData(Job.DBTable.NAME, j.toContentValues());
+                            }
+                        }
+                    }
+                }
+
+                onApiCallResponse();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JobResponse> call, @NonNull Throwable t) {
+                apiCounter++;
+                onApiCallResponse();
+            }
+        });
+    }
+
+
     @Override
     public void onItemClick(int WH_id) {
         switch (WH_id)
         {
             case 1:
-                if(isBookOn()) {
+             //   if(isBookOn()) {
                     AppPreferences.setTheme(5);
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
-                }else{
+              /*  }else{
                     showBookOnDialog();
-                }
+                }*/
                 break;
             case 2:
                 AppPreferences.setTheme(1);
@@ -134,16 +182,100 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
                 startActivity(brief);
                 break;
             case 5:
-                AppPreferences.setTheme(5);
-                Intent timeSheet = new Intent(context, TimeSheetActivity.class);
-                startActivity(timeSheet);
+                getTimeSheets();
+                break;
+            case 6:
+                AppPreferences.setTheme(2);
+                openIncident();
                 break;
             default:
                 break;
         }
     }
 
-    private boolean isBookOn() {
+
+
+    private void openIncident(){
+        Submission submission = new Submission("incident.json", "Incident", "");
+        long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
+        submission.setId(submissionID);
+
+        Answer answer = dbHandler.getAnswer(submissionID, "isUniqueIncident",
+                null, 0);
+
+        if (answer == null) {
+            answer = new Answer(submissionID, "isUniqueIncident");
+            answer.setAnswer("false");
+            answer.setRepeatID(null);
+            answer.setRepeatCount(0);
+
+            dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
+        }
+
+        Intent intent = new Intent(context, FormActivity.class);
+        intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+        startActivity(intent);
+    }
+
+    private void getTimeSheets() {
+        listener.showProgressBar();
+
+        APICalls.getTimesheets(user.gettoken()).enqueue(new Callback<TimeSheetResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<TimeSheetResponse> call, @NonNull Response<TimeSheetResponse> response) {
+               boolean isRejected = false;
+                String title = "Timesheet Rejected";
+                String message = "";
+                String key = "";
+
+                if (response.isSuccessful()) {
+                    TimeSheetResponse timeSheetResponse = response.body();
+                    if (timeSheetResponse != null && !timeSheetResponse.isEmpty()) {
+                        timeSheetResponse.toContentValues();
+                        ArrayList<TimeSheet> timeSheets = timeSheetResponse.getTimesheets();
+
+                        for (int i = 0 ; i < timeSheets.size() ; i++){
+                            TimeSheet timeSheet = timeSheets.get(i);
+                            if(!TextUtils.isEmpty(timeSheet.getRejectionReason())){
+                                key += timeSheet.getWeekCommencing();
+                                isRejected = true;
+                                String dateValue = timeSheet.getWeekCommencing();
+                                Date date = Utils.parseDate(dateValue , "yyyy-MM-dd'T'hh:mm:ss");
+                                if(date != null){
+                                    dateValue = Utils.formatDate(date , "dd/MM/yyyy");
+                                }
+                                message += "Date - "+dateValue+"\n";
+                                message += "Reason - "+timeSheet.getRejectionReason()+"\n\n\n";
+                            }
+                        }
+                    }
+                }
+
+                if(!isRejected || AppPreferences.getInt(key ,0) == 1){
+                    AppPreferences.setTheme(5);
+                    Intent timeSheet = new Intent(context, TimeSheetActivity.class);
+                    startActivity(timeSheet);
+                }else{
+                    AppPreferences.putInt(key , 1);
+                    showErrorDialog(title , message);
+                }
+                listener.hideProgressBar();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<TimeSheetResponse> call, @NonNull Throwable t) {
+                listener.hideProgressBar();
+                AppPreferences.setTheme(5);
+                Intent timeSheet = new Intent(context, TimeSheetActivity.class);
+                startActivity(timeSheet);
+            }
+        });
+    }
+
+    /*private boolean isBookOn() {
+        if(!Constants.isTimeSheetEnabled){
+            return true;
+        }
         if(user != null && !user.isCompleteTimesheets()){
             return true;
         }
@@ -165,9 +297,9 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
             return false;
         }
         return date.compareTo(currentDate) == 0;
-    }
+    }*/
 
-    private void showBookOnDialog(){
+    /*private void showBookOnDialog(){
         String title = "Book On";
         String message = "Please Book on before viewing any jobs";
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
@@ -177,13 +309,29 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
                     listener.hideProgressBar();
                     dialog1.dismiss();
                     Submission submission = new Submission("my_work_book_on.json","Timesheet Book On", "");
-                    long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+                    long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
                     submission.setId(submissionID);
                     Intent intent = new Intent(context, FormActivity.class);
                     intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
                     startActivityForResult(intent , 1000);
-                }).setNegative(getString(R.string.generic_cancel), (dialog12, which) -> {
-                    dialog12.dismiss();
+                }).setNegative(getString(R.string.generic_cancel), (dialog12, which) -> dialog12.dismiss())
+                .build();
+
+        dialog.setCancelable(false);
+        dialog.show(getChildFragmentManager(), "_ERROR_DIALOG");
+
+    }*/
+
+    private void showErrorDialog(String title , String message){
+
+        MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositive(getString(R.string.ok), (dialog1, i) -> {
+                    dialog1.dismiss();
+                    AppPreferences.setTheme(5);
+                    Intent timeSheet = new Intent(context, TimeSheetActivity.class);
+                    startActivity(timeSheet);
                 })
                 .build();
 
@@ -219,7 +367,7 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
     }
 
     private void onApiCallResponse(){
-        if(apiCounter == 2 || (!Constants.isStoreEnabled && apiCounter == 0)){
+        if(apiCounter == 3 || (!Constants.isStoreEnabled && apiCounter == 1)){
             listener.hideProgressBar();
         }
     }
@@ -240,7 +388,7 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
                 if(response.isSuccessful()){
                     DataMyRequests dataMyRequests = response.body();
                     if(dataMyRequests != null){
-                        DBHandler.getInstance().resetMyRequest();
+                        dbHandler.resetMyRequest();
                         dataMyRequests.toContentValues();
                     }
                 }
@@ -254,7 +402,7 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
         });
     }
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1000 && resultCode == Activity.RESULT_OK){
@@ -264,7 +412,6 @@ public class WelcomeHomeFragment extends Fragment implements WelcomeHomeAdapter.
                 startActivity(intent);
             }
         }
-    }
-
+    }*/
 }
 

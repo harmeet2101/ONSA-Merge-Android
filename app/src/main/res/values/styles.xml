@@ -3,6 +3,9 @@
     <!-- Base application theme. -->
 
     <style name="Theme.MyApp" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
+        <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
+        <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
         <!--  It extends AppCompat theme, but add all necessary stuff....
          old one    Theme.AppCompat.Light.NoActionBar-->
     </style>
@@ -34,11 +37,20 @@
         <item name="unselected_txt_color">@color/txt_color_light_grey</item>
     </style>
     <style name="AppTheme.Actions" parent="Theme.MyApp">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/ColorActions</item>
+        <item name="colorPrimaryDark">@color/ColorActions</item>
         <item name="colorAccent">@color/ColorActions</item>
         <item name="selected_background_color">@color/ColorActions</item>
         <item name="selected_txt_color">@color/ColorActions</item>
+        <item name="unselected_background_color">@color/white</item>
+        <item name="unselected_txt_color">@color/txt_color_light_grey</item>
+    </style>
+    <style name="AppTheme.Timesheet" parent="Theme.MyApp">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/ColorTimeSheet</item>
+        <item name="selected_background_color">@color/ColorTimeSheet</item>
+        <item name="selected_txt_color">@color/ColorTimeSheet</item>
         <item name="unselected_background_color">@color/white</item>
         <item name="unselected_txt_color">@color/txt_color_light_grey</item>
     </style>

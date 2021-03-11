@@ -1,0 +1,156 @@
+{
+  "title": "Incident",
+  "isProgressVisible": false,
+  "themeColor": "#243d4d",
+  "screens": [
+    {
+      "title": "Incident",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "et_short_text",
+          "uploadId": "incidentTitle",
+          "title": "Incident Title",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "jobId",
+          "key": "Job",
+          "isMultiSelection": false,
+          "isConcatDisplayText": false,
+          "title": "Estimate",
+          "optional": false
+        },
+        {
+          "type": "location",
+          "repeatId": "location",
+          "uploadId": "location",
+          "title": "Locate Me",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "incidentSourceId",
+          "key": "IncidentSource",
+          "title": "Source of Incident",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "incidentCategoryId",
+          "key": "IncidentCategory",
+          "title": "Incident Categories",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "incidentSubcategoryId",
+          "key": "IncidentSubCategory",
+          "title": "Incident Subcategories",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "incidentSeverityId",
+          "key": "IncidentSeverity",
+          "title": "Severity",
+          "optional": false
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "siteMeetingRequired",
+          "title": "Site Meeting Required?",
+          "optional": true
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "isUniqueIncident",
+          "title": "Unique Issue?",
+
+          "falseEnables": [
+            {
+              "type": "dropdown",
+              "uploadId": "parentIncidentId",
+              "key": "UniqueIncident",
+              "title": "Unique Incident",
+              "optional": false
+            }
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Incident",
+      "index": 1,
+      "upload": false,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "howTheIncidentOriginated",
+          "title": "How the Incident Originated?",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "immediateResponse",
+          "title": "Immediate Response (Action Taken)",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Incident",
+      "index": 2,
+      "url":"apphseq/incidents/submit-new-incident",
+      "upload": true,
+      "items": [
+        {
+          "type": "et_short_text",
+          "uploadId": "customerForeName",
+          "title": "Customer Forename",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "customerSurName",
+          "title": "Customer Surname",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "customerEmailAddress",
+          "title": "Customer Email Address",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "customerContactNumber",
+          "title": "Customer Contact Number",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "customerAlternativeContactNumber",
+          "title": "Alternative Contact Number",
+          "optional": true
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "customerAddress",
+          "title": "Customer Address",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "Incident",
+          "photoSize": 20,
+          "photoRequired": 0,
+          "photoId": "194"
+        }
+      ]
+    }
+  ]
+}

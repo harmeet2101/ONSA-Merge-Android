@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -26,11 +24,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.tonyodev.fetch2.DefaultFetchNotificationManager;
 import com.tonyodev.fetch2.Fetch;
-import com.tonyodev.fetch2.FetchConfiguration;
-import com.tonyodev.fetch2core.Downloader;
-import com.tonyodev.fetch2okhttp.OkHttpDownloader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +38,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import co.uk.depotnet.onsa.R;
-import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fcm.NotifyUtils;
 import co.uk.depotnet.onsa.fragments.hseq.WelcomeHomeFragment;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
@@ -56,7 +49,7 @@ import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.NetworkStateReceiver;
 import co.uk.depotnet.onsa.views.MaterialAlertDialog;
 
-public class WelcomeActivity extends AppCompatActivity implements
+public class WelcomeActivity extends BaseActivity implements
         NetworkStateReceiver.NetworkStateReceiverListener, FragmentActionListener, GetFetchListener {
 
     private static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1093;
@@ -74,28 +67,21 @@ public class WelcomeActivity extends AppCompatActivity implements
         networkStateReceiver = new NetworkStateReceiver();
         networkStateReceiver.addListener(this);
 
-        final FetchConfiguration fetchConfiguration = new FetchConfiguration.Builder(this)
-                .setDownloadConcurrentLimit(4)
-                .setHttpDownloader(new OkHttpDownloader(Downloader.FileDownloaderType.PARALLEL))
-                .setNamespace("OptinonsDownloader")
-                .setNotificationManager(new DefaultFetchNotificationManager(this))
-                .build();
-//        fetch = Fetch.Impl.getInstance(fetchConfiguration);
         fetch = Fetch.Impl.getDefaultInstance();
+        try {
+            user = dbHandler.getUser();
 
-
-        user = DBHandler.getInstance().getUser();
         setupBottomNavigation();
 
         if (savedInstanceState == null) {
             fragment = WelcomeHomeFragment.newInstance();
             addFragment(fragment, false);
         }
-        APICalls.getTags(DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<ArrayList<String>>() {
+        APICalls.getTags(user.gettoken()).enqueue(new Callback<ArrayList<String>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<String>> call, @NonNull Response<ArrayList<String>> response) {
                 if (response.isSuccessful()) {
-                    DBHandler.getInstance().resetTags();
+                    dbHandler.resetTags();
                     ArrayList<String> body1 = response.body();
                     if(body1 == null){
                         return;
@@ -103,7 +89,7 @@ public class WelcomeActivity extends AppCompatActivity implements
                     for (int i = 0; i < body1.size(); i++) {
                         ContentValues cv = new ContentValues();
                         cv.put("tagslist", body1.get(i));
-                        DBHandler.getInstance().replaceData("Tags", cv);
+                        dbHandler.replaceData("Tags", cv);
                     }
                 }
             }
@@ -119,14 +105,13 @@ public class WelcomeActivity extends AppCompatActivity implements
                     return;
                 }
                 if (response.isSuccessful()) {
-                    DBHandler.getInstance().resetNotification();
+                    dbHandler.resetNotification();
                     ArrayList<NotifyModel> list = response.body();
                     if (list != null && list.size() > 0) {
                         for (NotifyModel modal : list) {
-                            DBHandler.getInstance().replaceData(NotifyModel.DBTable.NAME, modal.toContentValues());
+                            dbHandler.replaceData(NotifyModel.DBTable.NAME, modal.toContentValues());
                         }
                         NotifyUtils.scheduleJob(getApplicationContext(), true); // reschedule the job
-                        Log.d("abhikr", "notification count: " + DBHandler.getInstance().getReadNotificationCount());
                     }
                 }
             }
@@ -135,17 +120,14 @@ public class WelcomeActivity extends AppCompatActivity implements
             public void onFailure(@NonNull Call<ArrayList<NotifyModel>> call, @NonNull Throwable t) {
             }
         });
-    }
+        }catch (Exception e){
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
+        }
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        //loadHomeFragment();
         fragment = WelcomeHomeFragment.newInstance();
         addFragment(fragment, false);
     }
@@ -293,7 +275,7 @@ public class WelcomeActivity extends AppCompatActivity implements
 
     @Override
     public void networkAvailable() {
-        ArrayList<Submission> submissions = DBHandler.getInstance().getQueuedSubmissions();
+        ArrayList<Submission> submissions = dbHandler.getQueuedSubmissions();
         if (submissions.isEmpty()) {
             return;
         }
@@ -353,11 +335,6 @@ public class WelcomeActivity extends AppCompatActivity implements
 
     @Override
     public void setTitle(String title) {
-    }
-
-    @Override
-    public void onFragmentHomeVisible(boolean isVisible) {
-
     }
 
     @Override

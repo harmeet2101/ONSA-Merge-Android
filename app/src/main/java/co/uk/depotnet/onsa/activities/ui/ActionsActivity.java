@@ -19,11 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.uk.depotnet.onsa.R;
+import co.uk.depotnet.onsa.activities.BaseActivity;
 import co.uk.depotnet.onsa.fragments.actions.ClearedFragment;
 import co.uk.depotnet.onsa.fragments.actions.OutstandingFragment;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 
-public class ActionsActivity extends AppCompatActivity {
+public class ActionsActivity extends BaseActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -64,9 +65,7 @@ public class ActionsActivity extends AppCompatActivity {
         adapter.addFrag(new OutstandingFragment(), "Outstanding");
         adapter.addFrag(new ClearedFragment(), "Cleared");
         viewPager.setAdapter(adapter);
-        /* the ViewPager requires a minimum of 1 as OffscreenPageLimit */
         int limit = (adapter.getCount() > 1 ? adapter.getCount() - 1 : 1);
-        //adapter.notifyDataSetChanged();
         viewPager.setOffscreenPageLimit(limit);
     }
 

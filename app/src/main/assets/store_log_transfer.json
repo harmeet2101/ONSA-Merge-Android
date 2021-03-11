@@ -12,8 +12,6 @@
           "type": "dropdown",
           "uploadId": "ToUserId",
           "key": "operatives",
-          "isMultiSelection": false,
-          "isConcatDisplayText": false,
           "title": "Operative",
           "optional": false
         }

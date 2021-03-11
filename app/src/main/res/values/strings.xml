@@ -33,7 +33,6 @@
     <string name="job_details">Job Details</string>
     <string name="work_log">Work Log</string>
 
-
     <string name="log_dcr">Log DCR</string>
     <string name="log_dfe">Log DFE</string>
     <string name="log_tdfs">Log TDFS</string>
@@ -44,7 +43,7 @@
     <string name="risk_assessment">Risk Assessment</string>
     <string name="visitor_attendance">Visitor on Site</string>
     <string name="survey">Survey</string>
-    <string name="take_photo">Take Photo/Video</string>
+    <string name="take_photo">Take Photo or Video</string>
     <string name="variation">Variation</string>
     <string name="view_gang_measures">View Gang Measures</string>
     <string name="create_task">Create / Request Task</string>
@@ -117,8 +116,9 @@
 
     <string name="go_to_risk_assessment">Go To Risk Assessment</string>
     <string name="go_to_hoist_risk_assessment">Go To Hoist Risk Assessment</string>
-    <string name="wraning_risk_assessment">You can not go into the work log before completing your risk assessment!</string>
-    <string name="wraning_hoist_risk_assessment">You can not go into the work log before completing your hoist risk assessment!</string>
+    <string name="wraning_risk_assessment">You can not go into the work log before completing your Risk assessment!</string>
+    <string name="wraning_hoist_risk_assessment">You can not go into the work log before completing your Hoist risk assessment!</string>
+    <string name="wraning_polling_risk_assessment">You can not go into the work log before completing your Poling risk assessment!</string>
     <string name="asset_survey_message">You have entered an asset. Please complete the asset survey Information</string>
     <string name="go_to_asset_Survey">Go to asset survey</string>
     <string name="signature">Signature</string>
@@ -308,5 +308,12 @@
     <string name="submit_timesheet">Submit Timesheet</string>
     <string name="timesheet">TimeSheets</string>
     <string name="book_off">Book Off</string>
+    <string name="goodstogo_survey">Good2Go Survey</string>
+    <string name="on_task">On Task</string>
+    <string name="no_hours_logged">No Hours Logged</string>
+    <string name="normal_time">Normal Time</string>
+    <string name="over_time">Over Time</string>
+    <string name="total_hours">Total Hours</string>
+    <string name="cancle">Cancel</string>
 
 </resources>

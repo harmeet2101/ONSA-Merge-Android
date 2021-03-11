@@ -15,36 +15,33 @@ import co.uk.depotnet.onsa.networking.Constants;
 
 public class HomeBottomBarHandler implements View.OnClickListener {
 
-    private Context context;
-    private HomeBottomBarListener listener;
+    private final Context context;
+    private final HomeBottomBarListener listener;
 
-    private LinearLayout llBtnMyWork;
-    private LinearLayout llBtnKitBag;
-    private LinearLayout llBtnBookOff;
-    private LinearLayout llBtnOnsaStore;
-    private LinearLayout llBtnOfflineCheck;
+    private final LinearLayout llBtnMyWork;
+    private final LinearLayout llBtnKitBag;
+    private final LinearLayout llBtnOnsaStore;
+    private final LinearLayout llBtnOfflineCheck;
 
 
-    private ImageView imgMyWork;
-    private ImageView imgKitBag;
-    private ImageView imgBookOff;
-    private ImageView imgOnsaStore;
-    private ImageView imgOfflineQueue;
+    private final ImageView imgMyWork;
+    private final ImageView imgKitBag;
+    private final ImageView imgOnsaStore;
+    private final ImageView imgOfflineQueue;
 
-    private TextView txtMyWork;
-    private TextView txtKitBag;
-    private TextView txtBookOff;
-    private TextView txtOnsaStore;
-    private TextView txtOfflineQueue;
+    private final TextView txtMyWork;
+    private final TextView txtKitBag;
+    private final TextView txtOnsaStore;
+    private final TextView txtOfflineQueue;
 
     private LinearLayout llLastSelected;
     private ImageView imgLastSelected;
     private TextView txtLastSelected;
 
-    private TextView txtStoreNotification;
+    private final TextView txtStoreNotification;
 
-    private int colorUnselected;
-    private int colorSelected;
+    private final int colorUnselected;
+    private final int colorSelected;
 
     public HomeBottomBarHandler(Context context, View view,
                                 HomeBottomBarListener listener) {
@@ -59,25 +56,20 @@ public class HomeBottomBarHandler implements View.OnClickListener {
 
         llBtnMyWork = view.findViewById(R.id.ll_btn_my_work);
         llBtnKitBag = view.findViewById(R.id.ll_btn_kit_bag);
-        llBtnBookOff = view.findViewById(R.id.ll_btn_book_off);
         llBtnOnsaStore = view.findViewById(R.id.ll_btn_onsa_store);
         llBtnOfflineCheck = view.findViewById(R.id.ll_btn_offline_queue);
 
-//        llBtnOnsaStore.setVisibility(View.GONE);
 
         llBtnMyWork.setOnClickListener(this);
         llBtnKitBag.setOnClickListener(this);
-        llBtnBookOff.setOnClickListener(this);
         llBtnOnsaStore.setOnClickListener(this);
         llBtnOfflineCheck.setOnClickListener(this);
 
         imgMyWork = view.findViewById(R.id.img_my_work);
         imgKitBag = view.findViewById(R.id.img_kit_bag);
-        imgBookOff = view.findViewById(R.id.img_book_off);
         imgOnsaStore = view.findViewById(R.id.img_vehicle_check);
         imgOfflineQueue = view.findViewById(R.id.img_offline_queue);
         txtMyWork = view.findViewById(R.id.txt_my_work);
-        txtBookOff = view.findViewById(R.id.txt_book_off);
         txtKitBag = view.findViewById(R.id.txt_kit_bag);
         txtOnsaStore = view.findViewById(R.id.txt_onsa_store);
         txtOfflineQueue = view.findViewById(R.id.txt_offline_queue);
@@ -95,6 +87,7 @@ public class HomeBottomBarHandler implements View.OnClickListener {
         }else{
             llBtnOnsaStore.setVisibility(View.GONE);
         }
+
     }
 
     @Override
@@ -117,15 +110,6 @@ public class HomeBottomBarHandler implements View.OnClickListener {
                         ColorStateList.valueOf(colorSelected));
                 txtLastSelected.setTextColor(colorSelected);
                 listener.onMyWorkClick();
-                break;
-            case R.id.ll_btn_book_off:
-                llLastSelected = llBtnBookOff;
-                imgLastSelected = imgBookOff;
-                txtLastSelected = txtBookOff;
-                ImageViewCompat.setImageTintList(imgLastSelected,
-                        ColorStateList.valueOf(colorSelected));
-                txtLastSelected.setTextColor(colorSelected);
-                listener.onBookOff();
                 break;
             case R.id.ll_btn_kit_bag:
                 llLastSelected = llBtnKitBag;

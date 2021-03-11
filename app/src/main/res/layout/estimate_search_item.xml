@@ -54,7 +54,7 @@
             android:layout_height="@dimen/_24sdp"
             app:srcCompat="@drawable/ic_search"
             android:layout_margin="@dimen/_4sdp"
-            android:tint="?attr/selected_background_color"
+            app:tint="?attr/selected_background_color"
             app:layout_constraintStart_toEndOf="@+id/et_estimate"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txt_estimate_title"

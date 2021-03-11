@@ -3,21 +3,30 @@ package co.uk.depotnet.onsa.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.datepicker.MaterialDatePicker;
+
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.CameraActivity;
 import co.uk.depotnet.onsa.activities.SignatureActivity;
-import co.uk.depotnet.onsa.adapters.FrokFormAdapter;
+import co.uk.depotnet.onsa.adapters.ForkFormAdapter;
 import co.uk.depotnet.onsa.listeners.FormAdapterListener;
 import co.uk.depotnet.onsa.listeners.FromActivityListener;
 import co.uk.depotnet.onsa.listeners.LocationListener;
@@ -38,7 +47,7 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
     private Context context;
     private FormItem formItem;
     private FromActivityListener listener;
-    private FrokFormAdapter formAdapter;
+    private ForkFormAdapter formAdapter;
     private Submission submission;
     private String themeColor;
     private int repeatCount;
@@ -61,8 +70,8 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
     public void onResume() {
         super.onResume();
         listener.showBtnContainer(false);
-        formAdapter.addListItems();
-        formAdapter.notifyDataSetChanged();
+        formAdapter.reInflateItems(true);
+//        formAdapter.notifyDataSetChanged();
 
     }
 
@@ -77,7 +86,7 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
             recipients=getArguments().getStringArrayList(ARG_RECIPIENTS);
         }
 
-        formAdapter = new FrokFormAdapter(context, submission , formItem , repeatCount , this, themeColor , recipients);
+        formAdapter = new ForkFormAdapter(context, submission , formItem , repeatCount , this, themeColor , recipients);
     }
 
     @Override
@@ -85,10 +94,18 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_form_fork, container, false);
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
-        rootView.findViewById(R.id.btn_add).setOnClickListener(view -> submit());
+        Button btnAdd = rootView.findViewById(R.id.btn_add);
+        btnAdd.setOnClickListener(view -> submit());
         VerticalSpaceItemDecoration itemDecoration = new VerticalSpaceItemDecoration(10);
         recyclerView.addItemDecoration(itemDecoration);
         recyclerView.setAdapter(formAdapter);
+
+        if (!TextUtils.isEmpty(themeColor)) {
+            int themeColor = Color.parseColor(this.themeColor);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                btnAdd.setBackgroundTintList(ColorStateList.valueOf(themeColor));
+            }
+        }
         return rootView;
     }
 
@@ -142,6 +159,16 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
         ForkFormFragment fragment = ForkFormFragment.newInstance(submission, formItem, repeatCount , themeColor , recipients);
         listener.addFragment(fragment);
 
+    }
+
+    @Override
+    public void showProgressBar() {
+        listener.showProgressBar();
+    }
+
+    @Override
+    public void hideProgressBar() {
+        listener.hideProgressBar();
     }
 
 
@@ -204,5 +231,10 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
     @Override
     public void getEstimateOperative(String estno, int position) {
 
+    }
+
+    @Override
+    public void showDatePicker(DialogFragment dialogFragment) {
+        dialogFragment.show(getChildFragmentManager() , dialogFragment.toString());
     }
 }

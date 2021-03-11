@@ -10,6 +10,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.incident.IncidentCategory;
+import co.uk.depotnet.onsa.modals.incident.IncidentSeverity;
+import co.uk.depotnet.onsa.modals.incident.IncidentSource;
+import co.uk.depotnet.onsa.modals.incident.UniqueIncident;
 
 public class HseqDataset implements Parcelable {
     @SerializedName("inspectionTemplates")
@@ -24,6 +28,21 @@ public class HseqDataset implements Parcelable {
     @SerializedName("photoTypes")
     @Expose
     private List<PhotoTypes> photoTypes = null;
+    @SerializedName("incidentSources")
+    @Expose
+    private List<IncidentSource> incidentSources = null;
+
+    @SerializedName("incidentCategories")
+    @Expose
+    private List<IncidentCategory> incidentCategories = null;
+
+    @SerializedName("uniqueIncidents")
+    @Expose
+    private List<UniqueIncident> uniqueIncidents = null;
+
+    @SerializedName("incidentSeverities")
+    @Expose
+    private List<IncidentSeverity> incidentSeverities = null;
     public HseqDataset() {
     }
 
@@ -32,6 +51,10 @@ public class HseqDataset implements Parcelable {
         operatives = in.createTypedArrayList(OperativeTemplate.CREATOR);
         inspectors = in.createTypedArrayList(InspectorTemplate.CREATOR);
         photoTypes = in.createTypedArrayList(PhotoTypes.CREATOR);
+        incidentSources = in.createTypedArrayList(IncidentSource.CREATOR);
+        incidentCategories = in.createTypedArrayList(IncidentCategory.CREATOR);
+        uniqueIncidents = in.createTypedArrayList(UniqueIncident.CREATOR);
+        incidentSeverities = in.createTypedArrayList(IncidentSeverity.CREATOR);
     }
 
     @Override
@@ -40,6 +63,10 @@ public class HseqDataset implements Parcelable {
         dest.writeTypedList(operatives);
         dest.writeTypedList(inspectors);
         dest.writeTypedList(photoTypes);
+        dest.writeTypedList(incidentSources);
+        dest.writeTypedList(incidentCategories);
+        dest.writeTypedList(uniqueIncidents);
+        dest.writeTypedList(incidentSeverities);
     }
 
     @Override
@@ -116,6 +143,31 @@ public class HseqDataset implements Parcelable {
         {
             for (PhotoTypes types : this.photoTypes) {
                 dbHandler.replaceData(PhotoTypes.DBTable.NAME, types.toContentValues());
+            }
+        }
+        if (this.incidentCategories !=null && !this.incidentCategories.isEmpty())
+        {
+            for (IncidentCategory types : this.incidentCategories) {
+                dbHandler.replaceData(IncidentCategory.DBTable.NAME, types.toContentValues());
+            }
+        }
+        if (this.incidentSources !=null && !this.incidentSources.isEmpty())
+        {
+            for (IncidentSource types : this.incidentSources) {
+                dbHandler.replaceData(IncidentSource.DBTable.NAME, types.toContentValues());
+            }
+        }
+        if (this.uniqueIncidents !=null && !this.uniqueIncidents.isEmpty())
+        {
+            for (UniqueIncident types : this.uniqueIncidents) {
+                dbHandler.replaceData(UniqueIncident.DBTable.NAME, types.toContentValues());
+            }
+        }
+
+        if (this.incidentSeverities !=null && !this.incidentSeverities.isEmpty())
+        {
+            for (IncidentSeverity types : this.incidentSeverities) {
+                dbHandler.replaceData(IncidentSeverity.DBTable.NAME, types.toContentValues());
             }
         }
         return cv;

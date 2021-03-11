@@ -18,15 +18,12 @@ import androidx.appcompat.widget.SwitchCompat;
 import android.os.Build;
 import android.text.InputFilter;
 import android.text.TextUtils;
-import android.util.SparseArray;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
@@ -39,17 +36,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import co.uk.depotnet.onsa.R;
+import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.activities.ListActivity;
 import co.uk.depotnet.onsa.activities.ListEditActivity;
 import co.uk.depotnet.onsa.activities.ListStockItemActivity;
 import co.uk.depotnet.onsa.activities.ListStoreItemActivity;
+import co.uk.depotnet.onsa.activities.ThemeBaseActivity;
 import co.uk.depotnet.onsa.barcode.ScannedBarcodeActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.dialogs.SimpleCalendarDialogFragment;
 import co.uk.depotnet.onsa.dialogs.ToolTipDialog;
 import co.uk.depotnet.onsa.formholders.BoldTextHolder;
 import co.uk.depotnet.onsa.formholders.BriefingSignHolder;
@@ -59,6 +60,7 @@ import co.uk.depotnet.onsa.formholders.CheckBoxHolder;
 import co.uk.depotnet.onsa.formholders.CurrentStoreHolder;
 import co.uk.depotnet.onsa.formholders.DFEItemHolder;
 import co.uk.depotnet.onsa.formholders.DateTimeHolder;
+import co.uk.depotnet.onsa.formholders.DayViewHolder;
 import co.uk.depotnet.onsa.formholders.DigMeasureItemHolder;
 import co.uk.depotnet.onsa.formholders.DropDownHolder;
 import co.uk.depotnet.onsa.formholders.DropDownNumber;
@@ -66,9 +68,9 @@ import co.uk.depotnet.onsa.formholders.EstimateSearchHolder;
 import co.uk.depotnet.onsa.formholders.ForkCardHolder;
 import co.uk.depotnet.onsa.formholders.ForkHolder;
 import co.uk.depotnet.onsa.formholders.LocationHolder;
+import co.uk.depotnet.onsa.formholders.LogDayHoursViewHolder;
 import co.uk.depotnet.onsa.formholders.LogDigBackFillItemHolder;
 import co.uk.depotnet.onsa.formholders.LogDigForkHolder;
-import co.uk.depotnet.onsa.formholders.LogHoursItemHolder;
 import co.uk.depotnet.onsa.formholders.LogMeasureItemHolder;
 import co.uk.depotnet.onsa.formholders.LogMuckAwayHolder;
 import co.uk.depotnet.onsa.formholders.LogReinstatementItemHolder;
@@ -88,7 +90,6 @@ import co.uk.depotnet.onsa.formholders.StoreHolder;
 import co.uk.depotnet.onsa.formholders.SwitchHolder;
 import co.uk.depotnet.onsa.formholders.TakePhotoHolder;
 import co.uk.depotnet.onsa.formholders.TimePickerHolder;
-import co.uk.depotnet.onsa.formholders.TimeSheetItemHolder;
 import co.uk.depotnet.onsa.formholders.TimeTotalWorkedHoursHolder;
 import co.uk.depotnet.onsa.formholders.VisitorSignHolder;
 import co.uk.depotnet.onsa.formholders.YesNoHolder;
@@ -96,22 +97,18 @@ import co.uk.depotnet.onsa.formholders.YesNoNAHolder;
 import co.uk.depotnet.onsa.formholders.YesNoNAToolTipHolder;
 import co.uk.depotnet.onsa.formholders.YesNoToolTipHolder;
 import co.uk.depotnet.onsa.fragments.FragmentStopWork;
+import co.uk.depotnet.onsa.listeners.DropDownCalls;
+import co.uk.depotnet.onsa.listeners.DropDownDataListner;
 import co.uk.depotnet.onsa.listeners.DropDownItem;
 import co.uk.depotnet.onsa.listeners.FormAdapterListener;
 import co.uk.depotnet.onsa.listeners.FromActivityListener;
 import co.uk.depotnet.onsa.listeners.LocationListener;
 import co.uk.depotnet.onsa.listeners.OnChangeChamberCount;
 import co.uk.depotnet.onsa.listeners.PhotoAdapterListener;
-import co.uk.depotnet.onsa.modals.ItemType;
-import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobWorkItem;
 import co.uk.depotnet.onsa.modals.LogMeasureForkItem;
-import co.uk.depotnet.onsa.modals.MeasureItems;
-import co.uk.depotnet.onsa.modals.MenSplit;
 import co.uk.depotnet.onsa.modals.Notice;
-import co.uk.depotnet.onsa.modals.RecordReturnReason;
 import co.uk.depotnet.onsa.modals.User;
-import co.uk.depotnet.onsa.modals.WorkItem;
 import co.uk.depotnet.onsa.modals.forms.Amends;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
@@ -125,11 +122,16 @@ import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.schedule.JobEstimate;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.StockItems;
+import co.uk.depotnet.onsa.modals.timesheet.LogHourItem;
+import co.uk.depotnet.onsa.modals.timesheet.LogHourTime;
 import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
 import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
+import co.uk.depotnet.onsa.modals.timesheet.TimesheetOperative;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import co.uk.depotnet.onsa.utils.JsonReader;
+import co.uk.depotnet.onsa.utils.Utils;
 import co.uk.depotnet.onsa.views.DropdownMenu;
 import co.uk.depotnet.onsa.views.DropdownNumberBottomSheet;
 import co.uk.depotnet.onsa.views.DropdownTimer;
@@ -140,25 +142,26 @@ import retrofit2.Response;
 public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements PhotoAdapterListener, AdapterLogMeasure.AdapterListener {
 
-    private Context context;
-    private Screen screen;
-    private List<FormItem> formItems;
-    private List<FormItem> originalItems;
-    private FormAdapterListener listener;
-    private OnChangeChamberCount changeChamberListener;
-    private long submissionID;
+    private final Context context;
+    private final Screen screen;
+    private final List<FormItem> formItems;
+    private final List<FormItem> originalItems;
+    private final FormAdapterListener listener;
+    private final OnChangeChamberCount changeChamberListener;
+    private final long submissionID;
     private int repeatCount;
-    private Submission submission;
+    private final Submission submission;
     private EditText focusedEditText;
     private boolean missingAnswerMode;
-    private GradientDrawable redBG;
+    private final GradientDrawable redBG;
     private boolean isTimerRunning;
-    private List<BaseTask> selectableTasks;
+    private final List<BaseTask> selectableTasks;
     private boolean estFlag = true;
     private String estimateGangId;
-    private String themeColor;
-    private boolean isScheduledInspection;
+    private final String themeColor;
+    private final boolean isScheduledInspection;
     private ArrayList<Notice> notices;
+    private final DBHandler dbHandler;
 
 
     public FormAdapter(Context context, Submission submission,
@@ -177,6 +180,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         redBG = new GradientDrawable();
         redBG.setColor(Color.parseColor("#e24444"));
+        this.dbHandler = DBHandler.getInstance();
         getNotices();
         reInflateItems(false);
     }
@@ -184,8 +188,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void addRepeatedVisitorSignature(ArrayList<FormItem> formItems) {
         this.formItems.clear();
-
-        DBHandler dbHandler = DBHandler.getInstance();
         ArrayList<FormItem> listItems = new ArrayList<>();
         for (int c = 0; c < formItems.size(); c++) {
             FormItem item = formItems.get(c);
@@ -221,7 +223,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         formItems.clear();
         int forkPosition = 0;
-        DBHandler dbHandler = DBHandler.getInstance();
 
         ArrayList<FormItem> listItems = new ArrayList<>();
         for (int c = 0; c < inflatedItems.size(); c++) {
@@ -260,8 +261,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         boolean isLogMeasureAdded = false;
         boolean isDigMeasureAdded = false;
         boolean isLogHoursAdded = false;
-        int repeatCount = 0;
-        DBHandler dbHandler = DBHandler.getInstance();
+        int repeatCount;
         ArrayList<FormItem> listItems = new ArrayList<>();
         for (int c = 0; c < inflatedItems.size(); c++) {
             FormItem item = inflatedItems.get(c);
@@ -325,8 +325,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     }
                 }
             } else if (!isLogMeasureAdded && item.getFormType() == FormItem.TYPE_ADD_LOG_MEASURE) {
-
-
                 isLogMeasureAdded = true;
                 ArrayList<String> fields = item.getFields();
                 if (fields != null && !fields.isEmpty()) {
@@ -344,7 +342,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                         formItems.addAll(c, toBeAdded);
                     }
-
 
                 }
             } else if (!isDigMeasureAdded && item.getFormType() == FormItem.TYPE_ADD_DIG_MEASURE) {
@@ -370,7 +367,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
                 }
-            }else if (!isLogHoursAdded && item.getFormType() == FormItem.TYPE_ADD_LOG_HOURS) {
+            } else if (!isLogHoursAdded && item.getFormType() == FormItem.TYPE_ADD_LOG_HOURS) {
                 isLogHoursAdded = true;
                 ArrayList<String> fields = item.getFields();
                 if (fields != null && !fields.isEmpty()) {
@@ -388,23 +385,17 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                         formItems.addAll(c, toBeAdded);
                     }
-
-
                 }
             }
         }
         notifyDataSetChanged();
 
-        if (!listItems.isEmpty()) {
-            repeatCount++;
-        }
     }
 
 
     private ArrayList<LogMeasureForkItem> getLogRepeatedItems(FormItem item) {
 
         ArrayList<LogMeasureForkItem> items = new ArrayList<>();
-        DBHandler dbHandler = DBHandler.getInstance();
         ArrayList<String> fields = item.getFields();
         if (fields != null) {
             JsonArray jsonArray = new JsonArray();
@@ -452,7 +443,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             notices = new ArrayList<>();
         }
         notices.clear();
-        notices.addAll(DBHandler.getInstance().getNotices(submission.getJobID()));
+        notices.addAll(dbHandler.getNotices(submission.getJobID()));
     }
 
     @NonNull
@@ -503,6 +494,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_ADD_LOG_MEASURE:
             case FormItem.TYPE_ADD_DIG_MEASURE:
             case FormItem.TYPE_ADD_LOG_HOURS:
+            case FormItem.TYPE_OPEN_LOG_HOURS:
                 return new ForkCardHolder(LayoutInflater.from(context).inflate(R.layout.item_fork_card, viewGroup, false));
             case FormItem.TYPE_CALENDER:
             case FormItem.TYPE_ITEM_WEEK_COMMENCING:
@@ -510,7 +502,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_DFE_ITEM:
                 return new DFEItemHolder(LayoutInflater.from(context).inflate(R.layout.item_dfe, viewGroup, false));
             case FormItem.TYPE_YES_NO_NA:
-                return new YesNoNAHolder(LayoutInflater.from(context).inflate(R.layout.item_yes_no_na, viewGroup, false));
             case FormItem.TYPE_YES_NO_NA_OPTIONAL:
                 return new YesNoNAHolder(LayoutInflater.from(context).inflate(R.layout.item_yes_no_na, viewGroup, false));
             case FormItem.TYPE_STOP_WATCH:
@@ -553,13 +544,14 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_RFNA_TOGGLE:
                 return new RFNAToggleHolder(LayoutInflater.from(context).inflate(R.layout.item_rfna_toggle, viewGroup, false));
             case FormItem.TYPE_ITEM_LOG_HOURS:
-                return new LogHoursItemHolder(LayoutInflater.from(context).inflate(R.layout.item_log_hours, viewGroup, false));
             case FormItem.TYPE_TASK_TIMESHEET_ITEM:
-                return new TimeSheetItemHolder(LayoutInflater.from(context).inflate(R.layout.item_timesheet, viewGroup, false));
+                return new LogDayHoursViewHolder(LayoutInflater.from(context).inflate(R.layout.item_day_log_hours, viewGroup, false));
             case FormItem.TYPE_TOTAL_WORKED_HOURS:
                 return new TimeTotalWorkedHoursHolder(LayoutInflater.from(context).inflate(R.layout.item_total_worked_hour, viewGroup, false));
             case FormItem.TYPE_ITEM_TIME_PICKER:
                 return new TimePickerHolder(LayoutInflater.from(context).inflate(R.layout.item_time_picker, viewGroup, false));
+            case FormItem.TYPE_ITEM_DAY:
+                return new DayViewHolder(LayoutInflater.from(context).inflate(R.layout.item_day_view, viewGroup, false));
         }
         return new BoldTextHolder(LayoutInflater.from(context).inflate(R.layout.item_txt_bold_head, viewGroup, false));
     }
@@ -633,6 +625,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_ADD_DIG_MEASURE:
             case FormItem.TYPE_ADD_LOG_HOURS:
                 bindForkCard((ForkCardHolder) holder, position);
+                break;
+            case FormItem.TYPE_OPEN_LOG_HOURS:
+                openLogHours((ForkCardHolder) holder, position);
                 break;
             case FormItem.TYPE_CALENDER:
                 bindCalender((CalenderHolder) holder, position);
@@ -714,10 +709,10 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 bindRFNAToggleHolder((RFNAToggleHolder) holder, position);
                 break;
             case FormItem.TYPE_ITEM_LOG_HOURS:
-                bindLogHoursHolder((LogHoursItemHolder) holder, position);
+                bindLogHoursHolder((LogDayHoursViewHolder) holder, position);
                 break;
             case FormItem.TYPE_TASK_TIMESHEET_ITEM:
-                bindTimeSheetHolder((TimeSheetItemHolder) holder, position);
+                bindTimeSheetHolder((LogDayHoursViewHolder) holder, position);
                 break;
             case FormItem.TYPE_TOTAL_WORKED_HOURS:
                 bindTotalWorkedHourHolder((TimeTotalWorkedHoursHolder) holder, position);
@@ -725,14 +720,24 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_ITEM_TIME_PICKER:
                 bindTimePickerHolder((TimePickerHolder) holder, position);
                 break;
+            case FormItem.TYPE_ITEM_DAY:
+                bindDayViewHolder((DayViewHolder) holder, position);
+                break;
         }
     }
 
+    private void bindDayViewHolder(final DayViewHolder holder, int position) {
+        final FormItem formItem = formItems.get(position);
+        LogHourItem logHourItem = formItem.getTimeSheetHour();
+        holder.txtTitle.setText(formItem.getTitle());
+        String status = dbHandler.getTimeSheetsStatus(logHourItem.getWeekCommencing());
+        holder.setColor(status);
+    }
 
     private void bindTimePickerHolder(final TimePickerHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
             String value = answer.getAnswer();
@@ -747,7 +752,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             final Calendar myCalendar = Calendar.getInstance();
 
             TimePickerDialog.OnTimeSetListener date = (view, hourOfDay, minute) -> {
-                Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                Answer answer12 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                         formItem.getRepeatId(), repeatCount);
 
                 myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
@@ -768,7 +773,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answer12.setRepeatID(formItem.getRepeatId());
                 answer12.setRepeatCount(repeatCount);
 
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer12.toContentValues());
             };
 
 
@@ -782,23 +787,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private void bindTotalWorkedHourHolder(TimeTotalWorkedHoursHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         holder.txtTime.setText(formItem.getTitle());
-//        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
-//                formItem.getRepeatId(), repeatCount);
-//        if (answer != null) {
-//
-//            String value = answer.getAnswer();
-//            if (value != null && !value.isEmpty()) {
-//                holder.editText.setText(value);
-//                if (estFlag) {
-//                    // position is imp to update items list particular  value.
-//                    listener.getEstimateOperative(value.trim(), 2);
-//                    estFlag = false;
-//                }
-//            }
-//        } else if (missingAnswerMode && !formItem.isOptional()) {
-//            holder.view.setBackground(redBG);
-//        }
-
     }
 
     private void bindEstimateSearchHolder(EstimateSearchHolder holder, int position) {
@@ -807,7 +795,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.editText.setHint(formItem.getHint());
         holder.editText.setText("");
         holder.editText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
 
@@ -825,7 +813,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
         holder.editText.setOnFocusChangeListener((view, hasFocus) -> {
             if (!hasFocus) {
-                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
+                Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
 
                 if (answer1 == null) {
                     answer1 = new Answer(submissionID, formItem.getUploadId());
@@ -840,7 +828,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answer1.setAnswer(et.getText().toString());
                 answer1.setRepeatID(formItem.getRepeatId());
                 answer1.setRepeatCount(repeatCount);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
                 focusedEditText = null;
             } else {
                 focusedEditText = (EditText) view;
@@ -856,14 +844,11 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
             return false;
         });
-        holder.btn_estimate_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String seatxt = holder.editText.getText().toString().trim();
-                if (!seatxt.isEmpty()) {
-                    // position is imp to update items list particular  value.
-                    listener.getEstimateOperative(seatxt, 2);
-                }
+        holder.btn_estimate_search.setOnClickListener(v -> {
+            String seatxt = holder.editText.getText().toString().trim();
+            if (!seatxt.isEmpty()) {
+                // position is imp to update items list particular  value.
+                listener.getEstimateOperative(seatxt, 2);
             }
         });
 
@@ -876,43 +861,28 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             return;
         }
 
-        Answer answerItemId = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+        Answer answerItemId = dbHandler.getAnswer(submissionID, fields.get(0),
                 formItem.getRepeatId(), formItem.getRepeatCount());
-        Answer docname = DBHandler.getInstance().getAnswer(submissionID, fields.get(1),
-                formItem.getRepeatId(), formItem.getRepeatCount());
-        Answer quantity = DBHandler.getInstance().getAnswer(submissionID, fields.get(2),
-                formItem.getRepeatId(), formItem.getRepeatCount());
+
         if (answerItemId != null) {
             String value = answerItemId.getAnswer();
             if (!TextUtils.isEmpty(value)) {
-                //holder.txtValue.setText(value);
                 holder.txtTitle.setText(answerItemId.getDisplayAnswer());
             }
-        }
-        if (docname != null) {
-            String value = docname.getAnswer();
-            if (!TextUtils.isEmpty(value)) {
-            }
-        }
-        if (quantity != null) {
-            String value = quantity.getAnswer();
-           /* if (!TextUtils.isEmpty(value)) {
-                holder.txtQuantity.setText(value);
-            }*/
         }
 
         holder.imgButton.setOnClickListener(v -> {
             formItems.remove(position);
-            Answer answerItemId1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+            Answer answerItemId1 = dbHandler.getAnswer(submissionID, fields.get(0),
                     formItem.getRepeatId(), formItem.getRepeatCount());
             // do not remove position 1 for multiple item doc name display
-            Answer quantity1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(2),
+            Answer quantity1 = dbHandler.getAnswer(submissionID, fields.get(2),
                     formItem.getRepeatId(), formItem.getRepeatCount());
             if (answerItemId1 != null) {
-                DBHandler.getInstance().removeAnswer(answerItemId1);
+                dbHandler.removeAnswer(answerItemId1);
             }
             if (quantity1 != null) {
-                DBHandler.getInstance().removeAnswer(quantity1);
+                dbHandler.removeAnswer(quantity1);
             }
 
             notifyDataSetChanged();
@@ -924,7 +894,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void bindBRIEFINGTEXTHolder(Briefingtextholder holder, final int position) {
         final FormItem formItem = formItems.get(position);
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
             String value = answer.getAnswer();
@@ -940,7 +910,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final FormItem formItem = formItems.get(position);
         holder.txtQuestion.setText(formItem.getTitle());
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
 
         holder.btnYes.setSelected(false);
@@ -968,7 +938,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             holder.btnYes.setSelected(true);
             holder.btnNo.setSelected(false);
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItem.getUploadId());
@@ -976,7 +946,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer1.setAnswer("1");
             answer1.setRepeatID(formItem.getRepeatId());
             answer1.setRepeatCount(repeatCount);
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
 
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
@@ -988,7 +958,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             holder.btnYes.setSelected(false);
             holder.btnNo.setSelected(true);
-            Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer12 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer12 == null) {
                 answer12 = new Answer(submissionID, formItem.getUploadId());
@@ -998,19 +968,16 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer12.setRepeatID(formItem.getRepeatId());
             answer12.setRepeatCount(repeatCount);
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer12.toContentValues());
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
 
         });
 
-        holder.imgBtnInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ToolTipDialog toolTipDialog = new ToolTipDialog(context, formItem.getToolTip());
-                toolTipDialog.show();
-            }
+        holder.imgBtnInfo.setOnClickListener(v -> {
+            ToolTipDialog toolTipDialog = new ToolTipDialog(context, formItem.getToolTip());
+            toolTipDialog.show();
         });
     }
 
@@ -1018,7 +985,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final FormItem formItem = formItems.get(position);
         holder.txtQuestion.setText(formItem.getTitle());
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
 
         holder.btnYes.setSelected(false);
@@ -1051,7 +1018,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnYes.setSelected(true);
             holder.btnNo.setSelected(false);
             holder.btnNA.setSelected(false);
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItem.getUploadId());
@@ -1059,7 +1026,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer1.setAnswer("1");
             answer1.setRepeatID(formItem.getRepeatId());
             answer1.setRepeatCount(repeatCount);
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
 
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
@@ -1072,7 +1039,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnYes.setSelected(false);
             holder.btnNo.setSelected(true);
             holder.btnNA.setSelected(false);
-            Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer12 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer12 == null) {
                 answer12 = new Answer(submissionID, formItem.getUploadId());
@@ -1082,7 +1049,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer12.setRepeatID(formItem.getRepeatId());
             answer12.setRepeatCount(repeatCount);
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer12.toContentValues());
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
@@ -1093,7 +1060,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnYes.setSelected(false);
             holder.btnNo.setSelected(false);
             holder.btnNA.setSelected(true);
-            Answer answer13 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer13 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
 
             if (answer13 == null) {
@@ -1104,7 +1071,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer13.setRepeatID(formItem.getRepeatId());
             answer13.setRepeatCount(repeatCount);
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer13.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer13.toContentValues());
 
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
@@ -1124,7 +1091,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         final FormItem formItem = formItems.get(position);
         final BaseTask task = formItem.getTask();
-        DBHandler dbHandler = DBHandler.getInstance();
         ArrayList<FormItem> fiLists = formItem.getDialogItems();
         if (fiLists == null || fiLists.isEmpty()) {
             return;
@@ -1136,19 +1102,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     uploadId, fi.getRepeatId(),
                     formItem.getRepeatCount());
             if (answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
-                /*if (uploadId.equalsIgnoreCase("surfaceTypeId")) {
-                    task.setSurfaceTypeId(answer.getAnswer());
-                    task.setSurfaceTypeName(answer.getDisplayAnswer());
-                } else if (uploadId.equalsIgnoreCase("materialTypeId")) {
-                    task.setMaterialTypeId(answer.getAnswer());
-                    task.setMaterialTypeName(answer.getDisplayAnswer());
-                } else if (uploadId.equalsIgnoreCase("length")) {
-                    task.setLength(Float.parseFloat(answer.getAnswer()));
-                } else if (uploadId.equalsIgnoreCase("width")) {
-                    task.setWidth(Float.parseFloat(answer.getAnswer()));
-                } else if (uploadId.equalsIgnoreCase("depth")) {
-                    task.setDepth(Float.parseFloat(answer.getAnswer()));
-                }else*/
                 if (uploadId.equalsIgnoreCase("cones")) {
                     task.setCones(Float.parseFloat(answer.getAnswer()));
                 } else if (uploadId.equalsIgnoreCase("barriers")) {
@@ -1166,13 +1119,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 }
             }
         }
-
-
-//        holder.txtSurfaceValue.setText(task.getSurfaceTypeName());
-//        holder.txtMaterialValue.setText(task.getMaterialTypeName());
-//        holder.txtLength.setText("Length: "+task.getLength());
-//        holder.txtWidth.setText("Width: "+task.getWidth());
-//        holder.txtHeight.setText("Height: "+task.getDepth());
 
         holder.txtCones.setText("Cones: " + task.getCones());
         holder.txtBarriers.setText("Barriers: " + task.getBarriers());
@@ -1204,35 +1150,35 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final FormItem formItem = formItems.get(position);
         ArrayList<String> fields = formItem.getFields();
 
-        Answer SurfaceTypeID = DBHandler.getInstance().getAnswer(submissionID, fields.get(0), formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer SurfaceTypeID = dbHandler.getAnswer(submissionID, fields.get(0), formItem.getRepeatId(), formItem.getRepeatCount());
         if (SurfaceTypeID != null && !TextUtils.isEmpty(SurfaceTypeID.getAnswer())) {
             holder.txtSurfaceValue.setText(SurfaceTypeID.getDisplayAnswer());
         } else {
             holder.txtSurfaceValue.setText("");
         }
 
-        Answer MaterialTypeID = DBHandler.getInstance().getAnswer(submissionID, fields.get(1), formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer MaterialTypeID = dbHandler.getAnswer(submissionID, fields.get(1), formItem.getRepeatId(), formItem.getRepeatCount());
         if (MaterialTypeID != null && !TextUtils.isEmpty(MaterialTypeID.getAnswer())) {
             holder.txtMaterialValue.setText(MaterialTypeID.getDisplayAnswer());
         } else {
             holder.txtMaterialValue.setText("");
         }
 
-        Answer Length = DBHandler.getInstance().getAnswer(submissionID, fields.get(2), formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer Length = dbHandler.getAnswer(submissionID, fields.get(2), formItem.getRepeatId(), formItem.getRepeatCount());
         if (Length != null && !TextUtils.isEmpty(Length.getAnswer())) {
             holder.txtLength.setText(Length.getDisplayAnswer());
         } else {
             holder.txtLength.setText("");
         }
 
-        Answer Width = DBHandler.getInstance().getAnswer(submissionID, fields.get(3), formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer Width = dbHandler.getAnswer(submissionID, fields.get(3), formItem.getRepeatId(), formItem.getRepeatCount());
         if (Width != null && !TextUtils.isEmpty(Width.getAnswer())) {
             holder.txtWidth.setText(Width.getDisplayAnswer());
         } else {
             holder.txtWidth.setText("");
         }
 
-        Answer Depth = DBHandler.getInstance().getAnswer(submissionID, fields.get(4), formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer Depth = dbHandler.getAnswer(submissionID, fields.get(4), formItem.getRepeatId(), formItem.getRepeatCount());
         if (Depth != null && !TextUtils.isEmpty(Depth.getAnswer())) {
             holder.txtDepth.setText(Depth.getDisplayAnswer());
         } else {
@@ -1246,9 +1192,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             for (String field :
                     fields) {
-                Answer rateId1 = DBHandler.getInstance().getAnswer(submissionID, field, formItem.getRepeatId(), formItem.getRepeatCount());
+                Answer rateId1 = dbHandler.getAnswer(submissionID, field, formItem.getRepeatId(), formItem.getRepeatCount());
                 if (rateId1 != null) {
-                    DBHandler.getInstance().removeAnswer(rateId1);
+                    dbHandler.removeAnswer(rateId1);
                 }
             }
 
@@ -1345,7 +1291,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         if (selectableTasks != null) {
             //remove old
-            DBHandler.getInstance().deleteMultiAnswer(submissionID, "completedSiteActivityTaskIds", repeatCount);
+            dbHandler.deleteMultiAnswer(submissionID, "completedSiteActivityTaskIds", repeatCount);
             //add new
             for (int i = 0; i < selectableTasks.size(); i++) {
                 BaseTask task = selectableTasks.get(i);
@@ -1355,7 +1301,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     answer.setIsMultiList(1);
                     answer.setRepeatID(null);
                     answer.setRepeatCount(repeatCount);
-                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+                    dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
                 }
             }
         }
@@ -1363,7 +1309,6 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void bindLogFillData(FormItem formItem) {
         BaseTask task = formItem.getTask();
-        DBHandler dbHandler = DBHandler.getInstance();
         ArrayList<FormItem> fiLists = formItem.getDialogItems();
         if (fiLists == null || fiLists.isEmpty()) {
             return;
@@ -1398,14 +1343,14 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         ArrayList<String> fields = formItem.getFields();
 
 
-        Answer rateID = DBHandler.getInstance().getAnswer(submissionID, fields.get(0), formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer rateID = dbHandler.getAnswer(submissionID, fields.get(0), formItem.getRepeatId(), formItem.getRepeatCount());
         if (rateID != null && !TextUtils.isEmpty(rateID.getAnswer())) {
             holder.txtWorkTitle.setText(rateID.getDisplayAnswer());
         } else {
             holder.txtWorkTitle.setText("");
         }
 
-        Answer quantity = DBHandler.getInstance().getAnswer(submissionID, fields.get(1), formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer quantity = dbHandler.getAnswer(submissionID, fields.get(1), formItem.getRepeatId(), formItem.getRepeatCount());
         if (quantity != null && !TextUtils.isEmpty(quantity.getAnswer())) {
             holder.txtQuantity.setText(quantity.getDisplayAnswer());
         } else {
@@ -1413,55 +1358,46 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
 
 
-        Answer RaiseATask = DBHandler.getInstance().getAnswer(submissionID, fields.get(2),
+        Answer RaiseATask = dbHandler.getAnswer(submissionID, fields.get(2),
                 formItem.getRepeatId(), formItem.getRepeatCount());
         if (RaiseATask != null && !TextUtils.isEmpty(RaiseATask.getAnswer()) && RaiseATask.getAnswer().equalsIgnoreCase("true")) {
 
             holder.llTaskData.setVisibility(View.VISIBLE);
 
-            Answer SurfaceTypeID = DBHandler.getInstance().getAnswer(submissionID, fields.get(3), formItem.getRepeatId(), formItem.getRepeatCount());
+            Answer SurfaceTypeID = dbHandler.getAnswer(submissionID, fields.get(3), formItem.getRepeatId(), formItem.getRepeatCount());
             if (SurfaceTypeID != null && !TextUtils.isEmpty(SurfaceTypeID.getAnswer())) {
                 holder.txtSurfaceValue.setText(SurfaceTypeID.getDisplayAnswer());
             } else {
                 holder.txtSurfaceValue.setText("");
             }
 
-            Answer MaterialTypeID = DBHandler.getInstance().getAnswer(submissionID, fields.get(4), formItem.getRepeatId(), formItem.getRepeatCount());
+            Answer MaterialTypeID = dbHandler.getAnswer(submissionID, fields.get(4), formItem.getRepeatId(), formItem.getRepeatCount());
             if (MaterialTypeID != null && !TextUtils.isEmpty(MaterialTypeID.getAnswer())) {
                 holder.txtMaterialValue.setText(MaterialTypeID.getDisplayAnswer());
             } else {
                 holder.txtMaterialValue.setText("");
             }
 
-            Answer Length = DBHandler.getInstance().getAnswer(submissionID, fields.get(5), formItem.getRepeatId(), formItem.getRepeatCount());
+            Answer Length = dbHandler.getAnswer(submissionID, fields.get(5), formItem.getRepeatId(), formItem.getRepeatCount());
             if (Length != null && !TextUtils.isEmpty(Length.getAnswer())) {
                 holder.txtLength.setText(Length.getDisplayAnswer());
             } else {
                 holder.txtLength.setText("");
             }
 
-            Answer Width = DBHandler.getInstance().getAnswer(submissionID, fields.get(6), formItem.getRepeatId(), formItem.getRepeatCount());
+            Answer Width = dbHandler.getAnswer(submissionID, fields.get(6), formItem.getRepeatId(), formItem.getRepeatCount());
             if (Width != null && !TextUtils.isEmpty(Width.getAnswer())) {
                 holder.txtWidth.setText(Width.getDisplayAnswer());
             } else {
                 holder.txtWidth.setText("");
             }
 
-            Answer DepthB = DBHandler.getInstance().getAnswer(submissionID, fields.get(7), formItem.getRepeatId(), formItem.getRepeatCount());
+            Answer DepthB = dbHandler.getAnswer(submissionID, fields.get(7), formItem.getRepeatId(), formItem.getRepeatCount());
             if (DepthB != null && !TextUtils.isEmpty(DepthB.getAnswer())) {
                 holder.txtDepth.setText(DepthB.getDisplayAnswer());
             } else {
                 holder.txtDepth.setText("");
             }
-
-          /*
-            Answer Deptht = DBHandler.getInstance().getAnswer(submissionID, fields.get(8), formItem.getRepeatId(), formItem.getRepeatCount());
-            if (Deptht != null && !TextUtils.isEmpty(Deptht.getAnswer())) {
-                holder.txtTopping.setText(Deptht.getDisplayAnswer());
-            } else {
-                holder.txtTopping.setText("");
-            }
-           */
 
         } else {
             holder.llTaskData.setVisibility(View.GONE);
@@ -1474,9 +1410,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             for (String field :
                     fields) {
-                Answer rateId1 = DBHandler.getInstance().getAnswer(submissionID, field, formItem.getRepeatId(), formItem.getRepeatCount());
+                Answer rateId1 = dbHandler.getAnswer(submissionID, field, formItem.getRepeatId(), formItem.getRepeatCount());
                 if (rateId1 != null) {
-                    DBHandler.getInstance().removeAnswer(rateId1);
+                    dbHandler.removeAnswer(rateId1);
                 }
             }
 
@@ -1484,109 +1420,210 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
     }
 
-    private void bindLogHoursHolder(@NonNull final LogHoursItemHolder holder, int position) {
+    private void bindLogHoursHolder(@NonNull final LogDayHoursViewHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         ArrayList<String> fields = formItem.getFields();
 
-
-        Answer dateWorked = DBHandler.getInstance().getAnswer(submissionID, fields.get(0), formItem.getRepeatId(), formItem.getRepeatCount());
+        Answer dateWorked = dbHandler.getAnswer(submissionID, fields.get(0), formItem.getRepeatId(), formItem.getRepeatCount());
         if (dateWorked != null && !TextUtils.isEmpty(dateWorked.getAnswer())) {
-            holder.txtDateWorked.setText("Date: " + dateWorked.getDisplayAnswer());
-        } else {
-            holder.txtDateWorked.setText("");
-        }
-
-        Answer timeType = DBHandler.getInstance().getAnswer(submissionID, fields.get(1), formItem.getRepeatId(), formItem.getRepeatCount());
-        if (timeType != null && !TextUtils.isEmpty(timeType.getAnswer())) {
-            holder.txtTimeType.setText("Time Type: " + timeType.getDisplayAnswer());
-        } else {
-            holder.txtTimeType.setText("");
-        }
-
-        Answer timeFrom = DBHandler.getInstance().getAnswer(submissionID, fields.get(2), formItem.getRepeatId(), formItem.getRepeatCount());
-        Answer timeTo = DBHandler.getInstance().getAnswer(submissionID, fields.get(3), formItem.getRepeatId(), formItem.getRepeatCount());
-        if (timeFrom != null && !TextUtils.isEmpty(timeFrom.getAnswer()) && timeTo != null && !TextUtils.isEmpty(timeTo.getAnswer())) {
-            holder.txtTime.setText("Time From-To: " + timeFrom.getDisplayAnswer() + "-" + timeTo.getDisplayAnswer());
-        } else {
-            holder.txtTime.setText("");
-        }
-
-
-        holder.llBtnEdit.setOnClickListener(v -> listener.openForkFragment(formItem, submissionID, formItem.getRepeatCount()));
-
-        holder.llBtnDelete.setOnClickListener(view -> {
-
-            for (String field : fields) {
-                Answer answer = DBHandler.getInstance().getAnswer(submissionID, field, formItem.getRepeatId(), formItem.getRepeatCount());
-                if (answer != null) {
-                    DBHandler.getInstance().removeAnswer(answer);
-                }
-            }
-
-            reInflateItems(true);
-        });
-    }
-    private void bindTimeSheetHolder(@NonNull final TimeSheetItemHolder holder, int position) {
-        final FormItem formItem = formItems.get(position);
-
-        TimeSheetHour timeSheetHour = formItem.getTimeSheetHour();
-
-        Answer day = DBHandler.getInstance().getAnswer(submissionID, TimeSheetHour.DBTable.day, formItem.getRepeatId(), formItem.getRepeatCount());
-        if (day != null && !TextUtils.isEmpty(day.getAnswer())) {
-            holder.txtDay.setText(day.getDisplayAnswer());
-            timeSheetHour.setDay(day.getDisplayAnswer());
-        } else {
-            holder.txtDay.setText("");
-        }
-
-        Answer timeType = DBHandler.getInstance().getAnswer(submissionID, TimeSheetHour.DBTable.timeTypeActivityId, formItem.getRepeatId(), formItem.getRepeatCount());
-        if (timeType != null && !TextUtils.isEmpty(timeType.getAnswer())) {
-            holder.txtTimeType.setText("Time Type: " + timeType.getDisplayAnswer());
-        } else {
-            holder.txtTimeType.setText("");
-        }
-
-        Answer dateWorked = DBHandler.getInstance().getAnswer(submissionID, TimeSheetHour.DBTable.dateWorked, formItem.getRepeatId(), formItem.getRepeatCount());
-        if (dateWorked != null && !TextUtils.isEmpty(dateWorked.getAnswer())) {
-            holder.txtDate.setText("Date: " + dateWorked.getDisplayAnswer());
-            timeSheetHour.setDateWorked(dateWorked.getAnswer());
+            holder.txtDate.setText(dateWorked.getDisplayAnswer());
         } else {
             holder.txtDate.setText("");
         }
 
-        Answer timeFrom = DBHandler.getInstance().getAnswer(submissionID, TimeSheetHour.DBTable.timeFrom, formItem.getRepeatId(), formItem.getRepeatCount());
-        Answer timeTo = DBHandler.getInstance().getAnswer(submissionID, TimeSheetHour.DBTable.timeTo, formItem.getRepeatId(), formItem.getRepeatCount());
-
-        if (timeFrom != null && !TextUtils.isEmpty(timeFrom.getAnswer()) && timeTo != null && !TextUtils.isEmpty(timeTo.getAnswer())) {
-            timeSheetHour.setTimeFrom(timeFrom.getAnswer());
-            timeSheetHour.setTimeTo(timeTo.getAnswer());
-            if(timeFrom.getAnswer().equalsIgnoreCase("00:00") && timeTo.getAnswer().equalsIgnoreCase("00:00")){
-                holder.rlTimeContainer.setVisibility(View.GONE);
-                holder.txtNoHoursLogged.setVisibility(View.VISIBLE);
-
-            }else {
-                holder.rlTimeContainer.setVisibility(View.VISIBLE);
-                holder.txtNoHoursLogged.setVisibility(View.GONE);
-                holder.txtTime.setText("Time From-To: " + timeFrom.getDisplayAnswer() + "-" + timeTo.getDisplayAnswer());
-            }
+        Answer taskType = dbHandler.getAnswer(submissionID, "timeTypeName", formItem.getRepeatId(), formItem.getRepeatCount());
+        if (taskType != null && !TextUtils.isEmpty(taskType.getAnswer())) {
+            holder.txtTaskType.setText(taskType.getDisplayAnswer());
         } else {
-            holder.rlTimeContainer.setVisibility(View.GONE);
-            holder.txtNoHoursLogged.setVisibility(View.VISIBLE);
+            holder.txtTaskType.setText("");
+        }
+
+        Answer timeType = dbHandler.getAnswer(submissionID, fields.get(1), formItem.getRepeatId(), formItem.getRepeatCount());
+        if (timeType != null && !TextUtils.isEmpty(timeType.getAnswer())) {
+            holder.llRow1.setVisibility(View.VISIBLE);
+            holder.txtTimeTypeName1.setText(timeType.getDisplayAnswer());
+        } else {
+            holder.txtTimeTypeName1.setText("");
+        }
+        int counter = 2;
+        if(submission.getJsonFileName().equalsIgnoreCase("timesheet_log_hours.json")){
+            Answer operatives = dbHandler.getAnswer(submissionID, fields.get(counter), formItem.getRepeatId(), formItem.getRepeatCount());
+            if (operatives != null && !TextUtils.isEmpty(operatives.getAnswer())) {
+                holder.txtOperatives.setVisibility(View.VISIBLE);
+                holder.txtOperatives.setText(operatives.getAnswer());
+            } else {
+                holder.txtOperatives.setVisibility(View.GONE);
+            }
+            counter++;
         }
 
 
-        holder.llBtnEdit.setOnClickListener(v -> listener.openForkFragment(formItem, submissionID, formItem.getRepeatCount()));
 
-        holder.llBtnDelete.setOnClickListener(view -> {
-            timeSheetHour.resetAnswers(submissionID, "timesheetHours" ,formItem.getRepeatCount());
+        Answer jobReference = dbHandler.getAnswer(submissionID, fields.get(counter), formItem.getRepeatId(), formItem.getRepeatCount());
+        if (jobReference != null && !TextUtils.isEmpty(jobReference.getAnswer())) {
+            holder.txtJobReference.setText(jobReference.getDisplayAnswer());
+        } else {
+            holder.txtJobReference.setText("");
+        }
+        counter++;
+
+        int totalTime = 0;
+        Answer normalTimeMinutes = dbHandler.getAnswer(submissionID, fields.get(counter), formItem.getRepeatId(), formItem.getRepeatCount());
+        counter++;
+        Answer overtimeMinutes = dbHandler.getAnswer(submissionID, fields.get(counter), formItem.getRepeatId(), formItem.getRepeatCount());
+        if (normalTimeMinutes != null && !TextUtils.isEmpty(normalTimeMinutes.getAnswer())) {
+            holder.txtNormalTime1.setText(normalTimeMinutes.getDisplayAnswer());
+            totalTime = Integer.parseInt(normalTimeMinutes.getAnswer());
+        } else {
+            holder.txtNormalTime1.setText("0h");
+        }
+        if (overtimeMinutes != null && !TextUtils.isEmpty(overtimeMinutes.getAnswer())) {
+            holder.llOverTime1.setText(overtimeMinutes.getDisplayAnswer());
+            totalTime += Integer.parseInt(overtimeMinutes.getAnswer());
+        } else {
+            holder.llOverTime1.setText("0h");
+        }
+
+        holder.llTotalHours1.setText(CommonUtils.getDisplayTime(totalTime));
+        holder.llTotalHours5.setText(CommonUtils.getDisplayTime(totalTime));
+
+        holder.itemView.setOnClickListener(v -> listener.openForkFragment(formItem, submissionID, formItem.getRepeatCount()));
+
+        holder.imgBtnDelete.setOnClickListener(view -> {
+
+            for (String field : fields) {
+                if(field.equalsIgnoreCase("normalTimeMinutes") || field.equalsIgnoreCase("overtimeMinutes")) {
+                    Answer answer = dbHandler.getAnswer(submissionID, field, formItem.getRepeatId(), formItem.getRepeatCount());
+                    if (answer != null) {
+                        answer.setDisplayAnswer("0h");
+                        answer.setAnswer("0");
+                        dbHandler.replaceData(Answer.DBTable.NAME , answer.toContentValues());
+//                        dbHandler.removeAnswer(answer);
+                    }
+                }
+            }
             reInflateItems(true);
         });
+    }
+
+    private void bindTimeSheetHolder(@NonNull final LogDayHoursViewHolder holder, int position) {
+        FormItem item = formItems.get(position);
+        LogHourItem timeSheetHour = item.getTimeSheetHour();
+        String weekCommencing = timeSheetHour.getWeekCommencing();
+        String status = DBHandler.getInstance().getTimeSheetsStatus(weekCommencing);
+        holder.setColor(status);
+
+        if (TextUtils.isEmpty(timeSheetHour.getTimeTypeName()) && TextUtils.isEmpty(timeSheetHour.getJobId())) {
+            holder.llHoursContainer.setVisibility(View.GONE);
+            holder.txtNoLoggedHours.setVisibility(View.VISIBLE);
+        } else {
+            holder.llHoursContainer.setVisibility(View.VISIBLE);
+            holder.txtNoLoggedHours.setVisibility(View.GONE);
+            holder.txtTaskType.setText(timeSheetHour.getTimeTypeName());
+            holder.txtJobReference.setText(timeSheetHour.getEstimate());
+            holder.txtOperatives.setVisibility(View.GONE);
+            try {
+                holder.txtDate.setText(Utils.getSimpleDateFormat(timeSheetHour.getDateWorked()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            addLayout(holder, timeSheetHour.getLogHourTimes());
+
+            holder.llTotalHours5.setText(timeSheetHour.getTotalHoursText());
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (timeSheetHour.isWaitingApproval() || timeSheetHour.isApproved()) {
+                return;
+            }
+            Intent intent = new Intent(context, FormActivity.class);
+            AppPreferences.setTheme(ThemeBaseActivity.THEME_TIME_SHEET);
+            String jsonFileName = "timesheet_log_hours.json";
+            Submission submission = new Submission(jsonFileName, "Log Hours", "");
+            long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
+            submission.setId(submissionID);
+            timeSheetHour.saveAnswers(submission.getID(), item.getRepeatId());
+            intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+            listener.startActivityForResultFromAdapter(intent, 10001);
+        });
+        holder.imgBtnDelete.setVisibility(View.GONE);
+
+//        holder.imgBtnDelete.setOnClickListener(view -> {
+//            if (timeSheetHour.isWaitingApproval() || timeSheetHour.isApproved()) {
+//                return;
+//            }
+//            DBHandler.getInstance().removeMultiAnswersByUploadID(submissionID , "timesheetHoursIds");
+//            timeSheetHour.deleteLogHourItem();
+//
+//            reInflateItems(true);
+//        });
+    }
+
+    private void openLogHours(ForkCardHolder holder , int position){
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, FormActivity.class);
+            AppPreferences.setTheme(ThemeBaseActivity.THEME_TIME_SHEET);
+            String jsonFileName = "timesheet_log_hours.json";
+            Submission submission = new Submission(jsonFileName, "Log Hours", "");
+            long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
+            submission.setId(submissionID);
+//            Answer answer = new Answer(submissionID , "selected_date" , null , 0);
+//            answer.setAnswer(wee);
+//            answer.setDisplayAnswer(timeSheetHour.getDisplayedWorkDate());
+//            answer.setShouldUpload(false);
+//            dbHandler.replaceData(Answer.DBTable.NAME , answer.toContentValues());
+
+            intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+            listener.startActivityForResultFromAdapter(intent, 10001);
+        });
+
+    }
+    private void addLayout(LogDayHoursViewHolder viewHolder, ArrayList<LogHourTime> times) {
+        if (times.isEmpty()) {
+            return;
+        }
+        viewHolder.llRow1.setVisibility(View.GONE);
+        viewHolder.llRow2.setVisibility(View.GONE);
+        viewHolder.llRow3.setVisibility(View.GONE);
+        viewHolder.llRow4.setVisibility(View.GONE);
+        for (int i = 0; i < times.size(); i++) {
+            if (i == 0) {
+                viewHolder.llRow1.setVisibility(View.VISIBLE);
+                viewHolder.txtTimeTypeName1.setText(times.get(i).getTimeTypeActivityName());
+                viewHolder.txtNormalTime1.setText(times.get(i).getNormalTimeHours());
+                viewHolder.llOverTime1.setText(times.get(i).getOvertimeHours());
+                viewHolder.llTotalHours1.setText(times.get(i).getTotalHoursText());
+            }
+            if (i == 1) {
+                viewHolder.llRow2.setVisibility(View.VISIBLE);
+                viewHolder.txtTimeTypeName2.setText(times.get(i).getTimeTypeActivityName());
+                viewHolder.txtNormalTime2.setText(times.get(i).getNormalTimeHours());
+                viewHolder.llOverTime2.setText(times.get(i).getOvertimeHours());
+                viewHolder.llTotalHours2.setText(times.get(i).getTotalHoursText());
+            }
+
+            if (i == 2) {
+                viewHolder.llRow3.setVisibility(View.VISIBLE);
+                viewHolder.txtTimeTypeName3.setText(times.get(i).getTimeTypeActivityName());
+                viewHolder.txtNormalTime3.setText(times.get(i).getNormalTimeHours());
+                viewHolder.llOverTime3.setText(times.get(i).getOvertimeHours());
+                viewHolder.llTotalHours3.setText(times.get(i).getTotalHoursText());
+            }
+
+            if (i == 3) {
+                viewHolder.llRow4.setVisibility(View.VISIBLE);
+                viewHolder.txtTimeTypeName4.setText(times.get(i).getTimeTypeActivityName());
+                viewHolder.txtNormalTime4.setText(times.get(i).getNormalTimeHours());
+                viewHolder.llOverTime4.setText(times.get(i).getOvertimeHours());
+                viewHolder.llTotalHours4.setText(times.get(i).getTotalHoursText());
+            }
+        }
     }
 
     private void bindBarCodeItem(DropDownHolder holder, int position) {
         holder.txtTitle.setText(formItems.get(position).getTitle());
         holder.view.setOnClickListener(v -> {
-            Answer answer = DBHandler.getInstance().getAnswer(submissionID, "StaId", "Items", 0);
+            Answer answer = dbHandler.getAnswer(submissionID, "StaId", "Items", 0);
             if (answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
                 Intent intent = new Intent(context, ScannedBarcodeActivity.class);
                 intent.putExtra("StaId", answer.getAnswer());
@@ -1602,7 +1639,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.txtTitle.setText(formItem.getTitle());
         holder.view.setBackground(null);
         holder.txtValue.setVisibility(View.GONE);
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID,
+        Answer answer = dbHandler.getAnswer(submissionID,
                 formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
@@ -1633,7 +1670,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private void bindStockItem(StockItemHolder holder, final int position) {
         final FormItem formItem = formItems.get(position);
 
-        final Answer answer = DBHandler.getInstance().getAnswer(submissionID, "StaStockItemId",
+        final Answer answer = dbHandler.getAnswer(submissionID, "StaStockItemId",
                 formItem.getRepeatId(), formItem.getRepeatCount());
         if (answer == null || TextUtils.isEmpty(answer.getAnswer())) {
             return;
@@ -1641,12 +1678,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         String description = "";
         if (submission.getJsonFileName().equalsIgnoreCase("log_store.json")) {
-            MyStore item = DBHandler.getInstance().getMyStores(answer.getAnswer());
+            MyStore item = dbHandler.getMyStores(answer.getAnswer());
             if (item != null) {
                 description = item.getdescription();
             }
         } else {
-            StockItems item = DBHandler.getInstance().getStockItems(answer.getAnswer());
+            StockItems item = dbHandler.getStockItems(answer.getAnswer());
             if (item != null) {
                 description = item.getdescription();
             }
@@ -1656,17 +1693,17 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.txtDescription.setText(description);
 
 
-        final Answer Quantity = DBHandler.getInstance().getAnswer(submissionID, "Quantity",
+        final Answer Quantity = dbHandler.getAnswer(submissionID, "Quantity",
                 formItem.getRepeatId(), formItem.getRepeatCount());
         if (Quantity == null || TextUtils.isEmpty(Quantity.getAnswer())) {
             return;
         }
 
 
-        Answer StaId = DBHandler.getInstance().getAnswer(submissionID,
+        Answer StaId = dbHandler.getAnswer(submissionID,
                 "StaId", formItem.getRepeatId(), formItem.getRepeatCount());
         if (StaId == null) {
-            Answer staAnswer = DBHandler.getInstance().getAnswer(submissionID, "StaId",
+            Answer staAnswer = dbHandler.getAnswer(submissionID, "StaId",
                     formItem.getRepeatId(), 0);
             if (staAnswer != null) {
                 StaId = new Answer(submissionID, "StaId");
@@ -1674,18 +1711,18 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 StaId.setRepeatCount(formItem.getRepeatCount());
                 StaId.setAnswer(staAnswer.getAnswer());
                 StaId.setDisplayAnswer(staAnswer.getDisplayAnswer());
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, StaId.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, StaId.toContentValues());
             }
         }
 
         holder.txtNumber.setText(Quantity.getAnswer());
         holder.btnDelete.setOnClickListener(v -> {
-            DBHandler.getInstance().removeAnswer(answer);
-            DBHandler.getInstance().removeAnswer(Quantity);
-            final Answer StaId1 = DBHandler.getInstance().getAnswer(submissionID, "StaId",
+            dbHandler.removeAnswer(answer);
+            dbHandler.removeAnswer(Quantity);
+            final Answer StaId1 = dbHandler.getAnswer(submissionID, "StaId",
                     formItem.getRepeatId(), formItem.getRepeatCount());
             if (StaId1 != null) {
-                DBHandler.getInstance().removeAnswer(StaId1);
+                dbHandler.removeAnswer(StaId1);
             }
 
             reInflateItems(false);
@@ -1705,7 +1742,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.txtQuantity.setText(String.valueOf(store.getquantity()));
         holder.txtNumber.setText(String.valueOf(formItem.getMyStoreQuantity()));
 
-        Answer staStockItemId = DBHandler.getInstance().getAnswer(submissionID, "StaStockItemId",
+        Answer staStockItemId = dbHandler.getAnswer(submissionID, "StaStockItemId",
                 formItem.getRepeatId(), formItem.getRepeatCount());
 
         if (staStockItemId == null) {
@@ -1719,9 +1756,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         staStockItemId.setRepeatID(formItem.getRepeatId());
         staStockItemId.setRepeatCount(formItem.getRepeatCount());
 
-        DBHandler.getInstance().replaceData(Answer.DBTable.NAME, staStockItemId.toContentValues());
+        dbHandler.replaceData(Answer.DBTable.NAME, staStockItemId.toContentValues());
 
-        Answer Quantity = DBHandler.getInstance().getAnswer(submissionID, "Quantity",
+        Answer Quantity = dbHandler.getAnswer(submissionID, "Quantity",
                 formItem.getRepeatId(), formItem.getRepeatCount());
         if (Quantity == null) {
             Quantity = new Answer(submissionID, "Quantity");
@@ -1732,9 +1769,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         Quantity.setRepeatID(formItem.getRepeatId());
         Quantity.setRepeatCount(formItem.getRepeatCount());
 
-        DBHandler.getInstance().replaceData(Answer.DBTable.NAME, Quantity.toContentValues());
+        dbHandler.replaceData(Answer.DBTable.NAME, Quantity.toContentValues());
 
-        Answer StaId = DBHandler.getInstance().getAnswer(submissionID, "StaId",
+        Answer StaId = dbHandler.getAnswer(submissionID, "StaId",
                 formItem.getRepeatId(), formItem.getRepeatCount());
         if (StaId == null) {
 
@@ -1747,7 +1784,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         StaId.setRepeatID(formItem.getRepeatId());
         StaId.setRepeatCount(formItem.getRepeatCount());
 
-        DBHandler.getInstance().replaceData(Answer.DBTable.NAME, StaId.toContentValues());
+        dbHandler.replaceData(Answer.DBTable.NAME, StaId.toContentValues());
 
 
     }
@@ -1761,7 +1798,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             return;
         }
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+        Answer answer = dbHandler.getAnswer(submissionID, fields.get(0),
                 formItem.getRepeatId(), formItem.getRepeatCount());
 
         if (answer != null && !TextUtils.isEmpty(answer.getDisplayAnswer())) {
@@ -1770,46 +1807,46 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.imgDelete.setOnClickListener(v -> {
 
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+            Answer answer1 = dbHandler.getAnswer(submissionID, fields.get(0),
                     formItem.getRepeatId(), formItem.getRepeatCount());
 
             if (answer1 != null) {
-                DBHandler.getInstance().removeAnswer(answer1);
+                dbHandler.removeAnswer(answer1);
             }
 
-            Answer actionRequired = DBHandler.getInstance().getAnswer(submissionID, "actionRequired",
+            Answer actionRequired = dbHandler.getAnswer(submissionID, "actionRequired",
                     formItem.getRepeatId(), formItem.getRepeatCount());
 
             if (actionRequired != null) {
-                DBHandler.getInstance().removeAnswer(actionRequired);
+                dbHandler.removeAnswer(actionRequired);
             }
 
-            Answer sPoleNo = DBHandler.getInstance().getAnswer(submissionID, "sPoleNo",
+            Answer sPoleNo = dbHandler.getAnswer(submissionID, "sPoleNo",
                     formItem.getRepeatId(), formItem.getRepeatCount());
 
             if (sPoleNo != null) {
-                DBHandler.getInstance().removeAnswer(sPoleNo);
+                dbHandler.removeAnswer(sPoleNo);
             }
 
-            Answer dPoleNo = DBHandler.getInstance().getAnswer(submissionID, "dPoleNo",
+            Answer dPoleNo = dbHandler.getAnswer(submissionID, "dPoleNo",
                     formItem.getRepeatId(), formItem.getRepeatCount());
 
             if (dPoleNo != null) {
-                DBHandler.getInstance().removeAnswer(dPoleNo);
+                dbHandler.removeAnswer(dPoleNo);
             }
 
-            Answer isPoleScheduleCompleted = DBHandler.getInstance().getAnswer(submissionID, "isPoleScheduleCompleted",
+            Answer isPoleScheduleCompleted = dbHandler.getAnswer(submissionID, "isPoleScheduleCompleted",
                     formItem.getRepeatId(), formItem.getRepeatCount());
 
             if (isPoleScheduleCompleted != null) {
-                DBHandler.getInstance().removeAnswer(isPoleScheduleCompleted);
+                dbHandler.removeAnswer(isPoleScheduleCompleted);
             }
 
-            Answer consideration = DBHandler.getInstance().getAnswer(submissionID, "consideration",
+            Answer consideration = dbHandler.getAnswer(submissionID, "consideration",
                     formItem.getRepeatId(), formItem.getRepeatCount());
 
             if (consideration != null) {
-                DBHandler.getInstance().removeAnswer(consideration);
+                dbHandler.removeAnswer(consideration);
             }
             formItems.remove(position);
             notifyDataSetChanged();
@@ -1821,7 +1858,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private void bindDateTimeHolder(final DateTimeHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
             String value = answer.getAnswer();
@@ -1837,7 +1874,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
 
-                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                         formItem.getRepeatId(), repeatCount);
 
 
@@ -1858,10 +1895,10 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answer1.setRepeatID(formItem.getRepeatId());
                 answer1.setRepeatCount(repeatCount);
 
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
             };
 
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 != null && !TextUtils.isEmpty(answer1.getAnswer())) {
                 String value = answer1.getAnswer();
@@ -1887,7 +1924,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             final Calendar myCalendar = Calendar.getInstance();
 
             TimePickerDialog.OnTimeSetListener date = (view, hourOfDay, minute) -> {
-                Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                Answer answer12 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                         formItem.getRepeatId(), repeatCount);
 
                 myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
@@ -1908,10 +1945,10 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answer12.setRepeatID(formItem.getRepeatId());
                 answer12.setRepeatCount(repeatCount);
 
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer12.toContentValues());
             };
 
-            Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer12 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer12 != null && !TextUtils.isEmpty(answer12.getAnswer())) {
                 String value = answer12.getAnswer();
@@ -1942,9 +1979,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             return;
         }
 
-        Answer answerVisitorName = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+        Answer answerVisitorName = dbHandler.getAnswer(submissionID, fields.get(0),
                 formItem.getRepeatId(), formItem.getRepeatCount());
-        Answer imgPath = DBHandler.getInstance().getAnswer(submissionID, fields.get(1),
+        Answer imgPath = dbHandler.getAnswer(submissionID, fields.get(1),
                 formItem.getRepeatId(), formItem.getRepeatCount());
 
         if (answerVisitorName != null) {
@@ -1965,16 +2002,16 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.imgDelete.setOnClickListener(v -> {
 
-            Answer answerVisitorName1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+            Answer answerVisitorName1 = dbHandler.getAnswer(submissionID, fields.get(0),
                     formItem.getRepeatId(), formItem.getRepeatCount());
-            Answer imgPath1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(1),
+            Answer imgPath1 = dbHandler.getAnswer(submissionID, fields.get(1),
                     formItem.getRepeatId(), formItem.getRepeatCount());
             if (answerVisitorName1 != null) {
-                DBHandler.getInstance().removeAnswer(answerVisitorName1);
+                dbHandler.removeAnswer(answerVisitorName1);
             }
 
             if (imgPath1 != null) {
-                DBHandler.getInstance().removeAnswer(imgPath1);
+                dbHandler.removeAnswer(imgPath1);
             }
 
             formItems.remove(position);
@@ -1987,7 +2024,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void bindStopWatchHolder(final StopWatchHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
             String value = answer.getAnswer();
@@ -2012,7 +2049,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             } else {
                 isTimerRunning = false;
                 holder.stopTimer();
-                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                         formItem.getRepeatId(), repeatCount);
                 if (answer1 == null) {
                     answer1 = new Answer(submissionID, formItem.getUploadId());
@@ -2023,7 +2060,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answer1.setAnswer(String.valueOf(holder.getUpdateTime()));
                 answer1.setDisplayAnswer(holder.txtTime.getText().toString());
 
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
             }
 
         });
@@ -2038,9 +2075,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             return;
         }
 
-        Answer answerItemId = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+        Answer answerItemId = dbHandler.getAnswer(submissionID, fields.get(0),
                 formItem.getRepeatId(), formItem.getRepeatCount());
-        Answer quantity = DBHandler.getInstance().getAnswer(submissionID, fields.get(1),
+        Answer quantity = dbHandler.getAnswer(submissionID, fields.get(1),
                 formItem.getRepeatId(), formItem.getRepeatCount());
 
         if (answerItemId != null) {
@@ -2060,16 +2097,16 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.llBtnDelete.setOnClickListener(v -> {
             formItems.remove(position);
-            Answer answerItemId1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(0),
+            Answer answerItemId1 = dbHandler.getAnswer(submissionID, fields.get(0),
                     formItem.getRepeatId(), formItem.getRepeatCount());
-            Answer quantity1 = DBHandler.getInstance().getAnswer(submissionID, fields.get(1),
+            Answer quantity1 = dbHandler.getAnswer(submissionID, fields.get(1),
                     formItem.getRepeatId(), formItem.getRepeatCount());
             if (answerItemId1 != null) {
-                DBHandler.getInstance().removeAnswer(answerItemId1);
+                dbHandler.removeAnswer(answerItemId1);
             }
 
             if (quantity1 != null) {
-                DBHandler.getInstance().removeAnswer(quantity1);
+                dbHandler.removeAnswer(quantity1);
             }
 
             notifyDataSetChanged();
@@ -2082,7 +2119,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private void bindCalender(final CalenderHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
             String value = answer.getAnswer();
@@ -2098,7 +2135,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
 
-                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                         formItem.getRepeatId(), repeatCount);
 
                 myCalendar.set(Calendar.YEAR, year);
@@ -2119,10 +2156,10 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answer1.setRepeatID(formItem.getRepeatId());
                 answer1.setRepeatCount(repeatCount);
 
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
             };
 
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 != null && !TextUtils.isEmpty(answer1.getAnswer())) {
                 String value = answer1.getAnswer();
@@ -2150,7 +2187,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final Calendar myCalendar = Calendar.getInstance();
         long timeInMiliSeconds = myCalendar.getTimeInMillis();
         holder.txtTitle.setText(formItem.getTitle());
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
             String value = answer.getAnswer();
@@ -2165,7 +2202,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
             SimpleDateFormat displaySdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 != null && !TextUtils.isEmpty(answer1.getAnswer())) {
                 String value = answer1.getAnswer();
@@ -2178,47 +2215,39 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     e.printStackTrace();
                 }
             }
-            DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                if(myCalendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
-                    listener.showValidationDialog("Validation" , "Please select week commencing date starting from Monday.");
+            listener.showDatePicker(new SimpleCalendarDialogFragment(context, date -> {
+
+                myCalendar.setTime(date);
+                if (myCalendar.get(Calendar.DAY_OF_WEEK) != CommonUtils.getWeekCommencingDayInt()) {
+                    listener.showValidationDialog("Validation", "Please select week commencing date starting from "+CommonUtils.getWeekCommencingDay()+".");
                     return;
                 }
-
 
                 String date1 = sdf.format(myCalendar.getTime());
                 String dispayDate = displaySdf.format(myCalendar.getTime());
                 holder.txtDate.setText(dispayDate);
 
 
-                Answer answer11 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+                Answer answer11 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                         formItem.getRepeatId(), repeatCount);
-                if(answer11 != null && !TextUtils.isEmpty(answer11.getAnswer())){
-                    ArrayList<TimeSheetHour> hours = DBHandler.getInstance().getTimeHours(answer11.getAnswer());
-                    for(int i = 0 ; i < hours.size() ; i++){
-                        hours.get(i).deleteAnswers(submissionID, "timesheetHours" ,formItem.getRepeatCount());
+                if (answer11 != null && !TextUtils.isEmpty(answer11.getAnswer())) {
+                    ArrayList<TimeSheetHour> hours = dbHandler.getTimeHours(answer11.getAnswer());
+                    for (int i = 0; i < hours.size(); i++) {
+                        hours.get(i).deleteAnswers(submissionID, "timesheetHours", formItem.getRepeatCount());
                     }
                 }
 
                 if (answer11 == null) {
-                    answer11 = new Answer(submissionID, formItem.getUploadId() , formItem.getRepeatId() , repeatCount);
+                    answer11 = new Answer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
                 }
 
                 answer11.setAnswer(date1);
                 answer11.setDisplayAnswer(dispayDate);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer11.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer11.toContentValues());
                 getTimeSheetHours();
-            };
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(context, date, myCalendar
-                    .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                    myCalendar.get(Calendar.DAY_OF_MONTH));
-            datePickerDialog.getDatePicker().setMaxDate(timeInMiliSeconds);
-            datePickerDialog.show();
-        });
+            }));
+      });
     }
 
 
@@ -2232,9 +2261,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         int assetNumber = formItem.getAssetNumber();
 
 
-        Answer assetId = DBHandler.getInstance().getAnswer(submissionID, "itemId",
+        Answer assetId = dbHandler.getAnswer(submissionID, "itemId",
                 formItem.getRepeatId(), assetNumber);
-        Answer quantity = DBHandler.getInstance().getAnswer(submissionID,
+        Answer quantity = dbHandler.getAnswer(submissionID,
                 "quantity", formItem.getRepeatId(), assetNumber);
 
         if (assetId != null) {
@@ -2259,7 +2288,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             final ArrayList<DropDownItem> items = new ArrayList<>();
             String uploadId = formItem.getKey();
-            items.addAll(DBHandler.getInstance().getItemTypes(uploadId));
+            items.addAll(dbHandler.getItemTypes(uploadId));
             if (items.isEmpty()) {
                 return;
             }
@@ -2269,7 +2298,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 holder.txtValue.setText(items.get(position1).getDisplayItem());
                 int assetNumber1 = formItem.getAssetNumber();
 
-                Answer assetType = DBHandler.getInstance().getAnswer(submissionID, "type",
+                Answer assetType = dbHandler.getAnswer(submissionID, "type",
                         formItem.getRepeatId(), assetNumber1);
 
                 if (assetType == null) {
@@ -2282,7 +2311,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 assetType.setRepeatCount(assetNumber1);
 
 
-                Answer assetId1 = DBHandler.getInstance().getAnswer(submissionID, "itemId",
+                Answer assetId1 = dbHandler.getAnswer(submissionID, "itemId",
                         formItem.getRepeatId(), assetNumber1);
 
                 if (assetId1 == null) {
@@ -2295,8 +2324,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 assetId1.setRepeatCount(assetNumber1);
 
 
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, assetType.toContentValues());
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, assetId1.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, assetType.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, assetId1.toContentValues());
             });
 
             listener.showBottomSheet(dropdownMenu);
@@ -2306,7 +2335,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (!hasFocus) {
 
                 int assetNumber12 = formItem.getAssetNumber();
-                Answer assetType = DBHandler.getInstance().getAnswer(submissionID, "type",
+                Answer assetType = dbHandler.getAnswer(submissionID, "type",
                         formItem.getRepeatId(), assetNumber12);
 
                 if (assetType == null) {
@@ -2319,7 +2348,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 assetType.setRepeatCount(assetNumber12);
 
 
-                Answer quantity1 = DBHandler.getInstance().getAnswer(submissionID,
+                Answer quantity1 = dbHandler.getAnswer(submissionID,
                         "quantity", formItem.getRepeatId(), assetNumber12);
 
                 if (quantity1 == null) {
@@ -2331,9 +2360,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 quantity1.setDisplayAnswer(et.getText().toString());
                 quantity1.setRepeatID(formItem.getRepeatId());
                 quantity1.setRepeatCount(assetNumber12);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME,
+                dbHandler.replaceData(Answer.DBTable.NAME,
                         quantity1.toContentValues());
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME,
+                dbHandler.replaceData(Answer.DBTable.NAME,
                         assetType.toContentValues());
                 focusedEditText = null;
             } else {
@@ -2350,7 +2379,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (themeColor != null && !themeColor.isEmpty()) {
             holder.txtBtnAddress.setBackgroundColor(Color.parseColor(themeColor));
         }
-        Answer latitude = DBHandler.getInstance().getAnswer(submissionID,
+        Answer latitude = dbHandler.getAnswer(submissionID,
                 "latitude",
                 formItem.getRepeatId(), repeatCount);
         holder.view.setBackground(null);
@@ -2385,7 +2414,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                     holder.txtLocation.setText(addressLine);
 
-                    Answer location1 = DBHandler.getInstance().getAnswer(submissionID, "location",
+                    Answer location1 = dbHandler.getAnswer(submissionID, "location",
                             formItem.getRepeatId(), repeatCount);
                     if (location1 == null) {
                         location1 = new Answer(submissionID, "location");
@@ -2395,9 +2424,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     location1.setDisplayAnswer(addressLine);
                     location1.setRepeatID(formItem.getRepeatId());
                     location1.setRepeatCount(repeatCount);
-                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, location1.toContentValues());
+                    dbHandler.replaceData(Answer.DBTable.NAME, location1.toContentValues());
 
-                    Answer address = DBHandler.getInstance().getAnswer(submissionID, "address",
+                    Answer address = dbHandler.getAnswer(submissionID, "address",
                             formItem.getRepeatId(), repeatCount);
                     if (address == null) {
                         address = new Answer(submissionID, "address");
@@ -2407,9 +2436,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     address.setDisplayAnswer(addressLine);
                     address.setRepeatID(formItem.getRepeatId());
                     address.setRepeatCount(repeatCount);
-                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, address.toContentValues());
+                    dbHandler.replaceData(Answer.DBTable.NAME, address.toContentValues());
 
-                    Answer latitude1 = DBHandler.getInstance().getAnswer(submissionID, "latitude",
+                    Answer latitude1 = dbHandler.getAnswer(submissionID, "latitude",
                             formItem.getRepeatId(), repeatCount);
                     if (latitude1 == null) {
                         latitude1 = new Answer(submissionID, "latitude");
@@ -2420,9 +2449,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     latitude1.setRepeatID(formItem.getRepeatId());
                     latitude1.setRepeatCount(repeatCount);
 
-                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, latitude1.toContentValues());
+                    dbHandler.replaceData(Answer.DBTable.NAME, latitude1.toContentValues());
 
-                    Answer longitude = DBHandler.getInstance().getAnswer(submissionID, "longitude",
+                    Answer longitude = dbHandler.getAnswer(submissionID, "longitude",
                             formItem.getRepeatId(), repeatCount);
                     if (longitude == null) {
                         longitude = new Answer(submissionID, "longitude");
@@ -2433,7 +2462,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     longitude.setRepeatID(formItem.getRepeatId());
                     longitude.setRepeatCount(repeatCount);
 
-                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, longitude.toContentValues());
+                    dbHandler.replaceData(Answer.DBTable.NAME, longitude.toContentValues());
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2448,7 +2477,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.txtLocation.setOnFocusChangeListener((view, hasFocus) -> {
             if (!hasFocus) {
 
-                Answer address = DBHandler.getInstance().getAnswer(submissionID, "address",
+                Answer address = dbHandler.getAnswer(submissionID, "address",
                         formItem.getRepeatId(), repeatCount);
                 if (address == null) {
                     address = new Answer(submissionID, "address");
@@ -2458,11 +2487,11 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 address.setDisplayAnswer(holder.txtLocation.getText().toString());
                 address.setRepeatID(formItem.getRepeatId());
                 address.setRepeatCount(repeatCount);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, address.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, address.toContentValues());
 
                 String lat = "0";
                 String lon = "0";
-                Answer latitude12 = DBHandler.getInstance().getAnswer(submissionID, "latitude",
+                Answer latitude12 = dbHandler.getAnswer(submissionID, "latitude",
                         formItem.getRepeatId(), repeatCount);
                 if (latitude12 == null) {
                     latitude12 = new Answer(submissionID, "latitude");
@@ -2475,9 +2504,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 latitude12.setRepeatID(formItem.getRepeatId());
                 latitude12.setRepeatCount(repeatCount);
 
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, latitude12.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, latitude12.toContentValues());
 
-                Answer longitude = DBHandler.getInstance().getAnswer(submissionID, "longitude",
+                Answer longitude = dbHandler.getAnswer(submissionID, "longitude",
                         formItem.getRepeatId(), repeatCount);
                 if (longitude == null) {
                     longitude = new Answer(submissionID, "longitude");
@@ -2490,7 +2519,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 longitude.setRepeatID(formItem.getRepeatId());
                 longitude.setRepeatCount(repeatCount);
 
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, longitude.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, longitude.toContentValues());
 
                 focusedEditText = null;
             } else {
@@ -2505,7 +2534,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
         holder.txtValue.setText("");
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
             String value = answer.getAnswer();
@@ -2526,7 +2555,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             holder.txtValue.setText(sb.toString());
 
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItem.getUploadId());
@@ -2537,7 +2566,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer1.setRepeatID(formItem.getRepeatId());
             answer1.setRepeatCount(repeatCount);
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
 
         });
 
@@ -2549,7 +2578,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
 
         if (answer != null) {
@@ -2561,7 +2590,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.editText.setOnFocusChangeListener((view, hasFocus) -> {
             if (!hasFocus) {
 
-                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
+                Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
 
                 if (answer1 == null) {
                     answer1 = new Answer(submissionID, formItem.getUploadId());
@@ -2571,7 +2600,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answer1.setAnswer(et.getText().toString());
                 answer1.setRepeatID(formItem.getRepeatId());
                 answer1.setRepeatCount(repeatCount);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
                 focusedEditText = null;
 
                 if (submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json") &&
@@ -2589,7 +2618,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.txtQuestion.setText(formItem.getTitle());
         holder.rlContainer.setVisibility(View.GONE);
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
 
         holder.btnYes.setSelected(false);
@@ -2623,7 +2652,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnNo.setSelected(false);
             holder.btnNA.setSelected(false);
             holder.rlContainer.setVisibility(View.GONE);
-            Answer answer13 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer13 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer13 == null) {
                 answer13 = new Answer(submissionID, formItem.getUploadId());
@@ -2631,7 +2660,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer13.setAnswer("1");
             answer13.setRepeatID(formItem.getRepeatId());
             answer13.setRepeatCount(repeatCount);
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer13.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer13.toContentValues());
         });
 
         holder.btnNo.setOnClickListener(view -> {
@@ -2640,7 +2669,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnNo.setSelected(true);
             holder.btnNA.setSelected(false);
             holder.rlContainer.setVisibility(View.VISIBLE);
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItem.getUploadId());
@@ -2650,7 +2679,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer1.setRepeatID(formItem.getRepeatId());
             answer1.setRepeatCount(repeatCount);
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
 
         });
 
@@ -2659,7 +2688,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnNo.setSelected(false);
             holder.btnNA.setSelected(true);
             holder.rlContainer.setVisibility(View.GONE);
-            Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer12 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
 
             if (answer12 == null) {
@@ -2670,7 +2699,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer12.setRepeatID(formItem.getRepeatId());
             answer12.setRepeatCount(repeatCount);
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer12.toContentValues());
 
         });
     }
@@ -2680,7 +2709,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final FormItem formItem = formItems.get(position);
         holder.txtQuestion.setText(formItem.getTitle());
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
 
         holder.btnYes.setSelected(false);
@@ -2724,7 +2753,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnYes.setSelected(true);
             holder.btnNo.setSelected(false);
             holder.btnNA.setSelected(false);
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItem.getUploadId());
@@ -2732,7 +2761,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer1.setAnswer("1");
             answer1.setRepeatID(formItem.getRepeatId());
             answer1.setRepeatCount(repeatCount);
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
 
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
@@ -2745,7 +2774,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnYes.setSelected(false);
             holder.btnNo.setSelected(true);
             holder.btnNA.setSelected(false);
-            Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer12 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer12 == null) {
                 answer12 = new Answer(submissionID, formItem.getUploadId());
@@ -2755,7 +2784,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer12.setRepeatID(formItem.getRepeatId());
             answer12.setRepeatCount(repeatCount);
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer12.toContentValues());
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
@@ -2765,7 +2794,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnYes.setSelected(false);
             holder.btnNo.setSelected(false);
             holder.btnNA.setSelected(true);
-            Answer answer13 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer13 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
 
             if (answer13 == null) {
@@ -2776,7 +2805,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer13.setRepeatID(formItem.getRepeatId());
             answer13.setRepeatCount(repeatCount);
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer13.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer13.toContentValues());
 
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
@@ -2785,44 +2814,34 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     private void bindYesNoNAOptionalHolder(final YesNoNAHolder holder, int position) {
-        boolean selectNaValue = true;
         final FormItem formItem = formItems.get(position);
         holder.txtQuestion.setText(formItem.getTitle());
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
 
         holder.btnYes.setSelected(false);
         holder.btnNo.setSelected(false);
         holder.btnNA.setSelected(false);
-        if (formItem.isYesNotVisible()) {
-            holder.btnYes.setVisibility(View.GONE);
-        } else {
-            holder.btnYes.setVisibility(View.VISIBLE);
-        }
 
-        if (formItem.isNoNotVisible()) {
-            holder.btnNo.setVisibility(View.GONE);
-        } else {
-            holder.btnNo.setVisibility(View.VISIBLE);
-        }
+        holder.btnYes.setVisibility(formItem.isYesNotVisible() ? View.GONE : View.VISIBLE);
+        holder.btnNo.setVisibility(formItem.isNoNotVisible() ? View.GONE : View.VISIBLE);
+        holder.btnNA.setVisibility(formItem.isNaNotVisible() ? View.GONE : View.VISIBLE);
 
-        if (answer != null) {
+        if (answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
             String value = answer.getAnswer();
-            if (value != null) {
-                if (value.equals("1")) {
-                    holder.btnYes.setSelected(true);
-                    holder.btnNo.setSelected(false);
-                    holder.btnNA.setSelected(false);
-                } else if (value.equals("2")) {
-                    holder.btnYes.setSelected(false);
-                    holder.btnNo.setSelected(true);
-                    holder.btnNA.setSelected(false);
-                } else if (value.equals("3")) {
-                    holder.btnYes.setSelected(false);
-                    holder.btnNo.setSelected(false);
-                    holder.btnNA.setSelected(true);
-                }
+            if (value.equals("1")) {
+                holder.btnYes.setSelected(true);
+                holder.btnNo.setSelected(false);
+                holder.btnNA.setSelected(false);
+            } else if (value.equals("2")) {
+                holder.btnYes.setSelected(false);
+                holder.btnNo.setSelected(true);
+                holder.btnNA.setSelected(false);
+            } else if (value.equals("3")) {
+                holder.btnYes.setSelected(false);
+                holder.btnNo.setSelected(false);
+                holder.btnNA.setSelected(true);
             }
         } else if (missingAnswerMode && !formItem.isOptional()) {
             holder.view.setBackground(redBG);
@@ -2833,16 +2852,13 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnYes.setSelected(true);
             holder.btnNo.setSelected(false);
             holder.btnNA.setSelected(false);
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 == null) {
-                answer1 = new Answer(submissionID, formItem.getUploadId());
+                answer1 = new Answer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
             }
             answer1.setAnswer("1");
-            answer1.setRepeatID(formItem.getRepeatId());
-            answer1.setRepeatCount(repeatCount);
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
-
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
@@ -2854,17 +2870,14 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnYes.setSelected(false);
             holder.btnNo.setSelected(true);
             holder.btnNA.setSelected(false);
-            Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer12 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer12 == null) {
-                answer12 = new Answer(submissionID, formItem.getUploadId());
+                answer12 = new Answer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
             }
 
             answer12.setAnswer("2");
-            answer12.setRepeatID(formItem.getRepeatId());
-            answer12.setRepeatCount(repeatCount);
-
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer12.toContentValues());
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
@@ -2875,23 +2888,20 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnNo.setSelected(false);
             holder.btnNA.setSelected(true);
 
-
-            Answer answer13 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer13 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
 
             if (answer13 == null) {
-                answer13 = new Answer(submissionID, formItem.getUploadId());
+                answer13 = new Answer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
                 answer13.setAnswer("3");
-                answer13.setRepeatID(formItem.getRepeatId());
-                answer13.setRepeatCount(repeatCount);
                 if (formItems.get(position + 1) != null) {
                     formItems.get(position + 1).setOptional(true);
                 }
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer13.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer13.toContentValues());
             } else {
                 if (formItem.isYesNotVisible() && formItem.isNoNotVisible()) {
                     holder.btnNA.setSelected(false);
-                    DBHandler.getInstance().removeAnswer(answer13);
+                    dbHandler.removeAnswer(answer13);
                     if (formItems.get(position + 1) != null) {
                         formItems.get(position + 1).setOptional(false);
                     }
@@ -2919,8 +2929,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private void bindPhotoHolder(PhotoHolder holder, int position) {
         FormItem formItem = formItems.get(position);
 
-        if (formItem.getTitle().equalsIgnoreCase("Take Photo/Video")) {
-            Answer answer = DBHandler.getInstance().getAnswer(submissionID, "photoTypes", null, 0);
+        if (formItem.getTitle().equalsIgnoreCase("Take Photo or Video")) {
+            Answer answer = dbHandler.getAnswer(submissionID, "photoTypes", null, 0);
             if (answer != null) {
                 formItem.setPhotoId(answer.getAnswer());
                 ArrayList<Photo> photos = formItem.getPhotos();
@@ -2975,7 +2985,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (!photo.isOptional()) {
                 required++;
             }
-            Answer answer = DBHandler.getInstance().getAnswer(submissionID,
+            Answer answer = dbHandler.getAnswer(submissionID,
                     photo.getPhoto_id(),
                     repeatCount, photo.getTitle());
 
@@ -2993,15 +3003,14 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
 
         holder.imgBtnCamera.setOnClickListener(view -> {
-
             if (submission.getJsonFileName().equalsIgnoreCase("take_photo.json")) {
-                Answer photoId = DBHandler.getInstance().getAnswer(submissionID,
+                Answer photoId = dbHandler.getAnswer(submissionID,
                         "photoTypes",
                         formItem.getRepeatId(), 0);
 
                 for (int i = 0; i < photos.size(); i++) {
                     Photo photo = photos.get(i);
-                    Answer answer = DBHandler.getInstance().getAnswer(submissionID,
+                    Answer answer = dbHandler.getAnswer(submissionID,
                             photo.getPhoto_id(),
                             repeatCount, photo.getTitle());
 
@@ -3061,10 +3070,10 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
             if (submission.getJsonFileName().equalsIgnoreCase("log_dfe.json")) {
-                answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "items"));
-                answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), "negItems"));
+                answers.addAll(dbHandler.getRepeatedAnswers(submissionID, fields.get(0), "items"));
+                answers.addAll(dbHandler.getRepeatedAnswers(submissionID, fields.get(0), "negItems"));
             } else {
-                answers.addAll(DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), formItem.getRepeatId()));
+                answers.addAll(dbHandler.getRepeatedAnswers(submissionID, fields.get(0), formItem.getRepeatId()));
             }
 
             for (int i = 0; i < answers.size(); i++) {
@@ -3083,7 +3092,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     private void getBreifingRead(int repeatCount, String uploadId, String repeatId) {
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, uploadId, repeatId, repeatCount);
+        Answer answer = dbHandler.getAnswer(submissionID, uploadId, repeatId, repeatCount);
         if (answer == null) {
             answer = new Answer(submissionID, uploadId);
         }
@@ -3091,17 +3100,17 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         answer.setRepeatID(repeatId);
         answer.setRepeatCount(repeatCount);
 
-        User user = DBHandler.getInstance().getUser();
+        User user = dbHandler.getUser();
         if (user == null) {
             return;
         }
-        ArrayList<OperativeTemplate> operativeTemplates = DBHandler.getInstance().getOperativeHseq();
+        ArrayList<OperativeTemplate> operativeTemplates = dbHandler.getOperativeHseq();
         for (OperativeTemplate ot : operativeTemplates) {
             if (ot.getOperativeId().equalsIgnoreCase(user.getuserId())) {
 
                 answer.setDisplayAnswer(ot.getOperativeFullName());
                 answer.setAnswer(ot.getOperativeId());
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
                 return;
             }
         }
@@ -3133,7 +3142,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 holder.btnClear.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(themeColor)));
             }
         }
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
 
         holder.imgSignature.setImageDrawable(null);
         if (answer != null) {
@@ -3146,9 +3155,9 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
         holder.btnClear.setOnClickListener(view -> {
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
             if (answer1 != null) {
-                DBHandler.getInstance().removeAnswer(answer1);
+                dbHandler.removeAnswer(answer1);
             }
             holder.imgSignature.setImageDrawable(null);
         });
@@ -3159,7 +3168,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
         holder.txtValue.setText("");
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
             String value = answer.getAnswer();
@@ -3170,37 +3179,34 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.view.setBackground(redBG);
         }
 
-        final DropdownTimer dropdownMenu = new DropdownTimer(context, new DropdownTimer.OnTimeSelected() {
-            @Override
-            public void timeSelected(String hours, String minutes) {
-                StringBuilder sb = new StringBuilder();
-                if (hours.isEmpty()) {
-                    hours = "00";
-                }
-
-                if (minutes.isEmpty()) {
-                    minutes = "00";
-                }
-                sb.append(hours);
-                sb.append(":");
-                sb.append(minutes);
-
-                holder.txtValue.setText(sb.toString());
-
-                Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
-                        formItem.getRepeatId(), repeatCount);
-                if (answer == null) {
-                    answer = new Answer(submissionID, formItem.getUploadId());
-                }
-
-                answer.setAnswer(sb.toString());
-                answer.setDisplayAnswer(sb.toString());
-                answer.setRepeatID(formItem.getRepeatId());
-                answer.setRepeatCount(repeatCount);
-
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
-
+        final DropdownTimer dropdownMenu = new DropdownTimer(context, (hours, minutes) -> {
+            StringBuilder sb = new StringBuilder();
+            if (hours.isEmpty()) {
+                hours = "00";
             }
+
+            if (minutes.isEmpty()) {
+                minutes = "00";
+            }
+            sb.append(hours);
+            sb.append(":");
+            sb.append(minutes);
+
+            holder.txtValue.setText(sb.toString());
+
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
+                    formItem.getRepeatId(), repeatCount);
+            if (answer1 == null) {
+                answer1 = new Answer(submissionID, formItem.getUploadId());
+            }
+
+            answer1.setAnswer(sb.toString());
+            answer1.setDisplayAnswer(sb.toString());
+            answer1.setRepeatID(formItem.getRepeatId());
+            answer1.setRepeatCount(repeatCount);
+
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+
         });
 
 
@@ -3212,7 +3218,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.txtTitle.setText(formItem.getTitle());
         holder.view.setBackground(null);
         holder.txtValue.setText("");
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID,
+        Answer answer = dbHandler.getAnswer(submissionID,
                 formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
@@ -3226,139 +3232,104 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
         holder.view.setOnClickListener(view -> {
+
             if (isScheduledInspection && formItem.getKey().equalsIgnoreCase(HseqDataset.DBTable.InspectionHseq)) {
                 listener.showValidationDialog("Warning", "Already selected inspection type");
                 return;
             }
-
-            final ArrayList<DropDownItem> items = new ArrayList<>();
-
             String uploadId = formItem.getUploadId();
+            listener.showProgressBar();
 
-            if (uploadId.equalsIgnoreCase("noticeId")) {
-                items.addAll(DBHandler.getInstance().getNotices(submission.getJobID()));
-            }
-
-            if (uploadId.equalsIgnoreCase("jobEtonSiteId")) {
-                items.addAll(DBHandler.getInstance().getNotices(submission.getJobID()));
-            }
-
-            if (formItem.getKey().equalsIgnoreCase(
-                    Job.DBTable.NAME)) {
-                items.addAll(DBHandler.getInstance().getJobs());
-            } else if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)) {
-                items.addAll(DBHandler.getInstance().getWorkItem(DatasetResponse.DBTable.dfeWorkItems,
-                        WorkItem.DBTable.itemCode));
-            } else if (formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)) {
-                items.addAll(DBHandler.getInstance().getJobWorkItem(submission.getJobID()));
-            } else if (formItem.getKey().equalsIgnoreCase(MeasureItems.DBTable.NAME)) {
-                items.addAll(DBHandler.getInstance().getMeasures());
-            } else if (formItem.getKey().equalsIgnoreCase(MenSplit.DBTable.NAME)) {
-                items.addAll(DBHandler.getInstance().getMenSplit());
-            } else if (formItem.getKey().equalsIgnoreCase(HseqDataset.DBTable.OperativesHseq)) {
-                if (estimateGangId != null && !estimateGangId.isEmpty()) {
-                    items.addAll(DBHandler.getInstance().getOperativeTemplateByGangId(estimateGangId));
-                } else {
-                    items.addAll(DBHandler.getInstance().getOperativeHseq());
-                }
-            } else if (formItem.getKey().equalsIgnoreCase(HseqDataset.DBTable.InspectionHseq)) {
-                items.addAll(DBHandler.getInstance().getInspectionHseq());
-            } else if (formItem.getKey().equalsIgnoreCase(HseqDataset.DBTable.InspectorsHseq)) {
-                items.addAll(DBHandler.getInstance().getInspectorHseq());
-            } else if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.engCompOutcomes)) {
-                ArrayList<ItemType> outComes = DBHandler.getInstance().getItemTypes(DatasetResponse.DBTable.engCompOutcomes);
-
-                Job job = DBHandler.getInstance().getJob(submission.getJobID());
-                boolean hasRFNA = job != null && job.hasRFNA();
-                boolean rfnaNotRequired = job != null && job.rfnaNotRequired();
-                for (int i = 0; i < outComes.size(); i++) {
-                    String displayItems = outComes.get(i).getDisplayItem();
-                    boolean isSuccessMessage = displayItems.startsWith("01") || displayItems.startsWith("02");
-                    String prefKey = AppPreferences.getString("RadioButton_" + submission.getJobID(), null);
-                    if (isSuccessMessage) {
-                        if (!rfnaNotRequired && (hasRFNA || (!TextUtils.isEmpty(prefKey) && prefKey.equalsIgnoreCase("true")))) {
-                            items.add(outComes.get(i));
+            new DropDownCalls(formItem, submission, estimateGangId, new DropDownDataListner() {
+                @Override
+                public void success(ArrayList<DropDownItem> items , boolean isDependOnDatasetEndpoint) {
+                    listener.hideProgressBar();
+                    if (items.isEmpty()) {
+                        String message = "Data can't be fetched due to slow internet connection.";
+                        if(!isDependOnDatasetEndpoint){
+                            message = "Data is not available.";
                         }
-                    } else if (rfnaNotRequired || (!hasRFNA && (!TextUtils.isEmpty(prefKey) && prefKey.equalsIgnoreCase("false")))) {
-                        items.add(outComes.get(i));
+                        listener.showErrorDialog("Error", message, false);
+                        return;
                     }
-                }
-            } else if (formItem.getKey().equalsIgnoreCase(RecordReturnReason.DBTable.NAME)) {
-                ArrayList<RecordReturnReason> recordReturnReasons = DBHandler.getInstance().getRecordReturnReasons(submission.getJobID());
-                items.addAll(recordReturnReasons);
-            } else {
-                items.addAll(DBHandler.getInstance().getItemTypes(formItem.getKey()));
-            }
 
-            if (items.isEmpty()) {
-                return;
-            }
+                    if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)
+                            || formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)
+                            || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.bookOperatives)
+                            || formItem.getKey().equalsIgnoreCase(TimesheetOperative.DBTable.NAME)
 
-            if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)
-                    || formItem.getKey().equalsIgnoreCase(JobWorkItem.DBTable.NAME)
-                    || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.bookOperatives)
+                    ) {
+                        Intent intent = new Intent(context, ListActivity.class);
+                        intent.putExtra("submissionID", submissionID);
+                        intent.putExtra("repeatId", formItem.getRepeatId());
+                        intent.putExtra("uploadId", uploadId);
+                        intent.putExtra("keyItemType", formItem.getKey());
+                        intent.putExtra("isMultiSelection", formItem.isMultiSelection());
+                        intent.putExtra("isConcatDisplayText", formItem.isConcatDisplayText());
+                        intent.putExtra("repeatCount", repeatCount);
+                        intent.putExtra(ListActivity.ARGS_THEME_COLOR, themeColor);
+                        context.startActivity(intent);
+                        return;
+                    } else if ((!TextUtils.isEmpty(submission.getJsonFileName()) && !submission.getJsonFileName().equalsIgnoreCase("request_task.json")) && (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.poleTypes)
+                            || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.surfaceTypes)
+                            || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.materialTypes)
+                            || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.blockTerminalTypes)
+                            || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.anchorTypes)
+                            || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.jointClosureTypes)
+                            || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.aerialCables)
+                            || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.ugCableTypes)
+                            || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dacTypes))) {
+                        Intent intent = new Intent(context, ListEditActivity.class);
+                        intent.putExtra("submissionID", submissionID);
+                        intent.putExtra("repeatId", formItem.getRepeatId());
+                        intent.putExtra("uploadId", uploadId);
+                        intent.putExtra("keyItemType", formItem.getKey());
+                        intent.putExtra("isMultiSelection", formItem.isMultiSelection());
+                        intent.putExtra("repeatCount", repeatCount);
+                        context.startActivity(intent);
+                        return;
+                    }
 
-            ) {
-                Intent intent = new Intent(context, ListActivity.class);
-                intent.putExtra("submissionID", submissionID);
-                intent.putExtra("repeatId", formItem.getRepeatId());
-                intent.putExtra("uploadId", uploadId);
-                intent.putExtra("keyItemType", formItem.getKey());
-                intent.putExtra("isMultiSelection", formItem.isMultiSelection());
-                intent.putExtra("isConcatDisplayText", formItem.isConcatDisplayText());
-                intent.putExtra("repeatCount", repeatCount);
-                context.startActivity(intent);
-                return;
-            } else if ((!TextUtils.isEmpty(submission.getJsonFileName()) && !submission.getJsonFileName().equalsIgnoreCase("request_task.json")) && (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.poleTypes)
-                    || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.surfaceTypes)
-                    || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.materialTypes)
-                    || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.blockTerminalTypes)
-                    || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.anchorTypes)
-                    || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.jointClosureTypes)
-                    || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.aerialCables)
-                    || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.ugCableTypes)
-                    || formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dacTypes))) {
-                Intent intent = new Intent(context, ListEditActivity.class);
-                intent.putExtra("submissionID", submissionID);
-                intent.putExtra("repeatId", formItem.getRepeatId());
-                intent.putExtra("uploadId", uploadId);
-                intent.putExtra("keyItemType", formItem.getKey());
-                intent.putExtra("isMultiSelection", formItem.isMultiSelection());
-                intent.putExtra("repeatCount", repeatCount);
-                context.startActivity(intent);
-                return;
-            }
+                    final DropdownMenu dropdownMenu = DropdownMenu.newInstance(items);
 
-            final DropdownMenu dropdownMenu = DropdownMenu.newInstance(items);
-            dropdownMenu.setListener(position1 -> {
-                holder.txtValue.setText(items.get(position1).getDisplayItem());
-                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
-                        formItem.getRepeatId(), repeatCount);
-                if (answer1 == null) {
-                    answer1 = new Answer(submissionID, formItem.getUploadId());
+                    dropdownMenu.setListener(position1 -> {
+                        holder.txtValue.setText(items.get(position1).getDisplayItem());
+
+                        Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
+                                formItem.getRepeatId(), repeatCount);
+                        if (answer1 == null) {
+                            answer1 = new Answer(submissionID, formItem.getUploadId());
+                        }
+                        if (formItem.getKey().equalsIgnoreCase("bookOperatives")
+                                && formItem.getUploadId().equalsIgnoreCase("userIds")) {
+                            answer1.setIsMultiList(1);
+                        }
+                        answer1.setAnswer(items.get(position1).getUploadValue());
+                        answer1.setDisplayAnswer(items.get(position1).getDisplayItem());
+                        answer1.setRepeatID(formItem.getRepeatId());
+                        answer1.setRepeatCount(repeatCount);
+                        dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                        if (needToBeNotified(formItem)) {
+                            reInflateItems(true);
+                        }
+                    });
+                    listener.showBottomSheet(dropdownMenu);
                 }
-                if (formItem.getKey().equalsIgnoreCase("bookOperatives")
-                        && formItem.getUploadId().equalsIgnoreCase("userIds")) {
-                    answer1.setIsMultiList(1);
+
+                @Override
+                public void showValidationDialog(String title, String message) {
+                    listener.showValidationDialog(title , message);
                 }
-                answer1.setAnswer(items.get(position1).getUploadValue());
-                answer1.setDisplayAnswer(items.get(position1).getDisplayItem());
-                answer1.setRepeatID(formItem.getRepeatId());
-                answer1.setRepeatCount(repeatCount);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
-                if (needToBeNotified(formItem)) {
-                    reInflateItems(true);
-                }
-            });
-            listener.showBottomSheet(dropdownMenu);
+            }).getDropDownItems();
         });
     }
+
 
     private void bindDialogScreen(final DropDownHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
         holder.txtValue.setText("");
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID,
+        Answer answer = dbHandler.getAnswer(submissionID,
                 formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
@@ -3378,7 +3349,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final FormItem formItem = formItems.get(position);
         holder.txtTitle.setText(formItem.getTitle());
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID,
+        Answer answer = dbHandler.getAnswer(submissionID,
                 formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
 
@@ -3387,17 +3358,15 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             String value = answer.getAnswer();
             if (value == null) {
                 holder.checkBox.setChecked(formItem.isChecked());
-            } else if (value.equals("true")) {
-                holder.checkBox.setChecked(true);
             } else {
-                holder.checkBox.setChecked(false);
+                holder.checkBox.setChecked(value.equals("true"));
             }
         } else if (missingAnswerMode && !formItem.isOptional()) {
             holder.view.setBackground(redBG);
         }
 
         holder.checkBox.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItem.getUploadId());
@@ -3408,7 +3377,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer1.setRepeatCount(repeatCount);
 
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
         });
     }
 
@@ -3417,30 +3386,49 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.txtTitle.setText(formItem.getTitle());
         holder.btnSwitch.setChecked(formItem.isChecked());
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
+
         if (answer != null) {
             String value = answer.getAnswer();
             holder.btnSwitch.setChecked(!TextUtils.isEmpty(value) &&
-                    value.equals("true"));
+                    (value.equals("true") || value.equals("1")));
 
         } else if (missingAnswerMode && !formItem.isOptional()) {
+
             holder.view.setBackground(redBG);
         }
 
+        if (answer == null) {
+            if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json") && (formItem.getUploadId().equalsIgnoreCase("trafficManagementMeetingRequired")
+                    || formItem.getUploadId().equalsIgnoreCase("trafficManagementRequired"))) {
+                answer = new Answer(submissionID, formItem.getUploadId());
+                answer.setAnswer("2");
+                answer.setRepeatID(formItem.getRepeatId());
+                answer.setRepeatCount(repeatCount);
+
+                dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
+            }
+        }
+
+
         holder.btnSwitch.setOnClickListener(v -> {
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID,
+            Answer answer1 = dbHandler.getAnswer(submissionID,
                     formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItem.getUploadId());
             }
 
-            answer1.setAnswer(((SwitchCompat) v).isChecked() ? "true" : "false");
+            if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json")) {
+                answer1.setAnswer(((SwitchCompat) v).isChecked() ? "1" : "2");
+            } else {
+                answer1.setAnswer(((SwitchCompat) v).isChecked() ? "true" : "false");
+            }
             answer1.setRepeatID(formItem.getRepeatId());
             answer1.setRepeatCount(repeatCount);
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
 
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
@@ -3450,7 +3438,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void bindRFNAToggleHolder(RFNAToggleHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
             String value = answer.getAnswer();
@@ -3476,7 +3464,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     value = "false";
                     break;
             }
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID,
+            Answer answer1 = dbHandler.getAnswer(submissionID,
                     formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 == null) {
@@ -3488,7 +3476,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer1.setRepeatCount(repeatCount);
 
             AppPreferences.putString("RadioButton_" + submission.getJobID(), value);
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
         });
     }
 
@@ -3502,7 +3490,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.txtQuestion.setText(formItem.getTitle());
         holder.view.setBackground(null);
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         holder.btnYes.setSelected(false);
         holder.btnNo.setSelected(false);
@@ -3526,12 +3514,14 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.btnNo.setSelected(false);
 
 
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItem.getUploadId());
             }
-            if (submission.getJsonFileName().equalsIgnoreCase("hoist_risk_assessment.json")) {
+            if (submission.getJsonFileName().equalsIgnoreCase("hoist_risk_assessment.json")
+                    || submission.getJsonFileName().equalsIgnoreCase("good_2_go.json")
+                    || submission.getJsonFileName().equalsIgnoreCase("poling_risk_assessment.json")) {
                 answer1.setAnswer("1");
             } else {
                 answer1.setAnswer("true");
@@ -3539,7 +3529,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             answer1.setRepeatID(formItem.getRepeatId());
             answer1.setRepeatCount(repeatCount);
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
@@ -3552,28 +3542,27 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
 
         holder.btnNo.setOnClickListener(view -> {
-
             holder.btnYes.setSelected(false);
             holder.btnNo.setSelected(true);
 
-
-            Answer answer12 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+            Answer answer12 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
             if (answer12 == null) {
                 answer12 = new Answer(submissionID, formItem.getUploadId());
             }
 
-            if (submission.getJsonFileName().equalsIgnoreCase("hoist_risk_assessment.json")) {
+            if (submission.getJsonFileName().equalsIgnoreCase("hoist_risk_assessment.json")
+                    || submission.getJsonFileName().equalsIgnoreCase("good_2_go.json")
+                    || submission.getJsonFileName().equalsIgnoreCase("poling_risk_assessment.json")) {
                 answer12.setAnswer("2");
             } else {
                 answer12.setAnswer("false");
             }
 
-
             answer12.setRepeatID(formItem.getRepeatId());
             answer12.setRepeatCount(repeatCount);
 
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, answer12.toContentValues());
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
@@ -3590,7 +3579,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private boolean needToBeNotified(FormItem formItem) {
 
         return (formItem.getEnables() != null && !formItem.getEnables().isEmpty())
-                || (formItem.getFalseEnables() != null && !formItem.getFalseEnables().isEmpty());
+                || (formItem.getFalseEnables() != null && !formItem.getFalseEnables().isEmpty()
+                || (formItem.getNaEnables() != null && !formItem.getNaEnables().isEmpty()));
     }
 
     public void reInflateItems(boolean isNotified) {
@@ -3620,14 +3610,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     submission.getJsonFileName().equalsIgnoreCase("slg_inspection.json") &&
                     !TextUtils.isEmpty(item.getUploadId()) &&
                     item.getUploadId().equalsIgnoreCase("actionWasRectifiedOnSite")) {
-                Answer answer = DBHandler.getInstance().getAnswer(submissionID, item.getUploadId(), item.getRepeatId(), item.getRepeatCount());
+                Answer answer = dbHandler.getAnswer(submissionID, item.getUploadId(), item.getRepeatId(), item.getRepeatCount());
                 if (answer == null) {
-                    answer = new Answer(submissionID, "actionWasRectifiedOnSite");
+                    answer = new Answer(submissionID, "actionWasRectifiedOnSite", item.getRepeatId(), item.getRepeatCount());
                 }
                 answer.setAnswer("false");
-                answer.setRepeatID(item.getRepeatId());
-                answer.setRepeatCount(item.getRepeatCount());
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
                 addEnableItems(item, "false");
                 return;
             }
@@ -3701,7 +3689,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (TextUtils.isEmpty(item.getUploadId())) {
             return null;
         }
-        return DBHandler.getInstance().getAnswer(submissionID,
+        return dbHandler.getAnswer(submissionID,
                 item.getUploadId(), item.getRepeatId(), repeatCount);
     }
 
@@ -3709,7 +3697,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (TextUtils.isEmpty(uploadId)) {
             return null;
         }
-        return DBHandler.getInstance().getAnswer(submissionID,
+        return dbHandler.getAnswer(submissionID,
                 uploadId, repeatId, repeatCount);
     }
 
@@ -3728,7 +3716,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             int formType = item.getFormType();
             String type = item.getTaskType(formType);
             if (!TextUtils.isEmpty(type)) {
-                if(type.equalsIgnoreCase("task_list_timesheet_item")){
+                if (type.equalsIgnoreCase("task_list_timesheet_item")) {
                     addTimeSheetTasksAt(item, c, type);
                     return;
                 }
@@ -3742,40 +3730,62 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         int formType = item.getFormType();
         if (formType == FormItem.TYPE_TASK_LIST_TIMESHEET) {
-            Answer answer = DBHandler.getInstance().getAnswer(submissionID , "weekCommencing" , null , 0);
-            if(answer == null){
+            Answer answer = dbHandler.getAnswer(submissionID, "weekCommencing", null, 0);
+            if (answer == null) {
                 return;
             }
 
             String weekCommencing = answer.getAnswer();
-            if(TextUtils.isEmpty(weekCommencing)){
+            if (TextUtils.isEmpty(weekCommencing)) {
                 return;
             }
-            ArrayList<TimeSheetHour> timeSheetHours = DBHandler.getInstance().getTimeHours(weekCommencing);
+            LinkedHashMap<String , ArrayList<LogHourItem>> timeSheetMap = dbHandler.getTimeSheetLogHoursByWeek(weekCommencing);
             ArrayList<FormItem> list = new ArrayList<>();
             long totalTime = 0;
-            for (int i = 0; i < timeSheetHours.size(); i++) {
-                TimeSheetHour timeSheetHour = timeSheetHours.get(i);
-                timeSheetHour.saveAnswers(submissionID , "timesheetHours" , i);
-//                selectableTasks.add(task);
-                totalTime += timeSheetHour.getTimeSheetHours(submissionID , "timesheetHours" , i);
-                FormItem formItem = new FormItem(type, timeSheetHour, true);
-                formItem.setRepeatCount(i);
-                Amends amends = JsonReader.loadAmends(context, "ammend_task_timesheet.json");
-                formItem.setDialogItems(amends.getDialogItems());
-                list.add(formItem);
+            int repeatCount = 0;
+
+            Set<String> keySet = timeSheetMap.keySet();
+            Calendar calendar = Calendar.getInstance();
+            for (String dayWorked : keySet){
+                ArrayList<LogHourItem> timeSheetHours = timeSheetMap.get(dayWorked);
+                Date date = Utils.parseDate(dayWorked , "yyyy-MM-dd'T'HH:mm:ss");
+                if(date != null) {
+                    calendar.setTime(date);
+                    String dayName = calendar.getDisplayName(Calendar.DAY_OF_WEEK , Calendar.LONG , Locale.ENGLISH);
+                    if(timeSheetHours != null && !timeSheetHours.isEmpty()) {
+                        FormItem dayItem = new FormItem("day_view", dayName, dayWorked, null, true);
+                        dayItem.setTimeSheetHour(timeSheetHours.get(0));
+                        list.add(dayItem);
+                    }
+
+                }
+
+                if(timeSheetHours!= null) {
+                    for (int i = 0; i < timeSheetHours.size(); i++) {
+                        LogHourItem timeSheetHour = timeSheetHours.get(i);
+                        repeatCount = timeSheetHour.saveTimeHoursID(submissionID, null, repeatCount);
+                        totalTime += timeSheetHour.getTotalTime();
+                        FormItem formItem = new FormItem(type, timeSheetHour, true);
+                        formItem.setRepeatId(item.getRepeatId());
+                        formItem.setRepeatCount(repeatCount);
+                        Amends amends = JsonReader.loadAmends(context, "ammend_task_timesheet.json");
+                        formItem.setDialogItems(amends.getDialogItems());
+                        list.add(formItem);
+                    }
+                }
             }
 
-            String time = (totalTime/60)+"h"+(totalTime%60)+"m";
-            String title  = "Total Hours Worked : "+time;
-            FormItem formItem = new FormItem("total_worked_hours",  title , "total_worked_hours" , null , true);
-            Answer timeWorked = DBHandler.getInstance().getAnswer(submissionID , "total_worked_hours" , null , 0);
-            if(timeWorked == null){
-                timeWorked = new Answer(submissionID , "total_worked_hours" , null , 0);
 
+            String time = (totalTime / 60) + "h" + (totalTime % 60) + "m";
+            String title = "Total Hours Worked : " + time;
+            FormItem formItem = new FormItem("total_worked_hours", title, "total_worked_hours", null, true);
+            Answer timeWorked = dbHandler.getAnswer(submissionID, "total_worked_hours", null, 0);
+            if (timeWorked == null) {
+                timeWorked = new Answer(submissionID, "total_worked_hours", null, 0);
             }
+            timeWorked.setShouldUpload(false);
             timeWorked.setAnswer(time);
-            DBHandler.getInstance().replaceData(Answer.DBTable.NAME , timeWorked.toContentValues());
+            dbHandler.replaceData(Answer.DBTable.NAME, timeWorked.toContentValues());
             list.add(formItem);
 
             formItems.addAll(position + 1, list);
@@ -3794,7 +3804,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (formType == FormItem.TYPE_TASK_LOG_REINSTATEMENT || formType == FormItem.TYPE_TASK_LOG_MUCKAWAY
                 || formType == FormItem.TYPE_TASK_LOG_BACKFILL
                 || formType == FormItem.TYPE_TASK_LOG_SERVICE || formType == FormItem.TYPE_TASK_SITE_CLEAR) {
-            ArrayList<BaseTask> tasks = DBHandler.getInstance().getTaskItems(submission.getJobID(), item.getTaskId());
+            ArrayList<BaseTask> tasks = dbHandler.getTaskItems(submission.getJobID(), item.getTaskId());
             initTasks(new ArrayList<>(tasks), position, type, item.getFormType());
 
         }
@@ -3808,7 +3818,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
 
         ArrayList<FormItem> list = new ArrayList<>();
-        ArrayList<Answer> answers = DBHandler.getInstance().getMultiAnswers(submissionID, "completedSiteActivityTaskIds", repeatCount);
+        ArrayList<Answer> answers = dbHandler.getMultiAnswers(submissionID, "completedSiteActivityTaskIds", repeatCount);
         for (int i = 0; i < tasks.size(); i++) {
             BaseTask task = tasks.get(i);
             selectableTasks.add(task);
@@ -3852,13 +3862,11 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     formList = amends.getDialogItems();
                 }
 
-                Answer siteActivityTaskId = DBHandler.getInstance().getAnswer(submissionID, "siteActivityTaskId", formList.get(0).getRepeatId(), i);
+                Answer siteActivityTaskId = dbHandler.getAnswer(submissionID, "siteActivityTaskId", formList.get(0).getRepeatId(), i);
                 if (siteActivityTaskId == null) {
-                    siteActivityTaskId = new Answer(submissionID, "siteActivityTaskId");
+                    siteActivityTaskId = new Answer(submissionID, "siteActivityTaskId", formList.get(0).getRepeatId(), i);
                     siteActivityTaskId.setAnswer(task.getSiteActivityTaskId());
-                    siteActivityTaskId.setRepeatID(formList.get(0).getRepeatId());
-                    siteActivityTaskId.setRepeatCount(i);
-                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, siteActivityTaskId.toContentValues());
+                    dbHandler.replaceData(Answer.DBTable.NAME, siteActivityTaskId.toContentValues());
                 }
 
                 if (formType != FormItem.TYPE_TASK_LOG_MUCKAWAY) {
@@ -3866,14 +3874,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         if (repeatId != null) {
                             fi.setRepeatId(repeatId);
                         }
-                        Answer answer = DBHandler.getInstance().getAnswer(submissionID, fi.getUploadId(), fi.getRepeatId(), i);
+                        Answer answer = dbHandler.getAnswer(submissionID, fi.getUploadId(), fi.getRepeatId(), i);
                         String uploadId = fi.getUploadId();
                         if (answer == null) {
-                            answer = new Answer(submissionID, uploadId);
+                            answer = new Answer(submissionID, uploadId, fi.getRepeatId(), i);
                             task.setAnswer(answer);
-                            answer.setRepeatID(fi.getRepeatId());
-                            answer.setRepeatCount(i);
-                            DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+                            dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
                         }
                     }
                 }
@@ -3903,7 +3909,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.editText.setHint(formItem.getHint());
         holder.editText.setText("");
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
             String value = answer.getAnswer();
@@ -3916,19 +3922,16 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.editText.setOnFocusChangeListener((view, hasFocus) -> {
             if (!hasFocus) {
-                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID,
+                Answer answer1 = dbHandler.getAnswer(submissionID,
                         formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
 
                 if (answer1 == null) {
-                    answer1 = new Answer(submissionID, formItem.getUploadId());
+                    answer1 = new Answer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
                 }
-
 
                 EditText et = (EditText) view;
                 answer1.setAnswer(et.getText().toString());
-                answer1.setRepeatID(formItem.getRepeatId());
-                answer1.setRepeatCount(repeatCount);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
                 focusedEditText = null;
             } else {
                 focusedEditText = (EditText) view;
@@ -3943,7 +3946,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.editText.setHint(formItem.getHint());
         holder.editText.setText("");
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
 
@@ -3957,22 +3960,19 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.editText.setOnFocusChangeListener((view, hasFocus) -> {
             if (!hasFocus) {
-                Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
+                Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
 
                 if (answer1 == null) {
-                    answer1 = new Answer(submissionID, formItem.getUploadId());
+                    answer1 = new Answer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
                 }
                 if (answer1.getUploadID() != null &&
                         answer1.getUploadID().equalsIgnoreCase("visitorName")) {
                     answer1.setIsMultiList(1);
                 }
 
-
                 EditText et = (EditText) view;
                 answer1.setAnswer(et.getText().toString());
-                answer1.setRepeatID(formItem.getRepeatId());
-                answer1.setRepeatCount(repeatCount);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
                 focusedEditText = null;
             } else {
                 focusedEditText = (EditText) view;
@@ -4015,7 +4015,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 int photosNeeded = photos.size();
                 for (int i = 0; i < photosNeeded; i++) {
                     Photo photo = photos.get(i);
-                    Answer answer = DBHandler.getInstance().getAnswer(submissionID, String.valueOf(photo.getPhoto_id()), repeatCount, photo.getTitle());
+                    Answer answer = dbHandler.getAnswer(submissionID, String.valueOf(photo.getPhoto_id()), repeatCount, photo.getTitle());
                     if (!photo.isOptional() && answer == null) {
                         missingCount++;
                         isPhotoMissing = true;
@@ -4027,7 +4027,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         item.getFormType() == FormItem.TYPE_ADD_STORE_ITEM) && !item.isOptional()) {
                     ArrayList<String> fields = item.getFields();
                     if (fields != null && !fields.isEmpty()) {
-                        ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                        ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
                         if (answers == null || answers.isEmpty()) {
                             missingCount++;
                         }
@@ -4038,24 +4038,24 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         (item.getFormType() == FormItem.TYPE_ADD_NEG_DFE)) {
                     ArrayList<String> fields = item.getFields();
                     if (fields != null && !fields.isEmpty()) {
-                        ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                        ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
                         if (answers != null && !answers.isEmpty()) {
                             ifDFEAdded = true;
                         }
                     }
                 } else if (item.getFormType() == FormItem.TYPE_LOCATION) {
-                    Answer answer = DBHandler.getInstance().getAnswer(submissionID, "latitude", item.getRepeatId(), repeatCount);
+                    Answer answer = dbHandler.getAnswer(submissionID, "latitude", item.getRepeatId(), repeatCount);
                     if (answer == null || TextUtils.isEmpty(answer.getAnswer())) {
                         missingCount++;
                     }
                 } else if (item.getFormType() == FormItem.TYPE_TASK_LOG_BACKFILL_ITEM) {
-                    Answer answer = DBHandler.getInstance().getAnswer(submissionID, "completedSiteActivityTaskIds",
+                    Answer answer = dbHandler.getAnswer(submissionID, "completedSiteActivityTaskIds",
                             null, repeatCount);
                     if (answer != null) {
                         isBackFillSelected = true;
                     }
                 } else if (item.getFormType() == FormItem.TYPE_TASK_LOG_SERVICE_ITEM) {
-                    Answer answer = DBHandler.getInstance().getAnswer(submissionID, "completedSiteActivityTaskIds",
+                    Answer answer = dbHandler.getAnswer(submissionID, "completedSiteActivityTaskIds",
                             null, repeatCount);
                     if (answer != null) {
                         isSerMatbase = true;
@@ -4067,28 +4067,28 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 } else if (item.getFormType() == FormItem.TYPE_ADD_LOG_MEASURE) {
                     ArrayList<String> fields = item.getFields();
                     if (fields != null && !fields.isEmpty()) {
-                        ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                        ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
                         if (answers == null || answers.isEmpty()) {
                             missingCount++;
                         }
                     }
-                }else if (item.getFormType() == FormItem.TYPE_ADD_LOG_HOURS) {
+                } else if (item.getFormType() == FormItem.TYPE_ADD_LOG_HOURS) {
                     ArrayList<String> fields = item.getFields();
                     if (fields != null && !fields.isEmpty()) {
-                        ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+                        ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
                         if (answers == null || answers.isEmpty()) {
                             missingCount++;
                         }
                     }
-                }else if (item.getFormType() == FormItem.TYPE_TOTAL_WORKED_HOURS) {
-                    Answer answer = DBHandler.getInstance().getAnswer(submissionID, item.getUploadId(), item.getRepeatId(), repeatCount);
+                } else if (item.getFormType() == FormItem.TYPE_TOTAL_WORKED_HOURS) {
+                    Answer answer = dbHandler.getAnswer(submissionID, item.getUploadId(), item.getRepeatId(), repeatCount);
                     if (answer == null || TextUtils.isEmpty(answer.getAnswer()) || answer.getAnswer().equalsIgnoreCase("0h0m")) {
                         missingCount++;
                         isTotalHoursValid = true;
                     }
                 } else {
                     if (!item.isOptional() && item.getUploadId() != null) {
-                        Answer answer = DBHandler.getInstance().getAnswer(submissionID, item.getUploadId(), item.getRepeatId(), repeatCount);
+                        Answer answer = dbHandler.getAnswer(submissionID, item.getUploadId(), item.getRepeatId(), repeatCount);
                         if (answer == null || TextUtils.isEmpty(answer.getAnswer())) {
                             missingCount++;
                         } else if (submission.getJsonFileName().equalsIgnoreCase("eng_comp.json") && (answer.getAnswer().length() < 10)) {
@@ -4106,7 +4106,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             listener.showValidationDialog("Validation Error", "Please select Log BackFill amendment!");
         } else if (submission.getJsonFileName().equalsIgnoreCase("service_material.json") && !isSerMatbase) {
             listener.showValidationDialog("Validation Error", "Please select Service/Material amendment!");
-        }else if(isTotalHoursValid){
+        } else if (isTotalHoursValid) {
             listener.showValidationDialog("Validation Error", "No hours have been logged for this week. Please log hours.");
         } else if (isPhotoMissing) {
             listener.showValidationDialog("Validation Error", "Photos are missing");
@@ -4125,18 +4125,17 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (submission.getJsonFileName().
                 equalsIgnoreCase("take_photo.json")) {
 
-            Answer photoId = DBHandler.getInstance().getAnswer(submissionID,
+            Answer photoId = dbHandler.getAnswer(submissionID,
                     "photoTypes",
                     null, 0);
 
             if (photoId == null) {
-
                 return;
             }
             ArrayList<Photo> photos = formItem.getPhotos();
             for (int i = 0; i < photos.size(); i++) {
                 Photo photo = photos.get(i);
-                Answer answer = DBHandler.getInstance().getAnswer(submissionID,
+                Answer answer = dbHandler.getAnswer(submissionID,
                         photo.getPhoto_id(),
                         repeatCount, photo.getTitle());
 
@@ -4168,10 +4167,10 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (items != null && !items.isEmpty()) {
             for (FormItem fi :
                     items) {
-                Answer answer = DBHandler.getInstance().getAnswer(submissionID,
+                Answer answer = dbHandler.getAnswer(submissionID,
                         fi.getUploadId(), fi.getRepeatId(), fi.getRepeatCount());
                 if (answer != null) {
-                    DBHandler.getInstance().removeAnswer(answer);
+                    dbHandler.removeAnswer(answer);
                 }
             }
 
@@ -4190,7 +4189,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         for (int i = 0; i < selectableTasks.size(); i++) {
             BaseTask task = selectableTasks.get(i);
             if (!task.isSelected()) {
-                DBHandler.getInstance().deleteAnswers(submissionID, "amendments", i);
+                dbHandler.deleteAnswers(submissionID, "amendments", i);
             }
         }
     }
@@ -4199,19 +4198,19 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (jobEstimate.getGangId() != null && !jobEstimate.getGangId().isEmpty()) {
             this.estimateGangId = jobEstimate.getGangId();
             //this.estimateGangId = "48c10128-fd64-48b8-fc56-08d771b0792e";
-            Answer answer1 = DBHandler.getInstance().getAnswer(submissionID,
+            Answer answer1 = dbHandler.getAnswer(submissionID,
                     formItems.get(pos).getUploadId(), formItems.get(pos).getRepeatId(), repeatCount);
 
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItems.get(pos).getUploadId());
             }
-            List<OperativeTemplate> estimateList = DBHandler.getInstance().getOperativeTemplateByGangId(estimateGangId);
+            List<OperativeTemplate> estimateList = dbHandler.getOperativeTemplateByGangId(estimateGangId);
             if (estimateList.size() > 0) {
                 answer1.setAnswer(estimateList.get(0).getOperativeId());
                 answer1.setDisplayAnswer(estimateList.get(0).getOperativeFullName());
                 answer1.setRepeatID(formItems.get(pos).getRepeatId());
                 answer1.setRepeatCount(repeatCount);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
                 if (pos != RecyclerView.NO_POSITION) {
                     notifyItemChanged(pos);
                 }
@@ -4219,7 +4218,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
         if (!TextUtils.isEmpty(jobEstimate.getJobId())) {
             if (jobEstimate.getJobId() != null && !jobEstimate.getJobId().isEmpty()) {
-                Answer answerjobID = DBHandler.getInstance().getAnswer(submissionID,
+                Answer answerjobID = dbHandler.getAnswer(submissionID,
                         "jobId", null, 0);
 
                 if (answerjobID == null) {
@@ -4228,54 +4227,44 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answerjobID.setAnswer(jobEstimate.getJobId());
                 answerjobID.setDisplayAnswer(jobEstimate.getJobId());
                 answerjobID.setRepeatCount(0);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answerjobID.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answerjobID.toContentValues());
             }
         }
     }
 
-    private void getTimeSheetHours(){
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID , "weekCommencing" , null , 0);
-        if(answer == null){
+    private void getTimeSheetHours() {
+        Answer answer = dbHandler.getAnswer(submissionID, "weekCommencing", null, 0);
+        if (answer == null) {
             return;
         }
 
         String weekCommencing = answer.getAnswer();
-        if(TextUtils.isEmpty(weekCommencing)){
+        if (TextUtils.isEmpty(weekCommencing)) {
             return;
         }
 
-        ((FromActivityListener)context).showProgressBar();
-        User user = DBHandler.getInstance().getUser();
+        ((FromActivityListener) context).showProgressBar();
+        User user = dbHandler.getUser();
 
-        APICalls.getTimesheetHours(user.gettoken() , weekCommencing).enqueue(new Callback<TimeSheetHours>() {
+        APICalls.getTimesheetHours(user.gettoken(), weekCommencing).enqueue(new Callback<TimeSheetHours>() {
             @Override
-            public void onResponse(Call<TimeSheetHours> call, Response<TimeSheetHours> response) {
-                if(response.isSuccessful()){
-
+            public void onResponse(@NonNull Call<TimeSheetHours> call, @NonNull Response<TimeSheetHours> response) {
+                DBHandler.getInstance().clearTable(TimeSheetHour.DBTable.NAME);
+                DBHandler.getInstance().removeMultiAnswersByUploadID(submissionID , "timesheetHoursIds");
+                if (response.isSuccessful()) {
                     TimeSheetHours timeSheetHours = response.body();
-                    if(timeSheetHours != null && !timeSheetHours.isEmpty()) {
-                        if(!timeSheetHours.isWaitingApproval() && !timeSheetHours.isApproved()){
-                            timeSheetHours.setWeekCommencing();
-                            timeSheetHours.toContentValues();
-                            reInflateItems(true);
-                        }else if(timeSheetHours.isWaitingApproval()){
-                            String time = timeSheetHours.getFormatedTotalTimeSheetHours();
-                            listener.showErrorDialog("Timesheets" , "Hours have been sent for approval of a total of the "+time+" hrs" , true);
-                        }else if(timeSheetHours.isApproved()){
-                            String time = timeSheetHours.getFormatedTotalTimeSheetHours();
-                            listener.showErrorDialog("Timesheets" , "Hours have been approved of a total of "+time+" hrs" , true);
-                        }
-
-                    }else{
-                        listener.showErrorDialog("Timesheets" , "There are no Timesheets to submit for this selected week" , false);
+                    if (timeSheetHours != null && !timeSheetHours.isEmpty()) {
+                        timeSheetHours.setWeekCommencing();
+                        timeSheetHours.toContentValues();
+                        reInflateItems(true);
                     }
                 }
-                ((FromActivityListener)context).hideProgressBar();
+                ((FromActivityListener) context).hideProgressBar();
             }
 
             @Override
-            public void onFailure(Call<TimeSheetHours> call, Throwable t) {
-                ((FromActivityListener)context).hideProgressBar();
+            public void onFailure(@NonNull Call<TimeSheetHours> call, @NonNull Throwable t) {
+                ((FromActivityListener) context).hideProgressBar();
             }
         });
     }

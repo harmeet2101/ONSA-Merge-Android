@@ -10,8 +10,10 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,20 +38,29 @@ import java.util.Map;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.ThemeBaseActivity;
+import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fcm.NotifyUtils;
 import co.uk.depotnet.onsa.fragments.FragmentKitBag;
 import co.uk.depotnet.onsa.fragments.FragmentQueue;
 import co.uk.depotnet.onsa.fragments.briefings.BriefingFragment;
-import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.listeners.GetFetchListener;
+import co.uk.depotnet.onsa.modals.actions.Action;
+import co.uk.depotnet.onsa.modals.actions.ActionResponse;
+import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class BriefingsActivity extends ThemeBaseActivity implements FragmentActionListener, GetFetchListener {
+public class BriefingsActivity extends ThemeBaseActivity implements  GetFetchListener {
 
     private static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1095;
-    BottomNavigationView mBottomNavigationView;
+    private BottomNavigationView mBottomNavigationView;
     private Fragment fragment;
     private Fetch fetch;
+    private ProgressBar progressBar;
+    private final List<String> actionList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +85,25 @@ public class BriefingsActivity extends ThemeBaseActivity implements FragmentActi
         if (savedInstanceState == null) {
             fragment= BriefingFragment.newInstance();
             ABHIKRCall(fragment,false);
+        }
+
+
+        progressBar=findViewById(R.id.progress_bar_actions);
+        progressBar.setVisibility(View.VISIBLE);
+
+        try {
+            if(CommonUtils.isNetworkAvailable(this)) {
+                GetActionsCall();
+            }
+            else
+            {
+                actionList.clear();
+                getActionsFromDb();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
         NotifyUtils.scheduleJob(getApplicationContext(),true); // schedule the job for notify
     }
@@ -255,36 +285,6 @@ public class BriefingsActivity extends ThemeBaseActivity implements FragmentActi
     }
 
     @Override
-    public void addFragment(Fragment fragment, boolean isHorizontalAnim) {
-
-    }
-
-    @Override
-    public void setTitle(String title) {
-
-    }
-
-    @Override
-    public void onFragmentHomeVisible(boolean isVisible) {
-
-    }
-
-    @Override
-    public void showProgressBar() {
-
-    }
-
-    @Override
-    public void hideProgressBar() {
-
-    }
-
-    @Override
-    public void setReceiptsBadge(String number) {
-
-    }
-
-    @Override
     public Fetch getFetch() {
         return fetch;
     }
@@ -293,5 +293,49 @@ public class BriefingsActivity extends ThemeBaseActivity implements FragmentActi
     public void openKitbagFolder(int parentId) {
         FragmentKitBag fragment = FragmentKitBag.newInstance(parentId);
         ABHIKRCall(fragment,true);
+    }
+
+    private void GetActionsCall()
+    {
+        APICalls.getActionsOutstandingList(DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<List<ActionResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<ActionResponse>> call, @NonNull Response<List<ActionResponse>> response) {
+                if(CommonUtils.onTokenExpired(BriefingsActivity.this, response.code())){
+                    return;
+                }
+                if (response.isSuccessful()) {
+                    dbHandler.clearTable(Action.DBTable.NAME);
+                    actionList.clear();
+                    List<ActionResponse> actionsresponse=response.body();
+                    if (actionsresponse!=null && !actionsresponse.isEmpty()) {
+                        for (ActionResponse modal : actionsresponse)
+                        {
+                            modal.setActionType("Outstanding");
+                            modal.toContentValues();
+                            actionList.add("Outstanding");
+                        }
+                        getActionsFromDb();
+                    }
+                }
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<ActionResponse>> call, @NonNull Throwable t) {
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void getActionsFromDb()
+    {
+        List<String> dueDates = DBHandler.getInstance().getActionDueDates("Outstanding");
+
+        if (dueDates!=null && !dueDates.isEmpty())
+        {
+            actionList.addAll(dueDates);
+            mBottomNavigationView.getOrCreateBadge(R.id.action_actions).setNumber(actionList.size());
+        }
+        progressBar.setVisibility(View.GONE);
     }
 }

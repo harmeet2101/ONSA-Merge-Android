@@ -68,7 +68,7 @@
                         android:layout_height="@dimen/_32sdp"
                         android:layout_margin="@dimen/_8sdp"
                         android:layout_gravity="bottom|end"
-                        android:tint="@color/depotnet_color"
+                        app:tint="@color/depotnet_color"
                         android:background="@drawable/img_bg_circle"
                         android:backgroundTint="@color/white"/>
                 </FrameLayout>

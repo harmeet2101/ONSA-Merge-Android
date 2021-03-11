@@ -72,7 +72,7 @@
                     android:layout_marginEnd="@dimen/_2sdp"
                     android:layout_marginRight="@dimen/_2sdp"
                     android:gravity="center"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_edit_icon" />
 
                 <TextView
@@ -104,7 +104,7 @@
                     android:gravity="center"
                     android:textColor="@color/txt_color_light_grey"
                     android:textSize="@dimen/_11sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_remove_circle" />
 
                 <TextView
@@ -398,7 +398,7 @@
                     android:layout_marginEnd="@dimen/_2sdp"
                     android:layout_marginRight="@dimen/_2sdp"
                     android:gravity="center"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_warning" />
 
                 <TextView
@@ -430,7 +430,7 @@
                     android:gravity="center"
                     android:textColor="@color/txt_color_light_grey"
                     android:textSize="@dimen/_11sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_note_add" />
 
                 <TextView

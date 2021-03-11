@@ -13,10 +13,9 @@
           "title": "Locate Me",
           "optional": false
         },
-
         {
           "type": "dropdown",
-          "uploadId": "tmType",
+          "uploadId": "trafficManagementTypeId",
           "key": "trafficManagementTypes",
           "title": "Traffic Management",
           "optional": false

@@ -33,7 +33,6 @@ import co.uk.depotnet.onsa.adapters.OfflineQueueAdapter;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.store.ReceiptItemsFragment;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
-import co.uk.depotnet.onsa.listeners.FromActivityListener;
 import co.uk.depotnet.onsa.modals.JobModuleStatus;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Answer;
@@ -43,8 +42,6 @@ import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.modals.hseq.ToolTipModel;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.Receipts;
-import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
-import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.ConnectionHelper;
@@ -130,7 +127,7 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
     }
 
     public void showErrorDialog(String title, String message) {
-        if(getChildFragmentManager().isStateSaved()){
+        if (getChildFragmentManager().isStateSaved()) {
             return;
         }
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
@@ -140,7 +137,7 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
                 .build();
 
         dialog.setCancelable(false);
-        if(!getChildFragmentManager().isStateSaved()) {
+        if (!getChildFragmentManager().isStateSaved()) {
             dialog.show(getChildFragmentManager(), "_ERROR_DIALOG");
         }
     }
@@ -153,27 +150,25 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
                     String json = submission.getJsonFileName();
 
                     dialog1.dismiss();
-                    if(!TextUtils.isEmpty(json) && json.equalsIgnoreCase("rfna.json")){
-                        sendRFNA(position , submission);
-                    }else if ((!TextUtils.isEmpty(json)) && ( json.equalsIgnoreCase("corrective_measure.json")
-                            ||  json.equalsIgnoreCase("cannot_rectify.json")))
-                    {
+                    if (!TextUtils.isEmpty(json) && json.equalsIgnoreCase("rfna.json")) {
+                        sendRFNA(position, submission);
+                    } else if ((!TextUtils.isEmpty(json)) && (json.equalsIgnoreCase("corrective_measure.json")
+                            || json.equalsIgnoreCase("cannot_rectify.json"))
+                            ||  json.equalsIgnoreCase("incident_cannot_rectify.json")
+                            ||  json.equalsIgnoreCase("incident_corrective_measure.json")) {
                         AppPreferences.setTheme(3);
                         Intent intent = new Intent(context, FormActivity.class);
                         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
                         startActivity(intent);
-                    }
-                    else if(!TextUtils.isEmpty(json) && json.equalsIgnoreCase("briefing_sign.json"))
-                    {
+                    } else if (!TextUtils.isEmpty(json) && json.equalsIgnoreCase("briefing_sign.json")) {
                         AppPreferences.setTheme(2);
                         Intent intent = new Intent(context, FormActivity.class);
                         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
                         startActivity(intent);
 
-                    } else if(!TextUtils.isEmpty(json) && json.equalsIgnoreCase("slg_inspection.json"))
-                    {
-                        getInsQue(submission,true);// for auto load all dynamic questions
-                    }else if (!TextUtils.isEmpty(json) && (json.startsWith("store_log_"))) {
+                    } else if (!TextUtils.isEmpty(json) && json.equalsIgnoreCase("slg_inspection.json")) {
+                        getInsQue(submission, true);// for auto load all dynamic questions
+                    } else if (!TextUtils.isEmpty(json) && (json.startsWith("store_log_"))) {
                         ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submission.getID(), "StaStockItemId",
                                 json.equalsIgnoreCase("store_log_issue.json") ? null : "Items");
                         if (answers.isEmpty()) {
@@ -276,43 +271,29 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
             return;
         }
 
-        if(!CommonUtils.validateToken(context)){
+        if (!CommonUtils.validateToken(context)) {
             return;
         }
 
-        Response response =null;
-        if (submission.getJsonFileName().equalsIgnoreCase("corrective_measure.json")
-                || submission.getJsonFileName().equalsIgnoreCase("cannot_rectify.json"))
-        {
-            //for actions calls
-            response =  new ConnectionHelper(context).
+        Response response = null;
+        if ((!TextUtils.isEmpty(jsonFileName)) &&
+                ( jsonFileName.equalsIgnoreCase("corrective_measure.json")
+                        ||  jsonFileName.equalsIgnoreCase("cannot_rectify.json")
+                        ||  jsonFileName.equalsIgnoreCase("incident_cannot_rectify.json")
+                        ||  jsonFileName.equalsIgnoreCase("incident_corrective_measure.json")
+                )){
+            response = new ConnectionHelper(context).
                     submitActions(screen.getUrl(),
                             submission, getChildFragmentManager());
-        }
-       /* else if(submission.getJsonFileName().equalsIgnoreCase("schedule_inspection.json"))
-        {
-           getInsQue(submission,true);
-
-        }*/
-        else if(submission.getJsonFileName().equalsIgnoreCase("slg_inspection.json"))
-        {
-            response =  new ConnectionHelper(context).
+        } else if (jsonFileName.equalsIgnoreCase("slg_inspection.json")) {
+            response = new ConnectionHelper(context).
                     submitInspections(screen.getUrl(), screen.getPhotoUrl(),
                             submission, getChildFragmentManager());
-        }
-        else if (submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")) {
-            screen.setUrl("app/timesheets/submit");
-        }
-        else
-        {
+        } else {
             response = new ConnectionHelper(context).
                     submitForm(screen.getUrl(), screen.getPhotoUrl(),
                             submission, getChildFragmentManager());
         }
-
-//        final Response response = new ConnectionHelper(context).
-//                submitForm(screen.getUrl(), screen.getPhotoUrl(),
-//                        submission, getChildFragmentManager());
 
 
         if (response != null && response.isSuccessful()) {
@@ -352,147 +333,13 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
         }
     }
 
-    private void updateLogHours( Submission submission) {
-
-        if (!CommonUtils.isNetworkAvailable(context)) {
-            DBHandler.getInstance().setSubmissionQueued(submission);
-            return;
-        }
-
-        if (!CommonUtils.validateToken(context)) {
-            return;
-        }
-
-        String jsonFileName = submission.getJsonFileName();
-
-        if (TextUtils.isEmpty(jsonFileName)) {
-            return;
-        }
-        Form form = JsonReader.loadForm(context, submission.getJsonFileName());
-        if (form == null) {
-            return;
-        }
-
-        ArrayList<Screen> screens = form.getScreens();
-        if(screens == null || screens.isEmpty()){
-            return;
-        }
-
-        Screen screen = screens.get(screens.size() - 1);
-
-        Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "weekCommencing" , null , 0);
-        if(answer == null || TextUtils.isEmpty(answer.getAnswer())){
-            return;
-        }
-
-        String weekCommencing = answer.getAnswer();
-
-        ArrayList<TimeSheetHour> hours = DBHandler.getInstance().getTimeHours(weekCommencing);
-        boolean isEdited = false;
-        for(int i = 0 ; i < hours.size() ; i++){
-            if(hours.get(i).isEdited()){
-                isEdited = true;
-                break;
-            }
-        }
-
-        if(!isEdited){
-            submitTimeSheet(submission , weekCommencing);
-            return;
-        }
-
-
-        new Thread(() -> {
-            Response response = new ConnectionHelper(context).
-                    submitForm(screen.getUrl(), screen.getPhotoUrl(),
-                            submission, getChildFragmentManager());
-
-
-            if (response == null || !response.isSuccessful()) {
-                DBHandler.getInstance().setSubmissionQueued(submission);
-            }
-
-            handler.post(() -> {
-                if(response == null){
-                    return;
-                }
-
-                if(response.isSuccessful()){
-                    getTimeSheetHours(submission , weekCommencing);
-                }
-
-            });
-        }).start();
-    }
-
-    private void submitTimeSheet(Submission submission , String weekCommencing){
-        ArrayList<TimeSheetHour> hours = DBHandler.getInstance().getTimeHours(weekCommencing);
-
-        Answer signatureFileBytes = DBHandler.getInstance().getAnswer(submission.getID(), "signatureFileBytes",
-                null, 0);
-
-        DBHandler.getInstance().removeAnswers(submission);
-
-        for(int i = 0 ; i < hours.size() ; i++){
-            if(!TextUtils.isEmpty(hours.get(i).getTimesheetHoursId())){
-                Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "timesheetHoursIds",
-                        null, i);
-                if (answer == null) {
-                    answer = new Answer(submission.getID(), "timesheetHoursIds",
-                            null, i);
-                }
-
-                answer.setAnswer(hours.get(i).getTimesheetHoursId());
-                answer.setDisplayAnswer("");
-                answer.setIsMultiList(1);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
-            }
-        }
-
-        Answer answer = new Answer(submission.getID(), "signatureFileBytes",
-                null, 0);
-        answer.setAnswer(signatureFileBytes.getAnswer());
-        answer.setIsPhoto(1);
-        answer.setDisplayAnswer(signatureFileBytes.getDisplayAnswer());
-        DBHandler.getInstance().replaceData(Answer.DBTable.NAME , answer.toContentValues());
-
-        sendToServer(submission);
-    }
-
-    private void getTimeSheetHours(Submission submission , String weekCommencing){
-
-
-        User user = DBHandler.getInstance().getUser();
-
-        APICalls.getTimesheetHours(user.gettoken() , weekCommencing).enqueue(new Callback<TimeSheetHours>() {
-            @Override
-            public void onResponse(Call<TimeSheetHours> call, retrofit2.Response<TimeSheetHours> response) {
-                if(response.isSuccessful()){
-                    TimeSheetHours timeSheetHours = response.body();
-                    if(timeSheetHours != null && !timeSheetHours.isEmpty()) {
-                        timeSheetHours.setWeekCommencing();
-                        timeSheetHours.toContentValues();
-                    }
-                }
-
-                submitTimeSheet(submission , weekCommencing);
-            }
-
-            @Override
-            public void onFailure(Call<TimeSheetHours> call, Throwable t) {
-                ((FromActivityListener)context).hideProgressBar();
-                submitTimeSheet(submission , weekCommencing);
-            }
-        });
-    }
-
     private void sendPollingSurvey(int position, Submission submission) {
 
         if (!CommonUtils.isNetworkAvailable(context)) {
             DBHandler.getInstance().setSubmissionQueued(submission);
             return;
         }
-        if(!CommonUtils.validateToken(context)){
+        if (!CommonUtils.validateToken(context)) {
             return;
         }
 
@@ -606,20 +453,20 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
                 } else if (!TextUtils.isEmpty(title) && title.equalsIgnoreCase("poling_survey")) {
                     sendPollingSurvey(i, submission);
                 } else if (!TextUtils.isEmpty(jsonFileName) && (jsonFileName.startsWith("store_log_"))) {
-                    sendLogJobRequest(i , submission);
-                }else if (submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")) {
-                    updateLogHours(submission);
+                    sendLogJobRequest(i, submission);
                 } else {
-                    sendToServer( submission);
+                    sendToServer(submission);
                 }
             }
 
-            handler.post(() -> {listener.hideProgressBar();
-                refreshQueue();});
+            handler.post(() -> {
+                listener.hideProgressBar();
+                refreshQueue();
+            });
         }).start();
     }
 
-    private void sendRFNA(int position , Submission submission){
+    private void sendRFNA(int position, Submission submission) {
 
         if (!CommonUtils.isNetworkAvailable(context)) {
             String title = "Submission Error";
@@ -629,26 +476,26 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
             return;
         }
 
-        if(!CommonUtils.validateToken(context)){
+        if (!CommonUtils.validateToken(context)) {
             return;
         }
 
         listener.showProgressBar();
 
 
-        APICalls.sendRfna(submission.getJobID() , user.gettoken()).enqueue(new Callback<Void>() {
+        APICalls.sendRfna(submission.getJobID(), user.gettoken()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull retrofit2.Response<Void> response) {
 
-                if(CommonUtils.onTokenExpired(context , response.code())){
+                if (CommonUtils.onTokenExpired(context, response.code())) {
                     return;
                 }
 
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     showErrorDialog("Success", "Submission was successful");
                     DBHandler.getInstance().removeAnswers(submission);
                     refreshQueue();
-                }else{
+                } else {
                     DBHandler.getInstance().setSubmissionQueued(submission);
 
                     showErrorDialog("Submission Error", "Submission Error, your submission has not been succeed");
@@ -665,35 +512,33 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
         });
     }
 
-    public void getInsQue(Submission submission,boolean shouldstartQues)
-    {
+    public void getInsQue(Submission submission, boolean shouldstartQues) {
         listener.showProgressBar();
         String latestTemplateVersionId = submission.getJobID();
         ArrayList<Answer> answersinspections = DBHandler.getInstance().getAnswers(submission.getID());
         for (int c = 0; c < answersinspections.size(); c++) {
             Answer answer = answersinspections.get(c);
-            if (!TextUtils.isEmpty(answer.getUploadID()) && answer.getUploadID().equalsIgnoreCase("inspectionId")){
+            if (!TextUtils.isEmpty(answer.getUploadID()) && answer.getUploadID().equalsIgnoreCase("inspectionId")) {
                 latestTemplateVersionId = DBHandler.getInstance().getLatestInspectionTemplateId(answer.getAnswer());
             }
         }
         String finalLatestTemplateVersionId = latestTemplateVersionId;
-        if(!CommonUtils.isNetworkAvailable(context)) {
+        if (!CommonUtils.isNetworkAvailable(context)) {
             String title = "Start Inspection  Error";
             String message = "Internet connection is not available. Please check your internet connection.";
             showErrorDialog(title, message);
             listener.hideProgressBar();
             return;
         }
-        APICalls.GetInspectionToolTipList(finalLatestTemplateVersionId,user.gettoken()).enqueue(new Callback<ArrayList<ToolTipModel>>() {
+        APICalls.GetInspectionToolTipList(finalLatestTemplateVersionId, user.gettoken()).enqueue(new Callback<ArrayList<ToolTipModel>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<ToolTipModel>> call, @NonNull retrofit2.Response<ArrayList<ToolTipModel>> response) {
-                if(CommonUtils.onTokenExpired(context, response.code())){
+                if (CommonUtils.onTokenExpired(context, response.code())) {
                     return;
                 }
-                if (response.isSuccessful())
-                {
+                if (response.isSuccessful()) {
                     ArrayList<ToolTipModel> models = response.body();
-                    if (models!=null && models.size()>0) {
+                    if (models != null && models.size() > 0) {
                         AppPreferences.setTheme(1);//setting hseq theme.
                         submission.setJobID(finalLatestTemplateVersionId); // for template
                         Intent intent = new Intent(context, FormActivity.class);
@@ -701,25 +546,23 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
                         intent.putParcelableArrayListExtra(FormActivity.ARG_QUESTIONS, models);
                         startActivity(intent);
                     } else {
-                        showErrorDialog("Inspection Error","Unfortunately the selected inspection version does not exist or it has no questions. Please select a different inspection or contact support.");
+                        showErrorDialog("Inspection Error", "Unfortunately the selected inspection version does not exist or it has no questions. Please select a different inspection or contact support.");
                     }
-                }
-                else
-                {
-                    showErrorDialog("Inspection Error","Unfortunately the selected inspection version does not exist or it has no questions. Please select a different inspection or contact support.");
+                } else {
+                    showErrorDialog("Inspection Error", "Unfortunately the selected inspection version does not exist or it has no questions. Please select a different inspection or contact support.");
                 }
                 listener.hideProgressBar();
             }
 
             @Override
             public void onFailure(@NonNull Call<ArrayList<ToolTipModel>> call, @NonNull Throwable t) {
-                showErrorDialog("Inspection Error","Unfortunately the selected inspection version does not exist or it has no questions. Please select a different inspection or contact support.");
+                showErrorDialog("Inspection Error", "Unfortunately the selected inspection version does not exist or it has no questions. Please select a different inspection or contact support.");
                 listener.hideProgressBar();
             }
         });
     }
 
-    private void refreshQueue(){
+    private void refreshQueue() {
         ArrayList<Submission> submissions = DBHandler.getInstance().getQueuedSubmissions();
         this.submissions.clear();
         this.submissions.addAll(submissions);

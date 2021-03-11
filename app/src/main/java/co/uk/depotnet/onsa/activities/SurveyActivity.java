@@ -4,9 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.Job;
+import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 
 public class SurveyActivity extends AppCompatActivity
@@ -26,10 +30,32 @@ public class SurveyActivity extends AppCompatActivity
         Intent intent = getIntent();
         jobID = intent.getStringExtra(ARG_JOB_ID);
 
+        Job job = DBHandler.getInstance().getJob(jobID);
 
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
-        findViewById(R.id.btn_pre_site_survey).setOnClickListener(this);
-        findViewById(R.id.btn_poling_survey).setOnClickListener(this);
+       RelativeLayout llbtnPresiteSurvey = findViewById(R.id.btn_pre_site_survey);
+        RelativeLayout llbtnPollingSurvey = findViewById(R.id.btn_poling_survey);
+        RelativeLayout llbtnGoodtogoSurvey = findViewById(R.id.btn_goods2go_survey);
+
+        llbtnPresiteSurvey.setOnClickListener(this);
+        llbtnPollingSurvey.setOnClickListener(this);
+        llbtnGoodtogoSurvey.setOnClickListener(this);
+
+        if(job.getSurveyTypeId() == 2){
+            llbtnPresiteSurvey.setVisibility(View.VISIBLE);
+        }else{
+            llbtnPresiteSurvey.setVisibility(View.GONE);
+        }
+        if(job.getSurveyTypeId() == 1){
+            llbtnPollingSurvey.setVisibility(View.VISIBLE);
+        }else{
+            llbtnPollingSurvey.setVisibility(View.GONE);
+        }
+        if(job.getSurveyTypeId() == 3){
+            llbtnGoodtogoSurvey.setVisibility(View.VISIBLE);
+        }else{
+            llbtnGoodtogoSurvey.setVisibility(View.GONE);
+        }
 
     }
 
@@ -51,6 +77,9 @@ public class SurveyActivity extends AppCompatActivity
             case R.id.btn_poling_survey:
                 openPolingSurveyList();
                 break;
+            case R.id.btn_goods2go_survey:
+                openGoodsToGoSurvey("good_2_go.json", "Goods2Go Survey");
+                break;
         }
     }
 
@@ -60,6 +89,12 @@ public class SurveyActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    private void openGoodsToGoSurvey(String jsonName, String title) {
+        Submission submission = new Submission(jsonName, title, jobID);
+        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        submission.setId(submissionID);
+        startFormActivity(submission);
+    }
 
     public void openPreSiteSurvey(String jsonName, String title) {
         Submission submission = new Submission(jsonName, title, jobID);

@@ -13,8 +13,6 @@
           "type": "dropdown",
           "uploadId": "IssueTypeId",
           "key": "issueTypes",
-          "isMultiSelection": false,
-          "isConcatDisplayText": false,
           "title": "Issue reason",
           "optional": false
         },

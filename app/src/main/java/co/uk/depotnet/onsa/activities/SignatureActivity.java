@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -41,6 +40,7 @@ public class SignatureActivity extends ThemeBaseActivity {
     private FormItem formItem;
     private int repeatCount;
     private String themeColor;
+    private String formatType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,10 @@ public class SignatureActivity extends ThemeBaseActivity {
         formItem = intent.getParcelableExtra(ARG_FORM_ITEM);
         repeatCount = intent.getIntExtra(ARG_REPEAT_COUNT, 0);
         themeColor = intent.getStringExtra(ARG_COLOR);
-
+        formatType = formItem.getType();
+        if(TextUtils.isEmpty(formatType)){
+            formatType = "jpg";
+        }
 
         setContentView(R.layout.activity_signature);
         if (themeColor != null && !themeColor.isEmpty()) {
@@ -76,19 +79,9 @@ public class SignatureActivity extends ThemeBaseActivity {
         }
 
 
-        findViewById(R.id.btn_save).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveFile();
-            }
-        });
+        findViewById(R.id.btn_save).setOnClickListener(view -> saveFile());
 
-        findViewById(R.id.btn_img_cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signaturePad.clear();
-            }
-        });
+        findViewById(R.id.btn_img_cancel).setOnClickListener(view -> signaturePad.clear());
     }
 
 
@@ -105,7 +98,7 @@ public class SignatureActivity extends ThemeBaseActivity {
 
         if (!signaturePad.isEmpty()) {
             Bitmap bitmap = signaturePad.getSignatureBitmap();
-            File file = Utils.saveSignature(this , bitmap);
+            File file = Utils.saveSignature(this , bitmap , formatType);
             if (file != null) {
                 Answer answer = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
                 if (answer == null) {

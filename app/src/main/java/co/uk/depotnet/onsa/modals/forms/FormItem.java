@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import co.uk.depotnet.onsa.modals.httpresponses.BaseTask;
 import co.uk.depotnet.onsa.modals.store.MyStore;
-import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
+import co.uk.depotnet.onsa.modals.timesheet.LogHourItem;
 
 public class FormItem implements Parcelable {
 
@@ -83,6 +83,9 @@ public class FormItem implements Parcelable {
     public static final int TYPE_TASK_LIST_TIMESHEET = 73;
     public static final int TYPE_TASK_TIMESHEET_ITEM = 74;
     public static final int TYPE_TOTAL_WORKED_HOURS = 75;
+    public static final int TYPE_ET_TIME_SHEET_HOURS = 76;
+    public static final int TYPE_OPEN_LOG_HOURS = 77;
+    public static final int TYPE_ITEM_DAY = 78;
 
 
     private String type;
@@ -92,6 +95,7 @@ public class FormItem implements Parcelable {
     private boolean optional;
     private boolean isYesNotVisible;
     private boolean isNoNotVisible;
+    private boolean isNaNotVisible;
     private boolean isChecked;
     private String imagePath;
     private String assetType;
@@ -120,7 +124,9 @@ public class FormItem implements Parcelable {
     private int taskId;
     private BaseTask task;
     private String toolTip;
-    private TimeSheetHour timeSheetHour;
+    private LogHourItem timeSheetHour;
+    private String signatureFormat;
+    private boolean isOverTimeVisible;
 
 
     public FormItem(FormItem formItem) {
@@ -131,6 +137,7 @@ public class FormItem implements Parcelable {
         this.optional = formItem.optional;
         this.isYesNotVisible = formItem.isYesNotVisible;
         this.isNoNotVisible = formItem.isNoNotVisible;
+        this.isNaNotVisible = formItem.isNaNotVisible;
         this.isChecked = formItem.isChecked;
         this.imagePath = formItem.imagePath;
         this.assetType = formItem.assetType;
@@ -169,6 +176,7 @@ public class FormItem implements Parcelable {
         optional = in.readByte() != 0;
         isYesNotVisible = in.readByte() != 0;
         isNoNotVisible = in.readByte() != 0;
+        isNaNotVisible = in.readByte() != 0;
         isChecked = in.readByte() != 0;
         imagePath = in.readString();
         assetType = in.readString();
@@ -196,7 +204,9 @@ public class FormItem implements Parcelable {
         taskId = in.readInt();
         task = in.readParcelable(BaseTask.class.getClassLoader());
         toolTip = in.readString();
-        timeSheetHour = in.readParcelable(TimeSheetHour.class.getClassLoader());
+        timeSheetHour = in.readParcelable(LogHourItem.class.getClassLoader());
+        signatureFormat = in.readString();
+        isOverTimeVisible = in.readByte() != 0;
     }
 
     @Override
@@ -208,6 +218,7 @@ public class FormItem implements Parcelable {
         dest.writeByte((byte) (optional ? 1 : 0));
         dest.writeByte((byte) (isYesNotVisible ? 1 : 0));
         dest.writeByte((byte) (isNoNotVisible ? 1 : 0));
+        dest.writeByte((byte) (isNaNotVisible ? 1 : 0));
         dest.writeByte((byte) (isChecked ? 1 : 0));
         dest.writeString(imagePath);
         dest.writeString(assetType);
@@ -236,6 +247,8 @@ public class FormItem implements Parcelable {
         dest.writeParcelable(task, flags);
         dest.writeString(toolTip);
         dest.writeParcelable(timeSheetHour, flags);
+        dest.writeString(signatureFormat);
+        dest.writeByte((byte) (isOverTimeVisible ? 1 : 0));
     }
 
     @Override
@@ -283,7 +296,7 @@ public class FormItem implements Parcelable {
         this.optional = true;
     }
 
-    public FormItem(String type, TimeSheetHour timeSheetHour, boolean selectable) {
+    public FormItem(String type, LogHourItem timeSheetHour, boolean selectable) {
         this.type = type;
         this.timeSheetHour = timeSheetHour;
         this.optional = true;
@@ -334,6 +347,10 @@ public class FormItem implements Parcelable {
         return isNoNotVisible;
     }
 
+    public boolean isNaNotVisible() {
+        return isNaNotVisible;
+    }
+
     public void setOptional(boolean optional) {
         this.optional = optional;
     }
@@ -344,6 +361,10 @@ public class FormItem implements Parcelable {
 
     public void setisNoNotVisible(boolean isNoNotVisible) {
         this.isNoNotVisible = isNoNotVisible;
+    }
+
+    public void setisNaNotVisible(boolean isNaNotVisible) {
+        this.isNaNotVisible = isNaNotVisible;
     }
 
     public boolean isChecked() {
@@ -450,12 +471,24 @@ public class FormItem implements Parcelable {
         this.toolTip = toolTip;
     }
 
-    public TimeSheetHour getTimeSheetHour() {
+    public LogHourItem getTimeSheetHour() {
         return timeSheetHour;
     }
 
-    public void setTimeSheetHour(TimeSheetHour timeSheetHour) {
+    public void setTimeSheetHour(LogHourItem timeSheetHour) {
         this.timeSheetHour = timeSheetHour;
+    }
+
+    public String getSignatureFormat() {
+        return signatureFormat;
+    }
+
+    public void setSignatureFormat(String signatureFormat) {
+        this.signatureFormat = signatureFormat;
+    }
+
+    public boolean isOverTimeVisible() {
+        return isOverTimeVisible;
     }
 
     public int getFormType() {
@@ -605,7 +638,16 @@ public class FormItem implements Parcelable {
             return TYPE_TASK_TIMESHEET_ITEM;
         }else if (type.equalsIgnoreCase("total_worked_hours")) {
             return TYPE_TOTAL_WORKED_HOURS;
+        }else if (type.equalsIgnoreCase("et_time_sheet_hours")) {
+            return TYPE_ET_TIME_SHEET_HOURS;
+        }else if (type.equalsIgnoreCase("open_log_hours")) {
+            return TYPE_OPEN_LOG_HOURS;
+        }else if (type.equalsIgnoreCase("day_view")) {
+            return TYPE_ITEM_DAY;
         }
+//        else if (type.equalsIgnoreCase("day_log_hours_item")) {
+//            return TYPE_ITEM_DAY_LOG_HOURS;
+//        }
 
 
         return TYPE_TXT_BOLD_HEAD;

@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/ColorTimeSheet"
         android:minHeight="?attr/actionBarSize"
         app:titleTextColor="@android:color/white">
-
 
         <TextView
             android:id="@+id/txt_toolbar_title"
@@ -23,9 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/timesheet"
-            android:textSize="@dimen/_12sdp"
-            android:textColor="@color/white" />
-
+            android:textColor="@color/white"
+            android:textSize="@dimen/_12sdp" />
 
         <ImageView
             android:id="@+id/btn_img_cancel"
@@ -34,102 +31,138 @@
             android:layout_gravity="right|end"
             android:layout_marginEnd="@dimen/_12sdp"
             android:layout_marginRight="@dimen/_12sdp"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_close" />
 
     </androidx.appcompat.widget.Toolbar>
 
-        <androidx.cardview.widget.CardView
-            android:layout_marginTop="@dimen/_10sdp"
-            android:id="@+id/card_log_hours"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="@dimen/_2sdp"
-            app:cardElevation="@dimen/_4sdp">
-
-            <LinearLayout
-                android:id="@+id/ll_log_hours"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="@dimen/_8sdp">
-
-                <ImageView
-                    android:id="@+id/img_icon"
-                    android:layout_width="@dimen/_24sdp"
-                    android:layout_height="@dimen/_24sdp"
-                    android:padding="@dimen/_2sdp"
-                    android:layout_centerVertical="true"
-                    app:srcCompat="@drawable/ic_log_hours_icon"
-                    android:background="@drawable/img_bg_circle"
-                    android:tint="@color/white"/>
-
-
-                <TextView
-                    android:id="@+id/txt_title"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_8sdp"
-                    android:layout_marginLeft="@dimen/_8sdp"
-                    android:layout_marginEnd="@dimen/_8sdp"
-                    android:layout_marginRight="@dimen/_8sdp"
-                    android:layout_centerVertical="true"
-                    android:text="@string/log_hours"
-                    android:textColor="@color/txt_color_dark"
-                    android:textSize="@dimen/_10sdp" />
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-
-    <androidx.cardview.widget.CardView
-        android:layout_marginTop="@dimen/_10sdp"
-        android:id="@+id/card_submit_timesheet"
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+        android:layout_below="@id/toolbar"
+        android:id="@+id/calendar_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="@dimen/_2sdp"
-        app:cardElevation="@dimen/_4sdp">
+        app:layout_collapseMode="pin"
+        android:background="@color/white"
+        app:mcv_arrowColor="@color/ColorTimeSheet"
+        app:mcv_calendarMode="week"
+        app:mcv_firstDayOfWeek="tuesday"
+        app:mcv_selectionColor="@color/ColorTimeSheet" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/calendar_view"
+        android:layout_above="@id/txt_daily_log_hours"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:layout_marginBottom="@dimen/_4sdp"
+        tools:listitem="@layout/item_day_log_hours"
+        android:orientation="vertical"/>
+
+    <LinearLayout
+        android:id="@+id/ll_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/ll_log_hours"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/_8sdp">
+
+            <ImageView
+                android:id="@+id/img_icon"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:background="@drawable/img_bg_circle"
+                android:backgroundTint="@color/txt_color_dark"
+                android:padding="@dimen/_2sdp"
+                app:tint="@color/white"
+                app:srcCompat="@drawable/ic_log_hours_icon" />
+
+            <TextView
+                android:id="@+id/txt_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:gravity="center"
+                android:text="@string/log_hours"
+                android:textColor="@color/txt_color_dark"
+                android:textSize="@dimen/_10sdp" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_submit_timesheet"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_40sdp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
             android:padding="@dimen/_8sdp">
 
             <ImageView
                 android:id="@+id/img_icon1"
                 android:layout_width="@dimen/_24sdp"
                 android:layout_height="@dimen/_24sdp"
-                android:padding="@dimen/_2sdp"
-                android:layout_centerVertical="true"
-                app:srcCompat="@drawable/ic_submit_hours_icon"
                 android:background="@drawable/img_bg_circle"
-                android:tint="@color/white"/>
-
+                android:backgroundTint="@color/txt_color_dark"
+                android:padding="@dimen/_2sdp"
+                app:tint="@color/white"
+                app:srcCompat="@drawable/ic_submit_hours_icon" />
 
             <TextView
                 android:id="@+id/txt_title1"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_8sdp"
-                android:layout_marginLeft="@dimen/_8sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
-                android:layout_marginRight="@dimen/_8sdp"
-                android:layout_centerVertical="true"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:gravity="center"
                 android:text="@string/submit_timesheet"
                 android:textColor="@color/txt_color_dark"
                 android:textSize="@dimen/_10sdp" />
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
-
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_daily_log_hours"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/ll_bottom"
+        android:background="@color/ColorTimeSheet"
+        android:gravity="center"
+        android:padding="@dimen/_8sdp"
+        android:text="DAILY TOTAL HOURS: 0h:0m"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_12sdp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/ll_ui_blocker"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent_overlay"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:elevation="100dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/progress_bar"
+            android:visibility="visible" />
+    </LinearLayout>
+
+</RelativeLayout>
 

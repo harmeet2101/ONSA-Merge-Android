@@ -26,7 +26,7 @@
                 android:layout_height="@dimen/_20sdp"
                 android:padding="@dimen/_4sdp"
                 app:srcCompat="@drawable/ic_event_note"
-                android:tint="@color/depotnet_color" />
+                app:tint="@color/depotnet_color" />
 
             <TextView
                 android:id="@+id/txt_notice_name"
@@ -52,7 +52,7 @@
                 android:layout_height="@dimen/_20sdp"
                 android:padding="@dimen/_4sdp"
                 app:srcCompat="@drawable/ic_location_on"
-                android:tint="@color/depotnet_color" />
+                app:tint="@color/depotnet_color" />
 
             <TextView
                 android:id="@+id/txt_address"
@@ -76,7 +76,7 @@
                 android:layout_height="@dimen/_20sdp"
                 android:padding="@dimen/_4sdp"
                 app:srcCompat="@drawable/ic_note_add"
-                android:tint="@color/depotnet_color" />
+                app:tint="@color/depotnet_color" />
 
             <TextView
                 android:id="@+id/txt_notice_type"
@@ -100,7 +100,7 @@
                 android:layout_height="@dimen/_20sdp"
                 android:padding="@dimen/_4sdp"
                 app:srcCompat="@drawable/ic_comment"
-                android:tint="@color/depotnet_color" />
+                app:tint="@color/depotnet_color" />
 
             <TextView
                 android:id="@+id/txt_notice_comments"
@@ -124,7 +124,7 @@
                 android:layout_height="@dimen/_20sdp"
                 android:padding="@dimen/_4sdp"
                 app:srcCompat="@drawable/ic_date_range"
-                android:tint="@color/depotnet_color" />
+                app:tint="@color/depotnet_color" />
 
             <TextView
                 android:id="@+id/txt_notice_start_date"
@@ -150,7 +150,7 @@
                 android:layout_height="@dimen/_20sdp"
                 android:padding="@dimen/_4sdp"
                 app:srcCompat="@drawable/ic_date_range"
-                android:tint="@color/depotnet_color" />
+                app:tint="@color/depotnet_color" />
 
             <TextView
                 android:id="@+id/txt_notice_end_date"

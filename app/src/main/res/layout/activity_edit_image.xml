@@ -19,7 +19,7 @@
             android:id="@+id/btn_img_back"
             android:layout_width="@dimen/_24sdp"
             android:layout_height="@dimen/_24sdp"
-            android:tint="@color/white"
+            app:tint="@color/white"
             app:srcCompat="@drawable/ic_baseline_arrow_back" />
 
         <TextView
@@ -44,7 +44,7 @@
             android:layout_gravity="right|end"
             android:layout_marginEnd="@dimen/_12sdp"
             android:layout_marginRight="@dimen/_12sdp"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_baseline_right" />
 
@@ -55,7 +55,7 @@
             android:layout_gravity="right|end"
             android:layout_marginEnd="@dimen/_12sdp"
             android:layout_marginRight="@dimen/_12sdp"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_baseline_left" />
     </androidx.appcompat.widget.Toolbar>
@@ -98,7 +98,7 @@
             android:layout_height="@dimen/_25sdp"
             android:layout_gravity="right"
             android:layout_marginRight="@dimen/_10sdp"
-            android:tint="@color/white"
+            app:tint="@color/white"
             app:srcCompat="@drawable/ic_close" />
 
         <LinearLayout

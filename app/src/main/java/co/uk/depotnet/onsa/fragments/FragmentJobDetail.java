@@ -61,7 +61,7 @@ public class FragmentJobDetail extends Fragment
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         job = args.getParcelable(ARG_JOB);
-        handler = new Handler();
+        handler = new Handler(context.getMainLooper());
         listener.setTitle("Job ID: " + job.getjobNumber());
 
     }
@@ -89,7 +89,6 @@ public class FragmentJobDetail extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        listener.onFragmentHomeVisible(false);
         mapView.onResume();
     }
 
@@ -144,6 +143,11 @@ public class FragmentJobDetail extends Fragment
             String postCode = job.getpostCode();
 
             try {
+                if(job.getlatitude() != 0 && job.getlongitude() != 0){
+                    LatLng latLng = new LatLng(job.getlatitude(), job.getlongitude());
+                    setPosition(latLng);
+                    return;
+                }else
 
                 if(!TextUtils.isEmpty(postCode)){
                     List<Address> addresses = geocoder.getFromLocationName(postCode, 1);
@@ -185,6 +189,10 @@ public class FragmentJobDetail extends Fragment
         switch (view.getId()) {
             case R.id.btn_directions:
                 String geoUri = "http://maps.google.com/maps?q=loc: 52.293060 , -1.779800 ( "+job.getlocationAddress()+" )";
+
+                if(job.getlatitude() != 0 && job.getlongitude() != 0){
+                    geoUri = "http://maps.google.com/maps?q=loc: "+job.getlatitude()+" , "+job.getlongitude()+" ( "+job.getlocationAddress()+" )";
+                }else
                 if(!TextUtils.isEmpty(job.getpostCode())){
                     geoUri = "http://maps.google.com/maps?daddr=" + job.getpostCode();
                 }

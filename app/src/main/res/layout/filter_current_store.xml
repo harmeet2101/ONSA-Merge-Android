@@ -34,7 +34,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:tint="@color/txt_color_light_grey"
+                    app:tint="@color/txt_color_light_grey"
                     app:srcCompat="@drawable/ic_chevron_right" />
 
                 <TextView
@@ -67,7 +67,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:tint="@color/txt_color_light_grey"
+                    app:tint="@color/txt_color_light_grey"
                     app:srcCompat="@drawable/ic_chevron_right" />
 
                 <TextView
@@ -100,7 +100,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:tint="@color/txt_color_light_grey"
+                    app:tint="@color/txt_color_light_grey"
                     app:srcCompat="@drawable/ic_chevron_right" />
 
                 <TextView
@@ -134,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_12sdp"
                 android:layout_marginLeft="@dimen/_12sdp"
-                android:tint="@color/white"
+                app:tint="@color/white"
                 app:srcCompat="@drawable/ic_baseline_arrow_back" />
 
 

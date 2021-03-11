@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import androidx.annotation.NonNull;
+
+import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
@@ -60,7 +62,7 @@ public class Utils {
     }
 
 
-    public static File saveSignature(Context context ,Bitmap bmp) {
+    public static File saveSignature(Context context ,Bitmap bmp , String format) {
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.UK).format(new Date());
         String imageFileName = "SIGN_" + timeStamp;
@@ -71,7 +73,7 @@ public class Utils {
         if (!dir.exists())
             dir.mkdirs();
         try {
-            File file = File.createTempFile(imageFileName, ".jpg", dir);
+            File file = File.createTempFile(imageFileName, "."+format, dir);
             FileOutputStream fOut = null;
 
             fOut = new FileOutputStream(file);
@@ -112,6 +114,34 @@ public class Utils {
         }
 
         return datetime;
+    }
+
+    public static String formatDate(Date date , String pattern){
+        if(!TextUtils.isEmpty(pattern) && date != null) {
+            return new SimpleDateFormat(pattern, Locale.UK).format(date);
+        }
+        return date.toString();
+    }
+
+    public static Date parseDate(String value , String pattern){
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern, Locale.UK);
+        if(!TextUtils.isEmpty(pattern) && !TextUtils.isEmpty(value)) {
+            try {
+                return dateFormat.parse(value);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public static String formatDate(String value , String pattern , String newPattern){
+        Date date = parseDate(value , pattern);
+        if(date != null){
+            return formatDate(date , newPattern);
+        }
+
+        return value;
     }
 
     public static String getSaveBriefingsDir(Context context) {

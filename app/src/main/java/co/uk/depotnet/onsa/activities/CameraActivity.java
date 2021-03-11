@@ -3,6 +3,7 @@ package co.uk.depotnet.onsa.activities;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -47,8 +48,16 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.Task;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -151,6 +160,7 @@ public class CameraActivity extends AppCompatActivity implements
             }
         }
     };
+    private FusedLocationProviderClient mFusedLocationClient;
 
 
     private static File getOutputMediaFile(int type) {
@@ -178,6 +188,9 @@ public class CameraActivity extends AppCompatActivity implements
         Camera c = null;
         try {
             c = Camera.open();
+            if(c== null){
+                return Camera.open(0);
+            }
         } catch (Exception e) {
         }
         return c;
@@ -202,6 +215,7 @@ public class CameraActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_camera);
 
         Intent intent = getIntent();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         formItem = intent.getParcelableExtra(ARG_FORM_ITEM);
         submissionID = intent.getLongExtra(ARG_SUBMISSION_ID, 0);
         repeatCount = intent.getIntExtra(ARG_REPEAT, 0);
@@ -249,9 +263,6 @@ public class CameraActivity extends AppCompatActivity implements
             }
 
             try {
-//                FileOutputStream fos = new FileOutputStream(pictureFile);
-//                fos.write(data);
-//                fos.close();
                 changeOrientation(data, pictureFile.getAbsolutePath());
                 setPicture(pictureFile.getPath());
             } catch (Exception e) {
@@ -313,7 +324,7 @@ public class CameraActivity extends AppCompatActivity implements
                 break;
             case R.id.img_btn_gallery:
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    //   startCameraPreview();
+                    openGallery();
                 } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                         == PackageManager.PERMISSION_GRANTED &&
                         ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -346,7 +357,7 @@ public class CameraActivity extends AppCompatActivity implements
         if (TextUtils.isEmpty(photoUrl)) {
             return;
         }
-        //Intent intent = new Intent(this , ImageAnnotationActivity.class);
+
         Intent intent = new Intent(this, EditShareActivity.class);
         intent.putExtra("photos", photo);
         intent.putExtra("photomodel", p);
@@ -354,10 +365,6 @@ public class CameraActivity extends AppCompatActivity implements
         intent.putExtra("POSITION", position);
         intent.putExtra(ARG_COLOR, themeColor);
         startActivityForResult(intent, PICK_MODIFY_IMAGE);
-//        Intent intent = new Intent(this , ImageAnnotationActivity.class);
-//        intent.putExtra("photos" , photo);
-//        intent.putExtra("POSITION" , position);
-//        startActivityForResult(intent , PICK_MODIFY_IMAGE);
     }
 
     private void startVideoCapturing() {
@@ -454,6 +461,8 @@ public class CameraActivity extends AppCompatActivity implements
         } else {
             this.answers.set(photos.size() - 1, answer);
         }
+        answer.setLatitude(latitude);
+        answer.setLongitude(longitude);
         DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
         lastPhotoPath = picturePath;
 
@@ -506,12 +515,10 @@ public class CameraActivity extends AppCompatActivity implements
         super.onResume();
         checkLocation();
         bindLocation();
-
     }
 
     private void checkLocation() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            // startCameraPreview();
             checkAndStart();
         } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED &&
@@ -531,7 +538,7 @@ public class CameraActivity extends AppCompatActivity implements
 
     private void checkAndStart() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            //   startCameraPreview();
+               startCameraPreview();
         } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -574,7 +581,9 @@ public class CameraActivity extends AppCompatActivity implements
                 camera = this.camera;
             else
                 camera = Camera.open();
-            if (camera != null) {
+            if (camera == null) {
+                return Camera.open(0);
+            }else{
                 return camera;
             }
 
@@ -851,21 +860,88 @@ public class CameraActivity extends AppCompatActivity implements
                         permissionRationale);
             }
         } else {
-            FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(CameraActivity.this);
-
-
-            mFusedLocationClient.getLastLocation()
+            mFusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY , null)
                     .addOnSuccessListener(location -> {
                         if (location != null) {
                             listener.onSuccess(location);
                         } else {
+                            createLocationRequest(listener);
                             listener.onFailure();
                         }
                     })
                     .addOnFailureListener(e -> {
+                        createLocationRequest(listener);
+                        e.printStackTrace();
                         listener.onFailure();
                     });
         }
+    }
+
+
+    private void createLocationRequest(LocationListener listener) {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+
+        SettingsClient client = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+
+        task.addOnSuccessListener((Activity) this, locationSettingsResponse -> {
+            startLocationUpdates(listener);
+        });
+
+        task.addOnFailureListener((Activity) this, e -> {
+            if (e instanceof ResolvableApiException) {
+                // Location settings are not satisfied, but this can be fixed
+                // by showing the user a dialog.
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    ResolvableApiException resolvable = (ResolvableApiException) e;
+                    resolvable.startResolutionForResult((Activity) this,
+                            11);
+                } catch (IntentSender.SendIntentException sendEx) {
+                    // Ignore the error.
+                }
+            }
+        });
+    }
+
+    private void startLocationUpdates(LocationListener listener) {
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mFusedLocationClient.requestLocationUpdates(locationRequest,
+                new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        super.onLocationResult(locationResult);
+                        if (locationResult == null) {
+                            return;
+                        }
+                        for (Location location : locationResult.getLocations()) {
+                            if (location != null) {
+                                listener.onSuccess(location);
+                                mFusedLocationClient.removeLocationUpdates(this);
+                                break;
+                            }
+                        }
+                    }
+                },
+                Looper.getMainLooper());
     }
 
     private void releaseMediaRecorder() {
@@ -976,7 +1052,7 @@ public class CameraActivity extends AppCompatActivity implements
             btnTakePic.setVisibility(View.VISIBLE);
             btnGallery.setVisibility(View.VISIBLE);
 
-            if (!photos.get(0).getTitle().equalsIgnoreCase("Take Photo/Video"))
+            if (!photos.get(0).getTitle().equalsIgnoreCase("Take Photo or Video"))
                 btnVideo.setVisibility(View.GONE);
             else
                 btnVideo.setVisibility(View.VISIBLE);

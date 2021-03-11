@@ -115,7 +115,7 @@ public class ScheduleInspectionActivity extends AppCompatActivity implements Sch
                     return;
                 }
                 if (response.isSuccessful()) {
-                    DBHandler.getInstance().resetSchedule();
+                    DBHandler.getInstance().clearTable(Schedule.DBTable.NAME);
                     List<Schedule> scheduleList = response.body();
                     if (scheduleList != null) {
                         for (Schedule schedule : scheduleList) {

@@ -38,8 +38,6 @@
           "type": "dropdown",
           "uploadId": "inspectionId",
           "key": "InspectionHseq",
-          "isMultiSelection": false,
-          "isConcatDisplayText": false,
           "title": "Add Inspection",
           "hint": "Select Inspection Type",
           "optional": false

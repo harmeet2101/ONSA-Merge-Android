@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -79,7 +80,6 @@ import co.uk.depotnet.onsa.modals.schedule.JobEstimate;
 import co.uk.depotnet.onsa.modals.store.ReceiptItems;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
-import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
 import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
@@ -253,6 +253,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         listener.onScreenChange(screen);
         formAdapter.reInflateItems(true);
         formAdapter.notifyDataSetChanged();
+
     }
 
 
@@ -274,15 +275,22 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 return;
             }
             if (submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")) {
-                updateLogHours();
+                sendToServer();
                 return;
             }
 
             if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("schedule_inspection.json")) {
                 getInsQue();//getting inspection question here and call formactivity
+            } else if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("good_2_go.json")) {
+                getLocationForServer();
+            } else if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("poling_risk_assessment.json")) {
+                getLocationForServer();
+            } else if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("hoist_risk_assessment.json")) {
+                getLocationForServer();
             } else {
                 sendToServer();
             }
+
         } else if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("take_photo.json")) {
             sendToServer();
         } else if (screen.isUpload()) {
@@ -298,6 +306,46 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             Intent intent = new Intent(context, AssetDataActivity.class);
             intent.putExtra(AssetDataActivity.ARG_SUBMISSION, submission);
             startActivityForResult(intent, ASSET_DATA_RESULT);
+        } else if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json") &&
+                screen.getIndex() == 0) {
+            Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "canOverheadGangComplete",
+                    null, 0);
+            if (answer != null && (answer.getAnswer().equals("false") || answer.getAnswer().equals("2"))) {
+                listener.goToNextScreen(38);
+            } else {
+                listener.goToNextScreen(screen.getIndex());
+            }
+        } else if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json") &&
+                screen.getIndex() == 1) {
+            Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "isAPolingSolutionRequired",
+                    null, 0);
+            if (answer != null && (answer.getAnswer().equals("false") || answer.getAnswer().equals("2"))) {
+                listener.goToNextScreen(6);
+            } else {
+                listener.goToNextScreen(screen.getIndex());
+            }
+            //  screen.setIndex(8);
+
+        } else if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json") &&
+                screen.getIndex() == 7) {
+            Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "isAerialCableRequired",
+                    null, 0);
+            if (answer != null && (answer.getAnswer().equals("false") || answer.getAnswer().equals("2"))) {
+                listener.goToNextScreen(10);
+            } else {
+                listener.goToNextScreen(screen.getIndex());
+            }
+
+        } else if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json") &&
+                screen.getIndex() == 11) {
+
+            Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "areDropwiresRequired",
+                    null, 0);
+            if (answer != null && (answer.getAnswer().equals("false") || answer.getAnswer().equals("2"))) {
+                listener.goToNextScreen(15);
+            } else {
+                listener.goToNextScreen(screen.getIndex());
+            }
         } else {
             listener.goToNextScreen(screen.getIndex());
         }
@@ -314,165 +362,15 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 jobModuleStatus.toContentValues());
     }
 
-    private void updateLogHours() {
-
-        if (!CommonUtils.isNetworkAvailable(context)) {
-            String title = "Submission Error";
-            String message = "Internet connection is not available. Please check your internet connection. Your request is submitted in Queue.";
-            DBHandler.getInstance().setSubmissionQueued(submission);
-            showErrorDialog(title, message, false);
-            return;
-        }
-
-        if (!CommonUtils.validateToken(context)) {
-            return;
-        }
-
-        Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "weekCommencing" , null , 0);
-        if(answer == null || TextUtils.isEmpty(answer.getAnswer())){
-            return;
-        }
-
-        String weekCommencing = answer.getAnswer();
-
-        ArrayList<TimeSheetHour> hours = DBHandler.getInstance().getTimeHours(weekCommencing);
-        boolean isEdited = false;
-        for(int i = 0 ; i < hours.size() ; i++){
-            if(hours.get(i).isEdited()){
-                isEdited = true;
-                break;
-            }
-        }
-
-        if(!isEdited){
-            submitTimeSheet(weekCommencing);
-            return;
-        }
-
+    @Override
+    public void showProgressBar() {
         listener.showProgressBar();
-        new Thread(() -> {
-            Response response = new ConnectionHelper(context).
-                    submitForm(screen.getUrl(), screen.getPhotoUrl(),
-                            submission, getChildFragmentManager());
-
-
-            if (response == null || !response.isSuccessful()) {
-                DBHandler.getInstance().setSubmissionQueued(submission);
-            }
-
-            handler.post(() -> {
-                listener.hideProgressBar();
-                String title = "Success";
-                String message = "Submission was successful";
-                if(response == null){
-                    title = "Submission Error";
-                    message = "Internet connection is not available. Please check your internet connection. Your request is submitted in Queue.";
-                    showErrorDialog(title, message, false);
-                    return;
-                }
-
-                if(response.isSuccessful()){
-                    getTimeSheetHours(weekCommencing);
-                }else if (response.code() == 400) {
-                    ResponseBody body = response.body();
-                    if (body != null) {
-                        try {
-                            String data = body.string();
-                            if (!TextUtils.isEmpty(data)) {
-                                JSONObject jsonObject = new JSONObject(data);
-                                if (jsonObject.has("status")) {
-                                    title = jsonObject.getString("status");
-                                }
-
-                                if (jsonObject.has("message")) {
-                                    message = jsonObject.getString("message");
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    showErrorDialog(title, message, response != null && response.isSuccessful());
-                }
-
-            });
-        }).start();
     }
 
-    private void submitTimeSheet(String weekCommencing){
-        ArrayList<TimeSheetHour> hours = DBHandler.getInstance().getTimeHours(weekCommencing);
-
-        Answer signatureFileBytes = DBHandler.getInstance().getAnswer(submission.getID(), "signatureFileBytes",
-                null, 0);
-
-
-        DBHandler.getInstance().removeAnswers(submission);
-
-
-
-        Answer weekAnswer = new Answer(submission.getID(), "weekCommencing",
-                null, 0);
-
-
-        weekAnswer.setAnswer(weekCommencing);
-        weekAnswer.setDisplayAnswer(weekCommencing);
-        DBHandler.getInstance().replaceData(Answer.DBTable.NAME , weekAnswer.toContentValues());
-
-        for(int i = 0 ; i < hours.size() ; i++){
-            if(!TextUtils.isEmpty(hours.get(i).getTimesheetHoursId())){
-                Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "timesheetHoursIds",
-                        null, i);
-                if (answer == null) {
-                    answer = new Answer(submission.getID(), "timesheetHoursIds",
-                            null, i);
-                }
-
-                answer.setAnswer(hours.get(i).getTimesheetHoursId());
-                answer.setDisplayAnswer("");
-                answer.setIsMultiList(1);
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
-            }
-        }
-
-        Answer answer = new Answer(submission.getID(), "signatureFileBytes",
-                null, 0);
-        answer.setAnswer(signatureFileBytes.getAnswer());
-        answer.setIsPhoto(1);
-        answer.setDisplayAnswer(signatureFileBytes.getDisplayAnswer());
-        DBHandler.getInstance().replaceData(Answer.DBTable.NAME , answer.toContentValues());
-
-        screen.setUrl("app/timesheets/submit");
-
-        sendToServer();
+    @Override
+    public void hideProgressBar() {
+        listener.hideProgressBar();
     }
-
-    private void getTimeSheetHours(String weekCommencing){
-
-        ((FromActivityListener)context).showProgressBar();
-        User user = DBHandler.getInstance().getUser();
-
-        APICalls.getTimesheetHours(user.gettoken() , weekCommencing).enqueue(new Callback<TimeSheetHours>() {
-            @Override
-            public void onResponse(Call<TimeSheetHours> call, retrofit2.Response<TimeSheetHours> response) {
-                if(response.isSuccessful()){
-                    TimeSheetHours timeSheetHours = response.body();
-                    if(timeSheetHours != null && !timeSheetHours.isEmpty()) {
-                        timeSheetHours.setWeekCommencing();
-                        timeSheetHours.toContentValues();
-                    }
-                }
-
-                submitTimeSheet(weekCommencing);
-            }
-
-            @Override
-            public void onFailure(Call<TimeSheetHours> call, Throwable t) {
-                ((FromActivityListener)context).hideProgressBar();
-                submitTimeSheet(weekCommencing);
-            }
-        });
-    }
-
 
     public void sendReceipts(final Receipts receipts) {
         if (!formAdapter.validate()) {
@@ -692,6 +590,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             AppPreferences.putString(jobID + "_" + Constants.IS_BOOK_ON, sdf.format(d));
         }
     }
+
     private void setTimeSheetBookOffOnStatus() {
         if (screen.getTitle().equalsIgnoreCase("Timesheet Book Off")) {
             AppPreferences.putString("TimeSheet_" + Constants.IS_BOOK_ON, null);
@@ -702,6 +601,25 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         }
     }
 
+    private void getLocationForServer() {
+
+        getLocation(new LocationListener() {
+
+            @Override
+            public void onSuccess(Location location) {
+                submission.setLatitude(location.getLatitude());
+                submission.setLongitude(location.getLongitude());
+                sendToServer();
+            }
+
+            @Override
+            public void onFailure() {
+                sendToServer();
+            }
+
+        });
+
+    }
 
     private void sendToServer() {
 
@@ -720,13 +638,14 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             return;
         }
 
+
         listener.showProgressBar();
         new Thread(() -> {
-            Response response = null;
-
+            Response response;
             if (submission.getJsonFileName().equalsIgnoreCase("corrective_measure.json")
-                    || submission.getJsonFileName().equalsIgnoreCase("cannot_rectify.json")) {
-                //for actions calls
+                    || submission.getJsonFileName().equalsIgnoreCase("cannot_rectify.json")
+                    || submission.getJsonFileName().equalsIgnoreCase("incident_cannot_rectify.json")
+                    || submission.getJsonFileName().equalsIgnoreCase("incident_corrective_measure.json")) {
                 response = new ConnectionHelper(context).
                         submitActions(screen.getUrl(),
                                 submission, getChildFragmentManager());
@@ -749,8 +668,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             if (submission.getJsonFileName().equalsIgnoreCase("finish_on_site.json")) {
                 Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "rfna", null, 0);
                 if (answer != null && !TextUtils.isEmpty(answer.getAnswer()) && answer.getAnswer().equalsIgnoreCase("true")) {
-                    Response response1 = new ConnectionHelper(context).sendRfna(submission);
-
+                    new ConnectionHelper(context).sendRfna(submission);
                     JobModuleStatus status = new JobModuleStatus();
                     status.setStatus(true);
                     status.setJobId(jobID);
@@ -881,7 +799,11 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
 
     @Override
     public void showBottomSheet(BottomSheetDialogFragment dialogFragment) {
-        dialogFragment.show(getChildFragmentManager(), dialogFragment.getClass().getSimpleName());
+        try {
+            dialogFragment.show(getChildFragmentManager(), dialogFragment.getClass().getSimpleName());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -953,13 +875,47 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     }
                     DBHandler.getInstance().replaceData(Answer.DBTable.NAME, StaId.toContentValues());
                 }
+            } else if (requestCode == 10001) {
+                Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "weekCommencing", null , 0);
+                if(answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
+                    getTimeSheetHours(answer.getAnswer());
+                }
             }
 
         }
     }
 
+    private void getTimeSheetHours(String weekCommencing){
+        if(TextUtils.isEmpty(weekCommencing)){
+            return;
+        }
+
+        showProgressBar();
+        User user = DBHandler.getInstance().getUser();
+
+        APICalls.getTimesheetHours(user.gettoken() , weekCommencing).enqueue(new Callback<TimeSheetHours>() {
+            @Override
+            public void onResponse(@NonNull Call<TimeSheetHours> call, @NonNull retrofit2.Response<TimeSheetHours> response) {
+                if(response.isSuccessful()){
+                    TimeSheetHours timeSheetHours = response.body();
+                    if(timeSheetHours != null && !timeSheetHours.isEmpty()) {
+                        timeSheetHours.setWeekCommencing();
+                        timeSheetHours.toContentValues();
+                        formAdapter.reInflateItems(true);
+                    }
+                }
+                hideProgressBar();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<TimeSheetHours> call, @NonNull Throwable t) {
+                hideProgressBar();
+            }
+        });
+    }
+
     public void showErrorDialog(String title, String message, boolean isSuccessful) {
-        if (getChildFragmentManager().isStateSaved()) {
+        if (getChildFragmentManager().isStateSaved() || !isAdded()) {
             ((Activity) context).setResult(Activity.RESULT_OK);
             ((Activity) context).finish();
             return;
@@ -982,10 +938,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositive(getString(R.string.ok), (dialog1, i) -> {
-                    dialog1.dismiss();
-
-                })
+                .setPositive(getString(R.string.ok), (dialog1, i) -> dialog1.dismiss())
                 .build();
 
         dialog.setCancelable(false);
@@ -1044,7 +997,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     permissionRationale);
         } else {
 
-            mFusedLocationClient.getLastLocation()
+            mFusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
                     .addOnSuccessListener(location -> {
                         if (location != null) {
                             listener.onSuccess(location);
@@ -1076,22 +1029,16 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         SettingsClient client = LocationServices.getSettingsClient(context);
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
-        task.addOnSuccessListener((Activity) context, locationSettingsResponse -> {
-            startLocationUpdates(listener);
-        });
+        task.addOnSuccessListener((Activity) context, locationSettingsResponse -> startLocationUpdates(listener));
 
         task.addOnFailureListener((Activity) context, e -> {
             if (e instanceof ResolvableApiException) {
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
                 try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
                     ResolvableApiException resolvable = (ResolvableApiException) e;
                     resolvable.startResolutionForResult((Activity) context,
                             11);
                 } catch (IntentSender.SendIntentException sendEx) {
-                    // Ignore the error.
+                    sendEx.printStackTrace();
                 }
             }
         });
@@ -1106,6 +1053,9 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
 
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         mFusedLocationClient.requestLocationUpdates(locationRequest,
                 new LocationCallback() {
                     @Override
@@ -1129,9 +1079,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-        } else {
+        if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
             android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context, R.style.DialogTheme)
                     .setTitle(getString(R.string.permission_denied))
                     .setMessage(getString(R.string.permissions_location_failure))
@@ -1222,7 +1170,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 if (response.isSuccessful()) {
                     ArrayList<ToolTipModel> models = response.body();
                     if (models != null && models.size() > 0) {
-                        AppPreferences.setTheme(1);//setting hseq theme.
+                        AppPreferences.setTheme(1);
                         String jsonFileName = "slg_inspection.json";
                         submission.setJsonFile(jsonFileName);
                         long submissionID = DBHandler.getInstance().replaceData(Submission.DBTable.NAME, submission.toContentValues());
@@ -1248,4 +1196,9 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             }
         });
     }
+    @Override
+    public void showDatePicker(DialogFragment dialogFragment) {
+        dialogFragment.show(getChildFragmentManager() , dialogFragment.toString());
+    }
+
 }

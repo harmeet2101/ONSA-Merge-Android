@@ -1,7 +1,7 @@
 package co.uk.depotnet.onsa.networking;
 
 import co.uk.depotnet.onsa.modals.Disclaimer;
-import co.uk.depotnet.onsa.modals.actions.OutstandingAction;
+import co.uk.depotnet.onsa.modals.actions.ActionResponse;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsDocModal;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsDocument;
 import co.uk.depotnet.onsa.modals.briefings.IssuedModel;
@@ -35,6 +35,7 @@ import co.uk.depotnet.onsa.modals.store.StockItems;
 import co.uk.depotnet.onsa.modals.store.StockLevel;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -124,10 +125,10 @@ public interface APIInterface {
     Call<List<ReceivedModel>> getBriefingsReceived();
 
     @GET("apphseq/actions/open")
-    Call<List<OutstandingAction>> getActionsOutstanding();
+    Call<List<ActionResponse>> getActionsOutstanding();
 
     @GET("apphseq/actions/closed")
-    Call<List<OutstandingAction>> getActionsCleared();
+    Call<List<ActionResponse>> getActionsCleared();
 
     @GET("apphseq/tags")
     Call<ArrayList<String>> methodReturnsTags();
@@ -149,4 +150,7 @@ public interface APIInterface {
 
     @GET("app/timesheets/timesheet-hours")
     Call<TimeSheetHours> getTimesheetHours(@Query("weekCommencing") String weekCommencing);
+
+    @GET("app/timesheets")
+    Call<TimeSheetResponse> getTimeSheets();
 }

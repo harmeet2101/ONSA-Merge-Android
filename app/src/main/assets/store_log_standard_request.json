@@ -13,8 +13,6 @@
           "uploadId": "StaId",
           "repeatId": "Items",
           "key": "stas",
-          "isMultiSelection": false,
-          "isConcatDisplayText": false,
           "title": "Request from STA (Warehouse)",
           "optional": false,
           "enables": [
@@ -26,7 +24,6 @@
               "listItemType": "stock_item",
               "isStoackLevelCheck": false,
               "isMultiSelection": true,
-              "isConcatDisplayText": false,
               "title": "Store Item",
               "optional": false
             },

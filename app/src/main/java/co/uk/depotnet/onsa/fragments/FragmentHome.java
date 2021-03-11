@@ -309,13 +309,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         {
             jobs.clear();
         }
-        fetchData();// to refresh auto
-        /*if (jobs.isEmpty()) {
-            fetchData();
-        }else{
-            getJobsFromDb();
-        }*/
-        listener.onFragmentHomeVisible(true);
+        fetchData();
     }
 
     @Override
@@ -416,7 +410,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
     @Override
     public void openTakePhotoAndVideo(Job job) {
-        Submission submission = new Submission("take_photo.json", "Take Photo/Video", job.getjobId());
+        Submission submission = new Submission("take_photo.json", "Take Photo or Video", job.getjobId());
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);

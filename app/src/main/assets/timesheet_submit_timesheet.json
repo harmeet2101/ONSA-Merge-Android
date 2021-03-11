@@ -1,6 +1,7 @@
 {
   "title": "Submit Timesheet",
   "isProgressVisible": false,
+  "themeColor":"#1795FA",
   "screens": [
     {
       "title": "Submit Timesheet",
@@ -14,7 +15,14 @@
           "optional": false
         },
         {
+          "type": "open_log_hours",
+          "uploadId": "openLogHours",
+          "title": "Add Log Hours",
+          "optional": true
+        },
+        {
           "type": "task_list_timesheet",
+          "repeatId": "timesheetHours",
           "title": "Timesheet Hours",
           "optional": false
         }
@@ -23,7 +31,7 @@
     {
       "title": "Submit Timesheet",
       "index": 1,
-      "url": "app/timesheets/log-hours",
+      "url": "app/timesheets/submit",
       "upload": true,
       "items": [
         {
@@ -31,6 +39,7 @@
           "uploadId": "signatureFileBytes",
           "signatureUrl":"signatureFileBytes",
           "photoId": "26",
+          "signatureFormat": "png",
           "title": "Signature",
           "optional": false
         }

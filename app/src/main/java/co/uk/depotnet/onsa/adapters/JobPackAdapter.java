@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
-import co.uk.depotnet.onsa.activities.MainActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.DownloadActionListener;
 import co.uk.depotnet.onsa.modals.Document;

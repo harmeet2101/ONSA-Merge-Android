@@ -93,7 +93,7 @@ public class ReadIssueFragment extends Fragment implements BriefingsListner {
                     return;
                 }
                 if (response.isSuccessful()) {
-                    DBHandler.getInstance().resetBriefings();
+                    DBHandler.getInstance().clearTable(BriefingsDocModal.DBTable.NAME);
                     List<BriefingsDocModal> briefingsDocModals = response.body();
                     if (briefingsDocModals != null && briefingsDocModals.size() > 0) {
                         for (BriefingsDocModal modal : briefingsDocModals) {

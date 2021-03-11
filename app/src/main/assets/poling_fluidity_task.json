@@ -228,7 +228,7 @@
           "enables": [
             {
               "type": "dropdown",
-              "uploadId": "tmType",
+              "uploadId": "trafficManagementTypeId",
               "key": "trafficManagementTypes",
               "repeatId": "fluidityTasksSection",
               "title": "Traffic Management",

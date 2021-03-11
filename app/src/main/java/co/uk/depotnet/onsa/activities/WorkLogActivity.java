@@ -173,14 +173,21 @@ public class WorkLogActivity extends AppCompatActivity
                     w.getTitle()));
         }
 
-        String title = job.getRiskAssessmentTypeId() == 1 ? "Risk Assessment" : "Hoist Only Risk Assessment";
-        if (title.equals("Risk Assessment")) {
-            btnRiskAssessment.setText(R.string.go_to_risk_assessment);
-            tv_riskAssessment_heading.setText(R.string.wraning_risk_assessment);
-        } else {
+        String title = "Risk Assessment";
+        if (job.getRiskAssessmentTypeId() == 2) {
+            title = "Hoist Only Risk Assessment";
             btnRiskAssessment.setText(R.string.go_to_hoist_risk_assessment);
             tv_riskAssessment_heading.setText(R.string.wraning_hoist_risk_assessment);
+        } else if (job.getRiskAssessmentTypeId() == 3) {
+            title = "Poling Risk Assessment";
+            btnRiskAssessment.setText(R.string.poling_ra);
+            tv_riskAssessment_heading.setText(R.string.wraning_polling_risk_assessment);
+        }else{
+            btnRiskAssessment.setText(R.string.go_to_risk_assessment);
+            tv_riskAssessment_heading.setText(R.string.wraning_risk_assessment);
         }
+
+
         boolean status =
                 DBHandler.getInstance().getJobModuleStatus(jobID, title);
 //        status = true;
@@ -218,8 +225,21 @@ public class WorkLogActivity extends AppCompatActivity
     }
 
     public void openRiskAssessment() {
-        String jsonFileName = job.getRiskAssessmentTypeId() == 1 ? "risk_assessment.json" : "hoist_risk_assessment.json";
-        String title = job.getRiskAssessmentTypeId() == 1 ? "Risk Assessment" : "Hoist Only Risk Assessment";
+
+        String jsonFileName = "";
+        String title = "";
+
+        if (job.getRiskAssessmentTypeId() == 2) {
+            jsonFileName = "hoist_risk_assessment.json";
+            title = "Hoist Only Risk Assessment";
+        } else if (job.getRiskAssessmentTypeId() == 3) {
+            jsonFileName = "poling_risk_assessment.json";
+            title = "Poling Risk Assessment";
+        }else{
+            jsonFileName = "risk_assessment.json";
+            title = "Risk Assessment";
+        }
+
         Submission submission = new Submission(jsonFileName, title, job.getjobId());
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);

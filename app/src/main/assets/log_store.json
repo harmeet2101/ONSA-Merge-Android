@@ -17,8 +17,6 @@
           "fields": ["StaStockItemId" , "StaId" , "Quantity"],
           "listItemType": "stock_item",
           "isStoackLevelCheck": true,
-          "isMultiSelection": false,
-          "isConcatDisplayText": false,
           "title": "Store Item",
           "optional": false
         },

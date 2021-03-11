@@ -36,7 +36,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_jobdetails" />
 
                 <TextView
@@ -56,7 +56,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
             </LinearLayout>
@@ -88,7 +88,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_worklog" />
 
                 <TextView
@@ -108,7 +108,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
             </LinearLayout>
@@ -141,7 +141,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_jobpack" />
 
                 <TextView
@@ -161,7 +161,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
             </LinearLayout>
@@ -195,7 +195,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_riskassessment" />
 
                 <TextView
@@ -215,7 +215,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
             </LinearLayout>
@@ -245,7 +245,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_riskassessment" />
 
                 <TextView
@@ -265,7 +265,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
             </LinearLayout>
@@ -296,7 +296,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_surveys" />
 
                 <TextView
@@ -317,7 +317,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
             </LinearLayout>
@@ -349,7 +349,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_takeaphoto" />
 
                 <TextView
@@ -370,7 +370,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
             </LinearLayout>
@@ -401,7 +401,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_view_gang_measures" />
 
                 <TextView
@@ -421,7 +421,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
 
@@ -453,7 +453,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_camera" />
 
                 <TextView
@@ -473,7 +473,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
 
@@ -504,7 +504,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_camera" />
 
                 <TextView
@@ -524,7 +524,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
 
@@ -555,7 +555,7 @@
                     android:layout_height="@dimen/_20sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_add_task_white_24dp" />
 
                 <TextView
@@ -575,7 +575,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
-                        android:tint="@color/txt_color_light_grey"
+                        app:tint="@color/txt_color_light_grey"
                         app:srcCompat="@drawable/ic_chevron_right" />'
                 </RelativeLayout>
 
@@ -600,7 +600,7 @@
                 android:layout_height="@dimen/_20sdp"
                 android:background="@drawable/img_bg_circle"
                 android:padding="@dimen/_4sdp"
-                android:tint="@color/white"
+                app:tint="@color/white"
                 app:srcCompat="@drawable/ic_view_gang_measures" />
 
             <TextView
@@ -620,7 +620,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:padding="@dimen/_4sdp"
-                    android:tint="@color/txt_color_light_grey"
+                    app:tint="@color/txt_color_light_grey"
                     app:srcCompat="@drawable/ic_chevron_right" />
             </RelativeLayout>
         </LinearLayout>

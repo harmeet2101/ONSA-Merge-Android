@@ -31,10 +31,12 @@ public class RiskAssessmentActivity extends AppCompatActivity implements View.On
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
         findViewById(R.id.btn_risk_assessment).setOnClickListener(this);
         findViewById(R.id.btn_visitor_log).setOnClickListener(this);
-        if (job.getRiskAssessmentTypeId() == 1) {
-            tvRiskAssessmentType.setText(getString(R.string.risk_assessment));
-        } else if (job.getRiskAssessmentTypeId() == 2) {
+        if (job.getRiskAssessmentTypeId() == 2) {
             tvRiskAssessmentType.setText(getString(R.string.hoist_only_risk_assessment));
+        } else if (job.getRiskAssessmentTypeId() == 3) {
+            tvRiskAssessmentType.setText(getString(R.string.poling_ra));
+        }else{
+            tvRiskAssessmentType.setText(getString(R.string.risk_assessment));
         }
     }
 
@@ -71,8 +73,20 @@ public class RiskAssessmentActivity extends AppCompatActivity implements View.On
 
     public void openRiskAssessment() {
 
-        String jsonFileName = job.getRiskAssessmentTypeId() == 1 ? "risk_assessment.json" : "hoist_risk_assessment.json";
-        String title = job.getRiskAssessmentTypeId() == 1 ? "Risk Assessment" : "Hoist Only Risk Assessment";
+        String jsonFileName = "";
+        String title = "";
+
+        if (job.getRiskAssessmentTypeId() == 2) {
+            jsonFileName = "hoist_risk_assessment.json";
+            title = "Hoist Only Risk Assessment";
+        } else if (job.getRiskAssessmentTypeId() == 3) {
+            jsonFileName = "poling_risk_assessment.json";
+            title = "Poling Risk Assessment";
+        }else{
+            jsonFileName = "risk_assessment.json";
+            title = "Risk Assessment";
+        }
+
         Submission submission = new Submission(jsonFileName, title, job.getjobId());
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);

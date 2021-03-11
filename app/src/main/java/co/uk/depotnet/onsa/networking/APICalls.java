@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.modals.Disclaimer;
-import co.uk.depotnet.onsa.modals.actions.OutstandingAction;
+import co.uk.depotnet.onsa.modals.actions.ActionResponse;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsDocModal;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsDocument;
 import co.uk.depotnet.onsa.modals.briefings.IssuedModel;
@@ -38,7 +38,9 @@ import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.modals.store.StockItems;
 import co.uk.depotnet.onsa.modals.store.StockLevel;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheet;
 import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
+import co.uk.depotnet.onsa.modals.timesheet.TimeSheetResponse;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -86,6 +88,11 @@ public class APICalls {
     public static Call<TimeSheetHours> getTimesheetHours(String authToken , String weekCommencing){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getTimesheetHours(weekCommencing);
+    }
+
+    public static Call<TimeSheetResponse> getTimesheets(String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.getTimeSheets();
     }
 
 
@@ -201,11 +208,11 @@ public class APICalls {
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getBriefingsReceived();
     }
-    public static Call<List<OutstandingAction>> getActionsOutstandingList(String authToken){
+    public static Call<List<ActionResponse>> getActionsOutstandingList(String authToken){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getActionsOutstanding();
     }
-    public static Call<List<OutstandingAction>> getActionsClearedList(String authToken){
+    public static Call<List<ActionResponse>> getActionsClearedList(String authToken){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getActionsCleared();
     }

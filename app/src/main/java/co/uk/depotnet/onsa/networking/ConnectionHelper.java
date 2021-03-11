@@ -1,23 +1,17 @@
 package co.uk.depotnet.onsa.networking;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
-import android.location.Location;
 import android.text.TextUtils;
 import android.util.Base64;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -31,17 +25,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import co.uk.depotnet.onsa.BuildConfig;
-import co.uk.depotnet.onsa.R;
-import co.uk.depotnet.onsa.activities.CameraActivity;
 import co.uk.depotnet.onsa.activities.LoginActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.listeners.LocationListener;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.Submission;
@@ -70,9 +60,10 @@ public class ConnectionHelper {
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
-    private Context context;
-    private OkHttpClient okHttpClient;
-    private Gson gson;
+    private final Context context;
+    private final OkHttpClient okHttpClient;
+    private final Gson gson;
+    private final DBHandler dbHandler;
 
     public ConnectionHelper(Context context) {
         this.context = context;
@@ -86,6 +77,7 @@ public class ConnectionHelper {
                 .addInterceptor(new AuthInterceptor())
                 .build();
         gson = new Gson();
+        this.dbHandler = DBHandler.getInstance();
     }
 
     private User refreshToken(UserRequest userRequest) {
@@ -135,7 +127,7 @@ public class ConnectionHelper {
         }
 
 
-        ArrayList<Answer> answers = DBHandler.getInstance().getAnswers(submission.getID());
+        ArrayList<Answer> answers = dbHandler.getAnswers(submission.getID());
 
         String uniqueId = UUID.randomUUID().toString();
         Map<String, Object> requestMap = new HashMap<>();
@@ -246,7 +238,7 @@ public class ConnectionHelper {
                                 String value = answer.getAnswer();
                                 if (!TextUtils.isEmpty(value)) {
 
-                                    Answer quantityAnswer = DBHandler.getInstance().getAnswer(submission.getID(), "quantity",
+                                    Answer quantityAnswer = dbHandler.getAnswer(submission.getID(), "quantity",
                                             uploadId, answer.getRepeatCount());
                                     if (quantityAnswer != null &&
                                             !TextUtils.isEmpty(quantityAnswer.getAnswer())) {
@@ -272,23 +264,6 @@ public class ConnectionHelper {
                                         }
 
                                         mapToAppendTo.put(uploadId, multiArr);
-
-
-                                        /*if (!mapToAppendTo.containsKey(uploadId)) {
-                                            mapToAppendTo.put(uploadId, new ArrayList<String>());
-                                        }
-
-
-                                        ArrayList<String> multiArr = (ArrayList<String>) mapToAppendTo.get(uploadId);
-                                        String[] values = value.split(",");
-                                        String[] quantity = quantities.split(",");
-
-
-                                        for (int i = 0; i < values.length && i < quantity.length; i++) {
-                                            multiArr.add(values[i]);
-                                        }
-
-                                        mapToAppendTo.put(uploadId, multiArr);*/
                                     }
 
                                 }
@@ -341,16 +316,6 @@ public class ConnectionHelper {
                             }
                         }
 
-                    } else {
-                        /*if (answer.isMultilist()) {
-                            if (!requestMap.containsKey(uploadId)) {
-                                requestMap.put(uploadId, new ArrayList<String>());
-                            }
-                            ArrayList<String> multiArr = (ArrayList<String>) requestMap.get(uploadId);
-                            multiArr.add(answer.getAnswer());
-                        } else {
-                            requestMap.put(uploadId, answer.getAnswer());
-                        }*/
                     }
                 } else {
                     String signatureUrl = answer.getSignatureUrl();
@@ -448,50 +413,11 @@ public class ConnectionHelper {
         return performJSONNetworking(RequestBody.create(JSON, ""), url);
     }
 
-    private void getLocation(Submission submission){
-
-        LocationListener listener = new LocationListener() {
-            @Override
-            public void onSuccess(Location location) {
-                submission.setLongitude(location.getLongitude());
-                submission.setLatitude(location.getLatitude());
-            }
-
-            @Override
-            public void onFailure() {
-
-            }
-        };
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(context,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-            listener.onFailure();
-        }
-
-
-        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
-
-
-        mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(location -> {
-                        if (location != null) {
-                            listener.onSuccess(location);
-                        } else {
-                            listener.onFailure();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        listener.onFailure();
-                    });
-
-    }
-
 
     public Response submitForm(String endPoint, String photoEndPoint,
                                Submission submission, FragmentManager fm) {
+
+        String jsonFileName = submission.getJsonFileName();
 
         if (!TextUtils.isEmpty(endPoint)) {
             endPoint = endPoint.replace("{jobId}", submission.getJobID());
@@ -501,21 +427,19 @@ public class ConnectionHelper {
             photoEndPoint = photoEndPoint.replace("{jobId}", submission.getJobID());
         }
 
-
-        ArrayList<Answer> answers = DBHandler.getInstance().getAnswers(submission.getID());
+        ArrayList<Answer> answers = dbHandler.getAnswers(submission.getID());
 
         String uniqueId = UUID.randomUUID().toString();
         Map<String, Object> requestMap = new HashMap<>();
         ArrayList<Answer> photosToUpload = new ArrayList<>();
         ArrayList<Answer> signatures = new ArrayList<>();
-        if (submission.getJsonFileName().equalsIgnoreCase("log_measure.json")) {
-            requestMap.put("submittedDateTime", submission.getDate());
-        }
+
         requestMap.put("submissionId", uniqueId);
         requestMap.put("submittedDate", submission.getDate());
         requestMap.put("dateTaken", submission.getDate());
         requestMap.put("latitude", submission.getLatitude());
         requestMap.put("longitude", submission.getLongitude());
+
 
         boolean isBookOn = !TextUtils.isEmpty(endPoint) && (endPoint.contains("book-on") || endPoint.contains("book-off"));
         boolean containsUserIds = false;
@@ -530,8 +454,6 @@ public class ConnectionHelper {
 
             if (answer.shouldUpload()) {
                 String signatureUrl = answer.getSignatureUrl();
-
-
                 boolean isSignature = !TextUtils.isEmpty(signatureUrl);
                 if (answer.isPhoto() == 0 || (isSignature && signatureUrl.equalsIgnoreCase("signatureFileBytes"))) {
                     if (isSignature) {
@@ -594,31 +516,19 @@ public class ConnectionHelper {
                             requestMap.put(uploadId, ans);
                         }
                     }
-                } else {
-
-                    if (isSignature) {
-                       /* if(endPoint != null && endPoint.equalsIgnoreCase("signatureFileBytes")){
-                            Bitmap bm = BitmapFactory.decodeFile(answer.getAnswer());
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bm.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-                            byte[] byteArrayImage = baos.toByteArray();
-                            String encodedSignature = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
-                            requestMap.put("signatureFileBytes", encodedSignature);
-                        }else*/
+                } else if (isSignature) {
                         if (endPoint != null && endPoint.contains("appstores")) {
                             Bitmap bm = BitmapFactory.decodeFile(answer.getAnswer());
                             ByteArrayOutputStream baos = new ByteArrayOutputStream();
                             bm.compress(Bitmap.CompressFormat.JPEG, 70, baos);
                             byte[] byteArrayImage = baos.toByteArray();
-
                             String encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
                             requestMap.put("SignatureImage", encodedImage);
                         } else {
                             signatures.add(answer);
                         }
-                    } else {
-                        photosToUpload.add(answer);
-                    }
+                } else {
+                    photosToUpload.add(answer);
                 }
             }
         }
@@ -634,22 +544,50 @@ public class ConnectionHelper {
             }
         }
 
+        if(!TextUtils.isEmpty(jsonFileName)){
+            if(jsonFileName.equalsIgnoreCase("good_2_go.json")) {
+                requestMap = updateGoodToGoSurvey(requestMap);
+            }else if(jsonFileName.equalsIgnoreCase("poling_risk_assessment.json")) {
+                requestMap = updatePolingRiskAssessment(requestMap);
+            }else if (jsonFileName.equalsIgnoreCase("log_measure.json")) {
+                requestMap.put("submittedDateTime", submission.getDate());
+            } else if(jsonFileName.equalsIgnoreCase("incident.json")){
+                ArrayList<Map<String , Object>> location = (ArrayList<Map<String, Object>>) requestMap.get("location");
+                User user = DBHandler.getInstance().getUser();
+                if(user != null) {
+                    requestMap.put("incidentOwnerUserId", user.getuserId());
+                }
+                if(location != null && !location.isEmpty()){
+                    location.get(0).put("lat" , location.get(0).get("latitude"));
+                    location.get(0).put("lng" , location.get(0).get("longitude"));
+                    location.get(0).remove("longitude");
+                    location.get(0).remove("latitude");
+                    requestMap.put("location" , location.get(0));
+                    requestMap.put("dateReported" , submission.getDate());
+                    requestMap.put("customerFullName" , requestMap.get("customerForeName")+" "+requestMap.get("customerSurName"));
+                }
+            }else if (jsonFileName.equalsIgnoreCase("timesheet_submit_timesheet.json")) {
+                if (!requestMap.containsKey("timesheetHoursIds")) {
+                    requestMap.put("timesheetHoursIds", new ArrayList<String>());
+                }
+            }
+        }
 
         if (isBookOn && !containsUserIds) {
             requestMap.put("userIds", new ArrayList<>());
         }
-        if(!TextUtils.isEmpty(submission.getJsonFileName()) &&
-                submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json") ){
-            if( endPoint.equalsIgnoreCase("app/timesheets/submit") && !requestMap.containsKey("timesheetHoursIds")){
-                requestMap.put("timesheetHoursIds" , new ArrayList<String>());
-            }
 
-            if( endPoint.equalsIgnoreCase("app/timesheets/log-hours")){
-                requestMap.remove("signatureFileBytes");
+        if(TextUtils.isEmpty(photoEndPoint)){
+            ArrayList<PhotoResponse> questionPhotos = new ArrayList<>();
+            for (int k = 0; k < photosToUpload.size(); k++) {
+                Answer answerqu = photosToUpload.get(k);
+                PhotoResponse photoResponse = createPhotoRequest(answerqu);
+                if (photoResponse != null) {
+                    questionPhotos.add(photoResponse);
+                }
             }
+            requestMap.put("photos", questionPhotos);
         }
-
-
 
         if (!signatures.isEmpty()) {
             for (Answer signature : signatures) {
@@ -667,55 +605,46 @@ public class ConnectionHelper {
         if (!TextUtils.isEmpty(endPoint)) {
             String url = BuildConfig.BASE_URL + endPoint;
             Response response;
-            if ((endPoint.contains("raise-dcr/v2") || endPoint.contains("raise-dfe/v2"))) {
+            if (endPoint.contains("raise-dcr/v2") || endPoint.contains("raise-dfe/v2")) {
                 response = uploadMultipart(jsonSubmission, photosToUpload, url);
             } else {
                 response = performJSONNetworking(body, url);
-
                 if (response == null || !response.isSuccessful()) {
                     return response;
                 }
             }
 
-            if (photoEndPoint != null && photoEndPoint.contains("issueId")) {
-                try {
-                    IssueResponse json = new Gson().fromJson(response.body().string(), IssueResponse.class);
-                    if (json != null) {
-                        photoEndPoint = photoEndPoint.replace("{issueId}", json.getIssueId());
-                        uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, "");
+            if(!TextUtils.isEmpty(photoEndPoint)){
+                if(photoEndPoint.contains("issueId")){
+                    try {
+                        IssueResponse json = new Gson().fromJson(response.body().string(), IssueResponse.class);
+                        if (json != null) {
+                            photoEndPoint = photoEndPoint.replace("{issueId}", json.getIssueId());
+                            uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, "");
+                        }
+                    } catch (Exception e) {
+
                     }
-                } catch (Exception e) {
-
+                }else{
+                    uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, "");
                 }
-            } else if (photoEndPoint != null) {
-                uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, "");
             }
-
             return response;
-        } else if (photoEndPoint != null && !photoEndPoint.isEmpty()) {
-            if (endPoint != null && endPoint.contains("logissue")) {
-
-            }
-
-            Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "comment", null, 0);
+        } else if (!TextUtils.isEmpty(photoEndPoint)) {
+            Answer answer = dbHandler.getAnswer(submission.getID(), "comment", null, 0);
             String photoComment = "";
             if (answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
                 photoComment = answer.getAnswer();
             }
-            uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, photoComment);
+            return uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, photoComment);
         }
         return null;
     }
 
 
-    // created by abhikr
     public Response submitActions(String endPoint,
                                   Submission submission, FragmentManager fm) {
         Gson gson = new GsonBuilder().serializeNulls().create();
-
-        if (!TextUtils.isEmpty(endPoint)) {
-            endPoint = endPoint.replace("{inspectionQuestionId}", submission.getJobID());
-        }
 
         ArrayList<Answer> answers = DBHandler.getInstance().getAnswers(submission.getID());
 
@@ -725,7 +654,8 @@ public class ConnectionHelper {
         List<PhotoResponse> photoResponseList = new ArrayList<>();
         int photoType = 0;
 
-        if (submission.getJsonFileName().equalsIgnoreCase("corrective_measure.json")) {
+        if (submission.getJsonFileName().equalsIgnoreCase("corrective_measure.json") ||
+                submission.getJsonFileName().equalsIgnoreCase("incident_corrective_measure.json")) {
             requestMap.put("cannotBeRectified", false);
             requestMap.put("cannotBeRectifiedComments", null);
             //photoResponse.setPhotoTypeId(3);
@@ -737,7 +667,12 @@ public class ConnectionHelper {
             photoType = 4;
         }
         requestMap.put("submissionId", uniqueId);
-        requestMap.put("inspectionQuestionId", submission.getJobID());
+
+        if(endPoint.equalsIgnoreCase("apphseq/actions/close-incident-action")) {
+            requestMap.put("incidentActionId", submission.getJobID());
+        }else{
+            requestMap.put("inspectionQuestionId", submission.getJobID());
+        }
         requestMap.put("submittedDate", submission.getDate());
         requestMap.put("dateTaken", submission.getDate());
         //PhotoResponseModel photoResponseModel = new PhotoResponseModel();
@@ -803,7 +738,7 @@ public class ConnectionHelper {
                 } else {
                     if (!TextUtils.isEmpty(answer.getUploadID()) && answer.getUploadID().equalsIgnoreCase("FileBytes")) {
                         PhotoResponse photoResponse = createPhotoRequest(answer);
-                        if(photoResponse != null){
+                        if (photoResponse != null) {
                             photoResponseList.add(photoResponse);
                         }
                     }
@@ -844,8 +779,8 @@ public class ConnectionHelper {
     public Response submitInspections(String endPoint, String photoEndPoint,
                                       Submission submission, FragmentManager fm) {
         Gson gson = new GsonBuilder().serializeNulls().create();
-        ArrayList<Answer> answersinspections = DBHandler.getInstance().getAnswers(submission.getID());//Utils.newInspectionSubmission
-        ArrayList<Answer> answersQuestions = DBHandler.getInstance().getRepeatedQuestionAnswers(submission.getID(), null, "questions");
+        ArrayList<Answer> answersinspections = dbHandler.getAnswers(submission.getID());//Utils.newInspectionSubmission
+        ArrayList<Answer> answersQuestions = dbHandler.getRepeatedQuestionAnswers(submission.getID(), null, "questions");
 
         String uniqueId = UUID.randomUUID().toString();
         Map<String, Object> requestMap = new HashMap<>();
@@ -871,11 +806,11 @@ public class ConnectionHelper {
                     } else {
                         if (uploadId.equals("scheduledInspectionId") || uploadId.equals("jobId")) {
                             requestMap.put(uploadId, ans); // only non-questions data
-                        }else if (uploadId.equals("address")) {
+                        } else if (uploadId.equals("address")) {
                             requestMap.put("location", ans);
-                        }else  if (uploadId.equals("latitude")) {
+                        } else if (uploadId.equals("latitude")) {
                             requestMap.put("latitude", ans);
-                        }else   if (uploadId.equals("longitude")) {
+                        } else if (uploadId.equals("longitude")) {
                             requestMap.put("longitude", ans);
                         }
                     }
@@ -906,21 +841,21 @@ public class ConnectionHelper {
             String answerId = answer.getAnswer();// for check
 
             if (answerId.equalsIgnoreCase("1")) {
-                questionmap.put("actionCorrectiveMeasure",null);
-                questionmap.put("actionAssignedToUserId",null);
+                questionmap.put("actionCorrectiveMeasure", null);
+                questionmap.put("actionAssignedToUserId", null);
                 questionmap.put("actionDueDate", date1);
-                questionmap.put("actionDefectComments",null);
-                questionmap.put("actionWasRectifiedOnSite",null);
+                questionmap.put("actionDefectComments", null);
+                questionmap.put("actionWasRectifiedOnSite", null);
             }
             if (answerId.equals("3")) {
-                questionmap.put("actionCorrectiveMeasure",null);
-                questionmap.put("actionAssignedToUserId",null);
+                questionmap.put("actionCorrectiveMeasure", null);
+                questionmap.put("actionAssignedToUserId", null);
                 questionmap.put("actionDueDate", date1);
-                questionmap.put("actionDefectComments",null);
-                questionmap.put("actionWasRectifiedOnSite",null);
-                questionmap.put("comments",null);
+                questionmap.put("actionDefectComments", null);
+                questionmap.put("actionWasRectifiedOnSite", null);
+                questionmap.put("comments", null);
             }
-            ArrayList<Answer> answers1 = DBHandler.getInstance().getRepeatedQuestionAnswers(
+            ArrayList<Answer> answers1 = dbHandler.getRepeatedQuestionAnswers(
                     submission.getID(),
                     null,
                     answer.getUploadID());
@@ -935,7 +870,7 @@ public class ConnectionHelper {
                         if (answerqu.getUploadID().equals("actionWasRectifiedOnSite") && answerqu.getAnswer().equalsIgnoreCase("true")) {
                             questionmap.put("actionAssignedToUserId", null);
                             questionmap.put("actionDueDate", null);
-                        } else if(answerqu.getUploadID().equals("actionWasRectifiedOnSite") && answerqu.getAnswer().equalsIgnoreCase("false")){
+                        } else if (answerqu.getUploadID().equals("actionWasRectifiedOnSite") && answerqu.getAnswer().equalsIgnoreCase("false")) {
                             questionmap.put("actionCorrectiveMeasure", null);
                         }
                     }
@@ -943,11 +878,11 @@ public class ConnectionHelper {
             }
             //Slg Questions Photo
             ArrayList<PhotoResponse> questionPhotos = new ArrayList<>();
-            ArrayList<Answer> questionsphotos = DBHandler.getInstance().getAnswerPic(submission.getID(), answer.getUploadID(), "Slg Questions Photo");
+            ArrayList<Answer> questionsphotos = dbHandler.getAnswerPic(submission.getID(), answer.getUploadID(), "Slg Questions Photo");
             for (int k = 0; k < questionsphotos.size(); k++) {
                 Answer answerqu = questionsphotos.get(k);
                 PhotoResponse photoResponse = createPhotoRequest(answerqu);
-                if(photoResponse != null){
+                if (photoResponse != null) {
                     questionPhotos.add(photoResponse);
                 }
             }
@@ -960,20 +895,20 @@ public class ConnectionHelper {
         requestMap.put("questions", questions); //questions arraylist
 
         ArrayList<PhotoResponse> slgphotorespons = new ArrayList<>();
-        ArrayList<Answer> answerphots = DBHandler.getInstance().getAnswerPic(submission.getID(), "fileBytes", "Slg Inspection Photo");
+        ArrayList<Answer> answerphots = dbHandler.getAnswerPic(submission.getID(), "fileBytes", "Slg Inspection Photo");
         for (int k = 0; k < answerphots.size(); k++) {
             PhotoResponse photoResponse = createPhotoRequest(answerphots.get(k));
-            if(photoResponse != null){
+            if (photoResponse != null) {
                 slgphotorespons.add(photoResponse);
             }
         }
         requestMap.put("photos", slgphotorespons);
 
-        if(!requestMap.containsKey("latitude")){
+        if (!requestMap.containsKey("latitude")) {
             requestMap.put("latitude", submission.getLatitude());
         }
 
-        if(!requestMap.containsKey("longitude")){
+        if (!requestMap.containsKey("longitude")) {
             requestMap.put("longitude", submission.getLongitude());
         }
 
@@ -1098,8 +1033,9 @@ public class ConnectionHelper {
         return obj;
     }
 
-    public void uploadPhotos(ArrayList<Answer> photosToUpload,
+    public Response uploadPhotos(ArrayList<Answer> photosToUpload,
                              String uniqueId, String photoUrl, FragmentManager fm, String photoComment) {
+        Response responseMP = null;
         photoUrl = BuildConfig.BASE_URL + photoUrl;
         int count = 1;
         MaterialAlertProgressDialog dialog = null;
@@ -1111,38 +1047,40 @@ public class ConnectionHelper {
         }
         for (Answer answer : photosToUpload) {
             Bitmap bm = BitmapFactory.decodeFile(answer.getAnswer());
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-            byte[] byteArrayImage = baos.toByteArray();
+            if(bm != null) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+                byte[] byteArrayImage = baos.toByteArray();
 
-            String encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
-            String fileName = answer.getDisplayAnswer();
-            if (TextUtils.isEmpty(fileName)) {
-                fileName = "Photo_" + count + ".jpg";
-            } else {
-                fileName = fileName.replace(" ", "_") + ".jpg";
-            }
+                String encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+                String fileName = answer.getDisplayAnswer();
+                if (TextUtils.isEmpty(fileName)) {
+                    fileName = "Photo_" + count + ".jpg";
+                } else {
+                    fileName = fileName.replace(" ", "_") + ".jpg";
+                }
 
-            PhotoRequest photoRequest = new PhotoRequest();
+                PhotoRequest photoRequest = new PhotoRequest();
 
-            photoRequest.setSubmissionID(uniqueId);
-            photoRequest.setFileBytes(encodedImage);
-            photoRequest.setFileName(fileName);
-            photoRequest.setPhotoType(answer.getUploadID());
-            photoRequest.setComment(photoComment);
-            photoRequest.setLatitude(String.valueOf(answer.getLatitude()));
-            photoRequest.setLongitude(String.valueOf(answer.getLongitude()));
-            photoRequest.setTakenDateTime(answer.getTakenDateTime());
+                photoRequest.setSubmissionID(uniqueId);
+                photoRequest.setFileBytes(encodedImage);
+                photoRequest.setFileName(fileName);
+                photoRequest.setPhotoType(answer.getUploadID());
+                photoRequest.setComment(photoComment);
+                photoRequest.setLatitude(String.valueOf(answer.getLatitude()));
+                photoRequest.setLongitude(String.valueOf(answer.getLongitude()));
+                photoRequest.setTakenDateTime(answer.getTakenDateTime());
 
-            String jsonSubmission = gson.toJson(photoRequest);
-            RequestBody body = RequestBody.create(JSON, jsonSubmission);
-            Response responseMP = performJSONNetworking(body, photoUrl);
+                String jsonSubmission = gson.toJson(photoRequest);
+                RequestBody body = RequestBody.create(JSON, jsonSubmission);
+                responseMP = performJSONNetworking(body, photoUrl);
 
-            if (responseMP != null && responseMP.isSuccessful()) {
-                count++;
-                if (dialog != null) {
-                    dialog.setMessage("Uploading " + count + " of " + photosToUpload.size() + " photos");
+                if (responseMP != null && responseMP.isSuccessful()) {
+                    count++;
+                    if (dialog != null) {
+                        dialog.setMessage("Uploading " + count + " of " + photosToUpload.size() + " photos");
 
+                    }
                 }
             }
 
@@ -1152,6 +1090,7 @@ public class ConnectionHelper {
             dialog.dismiss();
         }
 
+        return responseMP;
     }
 
     private String uploadSignature(String uniqueId, Answer signature, String jobId,
@@ -1228,7 +1167,7 @@ public class ConnectionHelper {
     @Nullable
     public Response performJSONNetworking(@NonNull RequestBody body,
                                           @NonNull String url) {
-        User user = DBHandler.getInstance().getUser();
+        User user = dbHandler.getUser();
         String token = "";
         if (user != null) {
             token = "Bearer " + user.gettoken();
@@ -1275,7 +1214,7 @@ public class ConnectionHelper {
 
         // Send up authentication token if we have it
 
-        User user = DBHandler.getInstance().getUser();
+        User user = dbHandler.getUser();
         if (user != null) {
             builder.addHeader("Authorization", "Bearer " + user.gettoken());
         }
@@ -1313,7 +1252,7 @@ public class ConnectionHelper {
 
         // Send up authentication token if we have it
 
-        User user = DBHandler.getInstance().getUser();
+        User user = dbHandler.getUser();
         if (user != null) {
             builder.addHeader("Authorization", "Bearer " + user.gettoken());
         }
@@ -1347,7 +1286,7 @@ public class ConnectionHelper {
             }
 
             if (mainResponse.code() == 401) {
-                User existUser = DBHandler.getInstance().getUser();
+                User existUser = dbHandler.getUser();
                 if (existUser == null) {
                     return mainResponse;
                 }
@@ -1357,7 +1296,7 @@ public class ConnectionHelper {
 
                 User user = refreshToken(userRequest);
                 if (user != null && !TextUtils.isEmpty(user.getuserId())) {
-                    DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
+                    dbHandler.replaceData(User.DBTable.NAME, user.toContentValues());
                     Request.Builder builder = mainRequest.newBuilder().header("Authorization", "Bearer " + user.gettoken()).
                             method(mainRequest.method(), mainRequest.body());
                     mainResponse = chain.proceed(builder.build());
@@ -1377,4 +1316,97 @@ public class ConnectionHelper {
             this.call = call;
         }
     }
+
+    private Map<String , Object> updateGoodToGoSurvey(Map<String , Object> requestMap){
+        Object value = requestMap.get("canOverheadGangComplete");
+        if((value != null && value.toString().equalsIgnoreCase("2"))){
+            return requestMap;
+        }
+//            first skip
+        if(!requestMap.containsKey("isThePoleSolutionAManualPole")){
+            requestMap.put("isThePoleSolutionAManualPole" , 3);
+        }
+        if(!requestMap.containsKey("isThereAccessAvailableForThePEU")){
+            requestMap.put("isThereAccessAvailableForThePEU" , 3);
+        }
+        if(!requestMap.containsKey("reinstatementRequired")){
+            requestMap.put("reinstatementRequired" , 3);
+        }
+        if(!requestMap.containsKey("siteContactNameNumber")){
+            requestMap.put("siteContactNameNumber" , 3);
+        }
+        if(!requestMap.containsKey("anyOtherRestrictions")){
+            requestMap.put("anyOtherRestrictions" , 3);
+        }
+
+//        second skip
+
+        if(!requestMap.containsKey("heightOfLowestAerialCableComments")){
+            requestMap.put("heightOfLowestAerialCableComments" , null);
+        }
+
+        if(!requestMap.containsKey("aerialCableTypeComments")){
+            requestMap.put("aerialCableTypeComments" , null);
+        }
+
+        if(!requestMap.containsKey("noOfSpansOfAerialCableComments")){
+            requestMap.put("noOfSpansOfAerialCableComments" , null);
+        }
+
+        if(!requestMap.containsKey("areDropwiresRequired")){
+            requestMap.put("areDropwiresRequired" , 3);
+        }
+
+        if(!requestMap.containsKey("areDropwiresRequiredComments")){
+            requestMap.put("areDropwiresRequiredComments" , null);
+        }
+
+//    third skip
+
+        if(!requestMap.containsKey("lowestDropwireHeightComments")){
+            requestMap.put("lowestDropwireHeightComments" , null);
+        }
+
+        if(!requestMap.containsKey("noOfSpansOfDropwireComments")){
+            requestMap.put("noOfSpansOfDropwireComments" , null);
+        }
+
+        if(!requestMap.containsKey("whatTypeOfCustomerEndFixingsComments")){
+            requestMap.put("whatTypeOfCustomerEndFixingsComments" , null);
+        }
+
+        if(!requestMap.containsKey("isThereAccessAvailableForTheHoist")){
+            requestMap.put("isThereAccessAvailableForTheHoist" , 3);
+        }
+
+        if(!requestMap.containsKey("areThereHospitalsSchoolsInVicinity")){
+            requestMap.put("areThereHospitalsSchoolsInVicinity" , 3);
+        }
+
+        if(!requestMap.containsKey("AdditionalPrecautionsRequiredComments")){
+            requestMap.put("AdditionalPrecautionsRequiredComments" , null);
+        }
+
+
+        if(!requestMap.containsKey("treeCutting")){
+            requestMap.put("treeCutting" , 2);
+        }
+        if(!requestMap.containsKey("treeSurgery")){
+            requestMap.put("treeSurgery" , 2);
+        }
+
+        return requestMap;
+    }
+
+    private Map<String , Object> updatePolingRiskAssessment(Map<String , Object> requestMap){
+
+
+        if(!requestMap.containsKey("AdditionalPrecautionsRequiredComments")){
+            requestMap.put("AdditionalPrecautionsRequiredComments" , null);
+        }
+
+        return requestMap;
+    }
+
+
 }

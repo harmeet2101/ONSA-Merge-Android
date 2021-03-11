@@ -1,0 +1,1268 @@
+{
+  "title": "Good2Go Survey",
+  "isProgressVisible": true,
+  "screens": [
+    {
+      "title": "Good2Go Survey",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "canOverheadGangComplete",
+          "title": "Can the Overhead gang complete this job?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "canOverheadGangCompleteComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 1,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isAPolingSolutionRequired",
+          "title": "Is a Poling solution required? If so, state Pole size in Comments",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isAPolingSolutionRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 2,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isThePoleSolutionAManualPole",
+          "title": "Is the pole solution a manual pole?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThePoleSolutionAManualPoleComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThePoleSolutionAManualPoleComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 3,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isThereAccessAvailableForThePEU",
+          "title": "Is there access available for the PEU?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThereAccessAvailableForThePEUComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "PEU",
+              "photoSize": 25,
+              "photoRequired": 0,
+              "photoId": "155"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThereAccessAvailableForThePEUComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "PEU",
+              "photoSize": 25,
+              "photoRequired": 0,
+              "photoId": "155"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 4,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "reinstatementRequired",
+          "title": "Reinstatement(s) required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "reinstatementRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "reinstatementRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 5,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "siteContactNameNumber",
+          "title": "Site contact (Name/Number)",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "siteContactNameNumberComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "siteContactNameNumberComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 6,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "anyOtherRestrictions",
+          "title": "Any other restrictions?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "anyOtherRestrictionsComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "anyOtherRestrictionsComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 7,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isAerialCableRequired",
+          "title": "Is Aerial Cable required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isAerialCableRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": []
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 8,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na_optional",
+          "uploadId": "heightOfLowestAerialCable",
+          "title": "Height of lowest Aerial Cable",
+          "isYesNotVisible": true,
+          "isNoNotVisible": true,
+          "isNaNotVisible": true,
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "heightOfLowestAerialCableComments",
+          "title": "Comments",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 9,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na_optional",
+          "uploadId": "aerialCableTypeId",
+          "title": "Type of Aerial Cable required",
+          "isYesNotVisible": true,
+          "isNoNotVisible": true,
+          "isNaNotVisible": true,
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "aerialCableTypeComments",
+          "title": "Comments",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 10,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na_optional",
+          "uploadId": "noOfSpansOfAerialCable",
+          "title": "No of spans of Aerial Cable required",
+          "isYesNotVisible": true,
+          "isNoNotVisible": true,
+          "isNaNotVisible": true,
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "noOfSpansOfAerialCableComments",
+          "title": "Comments",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 11,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "areDropwiresRequired",
+          "title": "Are Dropwires required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "areDropwiresRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": []
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 12,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na_optional",
+          "uploadId": "lowestDropwireHeight",
+          "title": "Lowest Dropwire height?",
+          "isYesNotVisible": true,
+          "isNoNotVisible": true,
+          "isNaNotVisible": true,
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "lowestDropwireHeightComments",
+          "title": "Comments",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 13,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na_optional",
+          "uploadId": "noOfSpansOfDropwire",
+          "title": "No of spans of Dropwire required?",
+          "isYesNotVisible": true,
+          "isNoNotVisible": true,
+          "isNaNotVisible": true,
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "noOfSpansOfDropwireComments",
+          "title": "Comments",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 14,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na_optional",
+          "uploadId": "whatTypeOfCustomerEndFixings",
+          "title": "What type of customer end fixings required",
+          "isYesNotVisible": true,
+          "isNoNotVisible": true,
+          "isNaNotVisible": true,
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "whatTypeOfCustomerEndFixingsComments",
+          "title": "Comments",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "CustomerEndFixings",
+          "photoSize": 25,
+          "photoRequired": 0,
+          "photoId": "156"
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 15,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isThereAccessAvailableForTheHoist",
+          "title": "Is there access available for the Hoist?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThereAccessAvailableForTheHoistComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "AccessAvailableForTheHoist",
+              "photoSize": 25,
+              "photoRequired": 0,
+              "photoId": "157"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThereAccessAvailableForTheHoistComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "AccessAvailableForTheHoist",
+              "photoSize": 25,
+              "photoRequired": 0,
+              "photoId": "157"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 16,
+      "upload": false,
+      "items": [
+        {
+          "type": "switch_layout",
+          "uploadId": "trafficManagementRequired",
+          "title": "Traffic Management?",
+          "enables": [
+            {
+              "type": "dropdown",
+              "uploadId": "speedLimitTypeId",
+              "key": "speedLimits",
+              "title": "Speed Limit",
+              "optional": false
+            },
+            {
+              "type": "dropdown",
+              "uploadId": "trafficManagementTypeId",
+              "key": "trafficManagementTypes",
+              "title": "Select TM",
+              "optional": false
+            },
+            {
+              "type": "switch_layout",
+              "uploadId": "trafficManagementMeetingRequired",
+              "title": "TM Meeting Required?",
+              "optional": true
+            },
+            {
+              "type": "et_long_text",
+              "uploadId": "trafficManagementComments",
+              "title": "TM Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Traffic Management",
+              "photoSize": 5,
+              "photoRequired": 0,
+              "photoId": "158"
+            }
+          ],
+          "optional": true
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 17,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "areThereHospitalsSchoolsInVicinity",
+          "title": "Are there hospitals, schools, clinics, shops, etc. in the vicinity of the works.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "areThereHospitalsSchoolsInVicinityComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "yes_no",
+              "uploadId": "additionalPrecautionsRequired",
+              "title": "Additional precautions required?",
+              "optional": false,
+              "enables": [
+                {
+                  "type": "et_long_text",
+                  "uploadId": "AdditionalPrecautionsRequiredComments",
+                  "title": "Comments",
+                  "optional": false
+                }
+              ]
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "areThereHospitalsSchoolsInVicinityComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "naEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "areThereHospitalsSchoolsInVicinityComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 18,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "onPrivateDrivesService",
+          "title": "On private drives service covers checked for weight limit before driving over them.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "onPrivateDrivesServiceComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Private Drives Service",
+              "photoSize": 25,
+              "photoRequired": 0,
+              "photoId": "159"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "onPrivateDrivesServiceComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Private Drives Service",
+              "photoSize": 25,
+              "photoRequired": 0,
+              "photoId": "159"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 19,
+      "upload": false,
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "Is there Overhead power in vicinity? "
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "hvWithin25m",
+          "title": "HV within 25m",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hvWithin25mComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "HV within 25m",
+              "photoSize": 25,
+              "photoRequired": 1,
+              "photoId": "160"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hvWithin25mComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        },
+        {
+          "type": "yes_no_na",
+          "uploadId": "lvWithin25m",
+          "title": "LV within 25m",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "lvWithin25mComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "LV within 25m",
+              "photoSize": 25,
+              "photoRequired": 1,
+              "photoId": "161"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "lvWithin25mComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 20,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "poleTestCarriedOut",
+          "title": "Pole test carried out.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleTestCarriedOutComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Pole Test",
+              "photoSize": 25,
+              "photoRequired": 1,
+              "photoId": "162"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleTestCarriedOutComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 21,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "forWorkOnADPole",
+          "title": "For work on a D pole are the works within the limits allowed for the category of D pole?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "forWorkOnADPoleComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "forWorkOnADPoleComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "naEnables": [
+          ]
+        }
+
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 22,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "isThePoleLeaning",
+          "title": "Is the pole leaning, overloaded, congested, missing stay, Pull On Pole?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "photo",
+              "title": "Leaning/ Overloaded/ Congested/ Missing stay",
+              "photoSize": 25,
+              "photoRequired": 1,
+              "photoId": "163"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 23,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "willTheWorksAdverselyAffectOverhead",
+          "title": "Will the works adversely affect overhead wires crossing a road?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "willTheWorksAdverselyAffectOverheadComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Overhead Wires",
+              "photoSize": 25,
+              "photoRequired": 1,
+              "photoId": "164"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "willTheWorksAdverselyAffectOverheadComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 24,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "willTheWorksRequireAccessingAJUP",
+          "title": "Will the works require accessing a Joint User Pole?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "willTheWorksRequireAccessingAJUPComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "willTheWorksRequireAccessingAJUPComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 25,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "anyTreeCuttingRequired",
+          "title": "Any tree cutting required? ",
+          "optional": false,
+          "enables": [
+            {
+              "type": "yes_no",
+              "uploadId": "treeCutting",
+              "title": " Tree cutting ",
+              "optional": false,
+              "enables": [
+                {
+                  "type": "et_long_text",
+                  "uploadId": "treeCuttingComments",
+                  "title": "Comments",
+                  "optional": true
+                },
+                {
+                  "type": "photo",
+                  "title": "Tree Cutting",
+                  "photoSize": 25,
+                  "photoRequired": 0,
+                  "photoId": "165"
+                }
+              ]
+            },
+            {
+              "type": "yes_no",
+              "uploadId": "treeSurgery",
+              "title": "Tree surgery ",
+              "optional": false,
+              "enables": [
+                {
+                  "type": "et_long_text",
+                  "uploadId": "treeSurgeryComments",
+                  "title": "Comments",
+                  "optional": true
+                },
+                {
+                  "type": "photo",
+                  "title": "Tree Surgery",
+                  "photoSize": 25,
+                  "photoRequired": 0,
+                  "photoId": "166"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 26,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "anyOtherEnvironmentalIssues",
+          "title": "Are there any other environmental issues?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "anyOtherEnvironmentalIssuesComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "anyOtherEnvironmentalIssuesComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 27,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "wayleaveRequired",
+          "title": "Wayleave required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "wayleaveRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "wayleaveRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 28,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "methodStatementSSRAMS",
+          "title": "Method statement SSRAMS required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "methodStatementSSRAMSComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "methodStatementSSRAMSComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 29,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "noticingPermitsRequired",
+          "title": "Noticing/Permits required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "noticingPermitsRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "noticingPermitsRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 30,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "anyDependentActivity",
+          "title": "Any Dependent activity? e.g. waiting customer work",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "anyDependentActivityComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "anyDependentActivityComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 31,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na_optional",
+          "uploadId": "suggestedTeamSize",
+          "title": "Suggested team size",
+          "isYesNotVisible": true,
+          "isNoNotVisible": true,
+          "isNaNotVisible": true,
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "suggestedTeamSizeComments",
+          "title": "Comments",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 32,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "siteInductionRequired",
+          "title": "Site Induction required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "siteInductionRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "siteInductionRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 33,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "specialistEquipmentRequired",
+          "title": "Specialist equipment required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "specialistEquipmentRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "specialistEquipmentRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 34,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "siteAccessRestrictions",
+          "title": "Site access restrictions",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "siteAccessRestrictionsComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "siteAccessRestrictionsComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 35,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "specialistTrainedEngineers",
+          "title": "Specialist trained engineers?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "specialistTrainedEngineersComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "specialistTrainedEngineersComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 36,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "permitToWork",
+          "title": "Permit to work? (if required by landowner/customer)",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "permitToWorkComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "permitToWorkComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 37,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "timeOfDayRestrictions",
+          "title": "Time of day restrictions?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "timeOfDayRestrictionsComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "timeOfDayRestrictionsComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 38,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no_na",
+          "uploadId": "asbestosRegisterPresent",
+          "title": "Asbestos register present",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "asbestosRegisterPresentComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "asbestosRegisterPresentComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Good2Go Survey",
+      "index": 39,
+      "upload": true,
+      "url": "app/jobs/{jobId}/good2go-survey",
+      "photoUrl": "app/jobs/{jobId}/photos",
+      "items": [
+        {
+          "type": "txt_bold_head",
+          "title": "I fully acknowledge that I have read, understand, and assume full responsibility for all the conditions of this SURVEY."
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "surveyedBy",
+          "title": "Surveyed By:",
+          "optional": false
+        },
+        {
+          "type": "calender",
+          "uploadId": "submittedDateTime",
+          "title": "Date of Survey",
+          "hint": "Date",
+          "optional": true
+        },
+        {
+          "type": "number",
+          "uploadId": "telephoneNo",
+          "title": "Tel:",
+          "optional": true
+        },
+        {
+          "type": "signature",
+          "signatureUrl": "app/jobs/{jobId}/upload-signature",
+          "uploadId": "signatureId",
+          "title": "Signature",
+          "photoId": "26",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

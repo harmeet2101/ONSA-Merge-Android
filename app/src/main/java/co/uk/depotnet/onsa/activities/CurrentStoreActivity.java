@@ -55,11 +55,6 @@ public class CurrentStoreActivity extends AppCompatActivity implements FragmentA
     }
 
     @Override
-    public void onFragmentHomeVisible(boolean isVisible) {
-
-    }
-
-    @Override
     public void showProgressBar() {
         progressBar.setVisibility(View.VISIBLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,

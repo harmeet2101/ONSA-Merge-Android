@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +37,7 @@ public class DropdownMenu extends BottomSheetDialogFragment implements OnItemCli
     private ArrayList<DropDownItem> items;
     private DropDownAdapter.OnItemSelectedListener listener;
 
-    private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
+    private final BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback = new BottomSheetBehavior.BottomSheetCallback() {
         @Override
         public void onStateChanged(@NonNull View bottomSheet, int newState) {
             if (newState == BottomSheetBehavior.STATE_HIDDEN) {
@@ -60,7 +62,7 @@ public class DropdownMenu extends BottomSheetDialogFragment implements OnItemCli
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         this.context = context;
     }
@@ -78,7 +80,7 @@ public class DropdownMenu extends BottomSheetDialogFragment implements OnItemCli
 
 
     @Override
-    public void setupDialog(final Dialog dialog, int style) {
+    public void setupDialog(@NonNull final Dialog dialog, int style) {
         super.setupDialog(dialog, style);
         dialog.setCancelable(true);
 

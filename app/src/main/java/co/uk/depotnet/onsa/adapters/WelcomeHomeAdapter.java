@@ -15,6 +15,8 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import co.uk.depotnet.onsa.R;
@@ -24,27 +26,40 @@ import co.uk.depotnet.onsa.modals.WelcomeHomeModal;
 import co.uk.depotnet.onsa.networking.Constants;
 
 public class WelcomeHomeAdapter extends RecyclerView.Adapter<WelcomeHomeAdapter.HomeHolder> {
-    private OnItemClickListener listener;
-    private List<WelcomeHomeModal> items;
-    private Context context;
+
+    private final OnItemClickListener listener;
+    private final List<WelcomeHomeModal> items;
+    private final Context context;
+
     public WelcomeHomeAdapter(Context context , OnItemClickListener listener){
         this.context = context;
         this.listener = listener;
         items = new ArrayList<>();
-        User user = DBHandler.getInstance().getUser();
-        items.add(new WelcomeHomeModal(1,"My Work",R.drawable.ic_my_work,R.color.ColorMyWork));
+        User user = DBHandler.getInstance(context).getUser();
+        items.add(new WelcomeHomeModal(1, "My Work", R.drawable.ic_my_work, R.color.ColorMyWork));
 
-        if(Constants.isHSEQEnabled) {
+        if (Constants.isHSEQEnabled) {
             items.add(new WelcomeHomeModal(2, "HSEQ", R.drawable.ic_hseq, R.color.ColorHseq));
-            items.add(new WelcomeHomeModal(4,"Briefing",R.drawable.ic_briefings,R.color.ColorBriefing));
+            items.add(new WelcomeHomeModal(4, "Briefing", R.drawable.ic_briefings, R.color.ColorBriefing));
+            items.add(new WelcomeHomeModal(6, "Incident", R.drawable.ic_incident, R.color.ColorIncident));
         }
-        if(Constants.isStoreEnabled) {
+        if (Constants.isStoreEnabled) {
             items.add(new WelcomeHomeModal(3, "STORES", R.drawable.ic_stores, R.color.ColorStore));
         }
-        if(user != null && user.isCompleteTimesheets()) {
+
+        if (Constants.isTimeSheetEnabled && user != null && user.isCompleteTimesheets()) {
             items.add(new WelcomeHomeModal(5, "TIMESHEETS", R.drawable.ic_timesheet_icon, R.color.ColorTimeSheet));
         }
 
+        Collections.sort(items, (o1, o2) -> {
+            if(o1.getWH_id() == o2.getWH_id()) {
+
+                return 0;
+            }else if(o1.getWH_id() < o2.getWH_id()){
+                return -1;
+            }
+            return 1;
+        });
     }
 
     @NonNull

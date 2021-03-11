@@ -19,7 +19,7 @@
         {
           "type": "photo",
           "title": "In Progress",
-          "photoSize": 1,
+          "photoSize": 100,
           "photoRequired": 1,
           "photoId": "78"
         }

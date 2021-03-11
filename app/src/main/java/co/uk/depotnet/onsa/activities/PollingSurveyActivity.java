@@ -33,7 +33,7 @@ public class PollingSurveyActivity extends AppCompatActivity
     private Submission submission;
     private LinearLayout llUiBlocker;
     private String[] files = new String[]{"poling_job_data.json", "poling_fluidity_task.json"
-            , "poling_solution.json", "poling_asset_data.json", "poling_risk_assessment.json"};
+            , "poling_solution.json", "poling_asset_data.json", "poling_planning_risk_assessment.json"};
 
     private ImageView[] statusIcons = new ImageView[5];
     private Handler handler;
@@ -128,7 +128,7 @@ public class PollingSurveyActivity extends AppCompatActivity
 
                 DBHandler.getInstance().replaceData(Answer.DBTable.NAME , answer.toContentValues());
 
-                submission.setJsonFile("poling_risk_assessment.json");
+                submission.setJsonFile("poling_planning_risk_assessment.json");
                 break;
         }
 

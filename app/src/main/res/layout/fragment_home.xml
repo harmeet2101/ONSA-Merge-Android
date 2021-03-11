@@ -54,7 +54,7 @@
                     android:layout_marginRight="@dimen/_4sdp"
                     android:layout_toStartOf="@id/txt_job_pin_code"
                     android:layout_toLeftOf="@id/txt_job_pin_code"
-                    android:tint="@color/depotnet_color"
+                    app:tint="@color/depotnet_color"
                     app:srcCompat="@drawable/ic_location_on" />
 
                 <LinearLayout
@@ -161,7 +161,7 @@
                     android:layout_marginTop="@dimen/_2sdp"
                     android:layout_marginEnd="@dimen/_4sdp"
                     android:layout_marginRight="@dimen/_4sdp"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     app:srcCompat="@drawable/ic_add_circle" />
 
 

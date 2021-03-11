@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true">
+
+    <RelativeLayout
+        android:id="@+id/rl_incident"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/actions_img"
+        android:layout_width="@dimen/_60sdp"
+        android:layout_height="@dimen/_60sdp"
+        android:layout_margin="@dimen/_4sdp"
+        app:civ_border_color="@color/ColorHseq"
+        android:layout_centerVertical="true"
+        app:civ_border_width="1dp"
+        app:srcCompat="@drawable/ic_error_red" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_4sdp"
+        android:layout_marginLeft="@dimen/_4sdp"
+        android:layout_toRightOf="@id/actions_img"
+        android:layout_toEndOf="@id/actions_img"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_incident_no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/tv_urgent"
+                android:layout_toStartOf="@id/tv_urgent"
+                android:maxLines="1"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:layout_marginRight="@dimen/_4sdp"
+                android:text="Incident no: 3"
+                android:textSize="@dimen/_12sdp" />
+
+            <TextView
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:id="@+id/tv_urgent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/_4sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:text="Urgent"
+                android:textStyle="bold"
+                android:textSize="@dimen/_12sdp" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/tv_due_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:text="Due Date: 18/02/2021"
+            android:textSize="@dimen/_12sdp"/>
+
+        <TextView
+            android:id="@+id/tv_addressed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="Addressed : S2 High Street, London Britain(UK)"
+            android:textSize="@dimen/_12sdp"/>
+
+        <TextView
+            android:id="@+id/tv_post_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Postcode: B95 5AN"
+            android:textSize="@dimen/_12sdp"/>
+
+    </LinearLayout>
+</RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_view_action"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_36sdp"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:background="@color/ColorBriefing"
+        android:padding="@dimen/_8sdp"
+        android:layout_below="@id/rl_incident">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="View Action"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_12sdp" />
+
+        <ImageView
+            android:id="@+id/img_expand_incident"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="@dimen/_8sdp"
+            android:layout_marginRight="@dimen/_8sdp"
+            app:tint="@color/white"
+            app:srcCompat="@drawable/ic_add_circle" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_action_container"
+        android:layout_width="match_parent"
+        android:layout_below="@id/rl_view_action"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/ll_incident_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginLeft="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:layout_marginBottom="@dimen/_4sdp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Action Description"
+                android:textSize="@dimen/_12sdp"
+                android:textColor="@color/txt_color_dark"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:text="Action Description"
+                android:textColor="@color/txt_color_light_grey"
+                android:textSize="@dimen/_10sdp"/>
+
+            <TextView
+                android:id="@+id/tv_title_action"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Action Comments"
+                android:textSize="@dimen/_12sdp"
+                android:textColor="@color/txt_color_dark"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tv_action_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:text="Action Comments"
+                android:textColor="@color/txt_color_light_grey"
+                android:textSize="@dimen/_10sdp"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_view_schedule"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_36sdp"
+            android:layout_marginTop="@dimen/_14sdp"
+            android:background="@color/ColorBriefing"
+            android:layout_below="@+id/ll_incident_data"
+            android:padding="@dimen/_8sdp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Complete/ Rectify"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12sdp" />
+
+            <ImageView
+                android:id="@+id/img_expend_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:layout_marginRight="@dimen/_8sdp"
+                app:tint="@color/white"
+                app:srcCompat="@drawable/ic_add_circle" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_hide_schedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_below="@id/rl_view_schedule">
+
+            <TextView
+                android:id="@+id/tv_corrective_measure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_8sdp"
+                android:drawableStart="@drawable/ic_jobdetails"
+                android:drawableLeft="@drawable/ic_jobdetails"
+                android:drawableEnd="@drawable/ic_chevron_right"
+                android:drawableRight="@drawable/ic_chevron_right"
+                android:drawablePadding="@dimen/_8sdp"
+                android:drawableTint="@color/ColorHseq"
+                android:gravity="center|start"
+                android:padding="@dimen/_2sdp"
+                android:text="Corrective Measure"
+                android:textSize="14sp"
+                tools:targetApi="m" />
+
+            <View
+                android:id="@+id/divactions"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:layout_below="@+id/tv_corrective_measure"
+                android:layout_margin="@dimen/_8sdp"
+                android:background="@color/txt_color_light_grey"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_cannot_rectify"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divactions"
+                android:layout_margin="@dimen/_8sdp"
+                android:drawableStart="@drawable/ic_jobdetails"
+                android:drawableLeft="@drawable/ic_jobdetails"
+                android:drawableEnd="@drawable/ic_chevron_right"
+                android:drawableRight="@drawable/ic_chevron_right"
+                android:drawablePadding="@dimen/_8sdp"
+                android:drawableTint="@color/ColorHseq"
+                android:gravity="center|start"
+                android:padding="@dimen/_2sdp"
+                android:text="Cannot Rectify"
+                android:textSize="14sp"
+                tools:targetApi="m" />
+
+            <View
+                android:id="@+id/divactions1"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:layout_below="@+id/tv_Cannot_Rectify"
+                android:layout_margin="@dimen/_8sdp"
+                android:background="@color/txt_color_light_grey"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

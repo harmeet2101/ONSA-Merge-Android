@@ -25,7 +25,7 @@
         {
           "type": "photo",
           "title": "Finish On Site",
-          "photoSize": 1,
+          "photoSize": 100,
           "photoRequired": 1,
           "photoId": "55"
         }

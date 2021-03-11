@@ -51,7 +51,7 @@
         android:layout_marginRight="8dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:tint="@color/txt_color_light_grey"
+        app:tint="@color/txt_color_light_grey"
         app:layout_constraintBottom_toTopOf="@+id/pc_divider"
         app:layout_constraintEnd_toStartOf="@+id/photo_comment_text"
         app:layout_constraintStart_toStartOf="parent"

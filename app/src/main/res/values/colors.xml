@@ -35,6 +35,10 @@
     <color name="ColorStore">#347265</color>
     <color name="ColorBriefing">#fdc357</color>
     <color name="ColorTimeSheet">#1795FA</color>
+    <color name="ColorIncident">#ff7961</color>
+    <color name="ColorTimeSheetPending">#FFF09000</color>
+    <color name="ColorTimeSheetApproved">#FF269145</color>
+    <color name="ColorTimeSheetInProgress">#1795FA</color>
 
     <color name="ColorAlerts">#7F7F7F</color>
     <!--<color name="ColorActions">#f5853b</color>-->

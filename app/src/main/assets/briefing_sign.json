@@ -32,8 +32,6 @@
               "type": "dropdown",
               "uploadId": "operativeId",
               "repeatId": "operatives",
-              "isMultiSelection": false,
-              "isConcatDisplayText": false,
               "key": "OperativesHseq",
               "title": "Select Operative",
               "optional": false

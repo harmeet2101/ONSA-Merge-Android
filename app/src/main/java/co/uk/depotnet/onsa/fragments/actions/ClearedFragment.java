@@ -17,29 +17,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import co.uk.depotnet.onsa.OnsaApp;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.adapters.actions.ActionsMainAdaptor;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.listeners.ActionsListner;
-import co.uk.depotnet.onsa.modals.actions.ActionsClose;
-import co.uk.depotnet.onsa.modals.actions.OutstandingAction;
+import co.uk.depotnet.onsa.listeners.ActionsListener;
+import co.uk.depotnet.onsa.modals.actions.Action;
+import co.uk.depotnet.onsa.modals.actions.ActionResponse;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
-public class ClearedFragment extends Fragment implements ActionsListner {
+public class ClearedFragment extends Fragment implements ActionsListener {
     private ProgressBar progressBar;
-    private RecyclerView mRecyclerView;
     private ActionsMainAdaptor actionAdapter;
     private TextView error;
-    private List<OutstandingAction> actionList=new ArrayList<>();
+    private final List<String> actionList = new ArrayList<>();
     private Context context;
 
     @Override
@@ -57,85 +55,85 @@ public class ClearedFragment extends Fragment implements ActionsListner {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        progressBar=view.findViewById(R.id.progress_bar_actions);
-        mRecyclerView=view.findViewById(R.id.cleared_recyclerview);
-        actionAdapter=new ActionsMainAdaptor(this);
+        progressBar = view.findViewById(R.id.progress_bar_actions);
+        RecyclerView mRecyclerView = view.findViewById(R.id.cleared_recyclerview);
+        actionAdapter = new ActionsMainAdaptor(context,"Cleared" , this);
         mRecyclerView.setAdapter(actionAdapter);
-        error=view.findViewById(R.id.cleared_error);
+        mRecyclerView.setHasFixedSize(true);
+
+        error = view.findViewById(R.id.cleared_error);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         try {
             progressBar.setVisibility(View.VISIBLE);
             error.setVisibility(View.GONE);
-            if(CommonUtils.isNetworkAvailable(getContext())) {
+            if (CommonUtils.isNetworkAvailable(context)) {
                 GetActionsCall();
             } else {
                 getActionsFromDb();
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-    private void GetActionsCall()
-    {
+
+    private void GetActionsCall() {
         progressBar.setVisibility(View.VISIBLE);
-        APICalls.getActionsClearedList(DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<List<OutstandingAction>>() {
+        APICalls.getActionsClearedList(DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<List<ActionResponse>>() {
             @Override
-            public void onResponse(@NonNull Call<List<OutstandingAction>> call, @NonNull Response<List<OutstandingAction>> response) {
-                if(CommonUtils.onTokenExpired(getContext(), response.code())){
+            public void onResponse(@NonNull Call<List<ActionResponse>> call, @NonNull Response<List<ActionResponse>> response) {
+                if (CommonUtils.onTokenExpired(getContext(), response.code())) {
                     return;
                 }
                 if (response.isSuccessful()) {
-                    DBHandler.getInstance().resetActions();
-                    List<OutstandingAction> actionsresponse=response.body();
-                    if (actionsresponse!=null && actionsresponse.size()>0) {
-                        for (OutstandingAction modal : actionsresponse)
-                        {
-                            modal.setActionType("Cleared"); // for filter data
-                            DBHandler.getInstance().replaceData(OutstandingAction.DBTable.NAME, modal.toContentValues());
+                    DBHandler.getInstance().clearTable(Action.DBTable.NAME);
+                    List<ActionResponse> actionsresponse = response.body();
+                    if (actionsresponse != null && !actionsresponse.isEmpty()) {
+                        for (ActionResponse modal : actionsresponse) {
+                            modal.setActionType("Cleared");
+                            modal.toContentValues();
                         }
                         getActionsFromDb();
-                    }
-                    else {
+                    } else {
                         error.setVisibility(View.VISIBLE);
                     }
-                }
-                else
-                {
+                } else {
                     error.setVisibility(View.VISIBLE);
                 }
                 progressBar.setVisibility(View.GONE);
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<OutstandingAction>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<ActionResponse>> call, @NonNull Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 error.setVisibility(View.VISIBLE);
             }
         });
     }
-    private void getActionsFromDb()
-    {
-        List<OutstandingAction> jobs = DBHandler.getInstance().getActions("Cleared");
+
+    private void getActionsFromDb() {
+        List<String> dueDates = DBHandler.getInstance().getActionDueDates("Cleared");
         actionList.clear();
-        if (jobs!=null && !jobs.isEmpty()) {
-            actionList.addAll(jobs);
-            actionAdapter.SetActionsList(actionList);
+        if (dueDates != null && !dueDates.isEmpty()) {
+            actionList.addAll(dueDates);
+            actionAdapter.SetActionsList(dueDates);
             actionAdapter.notifyDataSetChanged();
             error.setVisibility(View.GONE);
-        } else
-        {
+        } else {
             error.setVisibility(View.VISIBLE);
         }
         progressBar.setVisibility(View.GONE);
     }
+
     @Override
-    public void StartCorrectiveMeasure(ActionsClose action) {
+    public void startCorrectiveMeasure(Action action) {
         AppPreferences.setTheme(3);
-        String jsonFileName = "corrective_measure.json";// case sensitive for submission model too
-        Submission submission = new Submission(jsonFileName, "Corrective Measure", action.getInspectionQuestionId());// if jobid not than 0
-        // unique submission id for every form
+        String jsonFileName = action.isIncidentAction() ?"incident_corrective_measure.json" :"corrective_measure.json";// case sensitive for submission model too
+        Submission submission = new Submission(jsonFileName, "Corrective Measure", action.getActionId());// if jobid not than 0
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
@@ -144,11 +142,10 @@ public class ClearedFragment extends Fragment implements ActionsListner {
     }
 
     @Override
-    public void StartCannotRectify(ActionsClose action) {
+    public void startCannotRectify(Action action) {
         AppPreferences.setTheme(3);
-        String jsonFileName = "cannot_rectify.json";// case sensitive for submission model too
-        Submission submission = new Submission(jsonFileName, "Cannot Rectify", action.getInspectionQuestionId());// if jobid not than 0
-        // unique submission id for every form
+        String jsonFileName = action.isIncidentAction() ?"incident_cannot_rectify.json" :"cannot_rectify.json";// case sensitive for submission model too
+        Submission submission = new Submission(jsonFileName, "Cannot Rectify", action.getActionId());// if jobid not than 0
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);

@@ -146,7 +146,7 @@
             android:layout_gravity="end"
             android:layout_marginEnd="@dimen/_12sdp"
             android:layout_marginRight="@dimen/_12sdp"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_close" />
 

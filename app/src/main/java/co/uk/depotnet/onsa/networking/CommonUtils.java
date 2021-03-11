@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.text.TextUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -13,6 +14,7 @@ import java.util.TimeZone;
 
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
+import co.uk.depotnet.onsa.modals.ItemType;
 import co.uk.depotnet.onsa.modals.User;
 
 public class CommonUtils {
@@ -70,7 +72,63 @@ public class CommonUtils {
             return false;
 
         }
+    }
 
+    public static int parseInt(String value){
+        int intValue = 0;
+        if(!TextUtils.isEmpty(value)) {
+            try {
+                intValue = Integer.parseInt(value);
+            }catch (Exception e){
+
+            }
+        }
+        return intValue;
+    }
+
+    public static String getDisplayTime(int minutes){
+        return String.format("%02d", minutes/60)+":"+String.format("%02d", minutes%60)+"h";
+    }
+
+    public static int getWeekCommencingDayInt(){
+
+            String dayName = getWeekCommencingDay();
+            if(!TextUtils.isEmpty(dayName)){
+                if(dayName.equalsIgnoreCase("monday")){
+                    return Calendar.MONDAY;
+                }
+                if(dayName.equalsIgnoreCase("tuesday")){
+                    return Calendar.TUESDAY;
+                }
+                if(dayName.equalsIgnoreCase("wednesday")){
+                    return Calendar.WEDNESDAY;
+                }
+                if(dayName.equalsIgnoreCase("thursday")){
+                    return Calendar.THURSDAY;
+                }
+                if(dayName.equalsIgnoreCase("friday")){
+                    return Calendar.FRIDAY;
+                }
+                if(dayName.equalsIgnoreCase("saturday")){
+                    return Calendar.SATURDAY;
+                }
+                if(dayName.equalsIgnoreCase("sunday")){
+                    return Calendar.SUNDAY;
+                }
+            }
+        return Calendar.MONDAY;
+    }
+
+    public static String getWeekCommencingDay(){
+        ArrayList<ItemType> itemTypes = DBHandler.getInstance().getItemTypes("WeekCommencingDay");
+
+        if(!itemTypes.isEmpty()){
+            String dayName = itemTypes.get(0).getUploadValue();
+            if(!TextUtils.isEmpty(dayName)){
+                return dayName;
+            }
+        }
+        return "Monday";
     }
 
 }

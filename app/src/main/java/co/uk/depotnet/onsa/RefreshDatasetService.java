@@ -3,6 +3,8 @@ package co.uk.depotnet.onsa;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -11,6 +13,7 @@ import com.google.gson.Gson;
 import java.util.concurrent.TimeUnit;
 
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.hseq.HseqDataset;
 import co.uk.depotnet.onsa.modals.responses.DatasetResponse;
 import co.uk.depotnet.onsa.modals.store.FeatureResult;
@@ -18,6 +21,7 @@ import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import co.uk.depotnet.onsa.modals.timesheet.TimeTypeActivities;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.ConnectionHelper;
+import co.uk.depotnet.onsa.networking.Constants;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -48,15 +52,22 @@ public class RefreshDatasetService extends IntentService {
     }
 
     private void handleAction(String token) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getDataset(token);
-            }
-        }).start();
+        new Thread(() -> getDataset(token)).start();
 
-        getStoreDataset(token);
-        getTimeSheetShours(token);
+        new Thread(() -> getStoreDataset(token)).start();
+
+        new Thread(() -> getHseqData(token)).start();
+
+        if(isTimeSheetEnabled()) {
+            new Thread(() -> getTimeSheetHours(token)).start();
+        }
+
+    }
+
+    private boolean isTimeSheetEnabled(){
+        return true;
+//        User user = DBHandler.getInstance().getUser();
+//        return Constants.isTimeSheetEnabled && user != null && user.isCompleteTimesheets();
     }
 
     private void getDataset(String token) {
@@ -78,13 +89,17 @@ public class RefreshDatasetService extends IntentService {
         Call call = okHttpClient.newCall(request);
         try {
             okhttp3.Response response = call.execute();
-            if (response != null && response.isSuccessful()) {
-                ResponseBody body = response.body();
-                if (body != null) {
-                    DatasetResponse datasetResponse = gson.fromJson(body.string(), DatasetResponse.class);
-                    datasetResponse.toContentValues();
+            int count = 0;
+            while (count < 5) {
+                if (response != null && response.isSuccessful()) {
+                    ResponseBody body = response.body();
+                    if (body != null) {
+                        DatasetResponse datasetResponse = gson.fromJson(body.string(), DatasetResponse.class);
+                        datasetResponse.toContentValues();
+                        return;
+                    }
                 }
-
+                count++;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,41 +125,27 @@ public class RefreshDatasetService extends IntentService {
         Call call = okHttpClient.newCall(request);
         try {
             okhttp3.Response response = call.execute();
-            if (response != null && response.isSuccessful()) {
-                ResponseBody body = response.body();
-                if (body != null) {
-                    StoreDataset datasetResponse = gson.fromJson(body.string(), StoreDataset.class);
-                    datasetResponse.toContentValues();
+            int count = 0;
+            while (count < 5) {
+                if (response != null && response.isSuccessful()) {
+                    ResponseBody body = response.body();
+                    if (body != null) {
+                        StoreDataset datasetResponse = gson.fromJson(body.string(), StoreDataset.class);
+                        datasetResponse.toContentValues();
+                        return;
+                    }
                 }
-
+                count++;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        try {
-            Request requesthseq = new Request.Builder()
-                    .url(BuildConfig.BASE_URL + "apphseq/dataset")
-                    .addHeader("Authorization", "Bearer " + token)
-                    .addHeader("Accept", "application/json")
-                    .build();
-            Call callhseq = okHttpClient.newCall(requesthseq);
-            okhttp3.Response responsehseq = callhseq.execute();
-            if (responsehseq != null && responsehseq.isSuccessful()) {
-                ResponseBody body = responsehseq.body();
-                if (body != null) {
-                    HseqDataset datasetResponse = gson.fromJson(body.string(), HseqDataset.class);// for depotnet dropdown
-                    datasetResponse.toContentValues();
-                    //Log.d("abhikr","depotnet dataset: "+datasetResponse);
-                }
 
-            }
-        } catch (Exception ee) {
-            ee.printStackTrace();
-        }
     }
 
-    private void getTimeSheetShours(String token) {
+    private void getHseqData(String token){
+
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
@@ -154,7 +155,42 @@ public class RefreshDatasetService extends IntentService {
                 .addInterceptor(logging)
                 .build();
         Gson gson = new Gson();
-        String url = BuildConfig.BASE_URL + "app/timesheets/time-type-activities";
+        try {
+            Request requesthseq = new Request.Builder()
+                    .url(BuildConfig.BASE_URL + "apphseq/dataset")
+                    .addHeader("Authorization", "Bearer " + token)
+                    .addHeader("Accept", "application/json")
+                    .build();
+            Call callhseq = okHttpClient.newCall(requesthseq);
+            okhttp3.Response responsehseq = callhseq.execute();
+            int count = 0;
+            while (count < 5) {
+                if (responsehseq != null && responsehseq.isSuccessful()) {
+                    ResponseBody body = responsehseq.body();
+                    if (body != null) {
+                        HseqDataset datasetResponse = gson.fromJson(body.string(), HseqDataset.class);// for depotnet dropdown
+                        datasetResponse.toContentValues();
+                        return;
+                    }
+                }
+                count++;
+            }
+        } catch (Exception ee) {
+            ee.printStackTrace();
+        }
+    }
+
+    private void getTimeSheetHours(String token) {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(150, TimeUnit.SECONDS)
+                .readTimeout(150, TimeUnit.SECONDS)
+                .writeTimeout(150, TimeUnit.SECONDS)
+                .addInterceptor(logging)
+                .build();
+        Gson gson = new Gson();
+        String url = BuildConfig.BASE_URL + "app/timesheets/dataset";
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer " + token)

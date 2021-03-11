@@ -33,7 +33,7 @@
             android:layout_marginEnd="@dimen/_4sdp"
             android:background="@drawable/img_bg_circle"
             app:srcCompat="@drawable/ic_close"
-            android:tint="@color/red"/>
+            app:tint="@color/red"/>
 
         <TextView
             android:id="@+id/txt_title"

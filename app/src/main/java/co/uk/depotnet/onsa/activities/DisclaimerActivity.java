@@ -199,6 +199,8 @@ public class DisclaimerActivity extends AppCompatActivity
                 }
                 Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
                 Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
+                Constants.isTimeSheetEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_TIMESHEET);
+                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
                 showButtons();
             }
 
@@ -207,6 +209,8 @@ public class DisclaimerActivity extends AppCompatActivity
                 apiCounter++;
                 Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
                 Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
+                Constants.isTimeSheetEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_TIMESHEET);
+                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
                 showButtons();
             }
         });

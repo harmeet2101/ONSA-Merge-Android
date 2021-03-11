@@ -34,7 +34,7 @@
             android:layout_gravity="right|end"
             android:layout_marginEnd="@dimen/_12sdp"
             android:layout_marginRight="@dimen/_12sdp"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_close" />
 
@@ -133,7 +133,7 @@
                 android:layout_centerVertical="true"
                 app:srcCompat="@drawable/ic_offline_queue_01"
                 android:background="@drawable/img_bg_cirlcle_orange"
-                android:tint="@color/white"/>
+                app:tint="@color/white"/>
 
 
             <ImageView
@@ -143,7 +143,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:tint="@color/txt_color_light_grey"
+                app:tint="@color/txt_color_light_grey"
                 app:srcCompat="@drawable/ic_chevron_right" />
 
             <TextView
@@ -180,7 +180,7 @@
                 android:layout_centerVertical="true"
                 app:srcCompat="@drawable/ic_offline_queue_01"
                 android:background="@drawable/img_bg_cirlcle_orange"
-                android:tint="@color/white"/>
+                app:tint="@color/white"/>
 
 
             <ImageView

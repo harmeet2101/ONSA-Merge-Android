@@ -44,7 +44,7 @@ import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.utils.JsonReader;
 
-public class FormActivity extends AppCompatActivity implements
+public class FormActivity extends ThemeBaseActivity implements
         View.OnClickListener, FromActivityListener {
 
 
@@ -222,6 +222,7 @@ public class FormActivity extends AppCompatActivity implements
         if (briefingsDocument != null && briefingsDocument.size() > 0) {
             addBriefingsread(form);
         }
+
         try {
             if (!TextUtils.isEmpty(form.getThemeColor())) {
                 int themeColor = Color.parseColor(form.getThemeColor());

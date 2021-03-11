@@ -69,7 +69,6 @@ public class FragmentStore extends Fragment implements
     public void onResume() {
         super.onResume();
         listener.setTitle("Store");
-        listener.onFragmentHomeVisible(true);
     }
 
     @Override

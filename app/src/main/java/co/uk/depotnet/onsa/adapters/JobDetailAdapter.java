@@ -41,9 +41,7 @@ public class JobDetailAdapter extends RecyclerView.Adapter<JobDetailAdapter.View
             viewHolder.llParentItem.setBackgroundResource(R.color.item_bg_light_gray);
         }
 
-
         JobDetailItem jobDetailItem=arrayList.get(i);
-
         viewHolder.txtTitle.setText(jobDetailItem.getTitle());
 
         if(!TextUtils.isEmpty(jobDetailItem.getTitle())&& jobDetailItem.getTitle().equalsIgnoreCase("Job Order Notes")){

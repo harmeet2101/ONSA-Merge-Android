@@ -52,7 +52,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         holder.job = jobs.get(position);
 
-
         holder.imgHotJob.setVisibility(holder.job.isHotJob() ? View.VISIBLE : View.GONE);
 
         holder.txtJobEstNumber.setText(String.format("JOB ID : %s", holder.job.getestimateNumber()));
@@ -71,6 +70,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             holder.txtJobPriority.setText("Priority: "+holder.job.getpriority());
         }
 
+        if(holder.job.getSurveyTypeId() == -1){
+            holder.llBtnSurvey.setVisibility(View.GONE);
+        }else{
+            holder.llBtnSurvey.setVisibility(View.VISIBLE);
+        }
 
 
         holder.txtWorkInfo.setText(String.format("Work Info: %s", holder.job.getworkTitle()));

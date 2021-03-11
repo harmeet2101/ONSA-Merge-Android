@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
+
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+        android:id="@+id/calendarView"
+        android:layout_margin="@dimen/_10sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingRight="@dimen/_10sdp"
+        android:paddingEnd="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:gravity="right|end">
+
+        <TextView
+            android:id="@+id/txt_btn_positive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_4sdp"
+            android:textSize="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:text="@string/done"
+            android:textColor="@color/ColorTimeSheet"/>
+
+        <TextView
+            android:id="@+id/txt_btn_negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_4sdp"
+            android:textSize="@dimen/_10sdp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:text="@string/cancle"
+            android:textColor="@color/ColorTimeSheet"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -25,13 +25,23 @@
           "type": "yes_no",
           "uploadId": "twoTrainedPeopleOnSite",
           "title": "2 trained people onsite, operator acting as GSP understands limit of role (SFY/HSH/D039)?",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "twoTrainedPeopleOnSiteComments",
-          "title": "Comments",
-          "optional": true
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "twoTrainedPeopleOnSiteComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "twoTrainedPeopleOnSiteComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
         }
       ]
     },
@@ -47,19 +57,34 @@
           "optional": false,
           "enables": [
             {
+              "type": "et_long_text",
+              "uploadId": "trafficSurveyCompletedComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
               "type": "photo",
-              "title": "Traffic survey completed",
+              "title": "Traffic Survey",
               "photoSize": 20,
               "photoRequired": 1,
               "photoId": "124"
             }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "trafficSurveyCompletedComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Traffic Survey",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "124"
+            }
           ]
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "trafficSurveyCompletedComments",
-          "title": "Comments",
-          "optional": true
         }
       ]
     },
@@ -71,7 +96,7 @@
         {
           "type": "yes_no",
           "uploadId": "hospitalsSchoolsInVicinity",
-          "title": "Are there hospitals, schools, clinics, shops, etc. in the vicinity of the works.",
+          "title": "Are there hospitals, schools, clinics, shops, etc. in the vicinity of the works. Additional precautions required?",
           "optional": false,
           "enables": [
             {
@@ -79,35 +104,6 @@
               "uploadId": "hospitalsSchoolsInVicinityComments",
               "title": "Please Specify",
               "optional": true
-            },
-            {
-              "type": "yes_no",
-              "uploadId": "additionalPrecautionsRequired",
-              "title": "Additional precautions required?",
-              "optional": false,
-              "enables": [
-                {
-                  "type": "et_long_text",
-                  "uploadId": "additionalPrecautionsRequiredComments",
-                  "title": "Please Specify",
-                  "optional": true
-                },
-                {
-                  "type": "photo",
-                  "title": "Additional precautions required?",
-                  "photoSize": 20,
-                  "photoRequired": 1,
-                  "photoId": "125"
-                }
-              ],
-              "falseEnables": [
-                {
-                  "type": "et_long_text",
-                  "uploadId": "additionalPrecautionsRequiredComments",
-                  "title": "Comments if applicable",
-                  "optional": true
-                }
-              ]
             }
           ],
           "falseEnables": [
@@ -130,13 +126,23 @@
           "type": "yes_no",
           "uploadId": "protectionForKnuckle",
           "title": "Protection for knuckle (specifically PE8) considered in RWG set up.",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "protectionForKnuckleComments",
-          "title": "Comments",
-          "optional": true
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "protectionForKnuckleComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "protectionForKnuckleComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
         }
       ]
     },
@@ -152,19 +158,34 @@
           "optional": false,
           "enables": [
             {
+              "type": "et_long_text",
+              "uploadId": "pedestriansFootpathsClosedComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
               "type": "photo",
-              "title": "Pedestrians footpaths closed when working across footpath",
+              "title": "Footpath",
               "photoSize": 20,
               "photoRequired": 1,
               "photoId": "128"
             }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "pedestriansFootpathsClosedComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Footpath",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "128"
+            }
           ]
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "pedestriansFootpathsClosedComments",
-          "title": "Comments",
-          "optional": true
         }
       ]
     },
@@ -174,29 +195,40 @@
       "upload": false,
       "items": [
         {
-          "type": "txt_bold_head",
-          "title": "Ground conditions checked for safe operation"
-        },
-        {
           "type": "yes_no",
-          "uploadId": "inclinometerConfirmsSlope",
-          "title": "Inclinometer confirms slope hoist within operating envelope",
+          "uploadId": "groundConditionsChecked",
+          "title": "Ground conditions checked for safe operation -",
           "optional": false,
           "enables": [
             {
+              "type": "et_long_text",
+              "uploadId": "groundConditionsCheckedComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
               "type": "photo",
-              "title": "Inclinometer confirms slope hoist ",
+              "title": "Ground Conditions",
               "photoSize": 20,
               "photoRequired": 1,
-              "photoId": "129"
+              "photoId": "151"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "groundConditionsCheckedComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Ground Conditions",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "151"
             }
           ]
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "inclinometerConfirmsSlopeComments",
-          "title": "Comments",
-          "optional": true
         }
       ]
     },
@@ -206,29 +238,40 @@
       "upload": false,
       "items": [
         {
-          "type": "txt_bold_head",
-          "title": "Ground conditions checked for safe operation"
-        },
-        {
           "type": "yes_no",
-          "uploadId": "hoistLevelAcrossWidth",
-          "title": "Hoist level across width i.e. doesn’t have one side up kerb.",
+          "uploadId": "inclinometerConfirmsSlope",
+          "title": "Inclinometer confirms slope hoist within operating envelope",
           "optional": false,
           "enables": [
             {
+              "type": "et_long_text",
+              "uploadId": "inclinometerConfirmsSlopeComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
               "type": "photo",
-              "title": "Hoist level across width",
+              "title": "Inclinometer",
               "photoSize": 20,
               "photoRequired": 1,
-              "photoId": "130"
+              "photoId": "129"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "inclinometerConfirmsSlopeComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Inclinometer",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "129"
             }
           ]
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "hoistLevelAcrossWidthComments",
-          "title": "Comments",
-          "optional": true
         }
       ]
     },
@@ -238,9 +281,48 @@
       "upload": false,
       "items": [
         {
-          "type": "txt_bold_head",
-          "title": "Ground conditions checked for safe operation"
-        },
+          "type": "yes_no",
+          "uploadId": "hoistLevelAcrossWidth",
+          "title": "Hoist level across width i.e. doesn’t have one side up kerb.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hoistLevelAcrossWidthComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Hoist level",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "130"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hoistLevelAcrossWidthComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Hoist level",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "130"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 9,
+      "upload": false,
+      "items": [
         {
           "type": "yes_no",
           "uploadId": "stabilityConfirmOperatingSurface",
@@ -248,25 +330,40 @@
           "optional": false,
           "enables": [
             {
+              "type": "et_long_text",
+              "uploadId": "stabilityConfirmOperatingSurfaceComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
               "type": "photo",
-              "title": "Stability confirm operating surface",
+              "title": "Stability confirm operating surface Road/Pavement/private drive/un-metalled track/soft ground.",
               "photoSize": 20,
               "photoRequired": 1,
               "photoId": "131"
             }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "stabilityConfirmOperatingSurfaceComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Stability confirm operating surface Road/Pavement/private drive/un-metalled track/soft ground.",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "131"
+            }
           ]
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "stabilityConfirmOperatingSurfaceComments",
-          "title": "Comments",
-          "optional": true
         }
       ]
     },
     {
       "title": "Hoist Only Risk Assessment",
-      "index": 9,
+      "index": 10,
       "upload": false,
       "items": [
         {
@@ -287,7 +384,7 @@
     },
     {
       "title": "Hoist Only Risk Assessment",
-      "index": 10,
+      "index": 11,
       "upload": false,
       "items": [
         {
@@ -297,39 +394,35 @@
           "optional": false,
           "enables": [
             {
+              "type": "et_long_text",
+              "uploadId": "serviceCoversAndUndergroundStructuresComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
               "type": "photo",
-              "title": "Service covers and underground structures",
+              "title": "Service Covers",
               "photoSize": 20,
               "photoRequired": 1,
               "photoId": "133"
             }
-          ]
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "serviceCoversAndUndergroundStructuresComments",
-          "title": "Comments",
-          "optional": true
-        }
-      ]
-    },
-    {
-      "title": "Hoist Only Risk Assessment",
-      "index": 11,
-      "upload": false,
-      "items": [
-        {
-          "type": "yes_no_na",
-          "uploadId": "onPrivateDrivesServiceCovers",
-          "title": "On private drives service covers checked for weigh limit before driving over them. \n",
-          "optional": false,
-          "isNoNotVisible": true
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "onPrivateDrivesServiceCoversComments",
-          "title": "Comments",
-          "optional": true
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "serviceCoversAndUndergroundStructuresComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Service Covers",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "133"
+            }
+          ],
+          "naEnables": []
         }
       ]
     },
@@ -339,16 +432,20 @@
       "upload": false,
       "items": [
         {
-          "type": "yes_no",
-          "uploadId": "windSpeedChecked",
-          "title": "Wind speed checked to confirm within operating limits – anemometer (if available) used at ground level and observation for work position wind speed carried out from ground (Beaufort scale) record wind speed and observed Beaufort level. ",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "windSpeedCheckedComments",
-          "title": "Comments",
-          "optional": true
+          "type": "yes_no_na",
+          "uploadId": "onPrivateDrivesServiceCovers",
+          "title": "On private drives service covers checked for weigh limit before driving over them.",
+          "optional": false,
+          "isNoNotVisible": true,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "onPrivateDrivesServiceCoversComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "naEnables": []
         }
       ]
     },
@@ -358,32 +455,26 @@
       "upload": false,
       "items": [
         {
-          "type": "txt_bold_head",
-          "title": "Is there Overhead power in vicinity? "
-        },
-        {
-          "type": "yes_no_na",
-          "uploadId": "hvWithin25m",
-          "title": "HV within 25m – exclusion zone marked appropriate for power level",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "hvWithin25mComments",
-          "title": "Comments",
-          "optional": true
-        },
-        {
-          "type": "yes_no_na",
-          "uploadId": "lvWithin25m",
-          "title": "LV within 25m – refer to overhead power glovebox guide",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "lvWithin25mComments",
-          "title": "Comments",
-          "optional": true
+          "type": "yes_no",
+          "uploadId": "windSpeedChecked",
+          "title": "Wind speed checked to confirm within operating limits – anemometer (if available) used at ground level and observation for work position wind speed carried out from ground (Beaufort scale) record wind speed and observed Beaufort level. ",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "windSpeedCheckedComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "windSpeedCheckedComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
         }
       ]
     },
@@ -394,27 +485,103 @@
       "items": [
         {
           "type": "yes_no_na",
-          "uploadId": "methodToAccessPolesAgreed",
-          "title": "Method to access pole agreed – route the bucket will follow to access the WP discussed and agreed.",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "methodToAccessPolesAgreedComments",
-          "title": "Comments",
-          "optional": true
+          "uploadId": "isThereOverheadPowerInVicinity",
+          "title": "Is there Overhead power in vicinity?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThereOverheadPowerInVicinityComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThereOverheadPowerInVicinityComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "naEnables": [
+          ]
         },
         {
           "type": "yes_no_na",
-          "uploadId": "overheadObstructionsOnRoute",
-          "title": "Overhead obstructions on route and at WP considered – precautions understood by both operators.\n",
-          "optional": false
+          "uploadId": "hvWithin25m",
+          "title": "HV within 25m – exclusion zone marked appropriate for power level",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hvWithin25mComments",
+              "title": "Comments",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "hv_within_25",
+              "photoSize": 25,
+              "photoRequired": 1,
+              "photoId": "136"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "hvWithin25mComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "hv_within_25",
+              "photoSize": 25,
+              "photoRequired": 0,
+              "photoId": "136"
+            }
+          ],
+          "naEnables": [
+          ]
         },
         {
-          "type": "et_long_text",
-          "uploadId": "overheadObstructionsOnRouteComments",
-          "title": "Comments if applicable",
-          "optional": true
+          "type": "yes_no_na",
+          "uploadId": "lvWithin25m",
+          "title": "LV within 25m – refer to overhead power glovebox guide",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "lvWithin25mComments",
+              "title": "Comments",
+              "optional": false
+            },
+            {
+              "type": "photo",
+              "title": "lv_within_25",
+              "photoSize": 25,
+              "photoRequired": 1,
+              "photoId": "137"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "lvWithin25mComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "lv_within_25",
+              "photoSize": 25,
+              "photoRequired": 0,
+              "photoId": "137"
+            }
+          ],
+          "naEnables": [
+          ]
         }
       ]
     },
@@ -425,27 +592,27 @@
       "items": [
         {
           "type": "yes_no_na",
-          "uploadId": "onAerialCableRoutes",
-          "title": "On Aerial Cable routes all works will be on from outside the angle of the Pull On Pole.",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "onAerialCableRoutesComments",
-          "title": "Comments",
-          "optional": true
-        },
-        {
-          "type": "yes_no",
-          "uploadId": "poleTestCarriedOut",
-          "title": "Pole test carried out?",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "poleTestCarriedOutComments",
-          "title": "Comments if applicable",
-          "optional": true
+          "uploadId": "methodToAccessPolesAgreed",
+          "title": "Method to access pole agreed – route the bucket will follow to access the WP discussed and agreed.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "methodToAccessPolesAgreedComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "methodToAccessPolesAgreedComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "naEnables": [
+          ]
         }
       ]
     },
@@ -456,36 +623,27 @@
       "items": [
         {
           "type": "yes_no_na",
-          "uploadId": "forWorkOnADPole",
-          "title": "For work on a D pole are the works within the limits allowed for the category of D pole?",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "forWorkOnADPoleComments",
-          "title": "Comments",
-          "optional": true
-        },
-        {
-          "type": "yes_no_na",
-          "uploadId": "isThePoleLeaning",
-          "title": "Is the pole leaning, overloaded, congested, missing stay, POP?",
+          "uploadId": "overheadObstructionsOnRoute",
+          "title": "Overhead obstructions on route and at WP considered – precautions understood by both operators.",
           "optional": false,
           "enables": [
             {
-              "type": "photo",
-              "title": "Is the pole leaning, overloaded, congested, missing stay",
-              "photoSize": 20,
-              "photoRequired": 1,
-              "photoId": "142"
+              "type": "et_long_text",
+              "uploadId": "overheadObstructionsOnRouteComments",
+              "title": "Comments if applicable",
+              "optional": true
             }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "overheadObstructionsOnRouteComments",
+              "title": "Comments if applicable",
+              "optional": true
+            }
+          ],
+          "naEnables": [
           ]
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "isThePoleLeaningComments",
-          "title": "Comments",
-          "optional": true
         }
       ]
     },
@@ -496,15 +654,27 @@
       "items": [
         {
           "type": "yes_no_na",
-          "uploadId": "willWorksAdverselyAffectOverheadWires",
-          "title": "Will the works adversely affect overhead wires crossing a road? ",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "willWorksAdverselyAffectOverheadWiresComments",
-          "title": "Comments",
-          "optional": true
+          "uploadId": "onAerialCableRoutes",
+          "title": "On Aerial Cable routes all works will be on from outside the angle of the POP. ",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "onAerialCableRoutesComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "onAerialCableRoutesComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "naEnables": [
+          ]
         }
       ]
     },
@@ -515,15 +685,25 @@
       "items": [
         {
           "type": "yes_no",
-          "uploadId": "willWorksRequireAccessingJUP",
-          "title": "Will the works require accessing a Joint User Pole and if so, is the Joint User Pole Risk Assessment pad completed? ",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "willWorksRequireAccessingJUPComments",
-          "title": "Comments",
-          "optional": true
+          "uploadId": "poleTestCarriedOut",
+          "title": "Pole test carried out?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleTestCarriedOutComments",
+              "title": "Comments if applicable",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "poleTestCarriedOutComments",
+              "title": "Comments if applicable",
+              "optional": true
+            }
+          ]
         }
       ]
     },
@@ -533,24 +713,28 @@
       "upload": false,
       "items": [
         {
-          "type": "yes_no",
-          "uploadId": "areThereAnyPowerConflicts",
-          "title": "Are there any power conflicts within the spans connecting the pole?",
+          "type": "yes_no_na",
+          "uploadId": "forWorkOnADPole",
+          "title": "For work on a D pole are the works within the limits allowed for the D pole? (EPT/OHP/C031)",
           "optional": false,
           "enables": [
             {
-              "type": "yes_no",
-              "uploadId": "canConflictsBeResolved",
-              "title": "Can conflict be resolved during the visit and has an A1024 raised?",
-              "optional": false
+              "type": "et_long_text",
+              "uploadId": "forWorkOnADPoleComments",
+              "title": "Comments",
+              "optional": true
             }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "forWorkOnADPoleComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "naEnables": [
           ]
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "areThereAnyPowerConflictsComments",
-          "title": "Comments",
-          "optional": true
         }
       ]
     },
@@ -560,28 +744,42 @@
       "upload": false,
       "items": [
         {
-          "type": "yes_no",
-          "uploadId": "verbalAndVisualCommunication",
-          "title": "Verbal and visual communication can be maintained at all times?",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "verbalAndVisualCommunicationComments",
-          "title": "Comments",
-          "optional": true
-        },
-        {
-          "type": "yes_no",
-          "uploadId": "operatorsUnderstandTheWork",
-          "title": "Operators understand the work to be performed. Lifting plan raising/lift wires and equipment discussed and understood by everyone involved?",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "operatorsUnderstandTheWorkComments",
-          "title": "Comments",
-          "optional": true
+          "type": "yes_no_na",
+          "uploadId": "isThePoleLeaning",
+          "title": "Is the pole leaning, overloaded, congested, missing stay, Pull On Pole?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThePoleLeaningComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Leaning/ Overloaded/ Congested/ Missing stay",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "142"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThePoleLeaningComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Leaning/ Overloaded/ Congested/ Missing stay",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "142"
+            }
+          ],
+          "naEnables": [
+          ]
         }
       ]
     },
@@ -591,28 +789,42 @@
       "upload": false,
       "items": [
         {
-          "type": "yes_no",
-          "uploadId": "equipmentCheckedBeforeUse",
-          "title": "Equipment (including PE) checked before use, LOLER tests certificate/labels, general condition.?",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "equipmentCheckedBeforeUseComments",
-          "title": "Comments",
-          "optional": true
-        },
-        {
-          "type": "yes_no",
-          "uploadId": "areYouFollowingHygeine",
-          "title": "Are you following hygiene & respiratory procedures required onsite?",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "areYouFollowingHygeineComments",
-          "title": "Comments",
-          "optional": true
+          "type": "yes_no_na",
+          "uploadId": "willWorksAdverselyAffectOverheadWires",
+          "title": "Will the works adversely affect overhead wires crossing a road? ",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "willWorksAdverselyAffectOverheadWiresComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Overhead wires",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "143"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "willWorksAdverselyAffectOverheadWiresComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Overhead wires",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "143"
+            }
+          ],
+          "naEnables": [
+          ]
         }
       ]
     },
@@ -623,27 +835,25 @@
       "items": [
         {
           "type": "yes_no",
-          "uploadId": "appropriatePPEOnSite",
-          "title": "Appropriate PPE on site? ",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "appropriatePPEOnSiteComments",
-          "title": "Comments",
-          "optional": true
-        },
-        {
-          "type": "yes_no",
-          "uploadId": "riskAssessmentAndMethodStatement",
-          "title": "Risk assessment and method statement briefed to all gang members and fully understood?",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "riskAssessmentAndMethodStatementComments",
-          "title": "Comments",
-          "optional": true
+          "uploadId": "willWorksRequireAccessingJUP",
+          "title": "Will the works require accessing a Joint User Pole and if so, is the Joint User Pole Risk Aassessment pad completed.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "willWorksRequireAccessingJUPComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "willWorksRequireAccessingJUPComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
         }
       ]
     },
@@ -654,15 +864,25 @@
       "items": [
         {
           "type": "yes_no",
-          "uploadId": "isThereAMeansForWashing",
-          "title": "Is there a means for washing onsite?",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "isThereAMeansForWashingComments",
-          "title": "Comments",
-          "optional": true
+          "uploadId": "areThereAnyPowerConflicts",
+          "title": "Are there any power conflicts within the spans connecting the pole?\n(Can conflict be resolved during the visit and has an A1024 raised?)",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "areThereAnyPowerConflictsComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "areThereAnyPowerConflictsComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
         }
       ]
     },
@@ -673,40 +893,346 @@
       "items": [
         {
           "type": "yes_no",
-          "uploadId": "anyTreeCuttingRequired",
-          "title": "Any tree cutting required? ",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "anyTreeCuttingRequiredComments",
-          "title": "Comments",
-          "optional": true
-        },
-        {
-          "type": "yes_no",
-          "uploadId": "anyOtherEnvironmentalIssues",
-          "title": "Are there any other environmental issues?",
-          "optional": false
-        },
-        {
-          "type": "et_long_text",
-          "uploadId": "anyOtherEnvironmentalIssuesComments",
-          "title": "Comments",
-          "optional": true
+          "uploadId": "verbalAndVisualCommunication",
+          "title": "Verbal and visual communication can be maintained at all times?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "verbalAndVisualCommunicationComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "verbalAndVisualCommunicationComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
         }
       ]
     },
     {
       "title": "Hoist Only Risk Assessment",
       "index": 25,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "operatorsUnderstandTheWork",
+          "title": "Operators understand the work to be performed. Lifting plan raising/lift wires and equipment discussed and understood by everyone involved?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "operatorsUnderstandTheWorkComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "operatorsUnderstandTheWorkComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 26,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "equipmentCheckedBeforeUse",
+          "title": "Equipment (including Platform Elevating) checked before use, LOLER tests certificate/labels, general condition.",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "equipmentCheckedBeforeUseComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "equipmentCheckedBeforeUseComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 27,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "areYouFollowingHygeine",
+          "title": "Are you following hygiene & respiratory procedures required onsite?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "areYouFollowingHygeineComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "areYouFollowingHygeineComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 28,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "appropriatePPEOnSite",
+          "title": "Appropriate PPE on site? ",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "appropriatePPEOnSiteComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "appropriatePPEOnSiteComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 29,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isThereAMeansForWashing",
+          "title": "Is there a means of cleaning hands onsite?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThereAMeansForWashingComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "isThereAMeansForWashingComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 30,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "anyTreeCuttingRequired",
+          "title": "Any tree cutting required? ",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "anyTreeCuttingRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "anyTreeCuttingRequiredComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 31,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "anyOtherEnvironmentalIssues",
+          "title": "Are there any other environmental issues?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "anyOtherEnvironmentalIssuesComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "anyOtherEnvironmentalIssuesComments",
+              "title": "Comments",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 32,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "worksStartedEndWithinDaylight",
+          "title": "Works started / end within daylight hours (WITHOD) required? ",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "worksStartedEndWithinDaylightComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Tree works started/end within daylight",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "194"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "worksStartedEndWithinDaylightComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Tree works started/end within daylight",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "194"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 33,
+      "upload": false,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "HaveTheConclusionsOfTheRiskAssessment",
+          "title": "Have the conclusions of this Risk assessment and the methods of working required by it been  briefed to all gang members and fully understood?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "HaveTheConclusionsOfTheRiskAssessmentComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Methods of working Required",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "195"
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "HaveTheConclusionsOfTheRiskAssessmentComments",
+              "title": "Comments",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Methods of working Required",
+              "photoSize": 20,
+              "photoRequired": 1,
+              "photoId": "195"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Hoist Only Risk Assessment",
+      "index": 34,
       "upload": true,
       "url": "app/jobs/{jobId}/hoist-risk-assessment",
       "photoUrl": "app/jobs/{jobId}/photos",
       "items": [
         {
           "type": "txt_bold_head",
-          "title": "Sign below to acknowledge that you have fully read, understood and assume all responsibility for all the conditions of this Hoist Risk Assessment (HRA)."
+          "title": " I fully acknowledge that I have read, understand, and assume full responsibility for all the conditions of this SURVEY."
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "name",
+          "title": "Name",
+          "optional": true
+        },
+        {
+          "type": "calender",
+          "uploadId": "submittedDateTime",
+          "title": "Date",
+          "hint": "Select Date",
+          "optional": true
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "cssid",
+          "title": "CSSID:",
+          "optional": false
         },
         {
           "type": "signature",
@@ -715,25 +1241,6 @@
           "title": "Signature:",
           "photoId": "26",
           "optional": false
-        },
-        {
-          "type": "et_short_text",
-          "uploadId": "name",
-          "title": "Name:",
-          "optional": true
-        },
-        {
-          "type": "et_short_text",
-          "uploadId": "cssid",
-          "title": "CSS Id:",
-          "optional": false
-        },
-        {
-          "type": "calender",
-          "uploadId": "submittedDateTime",
-          "title": "Date",
-          "hint": "Date",
-          "optional": true
         }
       ]
     }

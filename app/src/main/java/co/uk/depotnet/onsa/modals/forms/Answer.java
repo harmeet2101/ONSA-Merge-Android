@@ -20,6 +20,7 @@ public class Answer implements Parcelable {
     private int isPhoto;
     private int isMultiList;
     private int repeatCounter;
+    private int arrayRepeatCounter;
     private String uploadID;
     private String answer;//to upload value ( in server post param too
     private String displayAnswer; // to show in field of form
@@ -46,6 +47,7 @@ public class Answer implements Parcelable {
             isPhoto = cursor.getInt(cursor.getColumnIndex(DBTable.isPhoto));
             isMultiList = cursor.getInt(cursor.getColumnIndex(DBTable.isMultiList));
             repeatCounter = cursor.getInt(cursor.getColumnIndex(DBTable.repeatCounter));
+            arrayRepeatCounter = cursor.getInt(cursor.getColumnIndex(DBTable.arrayRepeatCounter));
             repeatID = cursor.getString(cursor.getColumnIndex(DBTable.repeatID));
             shouldUpload = cursor.getInt(cursor.getColumnIndex(DBTable.shouldUpload)) == 1;
             estimatedQuantity = cursor.getInt(cursor.getColumnIndex(DBTable.estimatedQuantity));
@@ -76,6 +78,15 @@ public class Answer implements Parcelable {
         this.repeatCounter = repeatCounter;
     }
 
+    public Answer(long submissionID, String uploadID , String repeatID , int repeatCounter , String answer , String displayAnswer) {
+        this.submissionID = submissionID;
+        this.uploadID = uploadID;
+        this.repeatID = repeatID;
+        this.repeatCounter = repeatCounter;
+        this.answer  = answer;
+        this.displayAnswer = displayAnswer;
+    }
+
     public Answer(long submissionID, String uploadID,
                   int isPhoto, int isMultiList) {
         this.submissionID = submissionID;
@@ -90,6 +101,7 @@ public class Answer implements Parcelable {
         isPhoto = in.readInt();
         isMultiList = in.readInt();
         repeatCounter = in.readInt();
+        arrayRepeatCounter = in.readInt();
         uploadID = in.readString();
         answer = in.readString();
         displayAnswer = in.readString();
@@ -97,11 +109,38 @@ public class Answer implements Parcelable {
         shouldUpload = in.readByte() != 0;
         estimatedQuantity = in.readInt();
         signatureUrl = in.readString();
-        latitude=in.readDouble();
-        longitude=in.readDouble();
-        takenDateTime=in.readString();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+        takenDateTime = in.readString();
         comments = in.createTypedArrayList(PhotoComments.CREATOR);
         tags = in.createTypedArrayList(PhotoTags.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeLong(submissionID);
+        dest.writeInt(isPhoto);
+        dest.writeInt(isMultiList);
+        dest.writeInt(repeatCounter);
+        dest.writeInt(arrayRepeatCounter);
+        dest.writeString(uploadID);
+        dest.writeString(answer);
+        dest.writeString(displayAnswer);
+        dest.writeString(repeatID);
+        dest.writeByte((byte) (shouldUpload ? 1 : 0));
+        dest.writeInt(estimatedQuantity);
+        dest.writeString(signatureUrl);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
+        dest.writeString(takenDateTime);
+        dest.writeTypedList(comments);
+        dest.writeTypedList(tags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<Answer> CREATOR = new Creator<Answer>() {
@@ -123,6 +162,8 @@ public class Answer implements Parcelable {
     public void setEstimatedQuantity(int estimatedQuantity) {
         this.estimatedQuantity = estimatedQuantity;
     }
+
+
 
     public boolean shouldUpload() {
         return shouldUpload;
@@ -175,9 +216,6 @@ public class Answer implements Parcelable {
 
     public int getRepeatCount() {
         return repeatCounter;
-
-
-
     }
 
     public String getTakenDateTime() {
@@ -216,6 +254,14 @@ public class Answer implements Parcelable {
             return answer;
         else
             return "";
+    }
+
+    public int getArrayRepeatCounter() {
+        return arrayRepeatCounter;
+    }
+
+    public void setArrayRepeatCounter(int arrayRepeatCounter) {
+        this.arrayRepeatCounter = arrayRepeatCounter;
     }
 
     public void setLatitude(Double latitude){
@@ -278,6 +324,7 @@ public class Answer implements Parcelable {
         cv.put(DBTable.isPhoto, isPhoto);
         cv.put(DBTable.isMultiList, isMultiList);
         cv.put(DBTable.repeatCounter, repeatCounter);
+        cv.put(DBTable.arrayRepeatCounter, arrayRepeatCounter);
         cv.put(DBTable.repeatID, repeatID);
         cv.put(DBTable.shouldUpload, shouldUpload ? 1 : 0);
         cv.put(DBTable.estimatedQuantity, estimatedQuantity);
@@ -289,32 +336,6 @@ public class Answer implements Parcelable {
         return cv;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(id);
-        parcel.writeLong(submissionID);
-        parcel.writeInt(isPhoto);
-        parcel.writeInt(isMultiList);
-        parcel.writeInt(repeatCounter);
-        parcel.writeString(uploadID);
-        parcel.writeString(answer);
-        parcel.writeString(displayAnswer);
-        parcel.writeString(repeatID);
-        parcel.writeByte((byte) (shouldUpload ? 1 : 0));
-        parcel.writeInt(estimatedQuantity);
-        parcel.writeString(signatureUrl);
-        parcel.writeDouble(latitude);
-        parcel.writeDouble(longitude);
-        parcel.writeString(takenDateTime);
-        parcel.writeTypedList(comments);
-        parcel.writeTypedList(tags);
-    }
-
     public static class DBTable {
         public static final String NAME = "Answers";
         public static final String id = "id";
@@ -322,6 +343,7 @@ public class Answer implements Parcelable {
         public static final String isPhoto = "isPhoto";
         public static final String isMultiList = "isMultiList";
         public static final String repeatCounter = "repeatCounter";
+        public static final String arrayRepeatCounter = "arrayRepeatCounter";
         public static final String uploadID = "uploadID";
         public static final String answer = "answer";
         public static final String displayAnswer = "displayAnswer";

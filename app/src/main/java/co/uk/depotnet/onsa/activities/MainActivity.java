@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity
                 .setNamespace("OptinonsDownloader")
                 .setNotificationManager(new DefaultFetchNotificationManager(this))
                 .build();
-//        fetch = Fetch.Impl.getInstance(fetchConfiguration);
         fetch = Fetch.Impl.getDefaultInstance();
 
 
@@ -72,18 +71,6 @@ public class MainActivity extends AppCompatActivity
         networkStateReceiver.addListener(this);
 
         progressBar = findViewById(R.id.progress_bar);
-//        btnImageSearch = findViewById(R.id.btn_img_search);
-//
-//        btnImageSearch.setOnClickListener(this);
-//        btnImageCancel = findViewById(R.id.btn_img_cancel);
-//        btnImageCancel.setOnClickListener(this);
-//        btnImageCancel.setVisibility(View.GONE);
-//        btnSearchCancel = findViewById(R.id.btn_cancel_search);
-//        btnSearchCancel.setOnClickListener(this);
-//        btnSearchCancel.setVisibility(View.GONE);
-
-
-
 
         bottomBarHandler = new HomeBottomBarHandler(this, findViewById(R.id.bottom_bar), this);
         Fragment fragment;
@@ -189,31 +176,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
-
-    @Override
     public void setTitle(String title) {
-
-    }
-
-    @Override
-    public void onFragmentHomeVisible(boolean isVisible) {
-//        if (isVisible) {
-//            btnImageCancel.setVisibility(View.GONE);
-//            btnImageSearch.setVisibility(View.VISIBLE);
-//
-//            if (isSearchEnable) {
-//                btnSearchCancel.setVisibility(View.VISIBLE);
-//            } else {
-//                btnSearchCancel.setVisibility(View.GONE);
-//            }
-//        } else {
-//            btnImageCancel.setVisibility(View.VISIBLE);
-//            btnImageSearch.setVisibility(View.GONE);
-//        }
     }
 
 
@@ -236,16 +199,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBookOff() {
-        Submission submission = new Submission("my_work_book_off.json","Timesheet Book Off", "");
-        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
-        submission.setId(submissionID);
-        Intent intent = new Intent(this, FormActivity.class);
-        intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
-        startActivityForResult(intent , 1000);
-    }
-
-    @Override
     public void openKitbagFolder(int parentId) {
         FragmentKitBag fragmentKitBag = FragmentKitBag.newInstance(parentId);
         addFragment(fragmentKitBag, false);
@@ -253,7 +206,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onOnsaStoreClick() {
-//        btnSearchCancel.setVisibility(View.GONE);
         Utils.store_call = false;
         FragmentStore fragmentStore = FragmentStore.newInstance();
         addFragment(fragmentStore, false);
@@ -261,26 +213,18 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onOfflineQueueClick() {
-//        btnSearchCancel.setVisibility(View.GONE);
         FragmentQueue fragmentQueue = FragmentQueue.newInstance(false);
         addFragment(fragmentQueue, true);
     }
 
 
-    private void openSearchDialog() {
-//        PopupMenu popupMenu = new PopupMenu(this, null, this);
-//        popupMenu.show(btnImageSearch);
-    }
-
     @Override
     public void onSearch(String keyword) {
         FragmentManager fm = getSupportFragmentManager();
 
-
         FragmentHome fragmentHome = (FragmentHome) (fm.findFragmentByTag(FragmentHome.class.getName()));
         if (fragmentHome != null && fragmentHome.isVisible()) {
             fragmentHome.search(keyword);
-//            btnSearchCancel.setVisibility(View.VISIBLE);
         }
 
     }
@@ -292,7 +236,6 @@ public class MainActivity extends AppCompatActivity
                 closeSearch();
                 break;
             case R.id.btn_img_search:
-                openSearchDialog();
                 break;
             case R.id.btn_img_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
@@ -340,7 +283,6 @@ public class MainActivity extends AppCompatActivity
                 .setMessage(message)
                 .setPositive(getString(R.string.ok), (dialog1, i) -> {
                     hideProgressBar();
-//                    isNetworkDialogVisible = false;
                     dialog1.dismiss();
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     Fragment fragment = fragmentManager.findFragmentByTag(FragmentQueue.class.getName());
@@ -348,7 +290,6 @@ public class MainActivity extends AppCompatActivity
                     if (fragment != null && fragment.isVisible() ) {
                         return;
                     }
-//                    btnSearchCancel.setVisibility(View.GONE);
                     FragmentQueue fragmentQueue = FragmentQueue.newInstance(true);
                     addFragment(fragmentQueue, true);
                 }).setNegative(getString(R.string.generic_cancel), (dialog12, which) -> {

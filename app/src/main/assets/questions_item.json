@@ -71,8 +71,6 @@
               "type": "dropdown",
               "uploadId": "actionAssignedToUserId",
               "key": "InspectorsHseq",
-              "isMultiSelection": false,
-              "isConcatDisplayText": false,
               "title": "Inspector",
               "hint": "Select Inspector",
               "repeatId": "questions",

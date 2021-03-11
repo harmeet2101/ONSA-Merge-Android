@@ -123,129 +123,76 @@ public class DatasetResponse implements Parcelable {
         return 0;
     }
 
-    private void insertRecordReturn(){
-//        DBHandler dbHandler = DBHandler.getInstance();
-//        ItemType itemType0 = new ItemType("No Return Required" , "recordReturn", "KC40");
-//        dbHandler.replaceData(ItemType.DBTable.NAME, itemType0.toContentValues());
-//        ItemType itemType1 = new ItemType("Works Executed as Planned" , "recordReturn", "KC41");
-//        dbHandler.replaceData(ItemType.DBTable.NAME, itemType1.toContentValues());
-//        ItemType itemType2 = new ItemType("Works Executed with Changes" , "recordReturn", "KC42");
-//        dbHandler.replaceData(ItemType.DBTable.NAME, itemType2.toContentValues());
-
-
-    }
-
-
 
     public ContentValues toContentValues() {
-
         ContentValues cv = new ContentValues();
 
         DBHandler dbHandler = DBHandler.getInstance();
 
-        insertRecordReturn();
 
         if (this.aerialCables != null && !this.aerialCables.isEmpty()) {
-            for (ItemType item : this.aerialCables) {
-                item.settype(DBTable.aerialCables);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(aerialCables, DBTable.aerialCables);
         }
 
 
         if (this.photoTypes != null && !this.photoTypes.isEmpty()) {
-            for (ItemType item : this.photoTypes) {
-                item.settype(DBTable.photoTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(photoTypes, DBTable.photoTypes);
         }
 
         if (this.bookOperatives != null && !this.bookOperatives.isEmpty()) {
-            for (ItemType item : this.bookOperatives) {
-                item.settype(DBTable.bookOperatives);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(bookOperatives, DBTable.bookOperatives);
         }
 
 
         if (this.workItems != null && !this.workItems.isEmpty()) {
-            for (WorkItem item : this.workItems) {
-                item.settype(DBTable.workItems);
-                dbHandler.replaceData(WorkItem.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceDataDFEWorkItems(dfeWorkItems, DBTable.workItems);
         }
         if (this.dcrReasonCodes != null && !this.dcrReasonCodes.isEmpty()) {
-            for (ItemType item : this.dcrReasonCodes) {
-                item.settype(DBTable.dcrReasonCodes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(dcrReasonCodes, DBTable.dcrReasonCodes);
         }
 
         if (this.roadTypes != null && !this.roadTypes.isEmpty()) {
-            for (ItemType item : this.roadTypes) {
-                item.settype(DBTable.roadTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(roadTypes, DBTable.roadTypes);
         }
 
         if (this.engCompOutcomes != null && !this.engCompOutcomes.isEmpty()) {
-            for (ItemType item : this.engCompOutcomes) {
-                item.settype(DBTable.engCompOutcomes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(engCompOutcomes, DBTable.engCompOutcomes);
         }
 
 
         if (this.reinstatementTypes != null && !this.reinstatementTypes.isEmpty()) {
-            for (ItemType item : this.reinstatementTypes) {
-                item.settype(DBTable.reinstatementTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(reinstatementTypes, DBTable.reinstatementTypes);
         }
 
 
         if (this.speedLimits != null && !this.speedLimits.isEmpty()) {
-            for (ItemType item : this.speedLimits) {
-                item.settype(DBTable.speedLimits);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(speedLimits, DBTable.speedLimits);
         }
 
 
         if (this.abandonReasons != null && !this.abandonReasons.isEmpty()) {
-            for (ItemType item : this.abandonReasons) {
-                item.settype(DBTable.abandonReasons);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(abandonReasons, DBTable.abandonReasons);
         }
 
 
         if (this.surfaceTypes != null && !this.surfaceTypes.isEmpty()) {
-            for (ItemType item : this.surfaceTypes) {
-                item.settype(DBTable.surfaceTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(surfaceTypes, DBTable.surfaceTypes);
         }
 
 
         if (this.dfeWorkItems != null && !this.dfeWorkItems.isEmpty()) {
-            for (WorkItem item : this.dfeWorkItems) {
-                item.settype(DBTable.dfeWorkItems);
-                dbHandler.replaceData(WorkItem.DBTable.NAME, item.toContentValues());
-            }
+
+            dbHandler.replaceDataDFEWorkItems(dfeWorkItems, DatasetResponse.DBTable.dfeWorkItems);
+
         }
 
 
         if (this.stayTypes != null && !this.stayTypes.isEmpty()) {
-            for (ItemType item : this.stayTypes) {
-                item.settype(DBTable.stayTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(stayTypes, DBTable.stayTypes);
         }
 
         dbHandler.clearTable(KitBagDocument.DBTable.NAME);
         if (this.kitbagFolders != null && !this.kitbagFolders.isEmpty()) {
-
             for (KitBagDocument item : this.kitbagFolders) {
                 item.toContentValues();
             }
@@ -253,94 +200,55 @@ public class DatasetResponse implements Parcelable {
 
 
         if (this.materialTypes != null && !this.materialTypes.isEmpty()) {
-            for (ItemType item : this.materialTypes) {
-                item.settype(DBTable.materialTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(materialTypes, DBTable.materialTypes);
         }
 
         if (this.jobCategories != null && !this.jobCategories.isEmpty()) {
-            for (ItemType item : this.jobCategories) {
-                item.settype(DBTable.jobCategories);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(jobCategories, DBTable.jobCategories);
         }
 
         if (this.lowestWireTypes != null && !this.lowestWireTypes.isEmpty()) {
-            for (ItemType item : this.lowestWireTypes) {
-                item.settype(DBTable.lowestWireTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(lowestWireTypes, DBTable.lowestWireTypes);
         }
 
         if (this.anchorTypes != null && !this.anchorTypes.isEmpty()) {
-            for (ItemType item : this.anchorTypes) {
-                item.settype(DBTable.anchorTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(anchorTypes, DBTable.anchorTypes);
         }
 
         if (this.ugCableTypes != null && !this.ugCableTypes.isEmpty()) {
-            for (ItemType item : this.ugCableTypes) {
-                item.settype(DBTable.ugCableTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(ugCableTypes, DBTable.ugCableTypes);
         }
 
         if (this.trafficManagementTypes != null && !this.trafficManagementTypes.isEmpty()) {
-            for (ItemType item : this.trafficManagementTypes) {
-                item.settype(DBTable.trafficManagementTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(trafficManagementTypes, DBTable.trafficManagementTypes);
         }
 
         if (this.poleTypes != null && !this.poleTypes.isEmpty()) {
-            for (ItemType item : this.poleTypes) {
-                item.settype(DBTable.poleTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(poleTypes, DBTable.poleTypes);
         }
 
         if (this.blockTerminalTypes != null && !this.blockTerminalTypes.isEmpty()) {
-            for (ItemType item : this.blockTerminalTypes) {
-                item.settype(DBTable.blockTerminalTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(blockTerminalTypes, DBTable.blockTerminalTypes);
         }
 
         if (this.jointClosureTypes != null && !this.jointClosureTypes.isEmpty()) {
-            for (ItemType item : this.jointClosureTypes) {
-                item.settype(DBTable.jointClosureTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(jointClosureTypes, DBTable.jointClosureTypes);
         }
 
         if (this.dacTypes != null && !this.dacTypes.isEmpty()) {
-            for (ItemType item : this.dacTypes) {
-                item.settype(DBTable.dacTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(dacTypes, DBTable.dacTypes);
         }
 
         if (this.weatherConditions != null && !this.weatherConditions.isEmpty()) {
-            for (ItemType item : this.weatherConditions) {
-                item.settype(DBTable.weatherConditions);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(weatherConditions, DBTable.weatherConditions);
         }
 
         if (this.pedestrianManagementTypes != null && !this.pedestrianManagementTypes.isEmpty()) {
-            for (ItemType item : this.pedestrianManagementTypes) {
-                item.settype(DBTable.pedestrianManagementTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(pedestrianManagementTypes, DBTable.pedestrianManagementTypes);
         }
 
         if (this.newReplacedRecycledTypes != null && !this.newReplacedRecycledTypes.isEmpty()) {
-            for (ItemType item : this.newReplacedRecycledTypes) {
-                item.settype(DBTable.newReplacedRecycledTypes);
-                dbHandler.replaceData(ItemType.DBTable.NAME, item.toContentValues());
-            }
+            dbHandler.replaceItemTypes(newReplacedRecycledTypes, DBTable.newReplacedRecycledTypes);
         }
 
         if (this.riskAssessmentRiskElementTypes != null && !this.riskAssessmentRiskElementTypes.isEmpty()) {
@@ -349,7 +257,6 @@ public class DatasetResponse implements Parcelable {
                 dbHandler.replaceData(RiskElementType.DBTable.NAME, item.toContentValues());
             }
         }
-
         return cv;
     }
 

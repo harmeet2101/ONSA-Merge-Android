@@ -1,6 +1,7 @@
 {
   "title": "Log Hours",
   "isProgressVisible": false,
+  "themeColor":"#1795FA",
   "screens": [
     {
       "title": "Log Hours",
@@ -17,8 +18,10 @@
           "fields": [
             "dateWorked",
             "timeTypeActivityId",
-            "timeFrom",
-            "timeTo"
+            "additionalOperatives",
+            "jobId",
+            "normalTimeMinutes",
+            "overtimeMinutes"
           ],
           "optional": false,
           "dialogItems": [
@@ -34,23 +37,76 @@
               "uploadId": "timeTypeActivityId",
               "repeatId": "timesheetHours",
               "key": "TimeTypeActivity",
-              "title": "Time Type",
-              "optional": false
-            },
-            {
-              "type": "time_picker",
-              "uploadId": "timeFrom",
-              "repeatId": "timesheetHours",
-              "title": "Time From",
-              "optional": false
-            },
-            {
-              "type": "time_picker",
-              "uploadId": "timeTo",
-              "repeatId": "timesheetHours",
-              "title": "Time To",
-              "optional": false
+              "title": "Add Time Type Activity",
+              "optional": false,
+              "enables": [
+                {
+                  "type": "dropdown",
+                  "uploadId": "additionalOperatives",
+                  "repeatId": "timesheetHours",
+                  "key": "TimesheetOperative",
+                  "isMultiSelection": true,
+                  "isConcatDisplayText": true,
+                  "title": "Operatives Include",
+                  "optional": true
+                },
+                {
+                  "type": "dropdown",
+                  "uploadId": "jobId",
+                  "repeatId": "timesheetHours",
+                  "key": "Job",
+                  "title": "Job Number",
+                  "optional": true
+                },
+                {
+                  "type": "et_time_sheet_hours",
+                  "uploadId": "normalTimeMinutes",
+                  "repeatId": "timesheetHours",
+                  "isOverTimeVisible": true,
+                  "title": "Normal Time",
+                  "optional": false
+                }
+              ],
+              "falseEnables": [
+                {
+                  "type": "dropdown",
+                  "uploadId": "additionalOperatives",
+                  "repeatId": "timesheetHours",
+                  "key": "TimesheetOperative",
+                  "isMultiSelection": true,
+                  "isConcatDisplayText": true,
+                  "title": "Operatives Include",
+                  "optional": true
+                },
+                {
+                  "type": "dropdown",
+                  "uploadId": "jobId",
+                  "repeatId": "timesheetHours",
+                  "key": "Job",
+                  "title": "Job Number",
+                  "optional": true
+                },
+                {
+                  "type": "et_time_sheet_hours",
+                  "uploadId": "normalTimeMinutes",
+                  "repeatId": "timesheetHours",
+                  "isOverTimeVisible": true,
+                  "title": "Normal Time",
+                  "optional": false
+                }
+              ],
+              "naEnables": [
+                {
+                  "type": "et_time_sheet_hours",
+                  "uploadId": "normalTimeMinutes",
+                  "repeatId": "timesheetHours",
+                  "isOverTimeVisible": true,
+                  "title": "Normal Time",
+                  "optional": false
+                }
+              ]
             }
+
           ]
         }
       ]

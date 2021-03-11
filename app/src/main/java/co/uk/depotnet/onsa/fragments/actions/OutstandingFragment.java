@@ -1,5 +1,6 @@
 package co.uk.depotnet.onsa.fragments.actions;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,28 +18,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import co.uk.depotnet.onsa.OnsaApp;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.adapters.actions.ActionsMainAdaptor;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.listeners.ActionsListner;
-import co.uk.depotnet.onsa.modals.actions.ActionsClose;
-import co.uk.depotnet.onsa.modals.actions.OutstandingAction;
+import co.uk.depotnet.onsa.listeners.ActionsListener;
+import co.uk.depotnet.onsa.modals.actions.Action;
+import co.uk.depotnet.onsa.modals.actions.ActionResponse;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
-public class OutstandingFragment extends Fragment implements ActionsListner {
+public class OutstandingFragment extends Fragment implements ActionsListener {
     private ProgressBar progressBar;
-    private RecyclerView mRecyclerView;
     private ActionsMainAdaptor actionAdapter;
-    private List<OutstandingAction> actionList=new ArrayList<>();
+    private final List<String> actionList = new ArrayList<>();
     private TextView error;
     private Context context;
 
@@ -51,7 +50,6 @@ public class OutstandingFragment extends Fragment implements ActionsListner {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_outstanding, container, false);
     }
 
@@ -59,37 +57,19 @@ public class OutstandingFragment extends Fragment implements ActionsListner {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         progressBar=view.findViewById(R.id.progress_bar_actions);
-        mRecyclerView=view.findViewById(R.id.outstanding_recyclerview);
-        actionAdapter=new ActionsMainAdaptor(this);
+        RecyclerView mRecyclerView = view.findViewById(R.id.outstanding_recyclerview);
+        actionAdapter=new ActionsMainAdaptor(context,"Outstanding" , this);
         mRecyclerView.setAdapter(actionAdapter);
         error=view.findViewById(R.id.outstanding_error);
+    }
+
+    @Override
+    public void onResume() {
         try {
             progressBar.setVisibility(View.VISIBLE);
             error.setVisibility(View.GONE);
-            if(CommonUtils.isNetworkAvailable(getContext())) {
+            if(CommonUtils.isNetworkAvailable(context)) {
                 GetActionsCall();
-              /*  DBHandler.getInstance().resetActions();
-                List<OutstandingAction> actionsresponse=new ArrayList<>();
-                OutstandingAction action=new OutstandingAction();
-                action.setDueDate("30th dec");
-                List<ActionsClose> closeList=new ArrayList<>();
-                ActionsClose actionsClose = new ActionsClose();
-                actionsClose.setInspectionQuestionId("1");
-                actionsClose.setQuestionText("check que text");
-                actionsClose.setRaisedByUserFullName("abhikr");
-                actionsClose.setDefectComments("kuch nhi veere def comment");
-                actionsClose.setEstimateNumber("76AHBHty");
-                closeList.add(actionsClose);
-                action.setActions(closeList);
-                actionsresponse.add(action);
-                if (actionsresponse!=null && actionsresponse.size()>0) {
-                    for (OutstandingAction modal : actionsresponse)
-                    {
-                        modal.setActionType("Outstanding"); // for filter data
-                        DBHandler.getInstance().replaceData(OutstandingAction.DBTable.NAME, modal.toContentValues());
-                    }
-                }
-                getActionsFromDb();*/
             }
             else
             {
@@ -100,23 +80,25 @@ public class OutstandingFragment extends Fragment implements ActionsListner {
         {
             e.printStackTrace();
         }
+        super.onResume();
     }
+
     private void GetActionsCall()
     {
-        APICalls.getActionsOutstandingList(DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<List<OutstandingAction>>() {
+        APICalls.getActionsOutstandingList(DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<List<ActionResponse>>() {
             @Override
-            public void onResponse(@NonNull Call<List<OutstandingAction>> call, @NonNull Response<List<OutstandingAction>> response) {
+            public void onResponse(@NonNull Call<List<ActionResponse>> call, @NonNull Response<List<ActionResponse>> response) {
                 if(CommonUtils.onTokenExpired(getContext(), response.code())){
                     return;
                 }
                 if (response.isSuccessful()) {
-                    DBHandler.getInstance().resetActions();
-                    List<OutstandingAction> actionsresponse=response.body();
-                    if (actionsresponse!=null && actionsresponse.size()>0) {
-                        for (OutstandingAction modal : actionsresponse)
+                    DBHandler.getInstance().clearTable(Action.DBTable.NAME);
+                    List<ActionResponse> actionsresponse=response.body();
+                    if (actionsresponse!=null && !actionsresponse.isEmpty()) {
+                        for (ActionResponse modal : actionsresponse)
                         {
-                            modal.setActionType("Outstanding"); // for filter data
-                            DBHandler.getInstance().replaceData(OutstandingAction.DBTable.NAME, modal.toContentValues());
+                            modal.setActionType("Outstanding");
+                            modal.toContentValues();
                         }
                         getActionsFromDb();
                     }
@@ -132,7 +114,7 @@ public class OutstandingFragment extends Fragment implements ActionsListner {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<OutstandingAction>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<ActionResponse>> call, @NonNull Throwable t) {
                 error.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.GONE);
             }
@@ -140,12 +122,13 @@ public class OutstandingFragment extends Fragment implements ActionsListner {
     }
     private void getActionsFromDb()
     {
-        List<OutstandingAction> jobs = DBHandler.getInstance().getActions("Outstanding");
+        List<String> dueDates = DBHandler.getInstance().getActionDueDates("Outstanding");
+
         actionList.clear();
-        if (jobs!=null && !jobs.isEmpty())
+        if (dueDates!=null && !dueDates.isEmpty())
         {
-            actionList.addAll(jobs);
-            actionAdapter.SetActionsList(actionList);
+            actionList.addAll(dueDates);
+            actionAdapter.SetActionsList(dueDates);
             actionAdapter.notifyDataSetChanged();
             error.setVisibility(View.GONE);
         }
@@ -154,30 +137,47 @@ public class OutstandingFragment extends Fragment implements ActionsListner {
             error.setVisibility(View.VISIBLE);
         }
         progressBar.setVisibility(View.GONE);
+
+
     }
+
+    Action currentAction;
     @Override
-    public void StartCorrectiveMeasure(ActionsClose action) {
+    public void startCorrectiveMeasure(Action action) {
         AppPreferences.setTheme(3);
-        String jsonFileName = "corrective_measure.json";// case sensitive for submission model too
-        Submission submission = new Submission(jsonFileName, "Corrective Measure", action.getInspectionQuestionId());// if jobid not than 0
-        // unique submission id for every form
+        currentAction = action;
+        String jsonFileName = action.isIncidentAction() ?"incident_corrective_measure.json" :"corrective_measure.json";// case sensitive for submission model too
+        Submission submission = new Submission(jsonFileName, "Corrective Measure", action.getActionId());// if jobid not than 0
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
-        startActivity(intent);
+        startActivityForResult(intent , 10001);
     }
 
     @Override
-    public void StartCannotRectify(ActionsClose action) {
+    public void startCannotRectify(Action action) {
         AppPreferences.setTheme(3);
-        String jsonFileName = "cannot_rectify.json";// case sensitive for submission model too
-        Submission submission = new Submission(jsonFileName, "Cannot Rectify", action.getInspectionQuestionId());// if jobid not than 0
+        currentAction = action;
+        String jsonFileName = action.isIncidentAction() ?"incident_cannot_rectify.json" :"cannot_rectify.json";// case sensitive for submission model too
+        Submission submission = new Submission(jsonFileName, "Cannot Rectify", action.getActionId());// if jobid not than 0
         // unique submission id for every form
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
-        startActivity(intent);
+        startActivityForResult(intent , 10001);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == Activity.RESULT_OK && requestCode == 10001){
+            if(currentAction != null){
+//                currentAction.setActionType("Cleared");
+//                DBHandler.getInstance().replaceData(Action.DBTable.NAME , currentAction.toContentValues());
+//                actionAdapter.notifyDataSetChanged();
+            }
+        }
     }
 }
