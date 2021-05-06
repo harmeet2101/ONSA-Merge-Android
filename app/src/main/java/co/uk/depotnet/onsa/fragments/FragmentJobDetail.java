@@ -1,5 +1,6 @@
 package co.uk.depotnet.onsa.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -16,6 +17,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -73,7 +75,14 @@ public class FragmentJobDetail extends Fragment
                 false);
         mapView = view.findViewById(R.id.map_view);
         view.findViewById(R.id.btn_directions).setOnClickListener(this);
+        view.findViewById(R.id.btn_img_cancel).setOnClickListener(this);
+        TextView txtToolbarTitle = view.findViewById(R.id.txt_toolbar_title);
 
+        if(job.isSubJob()){
+            txtToolbarTitle.setText(String.format("%s-S%s", job.getestimateNumber(), job.getSubJobNumber()));
+        }else{
+            txtToolbarTitle.setText(String.format("%s", job.getestimateNumber()));
+        }
 
         ViewPager vpPager = view.findViewById(R.id.view_pager);
         TabLayout tabStrip = view.findViewById(R.id.pager_header);
@@ -186,8 +195,8 @@ public class FragmentJobDetail extends Fragment
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_directions:
+        if (view.getId() == R.id.btn_directions) {
+
                 String geoUri = "http://maps.google.com/maps?q=loc: 52.293060 , -1.779800 ( "+job.getlocationAddress()+" )";
 
                 if(job.getlatitude() != 0 && job.getlongitude() != 0){
@@ -199,7 +208,9 @@ public class FragmentJobDetail extends Fragment
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
                         Uri.parse(geoUri));
                 startActivity(intent);
-                break;
+
+        }else if (view.getId() == R.id.btn_img_cancel) {
+            ((Activity)context).onBackPressed();
         }
     }
 

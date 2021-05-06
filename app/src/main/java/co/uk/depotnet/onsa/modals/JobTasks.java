@@ -20,11 +20,11 @@ public class JobTasks implements Parcelable {
 
     public JobTasks(String jobId){
         this.jobId = jobId;
-        serviceMaterialDropTasks = DBHandler.getInstance().getTaskItems(jobId ,  Constants.TYPE_ID_SERVICE_MATERAL);
-        muckawayTasks = DBHandler.getInstance().getTaskItems(jobId ,  Constants.TYPE_ID_MUCKAWAY);
-        backfillTasks = DBHandler.getInstance().getTaskItems(jobId ,  Constants.TYPE_ID_BACKFILL);
-        reinstatementTasks = DBHandler.getInstance().getTaskItems(jobId ,  Constants.TYPE_ID_REINSTATEMENT);
-        siteClearanceTasks = DBHandler.getInstance().getTaskItems(jobId ,  Constants.TYPE_ID_SITE_CLEAR);
+        serviceMaterialDropTasks = DBHandler.getInstance().getTaskItems(jobId ,  Constants.TYPE_ID_SERVICE_MATERAL , 0);
+        muckawayTasks = DBHandler.getInstance().getTaskItems(jobId ,  Constants.TYPE_ID_MUCKAWAY , 0);
+        backfillTasks = DBHandler.getInstance().getTaskItems(jobId ,  Constants.TYPE_ID_BACKFILL , 0);
+        reinstatementTasks = DBHandler.getInstance().getTaskItems(jobId ,  Constants.TYPE_ID_REINSTATEMENT , 0);
+        siteClearanceTasks = DBHandler.getInstance().getTaskItems(jobId ,  Constants.TYPE_ID_SITE_CLEAR, 0);
     }
 
     protected JobTasks(Parcel in) {
@@ -66,11 +66,11 @@ public class JobTasks implements Parcelable {
     public void toContentValues(){
         DBHandler dbHandler = DBHandler.getInstance();
         
-        dbHandler.deleteBaseTasks(jobId , Constants.TYPE_ID_SERVICE_MATERAL);
-        dbHandler.deleteBaseTasks(jobId , Constants.TYPE_ID_MUCKAWAY);
-        dbHandler.deleteBaseTasks(jobId , Constants.TYPE_ID_BACKFILL);
-        dbHandler.deleteBaseTasks(jobId , Constants.TYPE_ID_REINSTATEMENT);
-        dbHandler.deleteBaseTasks(jobId , Constants.TYPE_ID_SITE_CLEAR);
+        dbHandler.deleteBaseTasks(jobId , Constants.TYPE_ID_SERVICE_MATERAL , 0);
+        dbHandler.deleteBaseTasks(jobId , Constants.TYPE_ID_MUCKAWAY , 0);
+        dbHandler.deleteBaseTasks(jobId , Constants.TYPE_ID_BACKFILL , 0);
+        dbHandler.deleteBaseTasks(jobId , Constants.TYPE_ID_REINSTATEMENT, 0);
+        dbHandler.deleteBaseTasks(jobId , Constants.TYPE_ID_SITE_CLEAR ,0);
         if(serviceMaterialDropTasks != null && !serviceMaterialDropTasks.isEmpty()){
             for (BaseTask baseTask : serviceMaterialDropTasks){
                 dbHandler.replaceData(BaseTask.DBTable.NAME , baseTask.toContentValues());

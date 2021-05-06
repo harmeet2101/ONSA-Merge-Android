@@ -359,8 +359,10 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
     }
 
+    private Job jobPackJob;
     @Override
     public void openJobPack(Job job) {
+        jobPackJob = job;
         checkStoragePermission(job);
     }
 
@@ -370,11 +372,8 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            if (!ActivityCompat.shouldShowRequestPermissionRationale((Activity) context,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
-                ActivityCompat.requestPermissions((Activity) context,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+            if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         STORAGE_PERMISSION_CODE);
 
             }
@@ -387,6 +386,14 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == STORAGE_PERMISSION_CODE){
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if(jobPackJob != null) {
+                    FragmentJobPackList fragment = FragmentJobPackList.newInstance(jobPackJob.getjobId());
+                    listener.addFragment(fragment, false);
+                }
+            }
+        }
     }
 
     @Override
@@ -400,6 +407,9 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     @Override
     public void openVisitorAttendance(Job job) {
         String jsonFileName = "visitor_attendance.json";
+        if(job.isSubJob()){
+            jsonFileName = "sub_job_visitor_attendance.json";
+        }
         Submission submission = new Submission(jsonFileName, "", job.getjobId());
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
@@ -410,7 +420,11 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
     @Override
     public void openTakePhotoAndVideo(Job job) {
-        Submission submission = new Submission("take_photo.json", "Take Photo or Video", job.getjobId());
+        String jsonFileName = "take_photo.json";
+        if(job.isSubJob()){
+            jsonFileName = "sub_job_take_photo.json";
+        }
+        Submission submission = new Submission(jsonFileName, "Take Photo or Video", job.getjobId());
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
@@ -774,7 +788,13 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
     @Override
     public void openAddNotes(Job job) {
-        Submission submission = new Submission("add_notes.json", "Add Notes", job.getjobId());
+        String jsonFileName;
+        if(job.isSubJob()){
+            jsonFileName = "sub_job_add_notes.json";
+        }else{
+            jsonFileName = "add_notes.json";
+        }
+        Submission submission = new Submission(jsonFileName, "Add Notes", job.getjobId());
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
@@ -1030,56 +1050,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         Intent intent = new Intent(context , PhotoActivity.class);
         intent.putExtra("Job" , job);
         startActivity(intent);
-    }
-
-    private void getSiteActivityTasks(Job job , final int siteActivityTypeId, boolean isFromJobDetail){
-        final String jobID = job.getjobId();
-        if(!CommonUtils.isNetworkAvailable(context)){
-            taskCounter++;
-            if(taskCounter == 5){
-                onSiteActivityTaskLoaded(job , isFromJobDetail);
-                listener.hideProgressBar();
-                taskCounter = 0;
-            }
-            return;
-        }
-
-        listener.showProgressBar();
-        APICalls.GetSiteActivityTasks(user.gettoken() , jobID , siteActivityTypeId).enqueue(new Callback<SiteActivityModel>() {
-            @Override
-            public void onResponse(@NonNull Call<SiteActivityModel> call, @NonNull Response<SiteActivityModel> response) {
-                SiteActivityModel siteActivityModel = response.body();
-                taskCounter++;
-                if (siteActivityModel != null) {
-                    DBHandler.getInstance().deleteBaseTasks(jobID , siteActivityTypeId);
-                    List<BaseTask> tasks = siteActivityModel.getResult();
-                    if(tasks != null && !tasks.isEmpty()){
-
-                        for (BaseTask task : tasks){
-                            DBHandler.getInstance().replaceData(BaseTask.DBTable.NAME , task.toContentValues());
-                        }
-                    }
-                }
-//                getTasks(jobID , siteActivityTypeId);
-
-                if(taskCounter == 5){
-                    onSiteActivityTaskLoaded(job , isFromJobDetail);
-                    listener.hideProgressBar();
-                    taskCounter = 0;
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<SiteActivityModel> call, @NonNull Throwable t) {
-                taskCounter++;
-
-                if(taskCounter == 5){
-                    onSiteActivityTaskLoaded(job , isFromJobDetail);
-                    listener.hideProgressBar();
-                    taskCounter = 0;
-                }
-            }
-        });
     }
 
     private void onSiteActivityTaskLoaded(Job job , boolean isFromJobDetail){

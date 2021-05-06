@@ -1,0 +1,28 @@
+{
+  "title": "Log TDFS",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log TDFS",
+      "index": 0,
+      "url":"app/subjob/{jobId}/raise-tdfs",
+      "photoUrl":"app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "TDFS Description:",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "Log TDFS",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "43"
+        }
+      ]
+    }
+  ]
+}

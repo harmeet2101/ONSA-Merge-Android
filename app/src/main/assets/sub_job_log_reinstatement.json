@@ -1,0 +1,42 @@
+{
+  "title": "Log Reinstatement",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log Reinstatement",
+      "index": 0,
+      "url":"app/subjob/{jobId}/complete-site-activity-tasks",
+      "photoUrl": "app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "task_list_reinstatement",
+          "taskId": 5,
+          "title": "Select Task",
+          "optional": false
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "IsPermanent",
+          "title": "Permanent?",
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comments",
+          "title": "Comments",
+          "hint": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Log Reinstatement",
+          "photoSize": 10,
+          "photoRequired": 2,
+          "photoId": "117"
+        }
+
+      ]
+    }
+  ]
+}

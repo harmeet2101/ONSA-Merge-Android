@@ -44,6 +44,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -168,10 +169,10 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         jobID = submission.getJobID();
         this.handler = new Handler();
 
-        if (submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json") &&
+        if ((submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json") || submission.getJsonFileName().equalsIgnoreCase("sub_job_risk_assessment.json")) &&
                 screen.getIndex() == 16) {
             onChangeChamberCount(false);
-        } else if (submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json") &&
+        } else if ((submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json") || submission.getJsonFileName().equalsIgnoreCase("sub_job_risk_assessment.json")) &&
                 screen.getIndex() > 16 && getChamberCount() > 0) {
             repeatCount = screen.getItems().get(0).getRepeatCount();
 
@@ -280,7 +281,12 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             }
 
             if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("schedule_inspection.json")) {
-                getInsQue();//getting inspection question here and call formactivity
+                Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "estimateNo" , null , 0);
+                if(answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
+                    getEstimateOperative(answer.getAnswer(), 2 , true);
+                }else{
+                    showValidationDialog("Estimate No Error", "Please enter estimate Number.");
+                }
             } else if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("good_2_go.json")) {
                 getLocationForServer();
             } else if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("poling_risk_assessment.json")) {
@@ -291,7 +297,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 sendToServer();
             }
 
-        } else if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("take_photo.json")) {
+        } else if (screen.isUpload() && (submission.getJsonFileName().equalsIgnoreCase("take_photo.json") || submission.getJsonFileName().equalsIgnoreCase("sub_job_take_photo.json"))) {
             sendToServer();
         } else if (screen.isUpload()) {
             JobModuleStatus jobModuleStatus = new JobModuleStatus();
@@ -444,7 +450,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                             message = "Submission Error, your submission has been added to the queue";
                         }
 
-                        if (response != null && response.code() == 400) {
+                        if (response != null && response.code() != 200) {
                             ResponseBody body = response.body();
                             if (body != null) {
                                 try {
@@ -553,7 +559,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                             message = "Submission Error, your submission has been added to the queue";
                         }
 
-                        if (response != null && response.code() == 400) {
+                        if (response != null && response.code() != 200) {
                             ResponseBody body1 = response.body();
                             if (body1 != null) {
                                 try {
@@ -653,7 +659,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 response = new ConnectionHelper(context).
                         submitInspections(screen.getUrl(), screen.getPhotoUrl(),
                                 submission, getChildFragmentManager());
-            } else {  //final Response response =
+            }else {  //final Response response =
+
                 response = new ConnectionHelper(context).
                         submitForm(screen.getUrl(), screen.getPhotoUrl(),
                                 submission, getChildFragmentManager());
@@ -696,7 +703,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 String title = "Success";
                 String message = "Submission was successful";
                 if (finalResponse != null && finalResponse.isSuccessful()) {
-                    if (submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json")) {
+                    if (submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json") || submission.getJsonFileName().equalsIgnoreCase("sub_job_risk_assessment.json")) {
                         getJobs();
                     }
                 }
@@ -707,7 +714,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     message = "Submission Error, your submission has been added to the queue";
                 }
 
-                if (finalResponse != null && finalResponse.code() == 400) {
+                if (finalResponse != null && finalResponse.code() != 200) {
                     ResponseBody body = finalResponse.body();
                     if (body != null) {
                         try {
@@ -1111,9 +1118,13 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     }
 
     @Override
-    public void getEstimateOperative(String estno, int position) {
+    public void getEstimateOperative(String estno, int position , boolean isSubmit) {
         if (!CommonUtils.isNetworkAvailable(context) || (estno.isEmpty() && position == -1)) {
             showErrorDialog("Internet Connection", "Internet connection is not available. Please check your internet connection.", false);
+            return;
+        }
+        if(TextUtils.isEmpty(estno)){
+            showValidationDialog("Estimate No Error", "Unfortunately the entered estimate number does not exist or it has no data. Please input a different or contact support.");
             return;
         }
         listener.showProgressBar();
@@ -1127,6 +1138,10 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     JobEstimate jobEstimate = response.body();
                     if (jobEstimate != null) {
                         formAdapter.showEstimateOperative(jobEstimate, position);
+                        if(isSubmit){
+                            getInsQue();
+                            return;
+                        }
                     } else {
                         showValidationDialog("Estimate No Error", "Unfortunately the entered estimate number does not exist or it has no data. Please input a different or contact support.");
                     }

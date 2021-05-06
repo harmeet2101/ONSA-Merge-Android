@@ -83,11 +83,9 @@ public class FragmentTasks extends Fragment {
 
     private void getBaseTasks(){
         FragmentTasks.this.baseTasks.clear();
-        ArrayList<BaseTask> baseTasks = DBHandler.getInstance().getTaskItems(job.getjobId());
+        ArrayList<BaseTask> baseTasks = DBHandler.getInstance().getTaskItems(job.getjobId() , job.isSubJob() ? 1: 0);
         if(baseTasks != null && !baseTasks.isEmpty())
         FragmentTasks.this.baseTasks.addAll(baseTasks);
         adapter.notifyDataSetChanged();
-
-
     }
 }

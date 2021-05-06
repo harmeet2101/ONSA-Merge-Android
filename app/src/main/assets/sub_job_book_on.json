@@ -1,0 +1,50 @@
+{
+  "title": "Book On",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Book On",
+      "index": 0,
+      "url":"app/subjob/{jobId}/book-on",
+      "photoUrl":"app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+
+        {
+          "type": "txt_bold_head",
+          "title": "Book on the day to say you are starting",
+          "optional": true
+        },
+        {
+          "type": "location",
+          "uploadId": "Location",
+          "title": "Locate Me",
+          "optional": false
+        },
+
+        {
+          "type": "txt_bold_head",
+          "title": "Log who are working with Today?",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "operativeUserIds",
+          "key": "bookOperatives",
+          "isMultiSelection": true,
+          "isConcatDisplayText": true,
+          "title": "Pick Your Crew",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Book On",
+          "photoSize": 100,
+          "photoRequired": 1,
+          "photoId": "83"
+
+        }
+      ]
+    }
+  ]
+}

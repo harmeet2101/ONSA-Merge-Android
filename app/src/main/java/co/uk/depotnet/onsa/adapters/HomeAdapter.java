@@ -54,7 +54,13 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         holder.imgHotJob.setVisibility(holder.job.isHotJob() ? View.VISIBLE : View.GONE);
 
-        holder.txtJobEstNumber.setText(String.format("JOB ID : %s", holder.job.getestimateNumber()));
+
+        if(holder.job.isSubJob()){
+            holder.txtJobEstNumber.setText(String.format("JOB ID: %s-S%s", holder.job.getestimateNumber(), holder.job.getSubJobNumber()));
+        }else{
+            holder.txtJobEstNumber.setText(String.format("JOB ID : %s", holder.job.getestimateNumber()));
+        }
+
         holder.txtJobExchange.setText(holder.job.getexchange());
 
         if(TextUtils.isEmpty(holder.job.getpostCode())){
@@ -103,6 +109,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         });
 
 
+
+
         if(Constants.isStoreEnabled) {
             holder.llBtnLogStores.setVisibility(View.VISIBLE);
             holder.llBtnLogStores.setOnClickListener(view -> listener.onLogStores(holder.job));
@@ -117,9 +125,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             holder.llBtnRequestTask.setOnClickListener(view -> listener.openRequestTask(holder.job));
         }
 
+        if(holder.job.isSubJob() || (TextUtils.isEmpty(user.getroleName()) || !user.getroleName().equalsIgnoreCase("Supervisor"))){
+            holder.llBtnQualityCheck.setVisibility(View.GONE);
+        }else{
+            holder.llBtnQualityCheck.setVisibility(View.VISIBLE);
+            holder.llBtnQualityCheck.setOnClickListener(view -> listener.onQualityCheck(holder.job));
+        }
 
 
-        holder.llBtnQualityCheck.setOnClickListener(view -> listener.onQualityCheck(holder.job));
+
+
 
 
         holder.llBtnJobDeatils.setOnClickListener(view -> listener.openJobDetail(holder.job));

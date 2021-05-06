@@ -62,6 +62,9 @@ public class RiskAssessmentActivity extends AppCompatActivity implements View.On
 
     private void openVisitorLog() {
         String jsonFileName = "visitor_attendance.json";
+        if(job.isSubJob()){
+            jsonFileName = "sub_job_visitor_attendance.json";
+        }
         Submission submission = new Submission(jsonFileName, "", job.getjobId());
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
@@ -84,6 +87,9 @@ public class RiskAssessmentActivity extends AppCompatActivity implements View.On
             title = "Poling Risk Assessment";
         }else{
             jsonFileName = "risk_assessment.json";
+            if(job.isSubJob()){
+                jsonFileName = "sub_job_risk_assessment.json";
+            }
             title = "Risk Assessment";
         }
 

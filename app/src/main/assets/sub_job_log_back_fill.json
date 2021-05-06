@@ -1,0 +1,41 @@
+{
+  "title": "Log BackFill",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log BackFill",
+      "index": 0,
+      "url":"app/subjob/{jobId}/complete-site-activity-tasks",
+      "photoUrl":"app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "task_list_backfill",
+          "taskId": 4,
+          "title": "Select Task",
+          "optional": false
+        },
+        {
+          "type": "switch_layout",
+          "uploadId": "readyForReinstatement",
+          "title": "Ready For Reinstatement?",
+          "optional": true
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comments",
+          "title": "Comments",
+          "hint": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Log Backfill",
+          "photoSize": 10,
+          "photoRequired": 3,
+          "photoId": "116"
+        }
+      ]
+    }
+  ]
+}

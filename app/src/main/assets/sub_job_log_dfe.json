@@ -1,0 +1,86 @@
+{
+  "title": "Log DFE",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log DFE",
+      "index": 0,
+      "url": "app/subjob/{jobId}/request-dfe",
+      "photoUrl": "app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "add_pos_dfe",
+          "uploadId": "",
+          "repeatId": "items",
+          "title": "Click to add a DFE Item",
+          "listItemType": "log_dfe_item",
+          "fields": [
+            "itemId",
+            "quantity"
+          ],
+          "optional": false,
+          "dialogItems": [
+            {
+              "type": "dropdown",
+              "uploadId": "itemId",
+              "repeatId": "items",
+              "key": "SubJobItems",
+              "title": "Items",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "quantity",
+              "repeatId": "items",
+              "title": "Qty",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "type": "add_neg_dfe",
+          "uploadId": "",
+          "repeatId": "negItems",
+          "title": "Click to add a negative DFE Item",
+          "listItemType": "log_dfe_item",
+          "fields": [
+            "itemId",
+            "quantity"
+          ],
+          "optional": false,
+          "dialogItems": [
+            {
+              "type": "dropdown",
+              "uploadId": "itemId",
+              "repeatId": "negItems",
+              "key": "JobWorkItem",
+              "title": "Items",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "quantity",
+              "repeatId": "negItems",
+              "title": "Qty",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "Please enter any comments",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "Log DFE",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "5"
+        }
+      ]
+    }
+  ]
+}

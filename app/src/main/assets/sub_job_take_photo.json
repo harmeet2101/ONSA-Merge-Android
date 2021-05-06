@@ -1,0 +1,38 @@
+{
+  "title": "Take Photo or Video",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Take Photo or Video",
+      "index": 0,
+      "photoUrl":"app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+
+        {
+          "type": "dropdown",
+          "uploadId": "photoTypes",
+          "key": "photoTypes",
+          "title": "Select Photo type",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_short_text",
+              "uploadId": "comment",
+              "hint": "Reference/Address",
+              "title": "Reference/Address",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Take Photo or Video",
+              "photoSize": 5,
+              "photoRequired": 1,
+              "photoId": "ac751054-4621-42b4-848e-b854ac6eedf9"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

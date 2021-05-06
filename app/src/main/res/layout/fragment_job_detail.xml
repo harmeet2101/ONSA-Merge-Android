@@ -41,6 +41,8 @@
             android:background="@color/colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
+
+
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
@@ -49,13 +51,48 @@
                 app:contentScrim="@color/colorPrimary"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                <FrameLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_300sdp"
                     android:background="@color/fire">
 
+                    <androidx.appcompat.widget.Toolbar
+                        android:id="@+id/toolbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/colorPrimary"
+                        android:minHeight="?attr/actionBarSize"
+                        app:titleTextColor="@android:color/white">
+
+
+                        <ImageView
+                            android:id="@+id/btn_img_cancel"
+                            android:layout_width="@dimen/_24sdp"
+                            android:layout_height="@dimen/_24sdp"
+                            android:layout_gravity="right|end"
+                            android:layout_marginEnd="@dimen/_12sdp"
+                            android:layout_marginRight="@dimen/_12sdp"
+                            app:tint="@color/white"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_close" />
+
+                        <TextView
+                            android:id="@+id/txt_toolbar_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/_4sdp"
+                            android:layout_gravity="center_horizontal"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_12sdp" />
+
+
+                    </androidx.appcompat.widget.Toolbar>
+
+
+
                     <com.google.android.gms.maps.MapView
                         android:id="@+id/map_view"
+                        android:layout_below="@id/toolbar"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
@@ -67,11 +104,13 @@
                         android:layout_width="@dimen/_32sdp"
                         android:layout_height="@dimen/_32sdp"
                         android:layout_margin="@dimen/_8sdp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
                         android:layout_gravity="bottom|end"
                         app:tint="@color/depotnet_color"
                         android:background="@drawable/img_bg_circle"
                         android:backgroundTint="@color/white"/>
-                </FrameLayout>
+                </RelativeLayout>
 
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>

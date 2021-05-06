@@ -1,0 +1,41 @@
+{
+  "title": "Visitor Attendance",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Visitor Attendance",
+      "index": 0,
+      "upload": true,
+      "url":"app/subjob/{jobId}/log-visitor",
+      "items": [
+        {
+          "type": "et_short_text",
+          "uploadId":"visitorName",
+          "title": "Visitor Name",
+          "hint": "Visitor Name",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "cssid",
+          "title": "CSSID:",
+          "optional": false
+        },
+        {
+          "type": "et_short_text",
+          "uploadId": "observations",
+          "title": "Observations:",
+          "optional": false
+        },
+        {
+          "type": "signature",
+          "uploadId": "signatureId",
+          "signatureUrl":"app/subjob/{jobId}/upload-signature",
+          "photoId": "26",
+          "title": "Signature",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

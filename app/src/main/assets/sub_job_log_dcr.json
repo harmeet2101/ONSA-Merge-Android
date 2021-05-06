@@ -1,0 +1,29 @@
+{
+  "title": "Log DCR",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log DCR",
+      "index": 0,
+      "url":"app/subjob/{jobId}/update-target-date",
+      "photoUrl":"app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "calender",
+          "uploadId": "targetDate",
+          "title": "Target Date",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "Log DCR",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "43"
+        }
+
+      ]
+    }
+  ]
+}

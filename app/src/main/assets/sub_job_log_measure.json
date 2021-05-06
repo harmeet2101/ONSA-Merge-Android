@@ -1,0 +1,153 @@
+{
+  "title": "Log Measure",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log Measure",
+      "index": 0,
+      "upload": false,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "jobEtonSiteId",
+          "key":"noticeId",
+          "title": "Select Notice",
+          "optional": true
+        },
+        {
+          "type": "add_log_measure",
+          "uploadId": "add_measure",
+          "repeatId": "measures",
+          "title": "Log Measure",
+          "fields": [
+            "menSplitID","itemId","quantity","raiseATask","surfaceTypeId" , "materialTypeId" , "length" ,
+            "width" , "depth", "comments", "backfill","muckaway","reinstatement","siteClear"
+          ],
+          "dialogItems": [
+            {
+              "type": "dropdown",
+              "uploadId": "menSplitID",
+              "repeatId": "measures",
+              "key": "MenSplits",
+              "title": "1st Man Crew Split",
+              "optional": true
+            },
+            {
+              "type": "dropdown",
+              "uploadId": "itemId",
+              "repeatId": "measures",
+              "title": "Work Item",
+              "key": "JobWorkItem",
+              "optional": true
+            },
+            {
+              "type": "number",
+              "uploadId": "quantity",
+              "repeatId": "measures",
+              "title": "Quantity",
+              "optional": false
+            },
+            {
+              "type": "yes_no",
+              "uploadId": "raiseATask",
+              "repeatId": "measures",
+              "title": "Do you want to raise a task?",
+              "optional": false,
+              "enables": [
+                {
+                  "type": "dropdown",
+                  "uploadId": "surfaceTypeId",
+                  "key": "surfaceTypes",
+                  "repeatId": "measures",
+                  "title": "Surface Types",
+                  "optional": true
+                },
+                {
+                  "type": "dropdown",
+                  "uploadId": "materialTypeId",
+                  "key": "materialTypes",
+                  "repeatId": "measures",
+                  "title": "Material Types",
+                  "optional": true
+                },
+                {
+                  "type": "number",
+                  "uploadId": "length",
+                  "repeatId": "measures",
+                  "title": "Length",
+                  "optional": false
+                },
+                {
+                  "type": "number",
+                  "uploadId": "width",
+                  "repeatId": "measures",
+                  "title": "Width",
+                  "optional": false
+                },
+                {
+                  "type": "number",
+                  "uploadId": "depth",
+                  "repeatId": "measures",
+                  "title": "Depth",
+                  "optional": false
+                }
+              ]
+            },
+            {
+              "type": "et_long_text",
+              "uploadId": "comments",
+              "repeatId": "measures",
+              "title": "Comments",
+              "hint": "Comments",
+              "optional": true
+            },
+            {
+              "type": "switch_layout",
+              "uploadId": "backfill",
+              "repeatId": "measures",
+              "title": "Backfill required?",
+              "optional": true
+            },
+            {
+              "type": "switch_layout",
+              "uploadId": "muckaway",
+              "repeatId": "measures",
+              "title": " Is a muckaway task required?",
+              "optional": true
+            },
+            {
+              "type": "switch_layout",
+              "uploadId": "reinstatement",
+              "repeatId": "measures",
+              "title": "Reinstatement required?",
+              "optional": true
+            },
+            {
+              "type": "switch_layout",
+              "uploadId": "siteClear",
+              "repeatId": "measures",
+              "title": "Site Clear required?",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Log Measure",
+      "index": 1,
+      "url":"app/subjob/{jobId}/log-measure",
+      "photoUrl": "app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "photo",
+          "title": "Log Measure",
+          "photoSize": 20,
+          "photoRequired": 3,
+          "photoId": "115"
+        }
+      ]
+    }
+  ]
+}

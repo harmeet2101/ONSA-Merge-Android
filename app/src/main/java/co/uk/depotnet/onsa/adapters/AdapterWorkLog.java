@@ -31,6 +31,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
     private boolean hasRFNA;
     private boolean hasRecordReturns;
     private boolean rfnaNotRequired;
+    private boolean isSubJob;
 
     public AdapterWorkLog(WorkLogActivity context, ArrayList<WorkLog> items, OnItemClickListener<WorkLog> listener, String jobID) {
         this.context = context;
@@ -39,6 +40,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
         this.jobID=jobID;
         Job job = DBHandler.getInstance().getJob(jobID);
         hasRFNA = job!=null && job.hasRFNA();
+        isSubJob = job!= null && job.isSubJob();
         hasRecordReturns = job!=null && job.hasRecordReturns();
         rfnaNotRequired = job!=null && job.rfnaNotRequired();
     }
@@ -63,7 +65,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
         if(position == 0){
             holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
         }else if(isBookOn){
-            if (jsonName.equalsIgnoreCase("start_on_site.json") || isStartOnSite() ){
+            if (jsonName.contains("start_on_site.json") || isStartOnSite() ){
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
             }else {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
@@ -101,7 +103,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
             }
         }
 
-        if(jsonName.equalsIgnoreCase("eng_comp.json")) {
+        if(jsonName.contains("eng_comp.json")) {
             if (isEngCompEnable()) {
                 holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
             } else {
@@ -111,7 +113,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
 
         holder.txtTitle.setText(workLog.getTitle());
 
-        ArrayList<BaseTask> baseTasks = DBHandler.getInstance().getTaskItems(jobID , workLog.getTaskId());
+        ArrayList<BaseTask> baseTasks = DBHandler.getInstance().getTaskItems(jobID , workLog.getTaskId() , isSubJob?1 : 0);
 
         if(!workLog.isIndicatorVisible()){
             holder.txtCount.setVisibility(View.GONE);
@@ -126,7 +128,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
 
         holder.view.setOnClickListener(view -> {
 
-            if(holder.getAdapterPosition() != 0 && (!isBookOn || (!jsonName.equalsIgnoreCase("start_on_site.json") && !isStartOnSite())) ) {
+            if(holder.getAdapterPosition() != 0 && (!isBookOn || (!jsonName.contains("start_on_site.json") && !isStartOnSite())) ) {
                 return;
             }
 
@@ -138,7 +140,7 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
                 return;
             }
 
-            if(jsonName.equalsIgnoreCase("eng_comp.json") && !isEngCompEnable()) {
+            if(jsonName.contains("eng_comp.json") && !isEngCompEnable()) {
                 return;
             }
 
@@ -177,16 +179,16 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
     }
 
     private boolean isRFNAEnable(){
-        return isStartOnSite() && !(hasRFNA || rfnaNotRequired || DBHandler.getInstance().getJobModuleStatus(jobID , "Ready For Next Activity"));
+        return isStartOnSite() && (isSubJob || !(hasRFNA || rfnaNotRequired || DBHandler.getInstance().getJobModuleStatus(jobID , "Ready For Next Activity")));
     }
 
 
     private boolean isRecordReturnEnable(){
-        return isStartOnSite() && !hasRecordReturns && ((hasRFNA || rfnaNotRequired || DBHandler.getInstance().getJobModuleStatus(jobID , "Ready For Next Activity")));
+        return isStartOnSite() && !hasRecordReturns && ((isSubJob || hasRFNA || rfnaNotRequired || DBHandler.getInstance().getJobModuleStatus(jobID , "Ready For Next Activity")));
     }
 
     private boolean isEngCompEnable(){
-        return isStartOnSite() && (hasRecordReturns  || DBHandler.getInstance().getJobModuleStatus(jobID , "Record Return"));
+        return isStartOnSite() && (isSubJob || hasRecordReturns  || DBHandler.getInstance().getJobModuleStatus(jobID , "Record Return"));
     }
 
 }

@@ -17,6 +17,7 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.JobDetailAdapter;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobDetailItem;
+import co.uk.depotnet.onsa.utils.Utils;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 
 public class FragmentChildJobDetails extends Fragment {
@@ -111,7 +112,6 @@ public class FragmentChildJobDetails extends Fragment {
         jobDetailItem = new JobDetailItem();
         jobDetailItem.setTitle("Job Order Notes");
         jobDetailItem.setValue(job.getJobOrderNotes());
-        jobDetailItem.setValue("Davey! duration=1625ms; Flags=1, IntendedVsync=1051003645747431, Vsync=1051004962414045, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=1051004987255201, AnimationStart=1051004987375513, PerformTraversalsStart=1051004987935669, DrawStart=1051005232797909, SyncQueued=1051005259265148, SyncStart=1051005259340200, IssueDrawCommandsStart=1051005260600930, SwapBuffers=1051005268199575, FrameCompleted=1051005271197596, DequeueBufferDuration=289000, QueueBufferDuration=715000, Davey! duration=1625ms; Flags=1, IntendedVsync=1051003645747431, Vsync=1051004962414045, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=1051004987255201, AnimationStart=1051004987375513, PerformTraversalsStart=1051004987935669, DrawStart=1051005232797909, SyncQueued=1051005259265148, SyncStart=1051005259340200, IssueDrawCommandsStart=1051005260600930, SwapBuffers=1051005268199575, FrameCompleted=1051005271197596, DequeueBufferDuration=289000, QueueBufferDuration=715000, Davey! duration=1625ms; Flags=1, IntendedVsync=1051003645747431, Vsync=1051004962414045, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=1051004987255201, AnimationStart=1051004987375513, PerformTraversalsStart=1051004987935669, DrawStart=1051005232797909, SyncQueued=1051005259265148, SyncStart=1051005259340200, IssueDrawCommandsStart=1051005260600930, SwapBuffers=1051005268199575, FrameCompleted=1051005271197596, DequeueBufferDuration=289000, QueueBufferDuration=715000, Davey! duration=1625ms; Flags=1, IntendedVsync=1051003645747431, Vsync=1051004962414045, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=1051004987255201, AnimationStart=1051004987375513, PerformTraversalsStart=1051004987935669, DrawStart=1051005232797909, SyncQueued=1051005259265148, SyncStart=1051005259340200, IssueDrawCommandsStart=1051005260600930, SwapBuffers=1051005268199575, FrameCompleted=1051005271197596, DequeueBufferDuration=289000, QueueBufferDuration=715000, Davey! duration=1625ms; Flags=1, IntendedVsync=1051003645747431, Vsync=1051004962414045, OldestInputEvent=9223372036854775807, NewestInputEvent=0, HandleInputStart=1051004987255201, AnimationStart=1051004987375513, PerformTraversalsStart=1051004987935669, DrawStart=1051005232797909, SyncQueued=1051005259265148, SyncStart=1051005259340200, IssueDrawCommandsStart=1051005260600930, SwapBuffers=1051005268199575, FrameCompleted=1051005271197596, DequeueBufferDuration=289000, QueueBufferDuration=715000,");
         arrayList.add(jobDetailItem);
 
         jobDetailItem = new JobDetailItem();
@@ -121,18 +121,20 @@ public class FragmentChildJobDetails extends Fragment {
 
         jobDetailItem = new JobDetailItem();
         jobDetailItem.setTitle("Required By Date");
-        jobDetailItem.setValue(job.getrequiredByDate());
-        arrayList.add(jobDetailItem);
-
-        jobDetailItem = new JobDetailItem();
-        jobDetailItem.setTitle("Scheduled End Date");
-        jobDetailItem.setValue(job.getScheduledEndDate());
+        jobDetailItem.setValue(Utils.formatDate(job.getrequiredByDate() , "yyyy-MM-dd'T'HH:mm:ss","dd/MM/yyyy"));
         arrayList.add(jobDetailItem);
 
         jobDetailItem = new JobDetailItem();
         jobDetailItem.setTitle("Scheduled Start Date");
-        jobDetailItem.setValue(job.getScheduledStartDate());
+        jobDetailItem.setValue(Utils.formatDate(job.getScheduledStartDate() , "yyyy-MM-dd'T'HH:mm:ss","dd/MM/yyyy"));
         arrayList.add(jobDetailItem);
+
+        jobDetailItem = new JobDetailItem();
+        jobDetailItem.setTitle("Scheduled End Date");
+        jobDetailItem.setValue(Utils.formatDate(job.getScheduledEndDate() , "yyyy-MM-dd'T'HH:mm:ss","dd/MM/yyyy"));
+        arrayList.add(jobDetailItem);
+
+
 
         jobDetailItem = new JobDetailItem();
         jobDetailItem.setTitle("short Address");

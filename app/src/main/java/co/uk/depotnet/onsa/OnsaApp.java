@@ -1,6 +1,7 @@
 package co.uk.depotnet.onsa;
 
 import android.app.Application;
+import android.os.Build;
 
 import co.uk.depotnet.onsa.utils.AppPreferences;
 
@@ -30,4 +31,6 @@ public class OnsaApp extends Application {
                 .build();
         Fetch.Impl.setDefaultInstanceConfiguration(fetchConfiguration);
     }
+
+
 }

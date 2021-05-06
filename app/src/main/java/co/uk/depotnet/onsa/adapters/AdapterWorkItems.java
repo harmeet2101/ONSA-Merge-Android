@@ -39,9 +39,10 @@ public class AdapterWorkItems extends RecyclerView.Adapter<AdapterWorkItems.View
             viewHolder.view.setBackgroundColor(ContextCompat.getColor(context , R.color.item_bg_light_gray));
         }
         JobWorkItem item = workItems.get(position);
-        viewHolder.txtDesc.setText(item.getdescription());
-        viewHolder.txtUnit.setText(String.valueOf(item.getunitType()));
-        viewHolder.txtQuantity.setText(String.valueOf(item.getquantity()));
+        viewHolder.txtItemCode.setText("Item Code: "+item.getitemCode());
+        viewHolder.txtDesc.setText("Description: "+item.getdescription());
+        viewHolder.txtUnit.setText("Unit: "+String.valueOf(item.getunitType()));
+        viewHolder.txtQuantity.setText("Quantity: "+String.valueOf(item.getquantity()));
     }
 
     @Override
@@ -52,6 +53,7 @@ public class AdapterWorkItems extends RecyclerView.Adapter<AdapterWorkItems.View
     static class ViewHolder extends RecyclerView.ViewHolder{
 
         final View view;
+        final TextView txtItemCode;
         final TextView txtDesc;
         final TextView txtUnit;
         final TextView txtQuantity;
@@ -59,6 +61,7 @@ public class AdapterWorkItems extends RecyclerView.Adapter<AdapterWorkItems.View
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.view = itemView;
+            this.txtItemCode = itemView.findViewById(R.id.txt_item_code);
             this.txtDesc = itemView.findViewById(R.id.txt_desc);
             this.txtUnit = itemView.findViewById(R.id.txt_unit);
             this.txtQuantity = itemView.findViewById(R.id.txt_quantity);

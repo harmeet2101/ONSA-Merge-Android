@@ -7,8 +7,8 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         // as per client requirement keeping all store same version of build
-        versionCode 94
-        versionName "2.7.1"
+        versionCode 105
+        versionName "2.8.2"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -31,13 +31,13 @@ android {
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
 
-//        timesheet {
+//        subjob {
 //            initWith debug
-//            android.defaultConfig.versionName "1.0.9"
-//            android.defaultConfig.versionCode 9
-//            applicationIdSuffix ".features.hseq.timesheet.dev"
-//            buildConfigField("String", "BASE_URL", '"https://dev-onsa-feature2-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "Onsa-Timesheet-dev"
+//            android.defaultConfig.versionName "1.1.2"
+//            android.defaultConfig.versionCode 12
+//            applicationIdSuffix ".features.hseq.subjob.dev"
+//            buildConfigField("String", "BASE_URL", '"https://dev-onsa-feature-api.depotnet.co.uk/"')
+//            resValue "string", "app_name", "Onsa-SubJob-dev"
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
 
@@ -94,13 +94,13 @@ android {
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
 
-        store_dev_oroh {
-            initWith debug
-            applicationIdSuffix ".store.oroh.dev"
-            buildConfigField("String", "BASE_URL", '"https://dev-onsa-oroh-api.depotnet.co.uk"')
-            resValue "string", "app_name", "OROH-ONSA-STORE-DEV"
-            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-        }
+//        store_dev_oroh {
+//            initWith debug
+//            applicationIdSuffix ".store.oroh.dev"
+//            buildConfigField("String", "BASE_URL", '"https://dev-onsa-oroh-api.depotnet.co.uk/"')
+//            resValue "string", "app_name", "OROH-ONSA-STORE-DEV"
+//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+//        }
 
 //        store_uat_oroh {
 //            initWith debug
@@ -142,13 +142,13 @@ android {
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
 
-//        store_live_instalor {
-//            initWith debug
-//            applicationIdSuffix ".store.instalor"
-//            buildConfigField("String", "BASE_URL", '"https://onsa-instalor-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "InstalOr Onsa"
-//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+        store_live_instalor {
+            initWith debug
+            applicationIdSuffix ".store.instalor.live"
+            buildConfigField("String", "BASE_URL", '"https://onsa-instalor-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "InstalOr Onsa"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }
 
 //        store_uat_lightsource {
 //            initWith debug

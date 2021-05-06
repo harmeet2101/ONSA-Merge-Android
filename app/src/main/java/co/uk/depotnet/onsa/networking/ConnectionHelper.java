@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.activities.LoginActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.Submission;
@@ -116,7 +117,8 @@ public class ConnectionHelper {
         Map<String, Object> solution = new HashMap<>();
         Map<String, Object> assetSection = new HashMap<>();
         Map<String, Object> riskAssessment = new HashMap<>();
-
+        Job job = dbHandler.getJob(submission.getJobID());
+        boolean isSubJob = job!= null && job.isSubJob();
 
         if (!TextUtils.isEmpty(endPoint)) {
             endPoint = endPoint.replace("{jobId}", submission.getJobID());
@@ -135,8 +137,6 @@ public class ConnectionHelper {
         ArrayList<Answer> signatures = new ArrayList<>();
 
         requestMap.put("submissionId", uniqueId);
-
-
         requestMap.put("submittedDate", submission.getDate());
         requestMap.put("dateTaken", submission.getDate());
         requestMap.put("latitude", submission.getLatitude());
@@ -157,11 +157,23 @@ public class ConnectionHelper {
                         if (repeatId.equalsIgnoreCase("jobDataSection")) {
 
                             if (uploadId.equalsIgnoreCase("address")) {
-                                jobData.put("surveyAddress", answer.getAnswer());
+                                if(!isSubJob) {
+                                    jobData.put("surveyAddress", answer.getAnswer());
+                                }else{
+                                    jobData.put(uploadId, answer.getAnswer());
+                                }
                             } else if (uploadId.equalsIgnoreCase("latitude")) {
-                                jobData.put("surveyLatitude", answer.getAnswer());
+                                if(!isSubJob) {
+                                    jobData.put("surveyLatitude", answer.getAnswer());
+                                }else{
+                                    jobData.put(uploadId, answer.getAnswer());
+                                }
                             } else if (uploadId.equalsIgnoreCase("longitude")) {
-                                jobData.put("surveyLongitude", answer.getAnswer());
+                                if(!isSubJob) {
+                                    jobData.put("surveyLongitude", answer.getAnswer());
+                                }else{
+                                    jobData.put(uploadId, answer.getAnswer());
+                                }
                             } else {
                                 jobData.put(uploadId, answer.getAnswer());
                             }
@@ -208,7 +220,11 @@ public class ConnectionHelper {
                                 uploadId = "locateMeLatitude";
                             } else if (uploadId.equalsIgnoreCase("longitude")) {
                                 uploadId = "locateMeLongitude";
-                            }
+                            }/*else if (uploadId.equalsIgnoreCase("dropWire")) {
+                                uploadId = "dropDownWireCount";
+                            }*/
+
+
                             Map<String, Map<String, Object>> repeatMap =
                                     (Map<String, Map<String, Object>>) assetSection.get(repeatId); // getRepeatobject
 
@@ -319,9 +335,14 @@ public class ConnectionHelper {
                     }
                 } else {
                     String signatureUrl = answer.getSignatureUrl();
-                    boolean isSignature = signatureUrl != null && !signatureUrl.isEmpty();
-                    if (isSignature) {
+                    boolean isSignature = !TextUtils.isEmpty(signatureUrl);
 
+
+//                    boolean isSignature = signatureUrl != null && !signatureUrl.isEmpty();
+                    if (isSignature) {
+                        if(isSubJob){
+                            answer.setSignatureUrl("app/subjob/{jobId}/upload-signature");
+                        }
                         signatures.add(answer);
                     } else {
                         photosToUpload.add(answer);
@@ -342,6 +363,9 @@ public class ConnectionHelper {
             }
         }
 
+        if(!fluidityTask.containsKey("tMMeetingRequired")){
+            fluidityTask.put("tMMeetingRequired" , 2);
+        }
 
         requestMap.put("jobDataSection", jobData);
         requestMap.put("fluidityTasksSection", fluidityTask);
@@ -383,6 +407,21 @@ public class ConnectionHelper {
             }
         }
 
+//        ((HashMap)requestMap.get("assetsSection")).get("assets")
+
+        if(isSubJob){
+            if(requestMap.containsKey("assetsSection")){
+                Object assets = requestMap.remove("assetsSection");
+                if((assets instanceof  HashMap) && ((HashMap) assets).get("assets") != null) {
+                    requestMap.put("assets" , ((HashMap) assets).get("assets"));
+                }
+            }
+
+            if (photoEndPoint != null) {
+                uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, "");
+            }
+        }
+
         String jsonSubmission = gson.toJson(requestMap);
         RequestBody body = RequestBody.create(JSON, jsonSubmission);
 
@@ -394,7 +433,7 @@ public class ConnectionHelper {
                 return response;
             }
 
-            if (photoEndPoint != null) {
+            if (!isSubJob && photoEndPoint != null) {
                 uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, "");
             }
 
@@ -435,6 +474,16 @@ public class ConnectionHelper {
         ArrayList<Answer> signatures = new ArrayList<>();
 
         requestMap.put("submissionId", uniqueId);
+
+        if(!TextUtils.isEmpty(submission.getJsonFileName()) &&
+                (submission.getJsonFileName().startsWith("sub_job_"))){
+            requestMap.put("submittedDateTime", submission.getDate());
+            if(submission.getJsonFileName().equalsIgnoreCase("sub_job_log_measure.json")){
+                requestMap.put("dateLogged", submission.getDate());
+            }
+        }
+
+
         requestMap.put("submittedDate", submission.getDate());
         requestMap.put("dateTaken", submission.getDate());
         requestMap.put("latitude", submission.getLatitude());
@@ -476,7 +525,7 @@ public class ConnectionHelper {
                             repeatId = "items";
                         }
                         if (!requestMap.containsKey(repeatId)) {  // if parent not contains repeatId then create new object
-                            requestMap.put(answer.getRepeatID(),
+                            requestMap.put(repeatId,
                                     new HashMap<String, Map<String, Object>>());
                         }
 
@@ -544,8 +593,13 @@ public class ConnectionHelper {
             }
         }
 
+        boolean isSubJobPresite = false;
+
         if(!TextUtils.isEmpty(jsonFileName)){
-            if(jsonFileName.equalsIgnoreCase("good_2_go.json")) {
+            if(jsonFileName.equalsIgnoreCase("sub_job_pre_site_survey.json")) {
+                requestMap = updateSubJobPresite(requestMap);
+                isSubJobPresite = true;
+            }if(jsonFileName.equalsIgnoreCase("good_2_go.json")) {
                 requestMap = updateGoodToGoSurvey(requestMap);
             }else if(jsonFileName.equalsIgnoreCase("poling_risk_assessment.json")) {
                 requestMap = updatePolingRiskAssessment(requestMap);
@@ -603,6 +657,9 @@ public class ConnectionHelper {
         RequestBody body = RequestBody.create(JSON, jsonSubmission);
 
         if (!TextUtils.isEmpty(endPoint)) {
+            if(isSubJobPresite && !TextUtils.isEmpty(photoEndPoint)){
+                uploadPhotos(photosToUpload, uniqueId, photoEndPoint, fm, "");
+            }
             String url = BuildConfig.BASE_URL + endPoint;
             Response response;
             if (endPoint.contains("raise-dcr/v2") || endPoint.contains("raise-dfe/v2")) {
@@ -614,7 +671,7 @@ public class ConnectionHelper {
                 }
             }
 
-            if(!TextUtils.isEmpty(photoEndPoint)){
+            if(!isSubJobPresite && !TextUtils.isEmpty(photoEndPoint)){
                 if(photoEndPoint.contains("issueId")){
                     try {
                         IssueResponse json = new Gson().fromJson(response.body().string(), IssueResponse.class);
@@ -786,8 +843,6 @@ public class ConnectionHelper {
         Map<String, Object> requestMap = new HashMap<>();
         //requestMap.put("submissionId", uniqueId);
         requestMap.put("templateVersionId", submission.getJobID());
-        ArrayList<PhotoComments> photoComments;
-        ArrayList<PhotoTags> photoTags;
         //getting data of new/schedule inspection here
         ArrayList<String> operativedata = new ArrayList<>();
         for (int c = 0; c < answersinspections.size(); c++) {
@@ -812,6 +867,18 @@ public class ConnectionHelper {
                             requestMap.put("latitude", ans);
                         } else if (uploadId.equals("longitude")) {
                             requestMap.put("longitude", ans);
+                        }else if (uploadId.equals("estimateNo")) {
+                            if(ans!= null) {
+                                Job job = dbHandler.getJobByEstimate(String.valueOf(ans));
+                                if(job != null) {
+                                    requestMap.put("jobId", job.getjobId());
+                                }else{
+                                    requestMap.put("jobId" , String.valueOf(ans));
+                                }
+                            }else{
+                                requestMap.put("jobId" , String.valueOf(ans));
+                            }
+
                         }
                     }
                 } else {
@@ -1221,6 +1288,7 @@ public class ConnectionHelper {
 
         try {
             Request request = builder.build();
+
             Call call = okHttpClient.newCall(request);
             Response response = call.execute();
 
@@ -1403,6 +1471,80 @@ public class ConnectionHelper {
 
         if(!requestMap.containsKey("AdditionalPrecautionsRequiredComments")){
             requestMap.put("AdditionalPrecautionsRequiredComments" , null);
+        }
+
+        return requestMap;
+    }
+
+    private Map<String , Object> updateSubJobPresite(Map<String , Object> requestMap){
+
+        if(!requestMap.containsKey("locationDetailsCorrect")){
+            requestMap.put("locationDetailsCorrect" , 1);
+        }
+        if(!requestMap.containsKey("haMeetingRequired")){
+            requestMap.put("haMeetingRequired" , 2);
+        }
+        if(!requestMap.containsKey("trafficManagementRequired")){
+            requestMap.put("trafficManagementRequired" , 2);
+        }
+        if(!requestMap.containsKey("tmMeetingRequired")){
+            requestMap.put("tmMeetingRequired" , 2);
+        }
+        if(!requestMap.containsKey("wayLeavePTDRequired")){
+            requestMap.put("wayLeavePTDRequired" , 2);
+        }
+
+//        second skip
+
+        if(!requestMap.containsKey("restrictions")){
+            requestMap.put("restrictions" , 2);
+        }
+
+        if(!requestMap.containsKey("dateConstraints")){
+            requestMap.put("dateConstraints" , 2);
+        }
+
+        if(!requestMap.containsKey("workingTimeRestrictions")){
+            requestMap.put("workingTimeRestrictions" , 2);
+        }
+
+        if(!requestMap.containsKey("outOfHoursApprovalRequired")){
+            requestMap.put("outOfHoursApprovalRequired" , 2);
+        }
+
+        if(!requestMap.containsKey("workingApproval24HrRequired")){
+            requestMap.put("workingApproval24HrRequired" , 2);
+        }
+
+        if(!requestMap.containsKey("parkingBaySuspensions")){
+            requestMap.put("parkingBaySuspensions" , 2);
+        }
+
+        if(!requestMap.containsKey("busStopSuspensions")){
+            requestMap.put("busStopSuspensions" , 2);
+        }
+
+        if(!requestMap.containsKey("jobCantStart")){
+            requestMap.put("jobCantStart" , 2);
+        }
+
+        if(!requestMap.containsKey("materialsRequired")){
+            requestMap.put("materialsRequired" , 2);
+        }
+
+        if(!requestMap.containsKey("pedestrianManagementRequired")){
+            requestMap.put("pedestrianManagementRequired" , 2);
+        }
+
+        if(!requestMap.containsKey("proposedDateToCommenceAvailable")){
+            requestMap.put("proposedDateToCommenceAvailable" , 2);
+        }
+
+        if(!requestMap.containsKey("proposedDateToCommenceDuration")){
+            requestMap.put("proposedDateToCommenceDuration" , 1);
+        }
+        if(!requestMap.containsKey("surveyRequired")){
+            requestMap.put("surveyRequired" , 2);
         }
 
         return requestMap;

@@ -3,7 +3,6 @@ package co.uk.depotnet.onsa.listeners;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -85,19 +84,24 @@ public class DropDownCalls {
             } else if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.engCompOutcomes)) {
                 ArrayList<ItemType> outComes = dbHandler.getItemTypes(DatasetResponse.DBTable.engCompOutcomes);
 
+
                 Job job = dbHandler.getJob(submission.getJobID());
-                boolean hasRFNA = job != null && job.hasRFNA();
-                boolean rfnaNotRequired = job != null && job.rfnaNotRequired();
-                for (int i = 0; i < outComes.size(); i++) {
-                    String displayItems = outComes.get(i).getDisplayItem();
-                    boolean isSuccessMessage = displayItems.startsWith("01") || displayItems.startsWith("02");
-                    String prefKey = AppPreferences.getString("RadioButton_" + submission.getJobID(), null);
-                    if (isSuccessMessage) {
-                        if (!rfnaNotRequired && (hasRFNA || (!TextUtils.isEmpty(prefKey) && prefKey.equalsIgnoreCase("true")))) {
+                if(job!= null && job.isSubJob()){
+                    items.addAll(outComes);
+                }else {
+                    boolean hasRFNA = job != null && job.hasRFNA();
+                    boolean rfnaNotRequired = job != null && job.rfnaNotRequired();
+                    for (int i = 0; i < outComes.size(); i++) {
+                        String displayItems = outComes.get(i).getDisplayItem();
+                        boolean isSuccessMessage = displayItems.startsWith("01") || displayItems.startsWith("02");
+                        String prefKey = AppPreferences.getString("RadioButton_" + submission.getJobID(), null);
+                        if (isSuccessMessage) {
+                            if (!rfnaNotRequired && (hasRFNA || (!TextUtils.isEmpty(prefKey) && prefKey.equalsIgnoreCase("true")))) {
+                                items.add(outComes.get(i));
+                            }
+                        } else if (rfnaNotRequired || (!hasRFNA && (!TextUtils.isEmpty(prefKey) && prefKey.equalsIgnoreCase("false")))) {
                             items.add(outComes.get(i));
                         }
-                    } else if (rfnaNotRequired || (!hasRFNA && (!TextUtils.isEmpty(prefKey) && prefKey.equalsIgnoreCase("false")))) {
-                        items.add(outComes.get(i));
                     }
                 }
             } else if (formItem.getKey().equalsIgnoreCase(RecordReturnReason.DBTable.NAME)) {

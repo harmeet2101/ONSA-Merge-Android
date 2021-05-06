@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_40sdp"
         android:padding="@dimen/_8sdp"
-        android:background="@color/depotnet_color">.
+        android:background="@color/depotnet_color">
 
         <TextView
             android:layout_width="wrap_content"
@@ -46,60 +46,43 @@
         <TextView
             android:id="@+id/txt_value"
             android:layout_width="wrap_content"
+            android:layout_toLeftOf="@id/txt_quantity"
+            android:layout_toStartOf="@id/txt_quantity"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/_4sdp"
             android:layout_marginEnd="@dimen/_4sdp"
-            android:gravity="center_vertical"
-            android:layout_centerVertical="true"
+            android:text="dffdfgdggd hjdg fjdjdgj hsfkhfsj hkshkh jshffjh sdfdfds sfsfs sf"
             android:textColor="@color/txt_color_dark"
             android:textSize="@dimen/_12sdp" />
-
-        <View
-            android:id="@+id/sep1"
-            android:layout_width="@dimen/_1sdp"
-            android:layout_height="wrap_content"
-            android:background="@color/btn_gray"
-            android:layout_marginRight="@dimen/_4sdp"
-            android:layout_marginEnd="@dimen/_4sdp"
-            android:layout_toRightOf="@id/txt_value"
-            android:layout_toEndOf="@id/txt_value" />
 
         <TextView
             android:id="@+id/txt_quantity"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-
             android:layout_width="wrap_content"
+            android:layout_marginLeft="@dimen/_4sdp"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginRight="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
+            android:text="1"
+            android:gravity="center_horizontal"
             android:textColor="@color/txt_color_dark"
             android:textSize="@dimen/_12sdp" />
 
-        <View
-            android:id="@+id/sep2"
-            android:layout_width="@dimen/_1sdp"
-            android:layout_height="wrap_content"
-            android:background="@color/btn_gray"
-            android:layout_marginRight="@dimen/_4sdp"
-            android:layout_marginEnd="@dimen/_4sdp"
-            android:layout_toLeftOf="@id/txt_quantity"
-            android:layout_toStartOf="@id/txt_quantity" />
-
-        <TextView
+        <!--<TextView
             android:id="@+id/txt_title"
-            android:layout_toRightOf="@id/sep1"
-            android:layout_toEndOf="@id/sep1"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical"
-            android:layout_toLeftOf="@id/sep2"
-            android:layout_toStartOf="@id/sep2"
+            android:layout_toRightOf="@id/txt_value"
+            android:layout_toEndOf="@id/txt_value"
+            android:layout_toLeftOf="@id/txt_quantity"
+            android:layout_toStartOf="@id/txt_quantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/_4sdp"
             android:layout_marginEnd="@dimen/_4sdp"
+            android:text=""
             android:textColor="@color/txt_color_dark"
-            android:textSize="@dimen/_12sdp" />
+            android:textSize="@dimen/_12sdp" />-->
     </RelativeLayout>
 
     <LinearLayout

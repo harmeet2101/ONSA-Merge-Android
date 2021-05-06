@@ -41,6 +41,7 @@ public class BaseTask implements Parcelable {
     private float stone;
     private boolean isSelectable;
     private boolean isSelected;
+    private boolean isSubJobTask;
 
     public BaseTask(Cursor cursor){
         siteActivityTaskId = cursor.getString(cursor.getColumnIndex(DBTable.siteActivityTaskId));
@@ -73,6 +74,7 @@ public class BaseTask implements Parcelable {
         bags = cursor.getFloat(cursor.getColumnIndex(DBTable.bags));
         sand = cursor.getFloat(cursor.getColumnIndex(DBTable.sand));
         stone = cursor.getFloat(cursor.getColumnIndex(DBTable.stone));
+        isSubJobTask = cursor.getInt(cursor.getColumnIndex(DBTable.isSubJobTask))==1;
     }
 
     public static class DBTable{
@@ -107,43 +109,8 @@ public class BaseTask implements Parcelable {
         public static final String bags = "bags";
         public static final String sand = "sand";
         public static final String stone = "stone";
+        public static final String isSubJobTask = "isSubJobTask";
     }
-
-    public ContentValues toContentValues(){
-        ContentValues cv = new ContentValues();
-        cv.put(DBTable.siteActivityTaskId , siteActivityTaskId);
-        cv.put(DBTable.dateCreated , dateCreated);
-        cv.put(DBTable.siteActivityTypeId , siteActivityTypeId);
-        cv.put(DBTable.siteActivityTypeName , siteActivityTypeName);
-        cv.put(DBTable.createdByGangId , createdByGangId);
-        cv.put(DBTable.createdByGangName , createdByGangName);
-        cv.put(DBTable.createdByUserId , createdByUserId);
-        cv.put(DBTable.createdByUserName , createdByUserName);
-        cv.put(DBTable.completedByGangId , completedByGangId);
-        cv.put(DBTable.completedByGangName , completedByGangName);
-        cv.put(DBTable.completedByUserId , completedByUserId);
-        cv.put(DBTable.completedByUserName , completedByUserName);
-        cv.put(DBTable.jobId , jobId);
-        cv.put(DBTable.materialTypeId , materialTypeId);
-        cv.put(DBTable.materialTypeName , materialTypeName);
-        cv.put(DBTable.surfaceTypeId , surfaceTypeId);
-        cv.put(DBTable.surfaceTypeName , surfaceTypeName);
-        cv.put(DBTable.length , length);
-        cv.put(DBTable.width , width);
-        cv.put(DBTable.depth , depth);
-        cv.put(DBTable.jobEtonSiteId , jobEtonSiteId);
-        cv.put(DBTable.noticePermitRef , noticePermitRef);
-        cv.put(DBTable.comments , comments);
-        cv.put(DBTable.cones , cones);
-        cv.put(DBTable.barriers , barriers);
-        cv.put(DBTable.chpt8 , chpt8);
-        cv.put(DBTable.fwBoards , fwBoards);
-        cv.put(DBTable.bags , bags);
-        cv.put(DBTable.sand , sand);
-        cv.put(DBTable.stone , stone);
-        return cv;
-    }
-
 
     protected BaseTask(Parcel in) {
         siteActivityTaskId = in.readString();
@@ -178,6 +145,49 @@ public class BaseTask implements Parcelable {
         stone = in.readFloat();
         isSelectable = in.readByte() != 0;
         isSelected = in.readByte() != 0;
+        isSubJobTask = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(siteActivityTaskId);
+        dest.writeString(dateCreated);
+        dest.writeInt(siteActivityTypeId);
+        dest.writeString(siteActivityTypeName);
+        dest.writeString(createdByGangId);
+        dest.writeString(createdByGangName);
+        dest.writeString(createdByUserId);
+        dest.writeString(createdByUserName);
+        dest.writeString(completedByGangId);
+        dest.writeString(completedByGangName);
+        dest.writeString(completedByUserId);
+        dest.writeString(completedByUserName);
+        dest.writeString(jobId);
+        dest.writeString(materialTypeId);
+        dest.writeString(materialTypeName);
+        dest.writeString(surfaceTypeId);
+        dest.writeString(surfaceTypeName);
+        dest.writeFloat(length);
+        dest.writeFloat(width);
+        dest.writeFloat(depth);
+        dest.writeString(jobEtonSiteId);
+        dest.writeString(noticePermitRef);
+        dest.writeString(comments);
+        dest.writeFloat(cones);
+        dest.writeFloat(barriers);
+        dest.writeFloat(chpt8);
+        dest.writeFloat(fwBoards);
+        dest.writeFloat(bags);
+        dest.writeFloat(sand);
+        dest.writeFloat(stone);
+        dest.writeByte((byte) (isSelectable ? 1 : 0));
+        dest.writeByte((byte) (isSelected ? 1 : 0));
+        dest.writeByte((byte) (isSubJobTask ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<BaseTask> CREATOR = new Creator<BaseTask>() {
@@ -192,46 +202,42 @@ public class BaseTask implements Parcelable {
         }
     };
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public ContentValues toContentValues(){
+        ContentValues cv = new ContentValues();
+        cv.put(DBTable.siteActivityTaskId , siteActivityTaskId);
+        cv.put(DBTable.dateCreated , dateCreated);
+        cv.put(DBTable.siteActivityTypeId , siteActivityTypeId);
+        cv.put(DBTable.siteActivityTypeName , siteActivityTypeName);
+        cv.put(DBTable.createdByGangId , createdByGangId);
+        cv.put(DBTable.createdByGangName , createdByGangName);
+        cv.put(DBTable.createdByUserId , createdByUserId);
+        cv.put(DBTable.createdByUserName , createdByUserName);
+        cv.put(DBTable.completedByGangId , completedByGangId);
+        cv.put(DBTable.completedByGangName , completedByGangName);
+        cv.put(DBTable.completedByUserId , completedByUserId);
+        cv.put(DBTable.completedByUserName , completedByUserName);
+        cv.put(DBTable.jobId , jobId);
+        cv.put(DBTable.materialTypeId , materialTypeId);
+        cv.put(DBTable.materialTypeName , materialTypeName);
+        cv.put(DBTable.surfaceTypeId , surfaceTypeId);
+        cv.put(DBTable.surfaceTypeName , surfaceTypeName);
+        cv.put(DBTable.length , length);
+        cv.put(DBTable.width , width);
+        cv.put(DBTable.depth , depth);
+        cv.put(DBTable.jobEtonSiteId , jobEtonSiteId);
+        cv.put(DBTable.noticePermitRef , noticePermitRef);
+        cv.put(DBTable.comments , comments);
+        cv.put(DBTable.cones , cones);
+        cv.put(DBTable.barriers , barriers);
+        cv.put(DBTable.chpt8 , chpt8);
+        cv.put(DBTable.fwBoards , fwBoards);
+        cv.put(DBTable.bags , bags);
+        cv.put(DBTable.sand , sand);
+        cv.put(DBTable.stone , stone);
+        cv.put(DBTable.isSubJobTask , isSubJobTask);
+        return cv;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(siteActivityTaskId);
-        parcel.writeString(dateCreated);
-        parcel.writeInt(siteActivityTypeId);
-        parcel.writeString(siteActivityTypeName);
-        parcel.writeString(createdByGangId);
-        parcel.writeString(createdByGangName);
-        parcel.writeString(createdByUserId);
-        parcel.writeString(createdByUserName);
-        parcel.writeString(completedByGangId);
-        parcel.writeString(completedByGangName);
-        parcel.writeString(completedByUserId);
-        parcel.writeString(completedByUserName);
-        parcel.writeString(jobId);
-        parcel.writeString(materialTypeId);
-        parcel.writeString(materialTypeName);
-        parcel.writeString(surfaceTypeId);
-        parcel.writeString(surfaceTypeName);
-        parcel.writeFloat(length);
-        parcel.writeFloat(width);
-        parcel.writeFloat(depth);
-        parcel.writeString(jobEtonSiteId);
-        parcel.writeString(noticePermitRef);
-        parcel.writeString(comments);
-        parcel.writeFloat(cones);
-        parcel.writeFloat(barriers);
-        parcel.writeFloat(chpt8);
-        parcel.writeFloat(fwBoards);
-        parcel.writeFloat(bags);
-        parcel.writeFloat(sand);
-        parcel.writeFloat(stone);
-        parcel.writeByte((byte) (isSelectable ? 1 : 0));
-        parcel.writeByte((byte) (isSelected ? 1 : 0));
-    }
 
     public String getSiteActivityTaskId() {
         return siteActivityTaskId;
@@ -529,6 +535,14 @@ public class BaseTask implements Parcelable {
             answer.setDisplayAnswer(String.valueOf(getStone()));
         }
         return answer;
+    }
+
+    public void setSubJobTask(boolean subJobTask) {
+        isSubJobTask = subJobTask;
+    }
+
+    public boolean isSubJobTask() {
+        return isSubJobTask;
     }
 }
 

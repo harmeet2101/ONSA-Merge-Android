@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.tonyodev.fetch2.AbstractFetchListener;
 import com.tonyodev.fetch2.DefaultFetchNotificationManager;
@@ -27,20 +28,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import co.uk.depotnet.onsa.R;
-import co.uk.depotnet.onsa.activities.MainActivity;
 import co.uk.depotnet.onsa.adapters.JobPackAdapter;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.listeners.DownloadActionListener;
 import co.uk.depotnet.onsa.modals.Document;
+import co.uk.depotnet.onsa.modals.Job;
 
-public class FragmentJobPackList extends Fragment implements
-        DownloadActionListener {
+public class FragmentJobPackList extends Fragment{
     private static final String ARG_JOBID = "JobId";
     private static final int UNKNOWN_REMAINING_TIME = -1;
     private static final int UNKNOWN_DOWNLOADED_BYTES_PER_SECOND = 0;
     private Context context;
     private JobPackAdapter adapter;
     private Fetch fetch;
+    private Job job;
     private final FetchListener fetchListener = new AbstractFetchListener() {
         @Override
         public void onAdded(@NotNull Download download) {
@@ -113,8 +113,10 @@ public class FragmentJobPackList extends Fragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
+        DBHandler dbHandler = DBHandler.getInstance(context);
 
         String jobId = args.getString(ARG_JOBID);
+        job = dbHandler.getJob(jobId);
         List<Document> jobPacks = DBHandler.getInstance().getDocument(jobId);
 
         final FetchConfiguration fetchConfiguration = new FetchConfiguration.Builder(context)
@@ -126,13 +128,21 @@ public class FragmentJobPackList extends Fragment implements
 //        fetch = Fetch.Impl.getInstance(fetchConfiguration);
         fetch = Fetch.Impl.getDefaultInstance();
         fetch.addListener(fetchListener);
-        adapter = new JobPackAdapter(context, jobPacks, this , fetch);
+        adapter = new JobPackAdapter(context, jobPacks, fetch , job.isSubJob());
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_kit_bag, container, false);
+        TextView txtToolBarTitle = view.findViewById(R.id.txt_toolbar_title);
+        String title;
+        if(job.isSubJob()){
+            title = "Jobpack: "+job.getestimateNumber()+"-"+"S"+job.getSubJobNumber();
+        }else{
+            title = "Jobpack: "+job.getestimateNumber();
+        }
+        txtToolBarTitle.setText(title);
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
@@ -155,26 +165,6 @@ public class FragmentJobPackList extends Fragment implements
         });
 
         return view;
-    }
-
-    @Override
-    public void onPauseDownload(int id) {
-
-    }
-
-    @Override
-    public void onResumeDownload(int id) {
-
-    }
-
-    @Override
-    public void onRemoveDownload(int id) {
-
-    }
-
-    @Override
-    public void onRetryDownload(int id) {
-
     }
 
     @Override

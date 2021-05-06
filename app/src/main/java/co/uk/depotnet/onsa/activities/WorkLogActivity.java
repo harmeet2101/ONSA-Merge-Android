@@ -74,7 +74,12 @@ public class WorkLogActivity extends AppCompatActivity
         jobReferenceNumber = intent.getStringExtra(ARG_JOB_REFERENCE_NUMBER);
         job = DBHandler.getInstance().getJob(jobID);
         TextView txtToolbarTitle = findViewById(R.id.txt_toolbar_title);
-        txtToolbarTitle.setText(String.format("%s: %s", getString(R.string.work_log), job.getestimateNumber()));
+        if(job.isSubJob()){
+            txtToolbarTitle.setText(String.format("Work Log: %s-S%s", job.getestimateNumber(), job.getSubJobNumber()));
+        }else{
+            txtToolbarTitle.setText(String.format("Work Log: %s", job.getestimateNumber()));
+        }
+
         llUiBlocker = findViewById(R.id.ll_ui_blocker);
 
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
@@ -88,11 +93,14 @@ public class WorkLogActivity extends AppCompatActivity
         VerticalSpaceItemDecoration itemDecoration = new VerticalSpaceItemDecoration(20);
         recyclerView.addItemDecoration(itemDecoration);
         String fileName = "work_log.json";
+        if(job.isSubJob()){
+            fileName = "sub_job_work_log.json";
+        }
         workLogs = JsonReader.loadFormJSON(this, WorkLog.class, fileName);
-
+        String prefix = job.isSubJob()?"sub_job_":"";
         if (!user.isReinstatement()) {
             for (int i = 0; i < workLogs.size(); i++) {
-                if (workLogs.get(i).getJson().equalsIgnoreCase("log_reinstatement.json")) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase(prefix+"log_reinstatement.json")) {
                     workLogs.remove(i);
                 }
             }
@@ -100,7 +108,7 @@ public class WorkLogActivity extends AppCompatActivity
 
         if (!user.isBackfill()) {
             for (int i = 0; i < workLogs.size(); i++) {
-                if (workLogs.get(i).getJson().equalsIgnoreCase("log_back_fill.json")) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase(prefix+"log_back_fill.json")) {
                     workLogs.remove(i);
                 }
             }
@@ -108,7 +116,7 @@ public class WorkLogActivity extends AppCompatActivity
 
         if (!user.isSiteClear()) {
             for (int i = 0; i < workLogs.size(); i++) {
-                if (workLogs.get(i).getJson().equalsIgnoreCase("log_site_clear.json")) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase(prefix+"log_site_clear.json")) {
                     workLogs.remove(i);
                 }
             }
@@ -124,7 +132,20 @@ public class WorkLogActivity extends AppCompatActivity
 
         if (!user.isServiceMaterialDrop()) {
             for (int i = 0; i < workLogs.size(); i++) {
-                if (workLogs.get(i).getJson().equalsIgnoreCase("service_material.json")) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase(prefix+"service_material.json")) {
+                    workLogs.remove(i);
+                }
+            }
+        }
+
+        if (job.isSubJob()) {
+            for (int i = 0; i < workLogs.size(); i++) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase("rfna.json")) {
+                    workLogs.remove(i);
+                }
+            }
+            for (int i = 0; i < workLogs.size(); i++) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase("record_return.json")) {
                     workLogs.remove(i);
                 }
             }
@@ -197,11 +218,19 @@ public class WorkLogActivity extends AppCompatActivity
             boolean isBookOn = isBookOn();
             if (isBookOn) {
                 workLogs.get(0).setStatus(false);
-                workLogs.get(0).setJson("book_off.json");
+                if(job.isSubJob()){
+                    workLogs.get(0).setJson("sub_job_book_off.json");
+                }else {
+                    workLogs.get(0).setJson("book_off.json");
+                }
                 workLogs.get(0).setTitle("Book Off");
             } else {
                 workLogs.get(0).setStatus(false);
-                workLogs.get(0).setJson("book_on.json");
+                if(job.isSubJob()) {
+                    workLogs.get(0).setJson("sub_job_book_on.json");
+                }else{
+                    workLogs.get(0).setJson("book_on.json");
+                }
                 workLogs.get(0).setTitle("Book On");
             }
             adapter.setBookOn(isBookOn);
@@ -237,6 +266,9 @@ public class WorkLogActivity extends AppCompatActivity
             title = "Poling Risk Assessment";
         }else{
             jsonFileName = "risk_assessment.json";
+            if(job.isSubJob()){
+                jsonFileName = "sub_job_risk_assessment.json";
+            }
             title = "Risk Assessment";
         }
 
@@ -272,18 +304,11 @@ public class WorkLogActivity extends AppCompatActivity
             return;
         }
 
-//        if (jsonName.equalsIgnoreCase("rfna.json")) {
-//            String title = "RFNA";
-//            String message = "This Process is irreversible. Do you really want to submit  ";
-//            showRFNAConfirmation(title, message);
-//            return;
-//        }
-
-        if (!isBookOn() && !jsonName.equalsIgnoreCase("book_on.json")) {
+        if (!isBookOn() && (!jsonName.equalsIgnoreCase("book_on.json") && !jsonName.equalsIgnoreCase("sub_job_book_on.json"))) {
             return;
         }
 
-        if (jsonName.equalsIgnoreCase("log_measure.json")) {
+        if (jsonName.equalsIgnoreCase("log_measure.json") || jsonName.equalsIgnoreCase("sub_job_log_measure.json")) {
             openLogMeasure(workLog);
             return;
         }
@@ -378,77 +403,5 @@ public class WorkLogActivity extends AppCompatActivity
 
         dialog.setCancelable(false);
         dialog.show(getSupportFragmentManager(), "_ERROR_DIALOG");
-    }
-
-    public void showRFNAConfirmation(String title, String message) {
-
-        final MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositive(getString(R.string.submit), (dialogInterface, i) -> {
-                    sendRFNA();
-                    dialogInterface.dismiss();
-                })
-                .setNegative(getString(R.string.generic_cancel), (dialogInterface, i) -> dialogInterface.dismiss())
-                .build();
-
-        dialog.setCancelable(false);
-        dialog.show(getSupportFragmentManager(), "_ERROR_DIALOG");
-    }
-
-    private void sendRFNA() {
-        String jsonFileName = "rfna.json";
-        Submission submission = new Submission(jsonFileName, "Ready For Next Activity", jobID);
-        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
-        submission.setId(submissionID);
-        JobModuleStatus jobModuleStatus = new JobModuleStatus();
-        jobModuleStatus.setStatus(true);
-        jobModuleStatus.setJobId(jobID);
-        jobModuleStatus.setModuleName("Ready For Next Activity");
-        jobModuleStatus.setSubmissionId(submission.getID());
-        DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
-                jobModuleStatus.toContentValues());
-
-
-        if (!CommonUtils.isNetworkAvailable(this)) {
-            String title = "Submission Error";
-            String message = "Internet connection is not available. Please check your internet connection.";
-            DBHandler.getInstance().setSubmissionQueued(submission);
-            showErrorDialog(title, message);
-            adapter.notifyDataSetChanged();
-            return;
-        }
-
-        if (!CommonUtils.validateToken(WorkLogActivity.this)) {
-            return;
-        }
-
-        showProgressBar();
-
-
-        APICalls.sendRfna(jobID, user.gettoken()).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-
-                if (CommonUtils.onTokenExpired(WorkLogActivity.this, response.code())) {
-                    return;
-                }
-
-                if (response.isSuccessful()) {
-                    showErrorDialog("Success", "Submission was successful");
-                } else {
-                    DBHandler.getInstance().setSubmissionQueued(submission);
-                    showErrorDialog("Submission Error", "Submission Error, your submission has not been succeed");
-                }
-                hideProgressBar();
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                DBHandler.getInstance().setSubmissionQueued(submission);
-                showErrorDialog("Submission Error", "Submission Error, your submission has not been succeed");
-                hideProgressBar();
-            }
-        });
     }
 }

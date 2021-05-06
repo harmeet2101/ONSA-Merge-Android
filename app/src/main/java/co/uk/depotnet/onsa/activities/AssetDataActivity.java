@@ -20,6 +20,7 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.AdapterAssets;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.OnItemClickListener;
+import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobModuleStatus;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
@@ -41,6 +42,7 @@ public class AssetDataActivity extends AppCompatActivity
     private LinearLayout llBtnContainer;
     private Submission submission;
     private Screen screen;
+    private Job job;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,14 @@ public class AssetDataActivity extends AppCompatActivity
         VerticalSpaceItemDecoration itemDecoration = new VerticalSpaceItemDecoration(20);
         recyclerView.addItemDecoration(itemDecoration);
 
-        screen = JsonReader.loadForm(this, "asset_survey.json").getScreens().get(1);
+        job = DBHandler.getInstance().getJob(submission.getJobID());
+        String fileName = "asset_survey.json";
+        if(job != null && job.isSubJob()){
+            fileName = "sub_job_asset_survey.json";
+        }
+
+
+        screen = JsonReader.loadForm(this, fileName).getScreens().get(1);
         adapter = new AdapterAssets(this, submission.getID(), poleItems, this, screen);
         recyclerView.setAdapter(adapter);
 
@@ -178,7 +187,12 @@ public class AssetDataActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(FormItem formItem, int position) {
-        submission.setJsonFile("asset_survey.json");
+
+        String fileName = "asset_survey.json";
+        if(job != null && job.isSubJob()){
+            fileName = "sub_job_asset_survey.json";
+        }
+        submission.setJsonFile(fileName);
         Intent intent = new Intent(this, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
         intent.putExtra(FormActivity.ARG_REPEAT_COUNT, position);

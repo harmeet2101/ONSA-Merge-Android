@@ -37,62 +37,83 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
+                <LinearLayout
+                    android:id="@+id/ll_yes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center">
 
-                <co.uk.depotnet.onsa.views.YesNoTextView
-                    android:id="@+id/txt_btn_yes"
-                    android:layout_width="@dimen/_50sdp"
-                    android:layout_height="@dimen/_50sdp"
-                    android:layout_marginEnd="@dimen/_30sdp"
-                    android:layout_marginRight="@dimen/_30sdp"
-                    android:background="@drawable/btn_yes_no_unselected"
-                    android:gravity="center"
-                    android:text="@string/yes"
-                    android:textAllCaps="true"
-                    android:textColor="@color/depotnet_color"
-                    android:textSize="@dimen/_16sdp"
-                    android:textStyle="bold"
-                    app:selected_background_color="@color/depotnet_color"
-                    app:selected_txt_color="@color/white"
-                    app:stroke_size="@dimen/_2sdp"
-                    app:unselected_background_color="@color/white"
-                    app:unselected_txt_color="@color/depotnet_color" />
+                    <co.uk.depotnet.onsa.views.YesNoTextView
+                        android:id="@+id/txt_btn_yes"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
+
+                        android:background="@drawable/btn_yes_no_unselected"
+                        android:gravity="center"
+                        android:text="@string/yes"
+                        android:textAllCaps="true"
+                        android:textColor="@color/depotnet_color"
+                        android:textSize="@dimen/_16sdp"
+                        android:textStyle="bold"
+                        app:selected_background_color="@color/depotnet_color"
+                        app:selected_txt_color="@color/white"
+                        app:stroke_size="@dimen/_2sdp"
+                        app:unselected_background_color="@color/white"
+                        app:unselected_txt_color="@color/depotnet_color" />
+
+                </LinearLayout>
 
 
-                <co.uk.depotnet.onsa.views.YesNoTextView
-                    android:id="@+id/txt_btn_no"
-                    android:layout_width="@dimen/_50sdp"
-                    android:layout_height="@dimen/_50sdp"
-                    android:layout_marginEnd="@dimen/_30sdp"
-                    android:layout_marginRight="@dimen/_30sdp"
-                    android:background="@drawable/btn_yes_no_unselected"
-                    android:gravity="center"
-                    android:text="@string/no"
-                    android:textAllCaps="true"
-                    android:textColor="@color/depotnet_color"
-                    android:textSize="@dimen/_16sdp"
-                    android:textStyle="bold"
-                    app:selected_background_color="@color/red"
-                    app:selected_txt_color="@color/white"
-                    app:stroke_size="@dimen/_2sdp"
-                    app:unselected_background_color="@color/white"
-                    app:unselected_txt_color="@color/red" />
+                <LinearLayout
+                    android:id="@+id/ll_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center">
 
-                <co.uk.depotnet.onsa.views.YesNoTextView
-                    android:id="@+id/txt_btn_not_applicable"
-                    android:layout_width="@dimen/_50sdp"
-                    android:layout_height="@dimen/_50sdp"
-                    android:background="@drawable/btn_yes_no_unselected"
-                    android:gravity="center"
-                    android:text="@string/not_applicable"
-                    android:textAllCaps="true"
-                    android:textColor="@color/depotnet_color"
-                    android:textSize="@dimen/_16sdp"
-                    android:textStyle="bold"
-                    app:selected_background_color="@color/txt_color_light_grey"
-                    app:selected_txt_color="@color/white"
-                    app:stroke_size="@dimen/_2sdp"
-                    app:unselected_background_color="@color/white"
-                    app:unselected_txt_color="@color/txt_color_light_grey" />
+                    <co.uk.depotnet.onsa.views.YesNoTextView
+                        android:id="@+id/txt_btn_no"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
+                        android:background="@drawable/btn_yes_no_unselected"
+                        android:gravity="center"
+                        android:text="@string/no"
+                        android:textAllCaps="true"
+                        android:textColor="@color/depotnet_color"
+                        android:textSize="@dimen/_16sdp"
+                        android:textStyle="bold"
+                        app:selected_background_color="@color/red"
+                        app:selected_txt_color="@color/white"
+                        app:stroke_size="@dimen/_2sdp"
+                        app:unselected_background_color="@color/white"
+                        app:unselected_txt_color="@color/red" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_na"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <co.uk.depotnet.onsa.views.YesNoTextView
+                        android:id="@+id/txt_btn_not_applicable"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
+                        android:background="@drawable/btn_yes_no_unselected"
+                        android:gravity="center"
+                        android:text="@string/not_applicable"
+                        android:textAllCaps="true"
+                        android:textColor="@color/depotnet_color"
+                        android:textSize="@dimen/_16sdp"
+                        android:textStyle="bold"
+                        app:selected_background_color="@color/txt_color_light_grey"
+                        app:selected_txt_color="@color/white"
+                        app:stroke_size="@dimen/_2sdp"
+                        app:unselected_background_color="@color/white"
+                        app:unselected_txt_color="@color/txt_color_light_grey" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

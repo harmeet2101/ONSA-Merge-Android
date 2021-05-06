@@ -1,0 +1,36 @@
+  {
+  "title": "Site Clear",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Site Clear",
+      "index": 0,
+      "url":"app/subjob/{jobId}/complete-site-activity-tasks",
+      "photoUrl": "app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "task_list_site_clear",
+          "taskId": 6,
+          "title": "Select Task",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comments",
+          "title": "Comments",
+          "hint": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Site Clear",
+          "photoSize": 10,
+          "photoRequired": 3,
+          "photoId": "118"
+        }
+
+      ]
+    }
+  ]
+}

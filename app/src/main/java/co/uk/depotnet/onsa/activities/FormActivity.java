@@ -12,7 +12,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.PersistableBundle;
 import android.text.TextUtils;
@@ -31,6 +30,7 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.FormFragment;
 import co.uk.depotnet.onsa.listeners.FromActivityListener;
+import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsDocument;
 import co.uk.depotnet.onsa.modals.forms.Answer;
@@ -109,7 +109,50 @@ public class FormActivity extends ThemeBaseActivity implements
         toolTipModels = intent.getParcelableArrayListExtra(ARG_QUESTIONS);
         briefingsDocument = intent.getParcelableArrayListExtra(ARG_DOCS);
         recipients = intent.getStringArrayListExtra(Doc_Recipient);
+        addSubJobFields();
         startFromFragment();
+    }
+
+    private void addSubJobFields(){
+        String jsonName = submission.getJsonFileName();
+        if(TextUtils.isEmpty(jsonName)) {
+            return;
+        }
+
+        if(!jsonName.startsWith("sub_job_")){
+            return;
+        }
+        Job job = dbHandler.getJob(submission.getJobID());
+        if(job != null) {
+            Answer answer = dbHandler.getAnswer(submission.getID(), "gangId", null, 0);
+            if(answer == null) {
+                answer = new Answer(submission.getID(), "gangId", null, 0);
+            }
+            answer.setAnswer(job.getGangId());
+            answer.setDisplayAnswer(job.getGangId());
+            dbHandler.replaceData(Answer.DBTable.NAME , answer.toContentValues());
+        }
+
+
+        String dateUploadId = "";
+        if(jsonName.equalsIgnoreCase("sub_job_start_on_site.json")){
+            dateUploadId = "startedDate";
+        }else if(jsonName.equalsIgnoreCase("sub_job_finish_on_site.json")){
+            dateUploadId = "finishedDate";
+        }else if(jsonName.equalsIgnoreCase("sub_job_book_off.json") || jsonName.equalsIgnoreCase("sub_job_book_on.json")){
+            dateUploadId = "bookDateTime";
+        }else if(jsonName.equalsIgnoreCase("sub_job_visitor_attendance.json")){
+            dateUploadId = "visitedDateTime";
+        }
+
+        Answer dateUpload = dbHandler.getAnswer(submission.getID(), dateUploadId, null, 0);
+        if(dateUpload == null) {
+             dateUpload = new Answer(submission.getID(), dateUploadId, null, 0);
+        }
+        dateUpload.setAnswer(submission.getDate());
+        dateUpload.setDisplayAnswer(submission.getDate());
+        dbHandler.replaceData(Answer.DBTable.NAME , dateUpload.toContentValues());
+
     }
 
     @Override
@@ -159,9 +202,17 @@ public class FormActivity extends ThemeBaseActivity implements
     @Override
     public void onScreenChange(Screen screen) {
         int progress = screen.getIndex();
+        String title = screen.getTitle();
         if (form != null && form.isProgressVisible()) {
-            txtScreenTitle.setText(screen.getTitle());
+            if(!TextUtils.isEmpty(submission.getJsonFileName()) && submission.getJsonFileName().equalsIgnoreCase("slg_inspection.json")){
+                Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "inspectionId" ,null , 0);
+                if(answer != null && !TextUtils.isEmpty(answer.getDisplayAnswer())) {
+                    title = "Question "+(screen.getIndex()+1)+" of "+form.getScreens().size();
+                }
+            }
+            txtScreenTitle.setText(title);
             linearProgressBar.setProgress(progress);
+
         }
         btnBack.setVisibility(progress == 0 ? View.GONE : View.VISIBLE);
         btnSubmit.setText(screen.isUpload() ? R.string.submit : R.string.next);
@@ -244,7 +295,16 @@ public class FormActivity extends ThemeBaseActivity implements
         } else {
             progressContainer.setVisibility(View.GONE);
         }
-        txtToolbarTitle.setText(form.getTitle());
+        String title = form.getTitle();
+        if (form != null && form.isProgressVisible()) {
+            if(!TextUtils.isEmpty(submission.getJsonFileName()) && submission.getJsonFileName().equalsIgnoreCase("slg_inspection.json")){
+                Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "inspectionId" ,null , 0);
+                if(answer != null && !TextUtils.isEmpty(answer.getDisplayAnswer())) {
+                    title = answer.getDisplayAnswer();
+                }
+            }
+        }
+        txtToolbarTitle.setText(title);
 
         addFragment(FormFragment.newInstance(submission, form.getScreens().get(0), form.getTitle(), 0, repeatCount, form.getThemeColor() ,schedule != null , recipients));
     }

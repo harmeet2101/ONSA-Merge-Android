@@ -152,10 +152,7 @@ public class VerificationActivity extends AppCompatActivity {
                     return;
                 }
 
-
-
                 if(response.isSuccessful()){
-
                     AppPreferences.putInt("isOtpVerified" , 1);
                     Intent intent = new Intent(VerificationActivity.this, DisclaimerActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -183,7 +180,7 @@ public class VerificationActivity extends AppCompatActivity {
 
     private void verify2FAChallenge(String otp){
         if(TextUtils.isEmpty(otp)){
-            Toast.makeText(this, "Please enter valid username", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter valid OTP", Toast.LENGTH_SHORT).show();
             return;
         }
 

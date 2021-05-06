@@ -1,4 +1,6 @@
 package co.uk.depotnet.onsa.modals;
+import android.text.TextUtils;
+
 import java.io.Serializable;
 
 public class JobDetailItem implements Serializable {
@@ -21,6 +23,10 @@ public class JobDetailItem implements Serializable {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        if(TextUtils.isEmpty(value)){
+            this.value = "N/A";
+        }else {
+            this.value = value;
+        }
     }
 }

@@ -1,0 +1,87 @@
+[
+  {
+    "title": "Book On",
+    "json": "sub_job_book_on.json",
+    "status": false
+  },
+  {
+    "title": "Start on Site",
+    "json": "sub_job_start_on_site.json",
+    "status": false
+  },
+  {
+    "title": "Service/Material",
+    "json": "sub_job_service_material.json",
+    "taskId": 1,
+    "isIndicatorVisible": true,
+    "status": false
+  },
+  {
+    "title": "In Progress",
+    "json": "sub_job_in_progress.json",
+    "status": false
+  },
+  {
+    "title": "Log Measure",
+    "json": "sub_job_log_measure.json",
+    "status": false
+  },
+  {
+    "title": "Raise Variation",
+    "json": "raise_variation.json",
+    "status": false
+  },
+  {
+    "title": "Muckaway",
+    "json": "sub_job_log_muckaway.json",
+    "isIndicatorVisible": true,
+    "taskId": 3,
+    "status": false
+  },
+  {
+    "title": "Log BackFill",
+    "json": "sub_job_log_back_fill.json",
+    "isIndicatorVisible": true,
+    "taskId": 4,
+    "status": false
+  },
+  {
+    "title": "Log Reinstatement",
+    "json": "sub_job_log_reinstatement.json",
+    "isIndicatorVisible": true,
+    "taskId": 5,
+    "status": false
+  },
+  {
+    "title": "Finish On Site",
+    "json": "sub_job_finish_on_site.json",
+    "status": false
+  },
+  {
+    "title": "Ready For Next Activity",
+    "json": "rfna.json",
+    "status": false
+  },
+  {
+    "title": "Record Return",
+    "json": "record_return.json",
+    "status": false
+  },
+  {
+    "title": "Eng Comp",
+    "json": "sub_job_eng_comp.json",
+    "status": false
+  },
+  {
+    "title": "Site Clear",
+    "json": "sub_job_log_site_clear.json",
+    "isIndicatorVisible": true,
+    "taskId": 6,
+    "status": false
+  },
+  {
+    "title": "Abandon",
+    "json": "sub_job_abandon.json",
+    "status": false
+  }
+]

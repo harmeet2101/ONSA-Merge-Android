@@ -1,0 +1,35 @@
+{
+  "title": "Abandon",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Abandon",
+      "index": 0,
+      "url": "app/subjob/{jobId}/abandon",
+      "photoUrl": "app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "abandonReasonId",
+          "title": "Abandoned Reason",
+          "key": "abandonReasons",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Abandon",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "29"
+        }
+      ]
+    }
+  ]
+}

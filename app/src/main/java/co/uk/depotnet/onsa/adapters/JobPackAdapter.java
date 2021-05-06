@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,6 @@ import android.widget.TextView;
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.listeners.DownloadActionListener;
 import co.uk.depotnet.onsa.modals.Document;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import co.uk.depotnet.onsa.utils.GenericFileProvider;
@@ -29,18 +29,17 @@ import java.util.List;
 
 public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHolder> {
 
-    private List<Document> jobPacks;
-    private Context context;
-    private DownloadActionListener listener;
-    private Fetch fetch;
+    private final List<Document> jobPacks;
+    private final Context context;
+    private final Fetch fetch;
+    private final boolean isSubJob;
 
 
-    public JobPackAdapter(Context context, List<Document> jobPacks,
-                          DownloadActionListener listener , Fetch fetch) {
+    public JobPackAdapter(Context context, List<Document> jobPacks, Fetch fetch , boolean isSubJob) {
         this.context = context;
         this.jobPacks = jobPacks;
-        this.listener = listener;
         this.fetch = fetch;
+        this.isSubJob = isSubJob;
     }
 
     @NonNull
@@ -55,7 +54,7 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
         final Document jobPack = jobPacks.get(position);
 
         holder.txtDocTitle.setText(jobPack.getDocumentName());
-        holder.txtDocTime.setText(jobPack.getdateTime());
+        holder.txtDocTime.setText(Utils.formatDate(jobPack.getdateTime() ,"yyyy-MM-dd'T'HH:mm:sss", "dd/MM/yyyy"));
         final int id = AppPreferences.getInt("JobPack" + jobPack.getjobDocumentId(), -1);
 
 
@@ -65,9 +64,18 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
             holder.btnDownload.setVisibility(View.VISIBLE);
             holder.btnDownload.setText("Download");
             holder.btnDownload.setOnClickListener(view -> {
-                String fileDir = Utils.getSaveDir(context) + "JobPack/" + "JobPack_" + jobPack.getjobDocumentId() + ".pdf";// + jobPack.gettype().toLowerCase(Locale.ENGLISH);
+                String extension = getExtension(jobPack.getDocumentName());
+                if(TextUtils.isEmpty(extension)){
+                    extension = "docx";
+                }
+                String fileDir = Utils.getSaveDir(context) + "JobPack/" + "JobPack_" + jobPack.getjobDocumentId() + "."+extension;// + jobPack.gettype().toLowerCase(Locale.ENGLISH);
                 String url = BuildConfig.BASE_URL+"app/jobs/"+jobPack.getJobId()+
                         "/documents/"+jobPack.getjobDocumentId()+"/download";
+
+                if(isSubJob){
+                    url = BuildConfig.BASE_URL+"app/jobs/"+jobPack.getJobId()+
+                            "/document/"+jobPack.getjobDocumentId();
+                }
                 Request request = new Request(url, fileDir);
                 request.addHeader("Authorization", "Bearer "+DBHandler.getInstance().getUser().gettoken());
                 fetch.enqueue(request, result -> {
@@ -160,15 +168,6 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
         }));
     }
 
-    public void showPdf(File file) {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID, file);
-        intent.setDataAndType(uri, "application/pdf");
-        context.startActivity(intent);
-    }
-
     public void openDocument(String name) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         File file = new File(name);
@@ -184,6 +183,14 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
         }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         context.startActivity(Intent.createChooser(intent, "Choose an Application:"));
+    }
+
+    private String getExtension(String name){
+        if(TextUtils.isEmpty(name)){
+            return null;
+        }
+        String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(name);
+        return extension;
     }
 
 

@@ -30,7 +30,7 @@
           "optional": false
         },
         {
-          "type": "switch_layout",
+          "type": "yes_no",
           "uploadId": "hasDistributionPole",
           "repeatId": "assets",
           "title": "Distribution Pole",
@@ -53,11 +53,11 @@
           ]
         },
         {
-          "type": "switch_layout",
+          "type": "yes_no",
           "uploadId": "hasSubPole",
           "repeatId": "assets",
           "title": "Sub Pole",
-          "optional": true,
+          "optional": false,
           "enables": [
             {
               "type": "et_long_text",
@@ -76,11 +76,11 @@
           ]
         },
         {
-          "type": "switch_layout",
+          "type": "yes_no",
           "uploadId": "isPrivate",
           "repeatId": "assets",
           "title": "Private:",
-          "optional": true
+          "optional": false
         }
       ]
     },

@@ -8,29 +8,37 @@
 
     <TextView
         android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/txt_item_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Item Code: "
+        android:textColor="@color/txt_color_light_grey"
+        android:textSize="@dimen/_14sdp"/>
+
+    <TextView
         android:id="@+id/txt_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Excavate only (LV) joint hole in footway"
-        android:textColor="@color/txt_color_dark"
-        android:textStyle="bold"
+        android:text="Description: "
+        android:layout_marginTop="@dimen/_1sdp"
+        android:textColor="@color/txt_color_light_grey"
         android:textSize="@dimen/_14sdp"/>
 
     <TextView
         android:id="@+id/txt_unit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_12sdp"
-        android:text="UNIT: Item"
-        android:textColor="@color/txt_color_dark"
-        android:textStyle="bold"
+        android:layout_marginTop="@dimen/_1sdp"
+        android:text="Unit: Item"
+        android:textColor="@color/txt_color_light_grey"
         android:textSize="@dimen/_12sdp"/>
 
     <TextView
         android:id="@+id/txt_quantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="QTY: 2"
+        android:text="Quantity: 2"
+        android:layout_marginTop="@dimen/_1sdp"
         android:textColor="@color/txt_color_light_grey"
         android:textSize="@dimen/_12sdp"
         android:layout_marginBottom="@dimen/_10sdp"/>

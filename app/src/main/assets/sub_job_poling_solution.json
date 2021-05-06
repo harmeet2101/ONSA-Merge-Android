@@ -1,0 +1,125 @@
+{
+  "title": "Poling Survey",
+  "isProgressVisible": true,
+  "screens": [
+    {
+      "title": "Poling Survey",
+      "index": 0,
+      "upload": true,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "engineeringSolutionComment",
+          "repeatId": "solutionSection",
+          "title": "Engineering Solution Comments",
+          "optional": true
+        },
+        {
+          "type": "yes_no",
+          "uploadId": "ugSolutionRequired",
+          "repeatId": "solutionSection",
+          "title": "U/G Solution Required?",
+          "optional": false,
+          "enables": [
+            {
+              "type": "et_long_text",
+              "uploadId": "ugSolutionRequiredComment",
+              "repeatId": "solutionSection",
+              "title": "Ug Solution Required Comment",
+              "optional": true
+            },
+            {
+              "type": "photo",
+              "title": "Ug Solution Photo",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "108"
+            }
+          ]
+        },
+        {
+          "type": "dialog_screen",
+          "uploadId": "LogDFE",
+          "repeatId": "solutionSection",
+          "title": "Log DFE",
+          "optional": true,
+          "dialogItems": [
+            {
+              "type": "add_pos_dfe",
+              "uploadId": "",
+              "repeatId": "dfeItems",
+              "title": "Click to add + DFE Item",
+              "listItemType": "log_dfe_item",
+              "fields": [
+                "itemId",
+                "quantity"
+              ],
+              "optional": true,
+              "dialogItems": [
+                {
+                  "type": "dropdown",
+                  "uploadId": "itemId",
+                  "repeatId": "dfeItems",
+                  "key": "SubJobItems",
+                  "title": "Items",
+                  "optional": false
+                },
+                {
+                  "type": "number",
+                  "uploadId": "quantity",
+                  "repeatId": "dfeItems",
+                  "title": "Qty",
+                  "optional": false
+                }
+              ]
+            },
+            {
+              "type": "add_neg_dfe",
+              "uploadId": "",
+              "repeatId": "negDfeItems",
+              "title": "Click to add - DFE Item",
+              "listItemType": "log_dfe_item",
+              "fields": [
+                "itemId",
+                "quantity"
+              ],
+              "optional": true,
+              "dialogItems": [
+                {
+                  "type": "dropdown",
+                  "uploadId": "itemId",
+                  "repeatId": "negDfeItems",
+                  "key": "JobWorkItem",
+                  "title": "Items",
+                  "optional": false
+                },
+                {
+                  "type": "number",
+                  "uploadId": "quantity",
+                  "repeatId": "negDfeItems",
+                  "title": "Qty",
+                  "optional": false
+                }
+              ]
+            },
+            {
+              "type": "photo",
+              "title": "DFE Photo",
+              "photoSize": 20,
+              "photoRequired": 0,
+              "photoId": "109"
+            }
+          ]
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "dfeComment",
+          "repeatId": "solutionSection",
+          "title": "DFE Comment",
+          "optional": true
+        }
+      ]
+    }
+  ]
+}
+

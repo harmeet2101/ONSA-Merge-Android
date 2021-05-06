@@ -1,0 +1,29 @@
+{
+  "title": "Eng Comp",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Eng Comp",
+      "index": 0,
+      "url":"app/subjob/{jobId}/eng-comp",
+      "photoUrl":"app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "et_long_text",
+          "uploadId": "comment",
+          "title": "Comments",
+          "optional": false
+        },
+        {
+          "type": "photo",
+          "title": "Eng Comp",
+          "photoSize": 1,
+          "photoRequired": 1,
+          "photoId": "25"
+        }
+
+      ]
+    }
+  ]
+}

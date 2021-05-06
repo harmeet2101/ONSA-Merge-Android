@@ -1,0 +1,36 @@
+{
+  "title": "Log Muckaway",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Log Myckaway",
+      "index": 0,
+      "url":"app/subjob/{jobId}/complete-site-activity-tasks",
+      "photoUrl": "app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "task_list_muckaway",
+          "taskId": 3,
+          "title": "Select Task",
+          "optional": false
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comments",
+          "title": "Comments",
+          "hint": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Log Muckaway",
+          "photoSize": 10,
+          "photoRequired": 2,
+          "photoId": "119"
+        }
+
+      ]
+    }
+  ]
+}

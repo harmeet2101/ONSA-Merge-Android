@@ -219,6 +219,20 @@ public class DBHandler {
         return null;
     }
 
+    public Job getJobByEstimate(String estimateNo) {
+        String whereClause = Job.DBTable.jobNumber + " = ? ";
+        String[] whereArgs = new String[]{estimateNo};
+
+        Cursor cursor = db.query(Job.DBTable.NAME, null, whereClause,
+                whereArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            return new Job(cursor);
+        }
+
+        cursor.close();
+        return null;
+    }
+
 
     public List<KitBagDocument> getKitBagDoc(int parentId) {
         ArrayList<KitBagDocument> kitBagDocuments = new ArrayList<>();
@@ -692,10 +706,10 @@ public class DBHandler {
         return workItems;
     }
 
-    public JobWorkItem getJobWorkItem(String jobId, String code) {
+    public JobWorkItem getJobWorkItem(String jobId, String itemId) {
 
-        String selection = JobWorkItem.DBTable.jobId + " = ? AND " + JobWorkItem.DBTable.itemCode + " = ?";
-        String[] selectionArgs = new String[]{String.valueOf(jobId), code};
+        String selection = JobWorkItem.DBTable.jobId + " = ? AND " + JobWorkItem.DBTable.itemId + " = ?";
+        String[] selectionArgs = new String[]{String.valueOf(jobId), itemId};
         JobWorkItem workItem = null;
         Cursor cursor = db.query(JobWorkItem.DBTable.NAME,
                 null, selection, selectionArgs,
@@ -1446,13 +1460,13 @@ public class DBHandler {
         return;
     }
 
-    public ArrayList<BaseTask> getTaskItems(String jobID, int taskId) {
+    public ArrayList<BaseTask> getTaskItems(String jobID, int taskId , int isSubJobTask) {
         ArrayList<BaseTask> tasks = new ArrayList<>();
         String whereClause = null;
         String[] whereArgs = null;
 
-        whereClause = BaseTask.DBTable.jobId + " = ? AND " + BaseTask.DBTable.siteActivityTypeId + " = ?";
-        whereArgs = new String[]{jobID, String.valueOf(taskId)};
+        whereClause = BaseTask.DBTable.jobId + " = ? AND " + BaseTask.DBTable.siteActivityTypeId + " = ? AND " + BaseTask.DBTable.isSubJobTask + " = ?";
+        whereArgs = new String[]{jobID, String.valueOf(taskId), String.valueOf(isSubJobTask)};
 
         Cursor cursor = db.query(BaseTask.DBTable.NAME , null , whereClause , whereArgs , null , null , BaseTask.DBTable.siteActivityTaskId+" DESC" );
         if (cursor.moveToFirst()) {
@@ -1464,13 +1478,13 @@ public class DBHandler {
         return tasks;
     }
 
-    public ArrayList<BaseTask> getTaskItems(String jobID) {
+    public ArrayList<BaseTask> getTaskItems(String jobID , int isSubJobTask) {
         ArrayList<BaseTask> tasks = new ArrayList<>();
         String whereClause = null;
         String[] whereArgs = null;
 
-        whereClause = BaseTask.DBTable.jobId + " = ?";
-        whereArgs = new String[]{jobID};
+        whereClause = BaseTask.DBTable.jobId + " = ? AND "+BaseTask.DBTable.isSubJobTask +" = ?";
+        whereArgs = new String[]{jobID , String.valueOf(isSubJobTask)};
 
         Cursor cursor = db.query(BaseTask.DBTable.NAME , null , whereClause , whereArgs , null , null , BaseTask.DBTable.siteActivityTaskId+" DESC" );
         if (cursor.moveToFirst()) {
@@ -1514,12 +1528,22 @@ public class DBHandler {
         return value;
     }
 
-    public void deleteBaseTasks(String jobID, int taskId) {
+    public void deleteBaseTasks(String jobID, int taskId , int isSubJob) {
         String whereClause = null;
         String[] whereArgs = null;
 
-        whereClause = BaseTask.DBTable.jobId + " = ? AND " + BaseTask.DBTable.siteActivityTypeId + " = ?";
-        whereArgs = new String[]{jobID, String.valueOf(taskId)};
+        whereClause = BaseTask.DBTable.jobId + " = ? AND " + BaseTask.DBTable.siteActivityTypeId + " = ? AND " + BaseTask.DBTable.isSubJobTask + " = ?";
+        whereArgs = new String[]{jobID, String.valueOf(taskId) , String.valueOf(isSubJob)};
+
+        int affectedRows = db.delete(BaseTask.DBTable.NAME, whereClause, whereArgs);
+    }
+
+    public void deleteBaseTasks(String jobID, int isSubJob) {
+        String whereClause = null;
+        String[] whereArgs = null;
+
+        whereClause = BaseTask.DBTable.jobId + " = ? AND " + BaseTask.DBTable.isSubJobTask + " = ?";
+        whereArgs = new String[]{jobID, String.valueOf(isSubJob)};
 
         int affectedRows = db.delete(BaseTask.DBTable.NAME, whereClause, whereArgs);
     }

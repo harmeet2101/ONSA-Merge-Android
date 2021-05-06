@@ -27,5 +27,5 @@ public interface FormAdapterListener extends LocationPermissionListener {
     void hideProgressBar();
 
     void openTaskAmendment(FormItem formItem, long submissionId , int repeatCount);
-    void getEstimateOperative(String estno, int position);
+    void getEstimateOperative(String estno, int position , boolean isSubmit);
 }

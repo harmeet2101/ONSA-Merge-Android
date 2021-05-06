@@ -4,9 +4,11 @@ import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 
@@ -19,7 +21,7 @@ public static final String ARG_JOB_REFERENCE_NUMBER = "Job_Reference_Number";
 
 private String jobID;
 private String jobReferenceNumber;
-
+private Job job;
 @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,29 +30,36 @@ private String jobReferenceNumber;
     Intent intent = getIntent();
     jobID = intent.getStringExtra(ARG_JOB_ID);
     jobReferenceNumber = intent.getStringExtra(ARG_JOB_REFERENCE_NUMBER);
-
+    job = DBHandler.getInstance(this).getJob(jobID);
 
     findViewById(R.id.btn_img_cancel).setOnClickListener(this);
     findViewById(R.id.btn_log_dcr).setOnClickListener(this);
     findViewById(R.id.btn_log_dfe).setOnClickListener(this);
-    findViewById(R.id.btn_log_tdfs).setOnClickListener(this);
+    Button btnLogTdfs = findViewById(R.id.btn_log_tdfs);
+
+    if(job!= null && job.isSubJob()){
+        btnLogTdfs.setVisibility(View.GONE);
+    }else{
+        btnLogTdfs.setOnClickListener(this);
+    }
 
     }
 
     @Override
     public void onClick(View v) {
+    String prefix = job.isSubJob()?"sub_job_":"";
         switch (v.getId()){
             case R.id.btn_img_cancel:
                 finish();
                 break;
             case R.id.btn_log_dcr:
-                openVariation("log_dcr.json" , "Log DCR");
+                openVariation(prefix+"log_dcr.json" , "Log DCR");
                 break;
             case R.id.btn_log_dfe:
-                openVariation("log_dfe.json" , "Log DFE");
+                openVariation(prefix+"log_dfe.json" , "Log DFE");
                 break;
             case R.id.btn_log_tdfs:
-                openVariation("log_tdfs.json" , "Log TDFS");
+                openVariation(prefix+"log_tdfs.json" , "Log TDFS");
                 break;
         }
     }

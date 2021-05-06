@@ -229,7 +229,7 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
     }
 
     @Override
-    public void getEstimateOperative(String estno, int position) {
+    public void getEstimateOperative(String estno, int position , boolean isSubmit) {
 
     }
 

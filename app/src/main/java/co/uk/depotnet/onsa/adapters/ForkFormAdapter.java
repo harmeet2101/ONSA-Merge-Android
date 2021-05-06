@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,6 +56,7 @@ import co.uk.depotnet.onsa.formholders.NumberHolder;
 import co.uk.depotnet.onsa.formholders.PhotoHolder;
 import co.uk.depotnet.onsa.formholders.ShortTextHolder;
 import co.uk.depotnet.onsa.formholders.SignatureHolder;
+import co.uk.depotnet.onsa.formholders.SwitchHolder;
 import co.uk.depotnet.onsa.formholders.TimePickerHolder;
 import co.uk.depotnet.onsa.formholders.TimeSheetHourHolder;
 import co.uk.depotnet.onsa.formholders.YesNoHolder;
@@ -65,6 +67,7 @@ import co.uk.depotnet.onsa.listeners.PhotoAdapterListener;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobWorkItem;
 import co.uk.depotnet.onsa.modals.MeasureItems;
+import co.uk.depotnet.onsa.modals.MenSplit;
 import co.uk.depotnet.onsa.modals.RiskElementType;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
@@ -265,6 +268,8 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 return new CalenderHolder(LayoutInflater.from(context).inflate(R.layout.item_calender, viewGroup, false));
             case FormItem.TYPE_ET_TIME_SHEET_HOURS:
                 return new TimeSheetHourHolder(LayoutInflater.from(context).inflate(R.layout.item_et_timesheet_hours, viewGroup, false));
+            case FormItem.TYPE_SWITCH:
+                return new SwitchHolder(LayoutInflater.from(context).inflate(R.layout.item_switch_layout, viewGroup, false));
         }
         return new BoldTextHolder(LayoutInflater.from(context).inflate(R.layout.item_txt_bold_head, viewGroup, false));
     }
@@ -298,6 +303,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case FormItem.TYPE_SIGNATURE:
                 bindSignatureHolder((SignatureHolder) holder, position);
                 break;
+
             case FormItem.TYPE_FORK_CARD:
             case FormItem.TYPE_ADD_NEG_DFE:
             case FormItem.TYPE_ADD_POS_DFE:
@@ -327,7 +333,65 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case FormItem.TYPE_ET_TIME_SHEET_HOURS:
                 bindTimeSheetHoursHolder((TimeSheetHourHolder) holder, position);
                 break;
+            case FormItem.TYPE_SWITCH:
+                bindSwitchHolder((SwitchHolder) holder, position);
+                break;
         }
+    }
+
+    private void bindSwitchHolder(SwitchHolder holder, int position) {
+        final FormItem formItem = formItems.get(position);
+        holder.txtTitle.setText(formItem.getTitle());
+        holder.btnSwitch.setChecked(formItem.isChecked());
+
+        Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
+                formItem.getRepeatId(), repeatCount);
+
+        if (answer != null) {
+            String value = answer.getAnswer();
+            holder.btnSwitch.setChecked(!TextUtils.isEmpty(value) &&
+                    (value.equals("true") || value.equals("1")));
+
+        } else if (missingAnswerMode && !formItem.isOptional()) {
+
+            holder.view.setBackground(redBG);
+        }
+
+        if (answer == null) {
+            if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json") && (formItem.getUploadId().equalsIgnoreCase("trafficManagementMeetingRequired")
+                    || formItem.getUploadId().equalsIgnoreCase("trafficManagementRequired"))) {
+                answer = new Answer(submissionID, formItem.getUploadId());
+                answer.setAnswer("2");
+                answer.setRepeatID(formItem.getRepeatId());
+                answer.setRepeatCount(repeatCount);
+
+                dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
+            }
+        }
+
+
+        holder.btnSwitch.setOnClickListener(v -> {
+            Answer answer1 = dbHandler.getAnswer(submissionID,
+                    formItem.getUploadId(),
+                    formItem.getRepeatId(), repeatCount);
+            if (answer1 == null) {
+                answer1 = new Answer(submissionID, formItem.getUploadId());
+            }
+
+            if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json")) {
+                answer1.setAnswer(((SwitchCompat) v).isChecked() ? "1" : "2");
+            } else {
+                answer1.setAnswer(((SwitchCompat) v).isChecked() ? "true" : "false");
+            }
+            answer1.setRepeatID(formItem.getRepeatId());
+            answer1.setRepeatCount(repeatCount);
+
+            dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+
+            if (needToBeNotified(formItem)) {
+                reInflateItems(true);
+            }
+        });
     }
 
     private void bindCalender(final CalenderHolder holder, int position) {
@@ -916,8 +980,8 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (answerItemId != null) {
             String value = answerItemId.getAnswer();
             if (!TextUtils.isEmpty(value)) {
-                holder.txtValue.setText(value);
-                holder.txtTitle.setText(answerItemId.getDisplayAnswer());
+//                holder.txtValue.setText(value);
+                holder.txtValue.setText(answerItemId.getDisplayAnswer());
             }
         }
 
@@ -1079,7 +1143,9 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     items.addAll(dbHandler.getMeasures());
                 }else if (formItem.getKey().equalsIgnoreCase(TimeTypeActivity.DBTable.NAME)) {
                     items.addAll(dbHandler.getTimeTypeActivities());
-                } else {
+                }else if (formItem.getKey().equalsIgnoreCase(MenSplit.DBTable.NAME)) {
+                    items.addAll(dbHandler.getMenSplit());
+                }else {
                     items.addAll(dbHandler.getItemTypes(formItem.getKey()));
                 }
 
@@ -1119,16 +1185,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     answer1.setRepeatCount(repeatCount);
 
                     dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
-                    if(submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")){
-//                        TimeSheetHour timeSheetHour = parentFormItem.getTimeSheetHour();
-//                        if(timeSheetHour != null){
-//                            if(formItem.getUploadId().equalsIgnoreCase("timeTypeActivityId")){
-//                                timeSheetHour.setTimeTypeActivityId(items.get(position1).getUploadValue());
-//                                timeSheetHour.setEdited(true);
-//                            }
-//                            dbHandler.replaceData(TimeSheetHour.DBTable.NAME , timeSheetHour.toContentValues());
-//                        }
-                    }else if (formItem.getUploadId().equalsIgnoreCase("type") &&
+                    if (formItem.getUploadId().equalsIgnoreCase("type") &&
                             formItem.getRepeatId().equalsIgnoreCase("riskElements")) {
                         if (items.get(position1).getUploadValue().equalsIgnoreCase("dorSPoles")) {
                             ArrayList<FormItem> items1 = JsonReader.loadFormJSON(context, FormItem.class, "pra_DOS.json");
@@ -1441,7 +1498,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                     qty = -1 * qty;
                                 }
                                 Answer code = dbHandler.getAnswer(submissionID,
-                                        "itemCode", "negItems", repeatCount);
+                                        "itemId", "negItems", repeatCount);
                                 if (code != null && !TextUtils.isEmpty(code.getAnswer())) {
                                     JobWorkItem workItem = dbHandler.getJobWorkItem(submission.getJobID(), code.getAnswer());
                                     if (workItem != null) {

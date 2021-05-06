@@ -61,7 +61,12 @@ public class DueAdaptor extends RecyclerView.Adapter<DueAdaptor.DueHolder>
         {
             holder.tv_auditee_text.setText("");
         }
-        holder.tv_ref.setText((String.format("%s : %s","Estimate Number",holder.schedule.getJobEstimateNumber())));
+        if(TextUtils.isEmpty(holder.schedule.getJobEstimateNumber())){
+            holder.tv_ref.setText((String.format("%s : %s","Estimate Number","N/A")));
+        }else{
+            holder.tv_ref.setText((String.format("%s : %s","Estimate Number",holder.schedule.getJobEstimateNumber())));
+        }
+
         //holder.tv_inspectionType.setText("Inspection Type: "+holder.schedule.getInspectionTemplateName());
         holder.tv_inspectionType.setText((String.format("%s : %s","Inspection Type",holder.schedule.getInspectionTemplateName())));
         if (holder.schedule.getScheduledInspectionStatus() == 3) { //for not due

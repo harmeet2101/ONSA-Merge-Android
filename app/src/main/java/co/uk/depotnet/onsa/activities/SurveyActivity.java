@@ -20,6 +20,7 @@ public class SurveyActivity extends AppCompatActivity
     public static final String ARG_JOB_REFERENCE_NUMBER = "Job_Reference_Number";
 
     private String jobID;
+    private boolean isSubJob;
 
 
     @Override
@@ -31,6 +32,7 @@ public class SurveyActivity extends AppCompatActivity
         jobID = intent.getStringExtra(ARG_JOB_ID);
 
         Job job = DBHandler.getInstance().getJob(jobID);
+        isSubJob = job!= null && job.isSubJob();
 
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
        RelativeLayout llbtnPresiteSurvey = findViewById(R.id.btn_pre_site_survey);
@@ -72,7 +74,12 @@ public class SurveyActivity extends AppCompatActivity
                 finish();
                 break;
             case R.id.btn_pre_site_survey:
-                openPreSiteSurvey("pre_site_survey.json", "Pre-Site Survey");
+                if(isSubJob){
+                    openPreSiteSurvey("sub_job_pre_site_survey.json", "Pre-Site Survey");
+                }else{
+                    openPreSiteSurvey("pre_site_survey.json", "Pre-Site Survey");
+                }
+
                 break;
             case R.id.btn_poling_survey:
                 openPolingSurveyList();

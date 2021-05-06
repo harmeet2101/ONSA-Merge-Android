@@ -10,20 +10,10 @@ import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.modals.ItemType;
 import co.uk.depotnet.onsa.modals.KitBagDocument;
 import co.uk.depotnet.onsa.modals.RiskElementType;
+import co.uk.depotnet.onsa.modals.SubJobItem;
 import co.uk.depotnet.onsa.modals.WorkItem;
 
 public class DatasetResponse implements Parcelable {
-    public static final Creator<DatasetResponse> CREATOR = new Creator<DatasetResponse>() {
-        @Override
-        public DatasetResponse createFromParcel(Parcel in) {
-            return new DatasetResponse(in);
-        }
-
-        @Override
-        public DatasetResponse[] newArray(int size) {
-            return new DatasetResponse[size];
-        }
-    };
     private ArrayList<ItemType> aerialCables;
     private ArrayList<ItemType> photoTypes;
     private ArrayList<ItemType> bookOperatives;
@@ -52,6 +42,7 @@ public class DatasetResponse implements Parcelable {
     private ArrayList<ItemType> pedestrianManagementTypes;
     private ArrayList<ItemType> newReplacedRecycledTypes;
     private ArrayList<RiskElementType> riskAssessmentRiskElementTypes;
+    private ArrayList<ItemType> subJobItems;
 
 
     protected DatasetResponse(Parcel in) {
@@ -83,6 +74,7 @@ public class DatasetResponse implements Parcelable {
         pedestrianManagementTypes = in.createTypedArrayList(ItemType.CREATOR);
         newReplacedRecycledTypes = in.createTypedArrayList(ItemType.CREATOR);
         riskAssessmentRiskElementTypes = in.createTypedArrayList(RiskElementType.CREATOR);
+        subJobItems = in.createTypedArrayList(ItemType.CREATOR);
     }
 
     @Override
@@ -115,7 +107,7 @@ public class DatasetResponse implements Parcelable {
         dest.writeTypedList(pedestrianManagementTypes);
         dest.writeTypedList(newReplacedRecycledTypes);
         dest.writeTypedList(riskAssessmentRiskElementTypes);
-
+        dest.writeTypedList(subJobItems);
     }
 
     @Override
@@ -123,6 +115,17 @@ public class DatasetResponse implements Parcelable {
         return 0;
     }
 
+    public static final Creator<DatasetResponse> CREATOR = new Creator<DatasetResponse>() {
+        @Override
+        public DatasetResponse createFromParcel(Parcel in) {
+            return new DatasetResponse(in);
+        }
+
+        @Override
+        public DatasetResponse[] newArray(int size) {
+            return new DatasetResponse[size];
+        }
+    };
 
     public ContentValues toContentValues() {
         ContentValues cv = new ContentValues();
@@ -257,6 +260,10 @@ public class DatasetResponse implements Parcelable {
                 dbHandler.replaceData(RiskElementType.DBTable.NAME, item.toContentValues());
             }
         }
+
+        if (this.subJobItems != null && !this.subJobItems.isEmpty()) {
+            dbHandler.replaceItemTypes(subJobItems, DBTable.subJobItems);
+        }
         return cv;
     }
 
@@ -289,6 +296,7 @@ public class DatasetResponse implements Parcelable {
         public static final String pedestrianManagementTypes = "pedestrianManagementTypes";
         public static final String newReplacedRecycledTypes = "newReplacedRecycledTypes";
         public static final String riskAssessmentRiskElementTypes = "riskAssessmentRiskElementTypes";
+        public static final String subJobItems = "SubJobItems";
 
     }
 }

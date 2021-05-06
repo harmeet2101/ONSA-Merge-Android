@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.networking.CommonUtils;
@@ -37,6 +38,7 @@ public class PollingSurveyActivity extends AppCompatActivity
 
     private ImageView[] statusIcons = new ImageView[5];
     private Handler handler;
+    private Job job;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +55,16 @@ public class PollingSurveyActivity extends AppCompatActivity
         findViewById(R.id.card_solution).setOnClickListener(this);
         findViewById(R.id.card_asset_data).setOnClickListener(this);
         findViewById(R.id.card_poling_ra).setOnClickListener(this);
-
+        job = DBHandler.getInstance().getJob(submission.getJobID());
         statusIcons[0] = findViewById(R.id.img_job_data);
         statusIcons[1] = findViewById(R.id.img_fluidity_task);
         statusIcons[2] = findViewById(R.id.img_solution);
         statusIcons[3] = findViewById(R.id.img_asset_data);
         statusIcons[4] = findViewById(R.id.img_pol_ra);
+
+        if(job != null && job.isSubJob()){
+            files[2] = "sub_job_poling_solution.json";
+        }
 
         handler = new Handler();
     }
@@ -102,16 +108,17 @@ public class PollingSurveyActivity extends AppCompatActivity
                 }
                 return;
             case R.id.card_job_data:
-                submission.setJsonFile("poling_job_data.json");
+                submission.setJsonFile(files[0]);
                 break;
             case R.id.card_fluidity_task:
-                submission.setJsonFile("poling_fluidity_task.json");
+                submission.setJsonFile(files[1]);
                 break;
             case R.id.card_solution:
-                submission.setJsonFile("poling_solution.json");
+
+                submission.setJsonFile(files[2]);
                 break;
             case R.id.card_asset_data:
-                submission.setJsonFile("poling_asset_data.json");
+                submission.setJsonFile(files[3]);
                 break;
             case R.id.card_poling_ra:
 
@@ -128,7 +135,7 @@ public class PollingSurveyActivity extends AppCompatActivity
 
                 DBHandler.getInstance().replaceData(Answer.DBTable.NAME , answer.toContentValues());
 
-                submission.setJsonFile("poling_planning_risk_assessment.json");
+                submission.setJsonFile(files[4]);
                 break;
         }
 
@@ -151,8 +158,15 @@ public class PollingSurveyActivity extends AppCompatActivity
 
         showProgressBar();
         new Thread(() -> {
+            String url = "app/jobs/{jobId}/poling-surveys";
+            String photoUrl = "app/jobs/{jobId}/poling-surveys";
+
+            if(job != null && job.isSubJob()){
+                url = "app/subjob/{jobId}/poling-survey";
+                photoUrl = "app/subjob/{jobId}/photo";
+            }
             final Response response = new ConnectionHelper(PollingSurveyActivity.this).
-                    submitPollingSurvey("app/jobs/{jobId}/poling-surveys", "app/jobs/{jobId}/photos",
+                    submitPollingSurvey(url, photoUrl,
                             submission, getSupportFragmentManager());
 
 
@@ -175,7 +189,7 @@ public class PollingSurveyActivity extends AppCompatActivity
                     message = "Submission Error, your submission has been added to the queue";
                 }
 
-                if(response != null && response.code() == 400){
+                if(response != null && response.code() != 200){
 
                         ResponseBody body = response.body();
                         if(body!= null){

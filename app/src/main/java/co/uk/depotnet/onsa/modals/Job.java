@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.DropDownItem;
+import co.uk.depotnet.onsa.modals.httpresponses.BaseTask;
 
 public class Job implements Parcelable, DropDownItem {
 
@@ -46,7 +47,11 @@ public class Job implements Parcelable, DropDownItem {
     private ArrayList<A75Groups> a75Groups;
     private boolean hasRFNA;
     private JobTasks siteActivityTasks;
+    private ArrayList<BaseTask> subJobSiteActivityTasks;
     private ArrayList<RecordReturnReason> recordReturnReasons;
+    private int jobTypeId;
+    private String subJobNumber;
+    private String gangId;
 
     public Job() {
 
@@ -89,7 +94,11 @@ public class Job implements Parcelable, DropDownItem {
         a75Groups = DBHandler.getInstance().getA75Groups(jobId);
         hasRFNA = cursor.getInt(cursor.getColumnIndex(DBTable.hasRFNA)) == 1;
         siteActivityTasks = new JobTasks(jobId);
+        subJobSiteActivityTasks = DBHandler.getInstance().getTaskItems(jobId , 1);
         recordReturnReasons =  DBHandler.getInstance().getRecordReturnReasons(jobId);
+        jobTypeId = cursor.getInt(cursor.getColumnIndex(DBTable.jobTypeId));
+        subJobNumber = cursor.getString(cursor.getColumnIndex(DBTable.subJobNumber));
+        gangId = cursor.getString(cursor.getColumnIndex(DBTable.gangId));
     }
 
     protected Job(Parcel in) {
@@ -127,7 +136,11 @@ public class Job implements Parcelable, DropDownItem {
         a75Groups = in.createTypedArrayList(A75Groups.CREATOR);
         hasRFNA = in.readByte() != 0;
         siteActivityTasks = in.readParcelable(JobTasks.class.getClassLoader());
+        subJobSiteActivityTasks = in.createTypedArrayList(BaseTask.CREATOR);
         recordReturnReasons = in.createTypedArrayList(RecordReturnReason.CREATOR);
+        jobTypeId = in.readInt();
+        subJobNumber = in.readString();
+        gangId = in.readString();
     }
 
     @Override
@@ -160,13 +173,22 @@ public class Job implements Parcelable, DropDownItem {
         dest.writeByte((byte) (isHotJob ? 1 : 0));
         dest.writeInt(riskAssessmentTypeId);
         dest.writeInt(surveyTypeId);
-        dest.writeByte((byte) (rfnaNotRequired ? 1 : 0));
         dest.writeByte((byte) (hasRecordReturns ? 1 : 0));
+        dest.writeByte((byte) (rfnaNotRequired ? 1 : 0));
         dest.writeByte((byte) (isSiteClear ? 1 : 0));
         dest.writeTypedList(a75Groups);
         dest.writeByte((byte) (hasRFNA ? 1 : 0));
         dest.writeParcelable(siteActivityTasks, flags);
+        dest.writeTypedList(subJobSiteActivityTasks);
         dest.writeTypedList(recordReturnReasons);
+        dest.writeInt(jobTypeId);
+        dest.writeString(subJobNumber);
+        dest.writeString(gangId);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<Job> CREATOR = new Creator<Job>() {
@@ -402,11 +424,6 @@ public class Job implements Parcelable, DropDownItem {
         return hasRFNA;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
 
     public String getJobOrderNotes() {
         return jobOrderNotes;
@@ -422,6 +439,14 @@ public class Job implements Parcelable, DropDownItem {
 
     public void setRecordReturnReasons(ArrayList<RecordReturnReason> recordReturnReasons) {
         this.recordReturnReasons = recordReturnReasons;
+    }
+
+    public String getSubJobNumber() {
+        return subJobNumber;
+    }
+
+    public boolean isSubJob() {
+        return jobTypeId == 2;
     }
 
     public ContentValues toContentValues() {
@@ -521,12 +546,23 @@ public class Job implements Parcelable, DropDownItem {
                 dbHandler.replaceData(RecordReturnReason.DBTable.NAME, r.toContentValues());
             }
         }
+        dbHandler.deleteBaseTasks(jobId , 1);
+        if (subJobSiteActivityTasks != null && !subJobSiteActivityTasks.isEmpty()) {
+            for (BaseTask a : subJobSiteActivityTasks) {
+                a.setJobId(jobId);
+                a.setSubJobTask(true);
+                dbHandler.replaceData(BaseTask.DBTable.NAME, a.toContentValues());
+            }
+        }
 
 
         if(siteActivityTasks != null){
             siteActivityTasks.setJobId(jobId);
             siteActivityTasks.toContentValues();
         }
+        cv.put(DBTable.jobTypeId, this.jobTypeId);
+        cv.put(DBTable.subJobNumber, this.subJobNumber);
+        cv.put(DBTable.gangId, this.gangId);
         return cv;
     }
 
@@ -567,6 +603,9 @@ public class Job implements Parcelable, DropDownItem {
         public static final String hasRFNA = "hasRFNA";
         public static final String recordReturnReason = "RecordReturnReason";
 
+        public static final String jobTypeId = "jobTypeId";
+        public static final String subJobNumber = "subJobNumber";
+        public static final String gangId = "gangId";
     }
 
     @Override
@@ -579,5 +618,7 @@ public class Job implements Parcelable, DropDownItem {
         return estimateNumber;
     }
 
-
+    public String getGangId() {
+        return gangId;
+    }
 }
