@@ -311,6 +311,9 @@ public class HSEQActivity extends ThemeBaseActivity
 
     @Override
     public Fetch getFetch() {
+        if(fetch == null || fetch.isClosed()){
+            fetch = Fetch.Impl.getDefaultInstance();
+        }
         return fetch;
     }
 }

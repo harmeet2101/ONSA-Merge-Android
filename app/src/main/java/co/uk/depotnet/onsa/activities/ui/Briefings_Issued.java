@@ -23,6 +23,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.uk.depotnet.onsa.networking.CallUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -80,7 +81,7 @@ public class Briefings_Issued extends AppCompatActivity {
 
     protected void GetIssuedDoc() {
         errormsg.setVisibility(View.GONE);
-        APICalls.getBriefingsIssuedList(user.gettoken()).enqueue(new Callback<List<IssuedModel>>() {
+        CallUtils.enqueueWithRetry(APICalls.getBriefingsIssuedList(user.gettoken()),new Callback<List<IssuedModel>>() {
             @Override
             public void onResponse(@NonNull Call<List<IssuedModel>> call, @NonNull Response<List<IssuedModel>> response) {
                 if (CommonUtils.onTokenExpired(Briefings_Issued.this, response.code())) {

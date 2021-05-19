@@ -24,6 +24,7 @@ import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.store.DataMyRequests;
 import co.uk.depotnet.onsa.modals.store.MyRequest;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 import retrofit2.Call;
@@ -100,7 +101,7 @@ public class FragmentMyRequests extends Fragment {
             return;
         }
         listener.showProgressBar();
-        APICalls.getMyRequests(user.gettoken()).enqueue(new Callback<DataMyRequests>() {
+        CallUtils.enqueueWithRetry(APICalls.getMyRequests(user.gettoken()), new Callback<DataMyRequests>() {
             @Override
             public void onResponse(@NonNull Call<DataMyRequests> call, @NonNull Response<DataMyRequests> response) {
                 listener.hideProgressBar();

@@ -18,6 +18,7 @@ import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.store.StockItems;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.views.DropdownNumberBottomSheet;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -156,7 +157,7 @@ public class StoreDetailActivity extends AppCompatActivity implements View.OnCli
         }
 
         User user = DBHandler.getInstance().getUser();
-        APICalls.getItem(user.gettoken() , barcode , staId).enqueue(new Callback<StockItems>() {
+        CallUtils.enqueueWithRetry(APICalls.getItem(user.gettoken() , barcode , staId),new Callback<StockItems>() {
             @Override
             public void onResponse(@NonNull Call<StockItems> call, @NonNull Response<StockItems> response) {
 

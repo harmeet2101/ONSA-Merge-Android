@@ -43,6 +43,7 @@ import co.uk.depotnet.onsa.modals.hseq.ToolTipModel;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.ConnectionHelper;
 import co.uk.depotnet.onsa.networking.Constants;
@@ -483,7 +484,7 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
         listener.showProgressBar();
 
 
-        APICalls.sendRfna(submission.getJobID(), user.gettoken()).enqueue(new Callback<Void>() {
+        CallUtils.enqueueWithRetry(APICalls.sendRfna(submission.getJobID(), user.gettoken()),new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull retrofit2.Response<Void> response) {
 
@@ -530,7 +531,7 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
             listener.hideProgressBar();
             return;
         }
-        APICalls.GetInspectionToolTipList(finalLatestTemplateVersionId, user.gettoken()).enqueue(new Callback<ArrayList<ToolTipModel>>() {
+        CallUtils.enqueueWithRetry(APICalls.GetInspectionToolTipList(finalLatestTemplateVersionId, user.gettoken()),new Callback<ArrayList<ToolTipModel>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<ToolTipModel>> call, @NonNull retrofit2.Response<ArrayList<ToolTipModel>> response) {
                 if (CommonUtils.onTokenExpired(context, response.code())) {

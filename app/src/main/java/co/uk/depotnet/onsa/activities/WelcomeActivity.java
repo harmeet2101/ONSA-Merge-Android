@@ -34,6 +34,9 @@ import java.util.Map;
 import co.uk.depotnet.onsa.fragments.FragmentKitBag;
 import co.uk.depotnet.onsa.fragments.FragmentQueue;
 import co.uk.depotnet.onsa.listeners.GetFetchListener;
+import co.uk.depotnet.onsa.modals.Job;
+import co.uk.depotnet.onsa.modals.responses.JobResponse;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -68,8 +71,8 @@ public class WelcomeActivity extends BaseActivity implements
         networkStateReceiver.addListener(this);
 
         fetch = Fetch.Impl.getDefaultInstance();
-        try {
-            user = dbHandler.getUser();
+
+        user = dbHandler.getUser();
 
         setupBottomNavigation();
 
@@ -77,13 +80,16 @@ public class WelcomeActivity extends BaseActivity implements
             fragment = WelcomeHomeFragment.newInstance();
             addFragment(fragment, false);
         }
-        APICalls.getTags(user.gettoken()).enqueue(new Callback<ArrayList<String>>() {
+
+        getJobs();
+
+        CallUtils.enqueueWithRetry(APICalls.getTags(user.gettoken()),new Callback<ArrayList<String>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<String>> call, @NonNull Response<ArrayList<String>> response) {
                 if (response.isSuccessful()) {
                     dbHandler.resetTags();
                     ArrayList<String> body1 = response.body();
-                    if(body1 == null){
+                    if (body1 == null) {
                         return;
                     }
                     for (int i = 0; i < body1.size(); i++) {
@@ -98,7 +104,8 @@ public class WelcomeActivity extends BaseActivity implements
             public void onFailure(@NonNull Call<ArrayList<String>> call, @NonNull Throwable t) {
             }
         });
-        APICalls.getNotifications(user.gettoken()).enqueue(new Callback<ArrayList<NotifyModel>>() {
+
+        CallUtils.enqueueWithRetry(APICalls.getNotifications(user.gettoken()),new Callback<ArrayList<NotifyModel>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<NotifyModel>> call, @NonNull Response<ArrayList<NotifyModel>> response) {
                 if (CommonUtils.onTokenExpired(WelcomeActivity.this, response.code())) {
@@ -120,9 +127,39 @@ public class WelcomeActivity extends BaseActivity implements
             public void onFailure(@NonNull Call<ArrayList<NotifyModel>> call, @NonNull Throwable t) {
             }
         });
-        }catch (Exception e){
+    }
 
+    private void getJobs() {
+        if (!CommonUtils.validateToken(WelcomeActivity.this)) {
+            return;
         }
+
+        CallUtils.enqueueWithRetry(APICalls.getJobList(user.gettoken()), new Callback<JobResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<JobResponse> call, @NonNull Response<JobResponse> response) {
+
+                if (CommonUtils.onTokenExpired(WelcomeActivity.this, response.code())) {
+                    return;
+                }
+                if (response.isSuccessful()) {
+                    dbHandler.resetJobs();
+                    JobResponse jobResponse = response.body();
+                    if (jobResponse != null) {
+                        List<Job> jobs = jobResponse.getJobs();
+                        if (jobs != null && !jobs.isEmpty()) {
+                            for (Job j : jobs) {
+                                dbHandler.replaceData(Job.DBTable.NAME, j.toContentValues());
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JobResponse> call, @NonNull Throwable t) {
+
+            }
+        });
     }
 
     @Override
@@ -381,6 +418,9 @@ public class WelcomeActivity extends BaseActivity implements
     }
 
     public Fetch getFetch() {
+        if (fetch == null || fetch.isClosed()) {
+            fetch = Fetch.Impl.getDefaultInstance();
+        }
         return fetch;
     }
 }

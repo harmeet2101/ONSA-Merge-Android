@@ -36,6 +36,7 @@ public class DropDownCalls {
     private int count = 0;
     private final DropDownDataListner listener;
     private final DBHandler dbHandler;
+    private boolean isDatasetEndpointFinished;
 
 
     public DropDownCalls(FormItem formItem, Submission submission, String estimateGangId, DropDownDataListner listener) {
@@ -45,6 +46,7 @@ public class DropDownCalls {
         this.listener = listener;
         dbHandler = DBHandler.getInstance();
         handler = new Handler(Looper.myLooper());
+        this.isDatasetEndpointFinished = AppPreferences.getBoolean("DatasetEndpoint" , false);
     }
 
     private final Runnable runnable = new Runnable() {
@@ -138,10 +140,14 @@ public class DropDownCalls {
                 items.addAll(dbHandler.getItemTypes(formItem.getKey()));
             }
 
-            if(isDependOnDatasetEndpoint && items.isEmpty() && count < 120){
-                count++;
-                handler.postDelayed(runnable , 2000);
-                return;
+            if(!isDatasetEndpointFinished) {
+                if (isDependOnDatasetEndpoint && items.isEmpty() && count < 120) {
+                    count++;
+                    handler.postDelayed(runnable, 2000);
+                    return;
+                }
+            }else{
+                isDependOnDatasetEndpoint = false;
             }
             handler.removeCallbacks(runnable);
             listener.success(items , isDependOnDatasetEndpoint);

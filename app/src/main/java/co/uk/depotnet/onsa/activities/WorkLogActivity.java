@@ -34,6 +34,7 @@ import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.modals.responses.MeasureItemResponse;
 import co.uk.depotnet.onsa.modals.responses.MenSplitResponse;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
 import co.uk.depotnet.onsa.utils.AppPreferences;
@@ -345,7 +346,7 @@ public class WorkLogActivity extends AppCompatActivity
         showProgressBar();
 
 
-        APICalls.getMenSplits(user.gettoken()).enqueue(new Callback<MenSplitResponse>() {
+        CallUtils.enqueueWithRetry(APICalls.getMenSplits(user.gettoken()),new Callback<MenSplitResponse>() {
             @Override
             public void onResponse(@NonNull Call<MenSplitResponse> call, @NonNull Response<MenSplitResponse> response) {
                 if (response.isSuccessful()) {
@@ -356,7 +357,7 @@ public class WorkLogActivity extends AppCompatActivity
 
                 }
 
-                APICalls.getMeasureItems(user.gettoken()).enqueue(new Callback<MeasureItemResponse>() {
+                CallUtils.enqueueWithRetry(APICalls.getMeasureItems(user.gettoken()),new Callback<MeasureItemResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<MeasureItemResponse> call, @NonNull Response<MeasureItemResponse> response) {
                         hideProgressBar();

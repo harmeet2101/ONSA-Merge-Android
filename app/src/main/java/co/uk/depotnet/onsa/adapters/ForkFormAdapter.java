@@ -1502,7 +1502,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 if (code != null && !TextUtils.isEmpty(code.getAnswer())) {
                                     JobWorkItem workItem = dbHandler.getJobWorkItem(submission.getJobID(), code.getAnswer());
                                     if (workItem != null) {
-                                        if (qty > workItem.getquantity()) {
+                                        if (qty > workItem.getAvailableToMeasureQuantity()) {
                                             missingCount++;
                                             listener.showValidationDialog("Validation Error", "Please enter correct quantity");
                                         }

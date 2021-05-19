@@ -129,6 +129,7 @@ import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHour;
 import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
 import co.uk.depotnet.onsa.modals.timesheet.TimesheetOperative;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import co.uk.depotnet.onsa.utils.JsonReader;
@@ -179,12 +180,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.isScheduledInspection = isScheduledInspection;
         this.formItems = new ArrayList<>();
         this.selectableTasks = new ArrayList<>();
+        this.job = DBHandler.getInstance().getJob(submission.getJobID());
 
         redBG = new GradientDrawable();
         redBG.setColor(Color.parseColor("#e24444"));
         this.dbHandler = DBHandler.getInstance();
 
-        this.job = DBHandler.getInstance().getJob(submission.getJobID());
         getNotices();
         reInflateItems(false);
     }
@@ -4388,7 +4389,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         ((FromActivityListener) context).showProgressBar();
         User user = dbHandler.getUser();
 
-        APICalls.getTimesheetHours(user.gettoken(), weekCommencing).enqueue(new Callback<TimeSheetHours>() {
+        CallUtils.enqueueWithRetry(APICalls.getTimesheetHours(user.gettoken(), weekCommencing) , new Callback<TimeSheetHours>() {
             @Override
             public void onResponse(@NonNull Call<TimeSheetHours> call, @NonNull Response<TimeSheetHours> response) {
                 DBHandler.getInstance().clearTable(TimeSheetHour.DBTable.NAME);

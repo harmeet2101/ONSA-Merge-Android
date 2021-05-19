@@ -177,6 +177,11 @@ public class FragmentKitBag extends Fragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        fetch.removeListener(fetchListener);
+        if(!fetch.isClosed()){
+            fetch.removeListener(fetchListener);
+            fetch.close();
+        }
+
+
     }
 }

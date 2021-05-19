@@ -83,6 +83,7 @@ import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.ConnectionHelper;
 import co.uk.depotnet.onsa.networking.Constants;
@@ -745,7 +746,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         }
         User user = DBHandler.getInstance().getUser();
         listener.showProgressBar();
-        APICalls.getJobList(user.gettoken()).enqueue(new Callback<JobResponse>() {
+        CallUtils.enqueueWithRetry(APICalls.getJobList(user.gettoken()) , new Callback<JobResponse>() {
             @Override
             public void onResponse(@NonNull Call<JobResponse> call, @NonNull retrofit2.Response<JobResponse> response) {
 
@@ -900,7 +901,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         showProgressBar();
         User user = DBHandler.getInstance().getUser();
 
-        APICalls.getTimesheetHours(user.gettoken() , weekCommencing).enqueue(new Callback<TimeSheetHours>() {
+        CallUtils.enqueueWithRetry(APICalls.getTimesheetHours(user.gettoken() , weekCommencing), new Callback<TimeSheetHours>() {
             @Override
             public void onResponse(@NonNull Call<TimeSheetHours> call, @NonNull retrofit2.Response<TimeSheetHours> response) {
                 if(response.isSuccessful()){
@@ -922,7 +923,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     }
 
     public void showErrorDialog(String title, String message, boolean isSuccessful) {
-        if (getChildFragmentManager().isStateSaved() || !isAdded()) {
+
+        if (!isAdded() || getChildFragmentManager().isStateSaved() ) {
             ((Activity) context).setResult(Activity.RESULT_OK);
             ((Activity) context).finish();
             return;
@@ -1128,7 +1130,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             return;
         }
         listener.showProgressBar();
-        APICalls.GetJobEstimateDetail(estno, DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<JobEstimate>() {
+        CallUtils.enqueueWithRetry(APICalls.GetJobEstimateDetail(estno, DBHandler.getInstance().getUser().gettoken()),new Callback<JobEstimate>() {
             @Override
             public void onResponse(@NonNull Call<JobEstimate> call, @NonNull retrofit2.Response<JobEstimate> response) {
                 if (CommonUtils.onTokenExpired(context, response.code())) {
@@ -1176,7 +1178,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             return;
         }
         User user = DBHandler.getInstance().getUser();
-        APICalls.GetInspectionToolTipList(finalLatestTemplateVersionId, user.gettoken()).enqueue(new Callback<ArrayList<ToolTipModel>>() {
+        CallUtils.enqueueWithRetry(APICalls.GetInspectionToolTipList(finalLatestTemplateVersionId, user.gettoken()),new Callback<ArrayList<ToolTipModel>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<ToolTipModel>> call, @NonNull retrofit2.Response<ArrayList<ToolTipModel>> response) {
                 if (CommonUtils.onTokenExpired(context, response.code())) {

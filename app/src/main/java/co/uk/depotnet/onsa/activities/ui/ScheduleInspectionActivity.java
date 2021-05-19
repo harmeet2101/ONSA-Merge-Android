@@ -18,6 +18,7 @@ import java.util.List;
 
 import co.uk.depotnet.onsa.listeners.OnScheduleListUpdate;
 import co.uk.depotnet.onsa.listeners.ScheduleFragmentListener;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -108,7 +109,7 @@ public class ScheduleInspectionActivity extends AppCompatActivity implements Sch
 
     public void refreshData(OnScheduleListUpdate listUpdate) {
         showProgressBar();
-        APICalls.getHseqScheduleList(user.gettoken()).enqueue(new Callback<List<Schedule>>() {
+        CallUtils.enqueueWithRetry(APICalls.getHseqScheduleList(user.gettoken()),new Callback<List<Schedule>>() {
             @Override
             public void onResponse(@NonNull Call<List<Schedule>> call, @NonNull Response<List<Schedule>> response) {
                 if (CommonUtils.onTokenExpired(getApplicationContext(), response.code())) {

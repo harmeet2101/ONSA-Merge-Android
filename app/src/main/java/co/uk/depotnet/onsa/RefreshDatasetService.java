@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
 
 import com.google.gson.Gson;
 
@@ -22,6 +23,7 @@ import co.uk.depotnet.onsa.modals.timesheet.TimeTypeActivities;
 import co.uk.depotnet.onsa.networking.APICalls;
 import co.uk.depotnet.onsa.networking.ConnectionHelper;
 import co.uk.depotnet.onsa.networking.Constants;
+import co.uk.depotnet.onsa.utils.AppPreferences;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -30,26 +32,28 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RefreshDatasetService extends IntentService {
+public class RefreshDatasetService extends JobIntentService {
 
     public static String PARAM_USER_TOKEN = "PARAM_USER_TOKEN";
 
-    public RefreshDatasetService() {
-        super("RefreshDatasetService");
+    private static final int JOB_ID = 1000;
+
+
+    @Override
+    protected void onHandleWork(@NonNull Intent intent) {
+        String userToken = intent.getStringExtra(PARAM_USER_TOKEN);
+        handleAction(userToken);
     }
 
 
     public static void startAction(Context context, String userToken) {
         Intent intent = new Intent(context, RefreshDatasetService.class);
         intent.putExtra(PARAM_USER_TOKEN, userToken);
-        context.startService(intent);
+        enqueueWork(context, RefreshDatasetService.class, JOB_ID, intent);
+//        context.startService(intent);
+
     }
 
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        String userToken = intent.getStringExtra(PARAM_USER_TOKEN);
-        handleAction(userToken);
-    }
 
     private void handleAction(String token) {
         new Thread(() -> getDataset(token)).start();
@@ -65,9 +69,8 @@ public class RefreshDatasetService extends IntentService {
     }
 
     private boolean isTimeSheetEnabled(){
-        return true;
-//        User user = DBHandler.getInstance().getUser();
-//        return Constants.isTimeSheetEnabled && user != null && user.isCompleteTimesheets();
+        User user = DBHandler.getInstance(RefreshDatasetService.this).getUser();
+        return Constants.isTimeSheetEnabled && user != null && user.isCompleteTimesheets();
     }
 
     private void getDataset(String token) {
@@ -94,6 +97,7 @@ public class RefreshDatasetService extends IntentService {
                 if (response != null && response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body != null) {
+                        AppPreferences.putBoolean("DatasetEndpoint" , true);
                         DatasetResponse datasetResponse = gson.fromJson(body.string(), DatasetResponse.class);
                         datasetResponse.toContentValues();
                         return;

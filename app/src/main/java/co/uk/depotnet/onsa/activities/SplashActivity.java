@@ -12,6 +12,8 @@ import com.microsoft.appcenter.crashes.Crashes;
 
 import androidx.annotation.NonNull;
 
+import java.net.SocketTimeoutException;
+
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.RefreshDatasetService;
@@ -19,6 +21,7 @@ import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
 import co.uk.depotnet.onsa.utils.AppPreferences;
@@ -97,9 +100,11 @@ public class SplashActivity extends BaseActivity {
         if(!CommonUtils.validateToken(SplashActivity.this)){
             return;
         }
-        APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
+
+        CallUtils.enqueueWithRetry(APICalls.featureResultCall(user.gettoken()), new Callback<FeatureResult>() {
             @Override
             public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
+                System.out.println("test navin onResponse");
                 if (CommonUtils.onTokenExpired(SplashActivity.this, response.code())) {
                     return;
                 }
@@ -120,6 +125,7 @@ public class SplashActivity extends BaseActivity {
 
             @Override
             public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
+                System.out.println("test navin onFail");
                 Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
                 Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
                 Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
@@ -127,6 +133,25 @@ public class SplashActivity extends BaseActivity {
                 startWelcomeActivity();
             }
         });
+//        APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
+//            @Override
+//            public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
+//
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
+//                if(t instanceof SocketTimeoutException){
+//                    call.clone().enqueue(this);
+//                    return;
+//                }
+//                Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
+//                Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
+//                Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
+//                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
+//                startWelcomeActivity();
+//            }
+//        });
     }
 
 

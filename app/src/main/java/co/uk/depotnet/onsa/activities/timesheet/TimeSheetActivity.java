@@ -37,6 +37,7 @@ import co.uk.depotnet.onsa.modals.timesheet.TimeSheet;
 import co.uk.depotnet.onsa.modals.timesheet.TimeSheetHours;
 import co.uk.depotnet.onsa.modals.timesheet.TimeSheetResponse;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import co.uk.depotnet.onsa.utils.Utils;
@@ -181,7 +182,7 @@ public class TimeSheetActivity extends ThemeBaseActivity implements View.OnClick
         showProgressBar();
         User user = dbHandler.getUser();
 
-        APICalls.getTimesheetHours(user.gettoken() , weekCommencing).enqueue(new Callback<TimeSheetHours>() {
+        CallUtils.enqueueWithRetry(APICalls.getTimesheetHours(user.gettoken() , weekCommencing) , new Callback<TimeSheetHours>() {
             @Override
             public void onResponse(@NonNull Call<TimeSheetHours> call, @NonNull Response<TimeSheetHours> response) {
                 if(response.isSuccessful()){
@@ -220,25 +221,13 @@ public class TimeSheetActivity extends ThemeBaseActivity implements View.OnClick
         showProgressBar();
         User user = dbHandler.getUser();
 
-        APICalls.getTimesheets(user.gettoken()).enqueue(new Callback<TimeSheetResponse>() {
+        CallUtils.enqueueWithRetry(APICalls.getTimesheets(user.gettoken()), new Callback<TimeSheetResponse>() {
             @Override
             public void onResponse(@NonNull Call<TimeSheetResponse> call, @NonNull Response<TimeSheetResponse> response) {
                 if(response.isSuccessful()){
                     TimeSheetResponse timeSheetResponse = response.body();
                     if(timeSheetResponse != null && !timeSheetResponse.isEmpty()) {
                         timeSheetResponse.toContentValues();
-//                        ArrayList<TimeSheet> timeSheets = dbHandler.getTimeSheets();
-//                        calendarView.removeDecorators();
-//                        HashMap<String, String> map = new HashMap<>();
-//                        if (!timeSheets.isEmpty()) {
-//                            for (TimeSheet ts : timeSheets) {
-//                                map.putAll(ts.getAllWeekDates());
-//                            }
-//                            Set<String> keySet = map.keySet();
-//                            for (String key : keySet) {
-//                                calendarView.addDecorator(new StatusDayDecorator(TimeSheetActivity.this, key, map.get(key)));
-//                            }
-//                        }
                     }
                 }
                 getTimeSheetHours(Utils.formatDate(weekDate , "yyyy-MM-dd'T'HH:mm:ss"));

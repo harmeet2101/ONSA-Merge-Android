@@ -34,6 +34,7 @@ import co.uk.depotnet.onsa.modals.store.DataMyStores;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.StoreDataset;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 import co.uk.depotnet.onsa.views.CurrentStoreFilterBottomSheet;
@@ -381,7 +382,7 @@ public class FragmentCurrentStoreList extends Fragment
             return;
         }
         listener.showProgressBar();
-        APICalls.getMyStore(user.gettoken()).enqueue(new Callback<DataMyStores>() {
+        CallUtils.enqueueWithRetry(APICalls.getMyStore(user.gettoken()),new Callback<DataMyStores>() {
 
 
             @Override

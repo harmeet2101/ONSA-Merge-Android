@@ -24,6 +24,7 @@ import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
 import co.uk.depotnet.onsa.modals.httprequests.VerificationRequest;
 import co.uk.depotnet.onsa.modals.httpresponses.VerificationResult;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import retrofit2.Call;
@@ -99,7 +100,7 @@ public class VerificationActivity extends AppCompatActivity {
         }
 
         showProgressBar();
-        APICalls.activeMFA(user.gettoken()).enqueue(mfaCallback);
+        CallUtils.enqueueWithRetry(APICalls.activeMFA(user.gettoken()), mfaCallback);
     }
 
     private void showMFADialog(ActiveMfa mfa) {
@@ -143,7 +144,7 @@ public class VerificationActivity extends AppCompatActivity {
 
         showProgressBar();
 
-        APICalls.verifyCode(verificationRequest , user.gettoken()).enqueue(new Callback<VerificationResult>() {
+        CallUtils.enqueueWithRetry(APICalls.verifyCode(verificationRequest , user.gettoken()) , new Callback<VerificationResult>() {
             @Override
             public void onResponse(@NonNull Call<VerificationResult> call, @NonNull Response<VerificationResult> response) {
                 hideProgressBar();
@@ -199,7 +200,7 @@ public class VerificationActivity extends AppCompatActivity {
 
         showProgressBar();
 
-        APICalls.verify2FAChallenge(verificationRequest , user.gettoken()).enqueue(new Callback<User>() {
+        CallUtils.enqueueWithRetry(APICalls.verify2FAChallenge(verificationRequest , user.gettoken()),new Callback<User>() {
             @Override
             public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 hideProgressBar();

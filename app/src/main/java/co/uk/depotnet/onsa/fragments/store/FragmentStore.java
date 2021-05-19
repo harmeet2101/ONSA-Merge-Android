@@ -16,16 +16,28 @@ import co.uk.depotnet.onsa.activities.CurrentStoreActivity;
 import co.uk.depotnet.onsa.activities.FormActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
+import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Submission;
+import co.uk.depotnet.onsa.modals.store.DataMyRequests;
+import co.uk.depotnet.onsa.modals.store.DataReceipts;
+import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
+import co.uk.depotnet.onsa.networking.CommonUtils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FragmentStore extends Fragment implements
          View.OnClickListener{
 
-
     private Context context;
     private FragmentActionListener listener;
     private TextView txtRequestNoti;
-
+    private TextView txtReceiptNoti;
+    private boolean isRequestDataFetched;
+    private User user;
+    private DBHandler dbHandler;
+    private int apiCounter;
 
     public static FragmentStore newInstance() {
         FragmentStore fragment = new FragmentStore();
@@ -37,6 +49,8 @@ public class FragmentStore extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.dbHandler = DBHandler.getInstance(context);
+        this.user = dbHandler.getUser();
     }
 
     @Override
@@ -48,20 +62,102 @@ public class FragmentStore extends Fragment implements
         view.findViewById(R.id.rl_goods_out).setOnClickListener(this);
         view.findViewById(R.id.rl_receipts).setOnClickListener(this);
         view.findViewById(R.id.rl_my_request).setOnClickListener(this);
+        view.findViewById(R.id.btn_img_cancel).setOnClickListener(v -> ((Activity)context).onBackPressed());
 
-
-        TextView txtReceiptNoti = view.findViewById(R.id.txt_receipt_notification);
+        txtReceiptNoti = view.findViewById(R.id.txt_receipt_notification);
         txtRequestNoti = view.findViewById(R.id.txt_request_notification);
 
         int receiptCount = DBHandler.getInstance().getReceipts().size();
         txtReceiptNoti.setText(String.valueOf(receiptCount));
-        view.findViewById(R.id.btn_img_cancel).setOnClickListener(v -> ((Activity)context).onBackPressed());
 
-//        getMyRequests();
+
         int requestCount = DBHandler.getInstance().getMyRequest().size();
         txtRequestNoti.setText(String.valueOf(requestCount));
 
+        if(!isRequestDataFetched){
+            isRequestDataFetched = true;
+            if(CommonUtils.isNetworkAvailable(context) && CommonUtils.validateToken(context)) {
+                listener.showProgressBar();
+                getMyRequests();
+                getReceipts();
+            }
+        }
+
         return view;
+    }
+
+    private void getMyRequests() {
+        CallUtils.enqueueWithRetry(APICalls.getMyRequests(user.gettoken()), new Callback<DataMyRequests>() {
+            @Override
+            public void onResponse(@NonNull Call<DataMyRequests> call, @NonNull Response<DataMyRequests> response) {
+               apiCounter++;
+                if (CommonUtils.onTokenExpired(context, response.code())) {
+                    onApiResponse();
+                    return;
+                }
+
+                if (response.isSuccessful()) {
+                    DataMyRequests dataMyRequests = response.body();
+                    if (dataMyRequests != null) {
+                        DBHandler.getInstance().resetMyRequest();
+                        dataMyRequests.toContentValues();
+                    }
+                }
+                int requestCount = DBHandler.getInstance().getMyRequest().size();
+                txtRequestNoti.setText(String.valueOf(requestCount));
+                onApiResponse();
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DataMyRequests> call, @NonNull Throwable t) {
+                apiCounter++;
+                int requestCount = DBHandler.getInstance().getMyRequest().size();
+                txtRequestNoti.setText(String.valueOf(requestCount));
+                onApiResponse();
+            }
+
+        });
+    }
+
+    private void getReceipts() {
+
+        CallUtils.enqueueWithRetry(APICalls.getReceipts(user.gettoken()), new Callback<DataReceipts>() {
+            @Override
+            public void onResponse(@NonNull Call<DataReceipts> call, @NonNull Response<DataReceipts> response) {
+                apiCounter++;
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    onApiResponse();
+                    return;
+                }
+
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        DBHandler.getInstance().resetReceipts();
+                        response.body().toContentValues();
+                        listener.hideProgressBar();
+
+                    }
+                }
+                int receiptCount = DBHandler.getInstance().getReceipts().size();
+                txtReceiptNoti.setText(String.valueOf(receiptCount));
+                onApiResponse();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DataReceipts> call, @NonNull Throwable t) {
+                apiCounter++;
+                int receiptCount = DBHandler.getInstance().getReceipts().size();
+                txtReceiptNoti.setText(String.valueOf(receiptCount));
+                onApiResponse();
+            }
+        });
+    }
+
+    private void onApiResponse(){
+        if(apiCounter == 2){
+            listener.hideProgressBar();
+        }
     }
 
 

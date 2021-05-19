@@ -18,11 +18,7 @@ import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.tonyodev.fetch2.DefaultFetchNotificationManager;
 import com.tonyodev.fetch2.Fetch;
-import com.tonyodev.fetch2.FetchConfiguration;
-import com.tonyodev.fetch2core.Downloader;
-import com.tonyodev.fetch2okhttp.OkHttpDownloader;
 
 import java.util.ArrayList;
 
@@ -31,13 +27,11 @@ import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.FragmentHome;
 import co.uk.depotnet.onsa.fragments.FragmentKitBag;
 import co.uk.depotnet.onsa.fragments.FragmentQueue;
-import co.uk.depotnet.onsa.fragments.store.FragmentStore;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.listeners.GetFetchListener;
 import co.uk.depotnet.onsa.listeners.HomeBottomBarListener;
 import co.uk.depotnet.onsa.modals.forms.Submission;
 import co.uk.depotnet.onsa.networking.NetworkStateReceiver;
-import co.uk.depotnet.onsa.utils.Utils;
 import co.uk.depotnet.onsa.views.MaterialAlertDialog;
 import co.uk.depotnet.onsa.views.PopupMenu;
 
@@ -57,15 +51,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        final FetchConfiguration fetchConfiguration = new FetchConfiguration.Builder(this)
-                .setDownloadConcurrentLimit(4)
-                .setHttpDownloader(new OkHttpDownloader(Downloader.FileDownloaderType.PARALLEL))
-                .setNamespace("OptinonsDownloader")
-                .setNotificationManager(new DefaultFetchNotificationManager(this))
-                .build();
-        fetch = Fetch.Impl.getDefaultInstance();
-
 
         networkStateReceiver = new NetworkStateReceiver();
         networkStateReceiver.addListener(this);
@@ -205,13 +190,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onOnsaStoreClick() {
-        Utils.store_call = false;
-        FragmentStore fragmentStore = FragmentStore.newInstance();
-        addFragment(fragmentStore, false);
-    }
-
-    @Override
     public void onOfflineQueueClick() {
         FragmentQueue fragmentQueue = FragmentQueue.newInstance(false);
         addFragment(fragmentQueue, true);
@@ -231,18 +209,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_cancel_search:
-                closeSearch();
-                break;
-            case R.id.btn_img_search:
-                break;
-            case R.id.btn_img_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.btn_img_cancel:
-                onBackPressed();
+        if(view.getId() == R.id.btn_cancel_search){
+            closeSearch();
+        }else if(view.getId() == R.id.btn_img_settings){
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }else if(view.getId() == R.id.btn_img_cancel){
+            onBackPressed();
         }
     }
 
@@ -276,7 +249,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void showNetworkDialog(String title, String message) {
-
         isNetworkDialogVisible = true;
         MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
                 .setTitle(title)
@@ -303,6 +275,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Fetch getFetch() {
+        if(fetch == null || fetch.isClosed()){
+            fetch = Fetch.Impl.getDefaultInstance();
+        }
         return fetch;
     }
 

@@ -1,8 +1,10 @@
 package co.uk.depotnet.onsa.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -10,6 +12,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -20,11 +23,22 @@ import co.uk.depotnet.onsa.modals.Document;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import co.uk.depotnet.onsa.utils.GenericFileProvider;
 import co.uk.depotnet.onsa.utils.Utils;
+
 import com.tonyodev.fetch2.Download;
 import com.tonyodev.fetch2.Fetch;
 import com.tonyodev.fetch2.Request;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
 import java.util.List;
 
 public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHolder> {
@@ -35,7 +49,7 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
     private final boolean isSubJob;
 
 
-    public JobPackAdapter(Context context, List<Document> jobPacks, Fetch fetch , boolean isSubJob) {
+    public JobPackAdapter(Context context, List<Document> jobPacks, Fetch fetch, boolean isSubJob) {
         this.context = context;
         this.jobPacks = jobPacks;
         this.fetch = fetch;
@@ -54,7 +68,7 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
         final Document jobPack = jobPacks.get(position);
 
         holder.txtDocTitle.setText(jobPack.getDocumentName());
-        holder.txtDocTime.setText(Utils.formatDate(jobPack.getdateTime() ,"yyyy-MM-dd'T'HH:mm:sss", "dd/MM/yyyy"));
+        holder.txtDocTime.setText(Utils.formatDate(jobPack.getdateTime(), "yyyy-MM-dd'T'HH:mm:sss", "dd/MM/yyyy"));
         final int id = AppPreferences.getInt("JobPack" + jobPack.getjobDocumentId(), -1);
 
 
@@ -64,25 +78,15 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
             holder.btnDownload.setVisibility(View.VISIBLE);
             holder.btnDownload.setText("Download");
             holder.btnDownload.setOnClickListener(view -> {
-                String extension = getExtension(jobPack.getDocumentName());
-                if(TextUtils.isEmpty(extension)){
-                    extension = "docx";
+                String url = BuildConfig.BASE_URL + "app/jobs/" + jobPack.getJobId() +
+                        "/documents/" + jobPack.getjobDocumentId() + "/download";
+                if (isSubJob) {
+                    url = BuildConfig.BASE_URL + "app/jobs/" + jobPack.getJobId() +
+                            "/document/" + jobPack.getjobDocumentId();
                 }
-                String fileDir = Utils.getSaveDir(context) + "JobPack/" + "JobPack_" + jobPack.getjobDocumentId() + "."+extension;// + jobPack.gettype().toLowerCase(Locale.ENGLISH);
-                String url = BuildConfig.BASE_URL+"app/jobs/"+jobPack.getJobId()+
-                        "/documents/"+jobPack.getjobDocumentId()+"/download";
 
-                if(isSubJob){
-                    url = BuildConfig.BASE_URL+"app/jobs/"+jobPack.getJobId()+
-                            "/document/"+jobPack.getjobDocumentId();
-                }
-                Request request = new Request(url, fileDir);
-                request.addHeader("Authorization", "Bearer "+DBHandler.getInstance().getUser().gettoken());
-                fetch.enqueue(request, result -> {
-                    notifyDataSetChanged();
-                    AppPreferences.putInt("JobPack" + jobPack.getjobDocumentId(), result.getId());
-                }, result -> {
-                });
+                identifyFileTypeUsingUrlConnectionGetContentType(url, jobPack);
+
             });
 
         } else {
@@ -171,9 +175,12 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
     public void openDocument(String name) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         File file = new File(name);
+
+
         Uri uri = GenericFileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", file);
 
         String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+//        String extension = getExtensionFromUrl(file);
         String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 
         if (extension.equalsIgnoreCase("") || mimetype == null) {
@@ -185,12 +192,50 @@ public class JobPackAdapter extends RecyclerView.Adapter<JobPackAdapter.ViewHold
         context.startActivity(Intent.createChooser(intent, "Choose an Application:"));
     }
 
-    private String getExtension(String name){
-        if(TextUtils.isEmpty(name)){
-            return null;
-        }
-        String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(name);
-        return extension;
+
+    public void identifyFileTypeUsingUrlConnectionGetContentType(final String fileName, Document jobPack) {
+        new Thread(() -> {
+            String fileType = null;
+
+            try {
+
+                final URL url = new URL(fileName);
+                HttpURLConnection myURLConnection = (HttpURLConnection) url.openConnection();
+                myURLConnection.setRequestProperty("Authorization", "Bearer " + DBHandler.getInstance().getUser().gettoken());
+                myURLConnection.setRequestMethod("GET");
+
+                myURLConnection.connect();
+                System.out.println("test navin status " + myURLConnection.getResponseCode());
+                fileType = myURLConnection.getContentType();
+                System.out.println("test navin url extension " + fileType);
+                myURLConnection.disconnect();
+
+                if (!TextUtils.isEmpty(fileType)) {
+                    fileType = MimeTypeMap.getSingleton().getExtensionFromMimeType(fileType);
+                }
+                if (TextUtils.isEmpty(fileType)) {
+                    fileType = "pdf";
+                }
+
+                final String extension = fileType;
+
+                ((Activity) context).runOnUiThread(() -> {
+                    String fileDir = Utils.getSaveDir(context) + "JobPack/" + "JobPack_" + jobPack.getjobDocumentId() + "." + extension;// + jobPack.gettype().toLowerCase(Locale.ENGLISH);
+                    Request request = new Request(fileName, fileDir);
+                    request.addHeader("Authorization", "Bearer " + DBHandler.getInstance().getUser().gettoken());
+                    fetch.enqueue(request, result -> {
+                        notifyDataSetChanged();
+                        AppPreferences.putInt("JobPack" + jobPack.getjobDocumentId(), result.getId());
+                    }, result -> {
+                    });
+                });
+
+            } catch (MalformedURLException badUrlEx) {
+
+            } catch (IOException ioEx) {
+
+            }
+        }).start();
     }
 
 

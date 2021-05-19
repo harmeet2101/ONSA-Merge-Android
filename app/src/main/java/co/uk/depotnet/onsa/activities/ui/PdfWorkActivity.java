@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.uk.depotnet.onsa.networking.CallUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -121,7 +122,7 @@ public class PdfWorkActivity extends AppCompatActivity implements View.OnClickLi
     private void GetFileBYID(String documentID)
     {
         ShowProgress(true);
-        APICalls.GetBriefingsDocData(documentID, DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<BriefingsDocument>() {
+        CallUtils.enqueueWithRetry(APICalls.GetBriefingsDocData(documentID, DBHandler.getInstance().getUser().gettoken()),new Callback<BriefingsDocument>() {
             @Override
             public void onResponse(@NonNull Call<BriefingsDocument> call, @NonNull Response<BriefingsDocument> response) {
                 if(CommonUtils.onTokenExpired(PdfWorkActivity.this , response.code())){

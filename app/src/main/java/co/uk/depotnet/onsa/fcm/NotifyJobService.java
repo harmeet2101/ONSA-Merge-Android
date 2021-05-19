@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 
+import co.uk.depotnet.onsa.networking.CallUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,7 +51,7 @@ public class NotifyJobService extends JobService {
     public void createAndPushNotify(NotifyModel notifyModel) {
 
         User user = DBHandler.getInstance().getUser();
-       APICalls.callNotificationMarkPush(new NotifyReadPush(notifyModel.getNotificationId()),user.gettoken()).enqueue(new Callback<NotifyReadPush>() {
+        CallUtils.enqueueWithRetry(APICalls.callNotificationMarkPush(new NotifyReadPush(notifyModel.getNotificationId()),user.gettoken()),new Callback<NotifyReadPush>() {
                 @Override
                 public void onResponse(@NonNull Call<NotifyReadPush> call, @NonNull Response<NotifyReadPush> response) {
                     if(CommonUtils.onTokenExpired(NotifyJobService.this, response.code())){

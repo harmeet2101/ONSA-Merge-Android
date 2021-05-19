@@ -17,6 +17,7 @@ import co.uk.depotnet.onsa.dialogs.ErrorDialog;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.httprequests.ResetPassword;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -106,7 +107,7 @@ public class ForgotPasswordActivity extends AppCompatActivity
         }
 
         if (validate()) {
-            APICalls.resetPassword(new ResetPassword(etEmail.toString().trim())).enqueue(forgetPasswordCallback);
+            CallUtils.enqueueWithRetry(APICalls.resetPassword(new ResetPassword(etEmail.toString().trim())) , forgetPasswordCallback);
 
             return;
         }

@@ -122,16 +122,6 @@ public class APICalls {
         return apiInterface.getJobList();
     }
 
-    public static Call<DatasetResponse> getDataSet(String authToken){
-        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
-        return apiInterface.getDataSet();
-    }
-
-    public static Call<StoreDataset> getStoreDataSet(String authToken){
-        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
-        return apiInterface.getStoreDataSet();
-    }
-
     public static Call<DataReceipts> getReceipts(String authToken){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getReceipts();
@@ -140,11 +130,6 @@ public class APICalls {
     public static Call<DataMyRequests> getMyRequests(String authToken){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getMyRequests();
-    }
-
-    public static Call<StockLevel> getStockLevel(String authToken , String staId , String stockItemId){
-        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
-        return apiInterface.getStockLevel(staId , stockItemId);
     }
 
     public static Call<StockItems> getItem(String authToken , String barcode, String staId){
@@ -196,6 +181,7 @@ public class APICalls {
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getBriefings();
     }
+
     public static Call<BriefingsDocument> GetBriefingsDocData(String briefingId, String authToken){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.GetBriefingsDoc(briefingId);
@@ -240,5 +226,7 @@ public class APICalls {
         APIInterface apiInterface = APIClient.createService(APIInterface.class, authToken);
         return apiInterface.notificationpush(readPush);
     }
+
+
 
 }

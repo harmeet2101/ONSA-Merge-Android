@@ -3,6 +3,8 @@ package co.uk.depotnet.onsa.fragments.store;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,8 +18,16 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.store.AdapterMyReceipts;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
+import co.uk.depotnet.onsa.modals.User;
+import co.uk.depotnet.onsa.modals.store.DataReceipts;
 import co.uk.depotnet.onsa.modals.store.Receipts;
+import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class ReceiptsFragment extends Fragment {
@@ -26,10 +36,9 @@ public class ReceiptsFragment extends Fragment {
     private FragmentActionListener listener;
     private Context context;
     private AdapterMyReceipts adapter;
+    private DBHandler dbHandler;
+    private User user;
 
-
-    public ReceiptsFragment() {
-    }
 
 
     public static ReceiptsFragment newInstance() {
@@ -43,8 +52,8 @@ public class ReceiptsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-        }
+        this.dbHandler = DBHandler.getInstance(context);
+        this.user = dbHandler.getUser();
 
         receipts = new ArrayList<>();
         adapter = new AdapterMyReceipts(receipts , listener);
@@ -63,14 +72,43 @@ public class ReceiptsFragment extends Fragment {
         VerticalSpaceItemDecoration decoration = new VerticalSpaceItemDecoration(16);
         recyclerView.addItemDecoration(decoration);
 
-        view.findViewById(R.id.btn_img_cancel).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_img_cancel).setOnClickListener(v -> ((Activity)context).onBackPressed());
+        getReceipts();
+        return view;
+    }
+
+    private void getReceipts() {
+        if(!CommonUtils.isNetworkAvailable(context)){
+            return;
+        }
+        if(!CommonUtils.validateToken(context)){
+            return;
+        }
+        listener.showProgressBar();
+        CallUtils.enqueueWithRetry(APICalls.getReceipts(user.gettoken()), new Callback<DataReceipts>() {
             @Override
-            public void onClick(View v) {
-                ((Activity)context).onBackPressed();
+            public void onResponse(@NonNull Call<DataReceipts> call, @NonNull Response<DataReceipts> response) {
+                if(CommonUtils.onTokenExpired(context , response.code())){
+                    return;
+                }
+
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        DBHandler.getInstance().resetReceipts();
+                        response.body().toContentValues();
+                        listener.hideProgressBar();
+                        receipts.clear();
+                        receipts.addAll( DBHandler.getInstance().getReceipts());
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DataReceipts> call, @NonNull Throwable t) {
+                listener.hideProgressBar();
             }
         });
-
-        return view;
     }
 
     @Override

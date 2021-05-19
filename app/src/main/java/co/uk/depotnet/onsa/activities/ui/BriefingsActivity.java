@@ -47,6 +47,7 @@ import co.uk.depotnet.onsa.listeners.GetFetchListener;
 import co.uk.depotnet.onsa.modals.actions.Action;
 import co.uk.depotnet.onsa.modals.actions.ActionResponse;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import retrofit2.Call;
@@ -286,6 +287,9 @@ public class BriefingsActivity extends ThemeBaseActivity implements  GetFetchLis
 
     @Override
     public Fetch getFetch() {
+        if(fetch == null || fetch.isClosed()){
+            fetch = Fetch.Impl.getDefaultInstance();
+        }
         return fetch;
     }
 
@@ -297,7 +301,7 @@ public class BriefingsActivity extends ThemeBaseActivity implements  GetFetchLis
 
     private void GetActionsCall()
     {
-        APICalls.getActionsOutstandingList(DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<List<ActionResponse>>() {
+        CallUtils.enqueueWithRetry(APICalls.getActionsOutstandingList(DBHandler.getInstance().getUser().gettoken()),new Callback<List<ActionResponse>>() {
             @Override
             public void onResponse(@NonNull Call<List<ActionResponse>> call, @NonNull Response<List<ActionResponse>> response) {
                 if(CommonUtils.onTokenExpired(BriefingsActivity.this, response.code())){

@@ -20,18 +20,15 @@ public class HomeBottomBarHandler implements View.OnClickListener {
 
     private final LinearLayout llBtnMyWork;
     private final LinearLayout llBtnKitBag;
-    private final LinearLayout llBtnOnsaStore;
     private final LinearLayout llBtnOfflineCheck;
 
 
     private final ImageView imgMyWork;
     private final ImageView imgKitBag;
-    private final ImageView imgOnsaStore;
     private final ImageView imgOfflineQueue;
 
     private final TextView txtMyWork;
     private final TextView txtKitBag;
-    private final TextView txtOnsaStore;
     private final TextView txtOfflineQueue;
 
     private LinearLayout llLastSelected;
@@ -56,22 +53,18 @@ public class HomeBottomBarHandler implements View.OnClickListener {
 
         llBtnMyWork = view.findViewById(R.id.ll_btn_my_work);
         llBtnKitBag = view.findViewById(R.id.ll_btn_kit_bag);
-        llBtnOnsaStore = view.findViewById(R.id.ll_btn_onsa_store);
         llBtnOfflineCheck = view.findViewById(R.id.ll_btn_offline_queue);
 
 
         llBtnMyWork.setOnClickListener(this);
         llBtnKitBag.setOnClickListener(this);
-        llBtnOnsaStore.setOnClickListener(this);
         llBtnOfflineCheck.setOnClickListener(this);
 
         imgMyWork = view.findViewById(R.id.img_my_work);
         imgKitBag = view.findViewById(R.id.img_kit_bag);
-        imgOnsaStore = view.findViewById(R.id.img_vehicle_check);
         imgOfflineQueue = view.findViewById(R.id.img_offline_queue);
         txtMyWork = view.findViewById(R.id.txt_my_work);
         txtKitBag = view.findViewById(R.id.txt_kit_bag);
-        txtOnsaStore = view.findViewById(R.id.txt_onsa_store);
         txtOfflineQueue = view.findViewById(R.id.txt_offline_queue);
         txtStoreNotification = view.findViewById(R.id.txt_store_notification);
 
@@ -81,12 +74,6 @@ public class HomeBottomBarHandler implements View.OnClickListener {
         ImageViewCompat.setImageTintList(imgLastSelected,
                 ColorStateList.valueOf(colorSelected));
         txtLastSelected.setTextColor(colorSelected);
-
-        if(Constants.isStoreEnabled){
-            llBtnOnsaStore.setVisibility(View.VISIBLE);
-        }else{
-            llBtnOnsaStore.setVisibility(View.GONE);
-        }
 
     }
 
@@ -119,16 +106,6 @@ public class HomeBottomBarHandler implements View.OnClickListener {
                         ColorStateList.valueOf(colorSelected));
                 txtLastSelected.setTextColor(colorSelected);
                 listener.onKitBagClick();
-                break;
-            case R.id.ll_btn_onsa_store:
-                llLastSelected = llBtnOnsaStore;
-                imgLastSelected = imgOnsaStore;
-                txtLastSelected = txtOnsaStore;
-                ImageViewCompat.setImageTintList(imgLastSelected,
-                        ColorStateList.valueOf(colorSelected));
-                txtLastSelected.setTextColor(colorSelected);
-
-                listener.onOnsaStoreClick();
                 break;
             case R.id.ll_btn_offline_queue:
                 llLastSelected = llBtnOfflineCheck;

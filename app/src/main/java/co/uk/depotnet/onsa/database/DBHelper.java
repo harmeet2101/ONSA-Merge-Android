@@ -19,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private final static String SP_KEY_DB_VER = BuildConfig.APPLICATION_ID+"_databse";
     private static DBHelper dbHelper;
     private final static String DATABASE_PATH = "/data/data/"+BuildConfig.APPLICATION_ID+"/databases/";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "onsadb.sqlite";
     private SQLiteDatabase database;
 

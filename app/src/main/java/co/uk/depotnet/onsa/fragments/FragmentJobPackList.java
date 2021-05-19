@@ -44,16 +44,18 @@ public class FragmentJobPackList extends Fragment{
     private final FetchListener fetchListener = new AbstractFetchListener() {
         @Override
         public void onAdded(@NotNull Download download) {
-
+            System.out.println("test navin onAdded "+download);
         }
 
         @Override
         public void onQueued(@NotNull Download download, boolean waitingOnNetwork) {
+            System.out.println("test navin onQueued "+download);
             adapter.update(download, UNKNOWN_REMAINING_TIME, UNKNOWN_DOWNLOADED_BYTES_PER_SECOND);
         }
 
         @Override
         public void onCompleted(@NotNull Download download) {
+            System.out.println("test navin onCompleted "+download);
             adapter.update(download, UNKNOWN_REMAINING_TIME, UNKNOWN_DOWNLOADED_BYTES_PER_SECOND);
         }
 
@@ -170,7 +172,9 @@ public class FragmentJobPackList extends Fragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        fetch.removeListener(fetchListener);
-        fetch.close();
+        if(!fetch.isClosed()){
+            fetch.removeListener(fetchListener);
+            fetch.close();
+        }
     }
 }

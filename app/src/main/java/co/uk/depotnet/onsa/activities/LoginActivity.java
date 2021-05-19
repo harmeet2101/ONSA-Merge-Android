@@ -26,6 +26,7 @@ import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
 import co.uk.depotnet.onsa.modals.httprequests.UserRequest;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 import okhttp3.ResponseBody;
@@ -56,7 +57,6 @@ public class LoginActivity extends AppCompatActivity
                     return;
                 }
             }
-
             ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "Please try again.","Some Error occurred");
             dialog.show();
         }
@@ -129,7 +129,7 @@ public class LoginActivity extends AppCompatActivity
                     }
                     
                     showProgressBar();
-                    APICalls.activeMFA(user.gettoken()).enqueue(mfaCallback);
+                    CallUtils.enqueueWithRetry(APICalls.activeMFA(user.gettoken()),mfaCallback);
                     return;
                 }
             }else{

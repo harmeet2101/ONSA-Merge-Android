@@ -42,7 +42,7 @@ public class AdapterWorkItems extends RecyclerView.Adapter<AdapterWorkItems.View
         viewHolder.txtItemCode.setText("Item Code: "+item.getitemCode());
         viewHolder.txtDesc.setText("Description: "+item.getdescription());
         viewHolder.txtUnit.setText("Unit: "+String.valueOf(item.getunitType()));
-        viewHolder.txtQuantity.setText("Quantity: "+String.valueOf(item.getquantity()));
+        viewHolder.txtQuantity.setText("Quantity: "+String.valueOf(item.getAvailableToMeasureQuantity()));
     }
 
     @Override

@@ -1,13 +1,17 @@
 package co.uk.depotnet.onsa.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -18,6 +22,7 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.MainActivity;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.GetFetchListener;
+import co.uk.depotnet.onsa.modals.Document;
 import co.uk.depotnet.onsa.modals.KitBagDocument;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.AppPreferences;
@@ -28,6 +33,10 @@ import com.tonyodev.fetch2.Fetch;
 import com.tonyodev.fetch2.Request;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 public class AdapterKitBag extends RecyclerView.Adapter<AdapterKitBag.ViewHolder> {
@@ -85,19 +94,9 @@ public class AdapterKitBag extends RecyclerView.Adapter<AdapterKitBag.ViewHolder
                     Toast.makeText(context , "Plaese enable your internet connection" , Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                String fileDir = Utils.getSaveDir(context) + "KitbagDoc/" + "KitbagDoc_" + kitBagItem.getDocumentId() +".pdf";
-
                 String url = BuildConfig.BASE_URL+"app/kitbag-documents/"+kitBagItem.getDocumentId()+"/download";
+                identifyFileTypeUsingUrlConnectionGetContentType(url , kitBagItem);
 
-                Request request = new Request(url, fileDir);
-                request.addHeader("Authorization", "Bearer "+DBHandler.getInstance().getUser().gettoken());
-//                    request.setExtras(getExtrasForRequest());
-
-                fetch.enqueue(request, result -> {
-                    notifyDataSetChanged();
-                    AppPreferences.putInt("KitbagDoc" + kitBagItem.getDocumentId(), result.getId());
-                }, result -> {});
             });
 
         } else {
@@ -181,6 +180,70 @@ public class AdapterKitBag extends RecyclerView.Adapter<AdapterKitBag.ViewHolder
             }
             fetch.remove(result.getId());
         }));
+    }
+
+    public void identifyFileTypeUsingUrlConnectionGetContentType(final String fileName , KitBagDocument kitbag)
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String fileType = null;
+
+                try
+                {
+
+                    final URL url = new URL(fileName);
+                    HttpURLConnection myURLConnection = (HttpURLConnection)url.openConnection();
+                    myURLConnection.setRequestProperty ("Authorization", "Bearer "+DBHandler.getInstance().getUser().gettoken());
+                    myURLConnection.setRequestMethod("GET");
+
+                    myURLConnection.connect();
+                    System.out.println("test navin statu "+myURLConnection.getResponseCode());
+                    fileType = myURLConnection.getContentType();
+                    System.out.println("test navin urlextension "+fileType);
+
+                    myURLConnection.disconnect();
+
+                    if(!TextUtils.isEmpty(fileType)){
+                        fileType = MimeTypeMap.getSingleton().getExtensionFromMimeType(fileType);
+                    }
+                    System.out.println("test navin fileType "+fileType);
+                    if(TextUtils.isEmpty(fileType)){
+                        fileType = "pdf";
+                    }
+
+                    final  String extension = fileType;
+
+                    ((Activity)context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            String fileDir = Utils.getSaveDir(context) + "KitbagDoc/" + "KitbagDoc_" + kitbag.getDocumentId() +"."+extension;
+
+
+                            Request request = new Request(fileName, fileDir);
+                            request.addHeader("Authorization", "Bearer "+DBHandler.getInstance().getUser().gettoken());
+//                    request.setExtras(getExtrasForRequest());
+
+                            fetch.enqueue(request, result -> {
+                                notifyDataSetChanged();
+                                AppPreferences.putInt("KitbagDoc" + kitbag.getDocumentId(), result.getId());
+                            }, result -> {});
+
+                        }
+                    });
+
+                }
+                catch (MalformedURLException badUrlEx)
+                {
+
+                }
+                catch (IOException ioEx)
+                {
+
+                }
+            }
+        }).start();
     }
 
     private void openDocument(String name) {

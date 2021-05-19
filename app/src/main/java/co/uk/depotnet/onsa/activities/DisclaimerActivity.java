@@ -28,6 +28,7 @@ import co.uk.depotnet.onsa.modals.Disclaimer;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.store.FeatureResult;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
 import okhttp3.ResponseBody;
@@ -137,7 +138,7 @@ public class DisclaimerActivity extends AppCompatActivity
 
             if (CommonUtils.validateToken(DisclaimerActivity.this) && user != null && !TextUtils.isEmpty(user.gettoken())) {
                 RefreshDatasetService.startAction(this , user.gettoken());
-                APICalls.getDisclaimer(user.gettoken()).enqueue(disclaimerCallback);
+                CallUtils.enqueueWithRetry(APICalls.getDisclaimer(user.gettoken()) , disclaimerCallback);
                 APICalls.getDisclaimerLogo(user.gettoken(), disclaimerCallbackLogo);
                 getFeatures();
             }
@@ -183,11 +184,11 @@ public class DisclaimerActivity extends AppCompatActivity
 
     private void getFeatures() {
 
-        APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
+        CallUtils.enqueueWithRetry(APICalls.featureResultCall(user.gettoken()), new Callback<FeatureResult>() {
             @Override
             public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
                 apiCounter++;
-                if (CommonUtils.onTokenExpired(DisclaimerActivity.this, response.code())) {
+                    if (CommonUtils.onTokenExpired(DisclaimerActivity.this, response.code())) {
                     return;
                 }
 

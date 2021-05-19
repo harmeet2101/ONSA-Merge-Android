@@ -28,6 +28,7 @@ import co.uk.depotnet.onsa.modals.store.DataReceipts;
 import co.uk.depotnet.onsa.modals.store.ReceiptItems;
 import co.uk.depotnet.onsa.modals.store.Receipts;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.Utils;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
@@ -171,7 +172,7 @@ public class ReceiptItemsFragment extends Fragment implements View.OnClickListen
             return;
         }
         listener.showProgressBar();
-        APICalls.getReceipts(user.gettoken()).enqueue(new Callback<DataReceipts>() {
+        CallUtils.enqueueWithRetry(APICalls.getReceipts(user.gettoken()), new Callback<DataReceipts>() {
             @Override
             public void onResponse(@NonNull Call<DataReceipts> call, @NonNull Response<DataReceipts> response) {
                 if(CommonUtils.onTokenExpired(context , response.code())){

@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.core.content.ContextCompat;
@@ -64,13 +63,10 @@ import co.uk.depotnet.onsa.modals.ItemType;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Submission;
-import co.uk.depotnet.onsa.modals.httpresponses.BaseTask;
-import co.uk.depotnet.onsa.modals.httpresponses.SiteActivityModel;
 import co.uk.depotnet.onsa.modals.responses.JobResponse;
-import co.uk.depotnet.onsa.modals.store.DataMyRequests;
 import co.uk.depotnet.onsa.modals.store.DataMyStores;
-import co.uk.depotnet.onsa.modals.store.DataReceipts;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.ConnectionHelper;
 import co.uk.depotnet.onsa.networking.Constants;
@@ -108,7 +104,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     private ArrayList<ItemType> jobTags;
     private Date selectedDate;
     private boolean isRefreshing;
-    private int taskCounter;
 
 
     public static FragmentHome newInstance() {
@@ -602,30 +597,24 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_cancel_search:
-                closeSearch();
-                break;
-            case R.id.btn_img_search:
-                openSearchDialog();
-                break;
-            case R.id.btn_img_settings:
-                Intent intent = new Intent(getActivity(), SettingsActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.btn_img_cancel:
-                ((Activity) context).onBackPressed();
+        if(view.getId() == R.id.btn_cancel_search){
+            closeSearch();
+        }else if(view.getId() == R.id.btn_img_search){
+            openSearch();
+        }else if(view.getId() == R.id.btn_img_settings){
+            Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(intent);
+        }else if(view.getId() == R.id.btn_img_cancel){
+            ((Activity) context).onBackPressed();
         }
     }
 
-    private void openSearchDialog() {
+    private void openSearch() {
         btnImageSearch.setVisibility(View.GONE);
         btnImageSettings.setVisibility(View.GONE);
         txtToolbarTitle.setVisibility(View.GONE);
         searchView.setVisibility(View.VISIBLE);
         searchView.setIconified(false);
-       /* PopupMenu popupMenu = new PopupMenu(getContext(), null , this);
-        popupMenu.show(btnImageSearch);*/
     }
 
 
@@ -639,10 +628,8 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         }
     }
 
-    private int apiCounter;
 
     private void fetchData(){
-        apiCounter = 0;
         if(!CommonUtils.isNetworkAvailable(context)){
             getJobsFromDb();
             if(Constants.isStoreEnabled) {
@@ -655,24 +642,17 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         isRefreshing = true;
         listener.showProgressBar();
         getJobs();
-        if(Constants.isStoreEnabled) {
-            getMyRequests();
-            getReceipts();
-        }
     }
 
     private void getJobs() {
-//        isRefreshing = true;
-//        listener.showProgressBar();
 
         if(!CommonUtils.validateToken(context)){
             return;
         }
 
-        APICalls.getJobList(user.gettoken()).enqueue(new Callback<JobResponse>() {
+        CallUtils.enqueueWithRetry(APICalls.getJobList(user.gettoken()) , new Callback<JobResponse>() {
             @Override
             public void onResponse(@NonNull Call<JobResponse> call, @NonNull Response<JobResponse> response) {
-                apiCounter++;
                 if(CommonUtils.onTokenExpired(context , response.code())){
                     return;
                 }
@@ -689,27 +669,18 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                     }
                 }
                 getJobsFromDb();
-//                if(Constants.isStoreEnabled) {
-//                    getMyRequests();
-//                }else{
-//                    isRefreshing = false;
-//                    refreshLayout.setRefreshing(false);
-//                    listener.hideProgressBar();
-//                }
                 onApiCallResponse();
             }
 
             @Override
             public void onFailure(@NonNull Call<JobResponse> call, @NonNull Throwable t) {
                 getJobsFromDb();
-                apiCounter++;
                 onApiCallResponse();
             }
         });
     }
 
     private void onApiCallResponse(){
-        if(apiCounter == 3 || (!Constants.isStoreEnabled && apiCounter == 1)){
             isRefreshing = false;
             refreshLayout.setRefreshing(false);
             listener.hideProgressBar();
@@ -717,64 +688,10 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                 int count = DBHandler.getInstance().getReceipts().size() + DBHandler.getInstance().getMyRequest().size();
                 listener.setReceiptsBadge(String.valueOf(count));
             }
-        }
     }
 
 
-    private void getReceipts(){
-        if(!CommonUtils.validateToken(context)){
-            return;
-        }
-        APICalls.getReceipts(user.gettoken()).enqueue(new Callback<DataReceipts>() {
-            @Override
-            public void onResponse(@NonNull Call<DataReceipts> call,@NonNull Response<DataReceipts> response) {
-                apiCounter++;
-                if(CommonUtils.onTokenExpired(context , response.code())){
-                    return;
-                }
 
-                if (response.isSuccessful() && response.body() != null) {
-                    response.body().toContentValues();
-                }
-                onApiCallResponse();
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<DataReceipts> call, @NonNull Throwable t) {
-                onApiCallResponse();
-            }
-        });
-    }
-
-
-    private void getMyRequests(){
-        if(!CommonUtils.validateToken(context)){
-            return;
-        }
-        APICalls.getMyRequests(user.gettoken()).enqueue(new Callback<DataMyRequests>() {
-            @Override
-            public void onResponse(@NonNull Call<DataMyRequests> call, @NonNull Response<DataMyRequests> response) {
-                apiCounter++;
-                if(CommonUtils.onTokenExpired(context , response.code())){
-                    return;
-                }
-
-                if(response.isSuccessful()){
-                    DataMyRequests dataMyRequests = response.body();
-                    if(dataMyRequests != null){
-                        DBHandler.getInstance().resetMyRequest();
-                        dataMyRequests.toContentValues();
-                    }
-                }
-                onApiCallResponse();
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<DataMyRequests> call, @NonNull Throwable t) {
-                onApiCallResponse();
-            }
-        });
-    }
 
     private void getJobsFromDb() {
         List<Job> jobs = DBHandler.getInstance().getJobs();
@@ -913,7 +830,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             return;
         }
         listener.showProgressBar();
-        APICalls.getMyStore(user.gettoken()).enqueue(new Callback<DataMyStores>() {
+        CallUtils.enqueueWithRetry(APICalls.getMyStore(user.gettoken()) , new Callback<DataMyStores>() {
 
 
             @Override
@@ -1049,19 +966,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     public void openPhotoGallery(Job job) {
         Intent intent = new Intent(context , PhotoActivity.class);
         intent.putExtra("Job" , job);
-        startActivity(intent);
-    }
-
-    private void onSiteActivityTaskLoaded(Job job , boolean isFromJobDetail){
-        if(isFromJobDetail){
-            FragmentJobDetail fragmentJobDetail = FragmentJobDetail.newInstance(job);
-            listener.addFragment(fragmentJobDetail, false);
-            return;
-        }
-
-        Intent intent = new Intent(context, WorkLogActivity.class);
-        intent.putExtra(WorkLogActivity.ARG_JOB_ID, job.getjobId());
-        intent.putExtra(WorkLogActivity.ARG_JOB_REFERENCE_NUMBER, job.getjobNumber());
         startActivity(intent);
     }
 }

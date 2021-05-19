@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import co.uk.depotnet.onsa.modals.briefings.BriefingsRecipient;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -86,7 +87,7 @@ public class ReadIssueFragment extends Fragment implements BriefingsListner {
     }
 
     private void GetBriefingsCall() {
-        APICalls.getBriefingsList(DBHandler.getInstance().getUser().gettoken()).enqueue(new Callback<List<BriefingsDocModal>>() {
+        CallUtils.enqueueWithRetry(APICalls.getBriefingsList(DBHandler.getInstance().getUser().gettoken()),new Callback<List<BriefingsDocModal>>() {
             @Override
             public void onResponse(@NonNull Call<List<BriefingsDocModal>> call, @NonNull Response<List<BriefingsDocModal>> response) {
                 if (CommonUtils.onTokenExpired(context, response.code())) {

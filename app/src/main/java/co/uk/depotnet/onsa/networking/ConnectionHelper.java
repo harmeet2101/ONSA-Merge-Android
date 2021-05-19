@@ -142,12 +142,14 @@ public class ConnectionHelper {
         requestMap.put("latitude", submission.getLatitude());
         requestMap.put("longitude", submission.getLongitude());
 
+
         for (int c = 0; c < answers.size(); c++) {
             Answer answer = answers.get(c);
             if (answer.shouldUpload()) {
                 if (answer.isPhoto() == 0) {
                     String repeatId = answer.getRepeatID();
                     String uploadId = answer.getUploadID();
+
 
 
                     if (!TextUtils.isEmpty(repeatId)) {  //INFO: repeat id not null

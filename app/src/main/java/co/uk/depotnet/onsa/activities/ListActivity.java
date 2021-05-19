@@ -219,13 +219,18 @@ public class ListActivity extends ThemeBaseActivity
         for (JobWorkItem w : itemTypes) {
             HashMap<String, String> map = new HashMap<>();
             String text = w.getDisplayItem() + "\n" +
-                    "Quantity: " + w.getquantity() /*+ "\n" +
+                    "Quantity: " + w.getAvailableToMeasureQuantity() /*+ "\n" +
                     "Measured quantity: " + w.getMeasuredQuantity() + "\n" +
                     "Available to measure quantity: " + w.getAvailableToMeasureQuantity()*/;
 
             map.put("text", text);
+            if(uploadId.equalsIgnoreCase("synthCode") || uploadId.equalsIgnoreCase("itemCode")){
+                map.put("value", w.getitemCode());
+            }else{
+                map.put("value", w.getUploadValue());
+            }
             map.put("itemCode", w.getitemCode());
-            map.put("value", w.getUploadValue());
+
             map.put("type", JobWorkItem.DBTable.NAME);
             items.add(map);
         }

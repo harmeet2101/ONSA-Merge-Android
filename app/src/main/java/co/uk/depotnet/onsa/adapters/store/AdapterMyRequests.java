@@ -25,6 +25,7 @@ import co.uk.depotnet.onsa.listeners.FragmentActionListener;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.store.MyRequest;
 import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
 import co.uk.depotnet.onsa.networking.CommonUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -90,7 +91,7 @@ public class AdapterMyRequests extends RecyclerView.Adapter<AdapterMyRequests.Vi
                     return;
                 }
                 listener.showProgressBar();
-                APICalls.hideReequest(user.gettoken(),holder.item.getrequestId()).enqueue(new Callback<Void>() {
+                CallUtils.enqueueWithRetry(APICalls.hideReequest(user.gettoken(),holder.item.getrequestId()),new Callback<Void>() {
 
                     @Override
                     public void onResponse(@NonNull Call<Void> call,

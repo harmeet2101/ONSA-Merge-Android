@@ -27,8 +27,16 @@ public class AppPreferences {
         sharedPreferences.edit().putInt(key , value).apply();
     }
 
+    public static void putBoolean(String key , boolean value){
+        sharedPreferences.edit().putBoolean(key , value).apply();
+    }
+
     public static int getInt(String key , int defValue){
         return sharedPreferences.getInt(key , defValue);
+    }
+
+    public static boolean getBoolean(String key , boolean defValue){
+        return sharedPreferences.getBoolean(key , defValue);
     }
 
     public static void clear(){

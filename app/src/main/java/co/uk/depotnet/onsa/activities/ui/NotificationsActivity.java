@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import co.uk.depotnet.onsa.networking.CallUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -104,7 +105,7 @@ public class NotificationsActivity extends AppCompatActivity implements View.OnC
     }
     private void GetUserNotificatins()
     {
-        APICalls.getNotifications(user.gettoken()).enqueue(new Callback<ArrayList<NotifyModel>>() {
+        CallUtils.enqueueWithRetry(APICalls.getNotifications(user.gettoken()),new Callback<ArrayList<NotifyModel>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<NotifyModel>> call, @NonNull Response<ArrayList<NotifyModel>> response) {
                 if(CommonUtils.onTokenExpired(NotificationsActivity.this, response.code())){
@@ -209,7 +210,7 @@ public class NotificationsActivity extends AppCompatActivity implements View.OnC
         if (!notifyModel.getHasBeenRead() && CommonUtils.isNetworkAvailable(getApplicationContext()))
         {
             HideShow_Progress(true);
-            APICalls.callNotificationMarkRead(new NotifyReadPush(notifyModel.getNotificationId()),user.gettoken()).enqueue(new Callback<NotifyReadPush>() {
+            CallUtils.enqueueWithRetry(APICalls.callNotificationMarkRead(new NotifyReadPush(notifyModel.getNotificationId()),user.gettoken()),new Callback<NotifyReadPush>() {
                 @Override
                 public void onResponse(@NonNull Call<NotifyReadPush> call, @NonNull Response<NotifyReadPush> response) {
                     if(CommonUtils.onTokenExpired(NotificationsActivity.this, response.code())){
