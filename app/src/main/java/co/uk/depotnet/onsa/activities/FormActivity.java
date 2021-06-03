@@ -264,8 +264,19 @@ public class FormActivity extends ThemeBaseActivity implements
         form = JsonReader.loadForm(FormActivity.this, jsonFileName);
         addMyStoreItems(form);
 
+        String title = form.getTitle();
+        if (form != null && form.isProgressVisible()) {
+            if(!TextUtils.isEmpty(submission.getJsonFileName()) && submission.getJsonFileName().equalsIgnoreCase("slg_inspection.json")){
+                Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "inspectionId" ,null , 0);
+                if(answer != null && !TextUtils.isEmpty(answer.getDisplayAnswer())) {
+                    title = answer.getDisplayAnswer();
+                }
+            }
+        }
+        txtToolbarTitle.setText(title);
+
         if (toolTipModels != null && !toolTipModels.isEmpty()) {
-            AddQuestions(form);
+            AddQuestions(form , title);
         }
         if (schedule != null) {
             addScheduleData(form);
@@ -295,16 +306,8 @@ public class FormActivity extends ThemeBaseActivity implements
         } else {
             progressContainer.setVisibility(View.GONE);
         }
-        String title = form.getTitle();
-        if (form != null && form.isProgressVisible()) {
-            if(!TextUtils.isEmpty(submission.getJsonFileName()) && submission.getJsonFileName().equalsIgnoreCase("slg_inspection.json")){
-                Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "inspectionId" ,null , 0);
-                if(answer != null && !TextUtils.isEmpty(answer.getDisplayAnswer())) {
-                    title = answer.getDisplayAnswer();
-                }
-            }
-        }
-        txtToolbarTitle.setText(title);
+
+
 
         addFragment(FormFragment.newInstance(submission, form.getScreens().get(0), form.getTitle(), 0, repeatCount, form.getThemeColor() ,schedule != null , recipients));
     }
@@ -371,17 +374,19 @@ public class FormActivity extends ThemeBaseActivity implements
 
     }
 
-    private void AddQuestions(Form form) {
+    private void AddQuestions(Form form , String insectionName) {
         if (form == null) {
             return;
         }
+
+
         int index = 0;
         ArrayList<Screen> screenArrayList = new ArrayList<>();
         for (ToolTipModel tipModel : toolTipModels) {
             Screen screen = new Screen();
             screen.setIndex(index);
             index++;
-            screen.setTitle("SLG Questions");
+            screen.setTitle(insectionName);
             screen.setUpload(false);
             ArrayList<FormItem> formItems;
             //it will return all dialogitem of item
@@ -402,6 +407,7 @@ public class FormActivity extends ThemeBaseActivity implements
             formItems.get(0).getEnables().get(0).setOptional(!tipModel.getCommentIsMandatory());
             formItems.get(0).getEnables().get(1).setUploadId(tipModel.getQuestionId());
             formItems.get(0).getEnables().get(1).setPhotoId(tipModel.getQuestionId());
+            formItems.get(0).getEnables().get(1).setPhotoTitle(insectionName);
             formItems.get(0).getEnables().get(1).setPhotoRequired(tipModel.getMinimumPhotoCount());
             // na options
             formItems.get(0).getFalseEnables().get(0).setRepeatId(tipModel.getQuestionId());
@@ -410,6 +416,7 @@ public class FormActivity extends ThemeBaseActivity implements
             formItems.get(0).getFalseEnables().get(0).getEnables().get(1).setRepeatId(tipModel.getQuestionId());
             formItems.get(0).getFalseEnables().get(0).getEnables().get(2).setUploadId(tipModel.getQuestionId());
             formItems.get(0).getFalseEnables().get(0).getEnables().get(2).setPhotoId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getEnables().get(2).setPhotoTitle(insectionName);
             formItems.get(0).getFalseEnables().get(0).getEnables().get(2).setPhotoRequired(tipModel.getMinimumPhotoCount());
             // na checkbox false
             formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(0).setRepeatId(tipModel.getQuestionId());
@@ -417,6 +424,7 @@ public class FormActivity extends ThemeBaseActivity implements
             formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(2).setRepeatId(tipModel.getQuestionId());
             formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(3).setUploadId(tipModel.getQuestionId());
             formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(3).setPhotoId(tipModel.getQuestionId());
+            formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(3).setPhotoTitle(insectionName);
             formItems.get(0).getFalseEnables().get(0).getFalseEnables().get(3).setPhotoRequired(tipModel.getMinimumPhotoCount());
           /*  formItems.get(1).setUploadId(tipModel.getQuestionId());//setting photos uploadid to question
             formItems.get(1).setPhotoId(tipModel.getQuestionId());//setting photosid

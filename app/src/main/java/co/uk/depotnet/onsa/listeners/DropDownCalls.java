@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.DCRReasons;
 import co.uk.depotnet.onsa.modals.ItemType;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobWorkItem;
@@ -109,6 +110,10 @@ public class DropDownCalls {
             } else if (formItem.getKey().equalsIgnoreCase(RecordReturnReason.DBTable.NAME)) {
                 ArrayList<RecordReturnReason> recordReturnReasons = dbHandler.getRecordReturnReasons(submission.getJobID());
                 items.addAll(recordReturnReasons);
+            }else if (formItem.getKey().equalsIgnoreCase(DCRReasons.DBTable.NAME)) {
+                isDependOnDatasetEndpoint = false;
+                ArrayList<DCRReasons> dcrReasons = dbHandler.getDCRReason(submission.getJobID());
+                items.addAll(dcrReasons);
             }else if (formItem.getKey().equalsIgnoreCase(TimesheetOperative.DBTable.NAME)) {
                 ArrayList<TimesheetOperative> timeSheetOperatives = dbHandler.getTimeSheetOperatives();
                 items.addAll(timeSheetOperatives);

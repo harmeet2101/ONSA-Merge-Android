@@ -18,7 +18,7 @@ public class DatasetResponse implements Parcelable {
     private ArrayList<ItemType> photoTypes;
     private ArrayList<ItemType> bookOperatives;
     private ArrayList<WorkItem> workItems;
-    private ArrayList<ItemType> dcrReasonCodes;
+//    private ArrayList<ItemType> dcrReasonCodes;
     private ArrayList<ItemType> roadTypes;
     private ArrayList<ItemType> engCompOutcomes;
     private ArrayList<ItemType> reinstatementTypes;
@@ -50,7 +50,7 @@ public class DatasetResponse implements Parcelable {
         photoTypes = in.createTypedArrayList(ItemType.CREATOR);
         bookOperatives = in.createTypedArrayList(ItemType.CREATOR);
         workItems = in.createTypedArrayList(WorkItem.CREATOR);
-        dcrReasonCodes = in.createTypedArrayList(ItemType.CREATOR);
+//        dcrReasonCodes = in.createTypedArrayList(ItemType.CREATOR);
         roadTypes = in.createTypedArrayList(ItemType.CREATOR);
         engCompOutcomes = in.createTypedArrayList(ItemType.CREATOR);
         reinstatementTypes = in.createTypedArrayList(ItemType.CREATOR);
@@ -83,7 +83,7 @@ public class DatasetResponse implements Parcelable {
         dest.writeTypedList(photoTypes);
         dest.writeTypedList(bookOperatives);
         dest.writeTypedList(workItems);
-        dest.writeTypedList(dcrReasonCodes);
+//        dest.writeTypedList(dcrReasonCodes);
         dest.writeTypedList(roadTypes);
         dest.writeTypedList(engCompOutcomes);
         dest.writeTypedList(reinstatementTypes);
@@ -150,9 +150,9 @@ public class DatasetResponse implements Parcelable {
         if (this.workItems != null && !this.workItems.isEmpty()) {
             dbHandler.replaceDataDFEWorkItems(dfeWorkItems, DBTable.workItems);
         }
-        if (this.dcrReasonCodes != null && !this.dcrReasonCodes.isEmpty()) {
-            dbHandler.replaceItemTypes(dcrReasonCodes, DBTable.dcrReasonCodes);
-        }
+//        if (this.dcrReasonCodes != null && !this.dcrReasonCodes.isEmpty()) {
+//            dbHandler.replaceItemTypes(dcrReasonCodes, DBTable.dcrReasonCodes);
+//        }
 
         if (this.roadTypes != null && !this.roadTypes.isEmpty()) {
             dbHandler.replaceItemTypes(roadTypes, DBTable.roadTypes);
@@ -273,7 +273,6 @@ public class DatasetResponse implements Parcelable {
         public static final String photoTypes = "photoTypes";
         public static final String bookOperatives = "bookOperatives";
         public static final String workItems = "workItems";
-        public static final String dcrReasonCodes = "dcrReasonCodes";
         public static final String roadTypes = "roadTypes";
         public static final String engCompOutcomes = "engCompOutcomes";
         public static final String reinstatementTypes = "reinstatementTypes";

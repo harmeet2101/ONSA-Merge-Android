@@ -300,8 +300,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             txtToolbarTitle.setText(title);
         }
 
-        if (jobs!=null && jobs.size()>0)
-        {
+        if (jobs!=null && jobs.size() > 0){
             jobs.clear();
         }
         fetchData();

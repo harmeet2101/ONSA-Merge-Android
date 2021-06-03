@@ -51,7 +51,7 @@
             },
             {
               "type": "photo",
-              "title": "Slg Questions Photo",
+              "title": "Take Photo",
               "uploadId": "fileBytes",
               "photoSize": 20,
               "photoRequired": 0,
@@ -86,7 +86,7 @@
             },
             {
               "type": "photo",
-              "title": "Slg Questions Photo",
+              "title": "Take Photo",
               "uploadId": "fileBytes",
               "photoSize": 20,
               "photoRequired": 0,

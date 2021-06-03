@@ -29,7 +29,9 @@ import java.util.Locale;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.AdapterList;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.DCRReasons;
 import co.uk.depotnet.onsa.modals.ItemType;
+import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.JobWorkItem;
 import co.uk.depotnet.onsa.modals.WorkItem;
 import co.uk.depotnet.onsa.modals.forms.Answer;
@@ -59,6 +61,7 @@ public class ListActivity extends ThemeBaseActivity
     private ImageView btnImageSearch;
     private String estimateGangId;
     private ArrayList<String> recipients;
+    private DBHandler dbHandler;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +69,7 @@ public class ListActivity extends ThemeBaseActivity
         setContentView(R.layout.activity_list);
 
         Intent intent = getIntent();
-
+        this.dbHandler = DBHandler.getInstance(this);
         submissionId = intent.getLongExtra("submissionID", 0);
         repeatId = intent.getStringExtra("repeatId");
         uploadId = intent.getStringExtra("uploadId");
@@ -97,7 +100,7 @@ public class ListActivity extends ThemeBaseActivity
         items = new ArrayList<>();
 
         if (!isMultiSelection) {
-            Answer answer = DBHandler.getInstance().getAnswer(submissionId, uploadId,
+            Answer answer = dbHandler.getAnswer(submissionId, uploadId,
                     repeatId, repeatCount);
             if (answer != null) {
                 String value = answer.getAnswer();
@@ -108,9 +111,9 @@ public class ListActivity extends ThemeBaseActivity
         } else {
             ArrayList<Answer> answers;
             if(!TextUtils.isEmpty(uploadId) && uploadId.equalsIgnoreCase("additionalOperatives")){
-                answers = DBHandler.getInstance().getRepeatedMultiArrayAnswers(submissionId, uploadId, repeatId, repeatCount);
+                answers = dbHandler.getRepeatedMultiArrayAnswers(submissionId, uploadId, repeatId, repeatCount);
             }else{
-                answers = DBHandler.getInstance().getRepeatedAnswers(submissionId, uploadId, repeatId);
+                answers = dbHandler.getRepeatedAnswers(submissionId, uploadId, repeatId);
             }
                 if (answers != null && !answers.isEmpty()) {
                     for (Answer answer : answers) {
@@ -124,7 +127,9 @@ public class ListActivity extends ThemeBaseActivity
                 }
         }
 
-        if (keyItemType.equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)) {
+        if (keyItemType.equalsIgnoreCase(DCRReasons.DBTable.NAME)) {
+            getDCRReasons();
+        } else if (keyItemType.equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)) {
             getDfeItems();
         } else if (keyItemType.equalsIgnoreCase(JobWorkItem.DBTable.NAME)) {
             getJobWorkItem();
@@ -133,7 +138,7 @@ public class ListActivity extends ThemeBaseActivity
         } else if (keyItemType.equalsIgnoreCase(TimesheetOperative.DBTable.NAME)) {
             getTimeSheetOperatives();
         } else {
-            ArrayList<ItemType> itemTypes = DBHandler.getInstance().getItemTypes(keyItemType);
+            ArrayList<ItemType> itemTypes = dbHandler.getItemTypes(keyItemType);
             for (ItemType w :
                     itemTypes) {
                 HashMap<String, String> map = new HashMap<>();
@@ -200,8 +205,10 @@ public class ListActivity extends ThemeBaseActivity
 
     private void getDfeItems() {
         items.clear();
-        String contract = DBHandler.getInstance().getJob(DBHandler.getInstance().getSubmission(String.valueOf(submissionId)).getJobID()).getcontract();
-        ArrayList<WorkItem> itemTypes = DBHandler.getInstance().getWorkItem(keyItemType, contract, WorkItem.DBTable.itemCode);
+        Job job = dbHandler.getJob(String.valueOf(dbHandler.getSubmission(String.valueOf(submissionId)).getJobID()));
+        String contract = job.getcontract();
+        int revisionNo = job.getRateIssueNumber();
+        ArrayList<WorkItem> itemTypes = dbHandler.getWorkItem(keyItemType, contract, revisionNo ,WorkItem.DBTable.itemCode);
         for (WorkItem w : itemTypes) {
             HashMap<String, String> map = new HashMap<>();
             map.put("text", w.getDisplayItem());
@@ -210,11 +217,22 @@ public class ListActivity extends ThemeBaseActivity
             items.add(map);
         }
     }
+    private void getDCRReasons() {
+            items.clear();
+        ArrayList<DCRReasons> itemTypes = dbHandler.getDCRReason(dbHandler.getSubmission(String.valueOf(submissionId)).getJobID());
+
+            for (DCRReasons w : itemTypes) {
+                HashMap<String, String> map = new HashMap<>();
+                map.put("text", w.getDisplayItem());
+                map.put("value", w.getUploadValue());
+                items.add(map);
+            }
+        }
 
     private void getJobWorkItem() {
         items.clear();
 
-        ArrayList<JobWorkItem> itemTypes = DBHandler.getInstance().getJob(DBHandler.getInstance().getSubmission(String.valueOf(submissionId)).getJobID()).getworkItems();
+        ArrayList<JobWorkItem> itemTypes = dbHandler.getJob(dbHandler.getSubmission(String.valueOf(submissionId)).getJobID()).getworkItems();
         Collections.sort(itemTypes, (o1, o2) -> o1.getitemCode().compareTo(o2.getitemCode()));
         for (JobWorkItem w : itemTypes) {
             HashMap<String, String> map = new HashMap<>();
@@ -239,7 +257,7 @@ public class ListActivity extends ThemeBaseActivity
     private void getTimeSheetOperatives() {
         items.clear();
         ArrayList<TimesheetOperative> itemTypes = new ArrayList<>();
-        itemTypes.addAll(DBHandler.getInstance().getTimeSheetOperatives());
+        itemTypes.addAll(dbHandler.getTimeSheetOperatives());
 
 
         for (TimesheetOperative w : itemTypes) {
@@ -255,9 +273,9 @@ public class ListActivity extends ThemeBaseActivity
         items.clear();
         ArrayList<OperativeTemplate> itemTypes = new ArrayList<>();
         if (estimateGangId != null && !estimateGangId.isEmpty()) {
-            itemTypes.addAll(DBHandler.getInstance().getOperativeTemplateByGangId(estimateGangId));
+            itemTypes.addAll(dbHandler.getOperativeTemplateByGangId(estimateGangId));
         } else {
-            itemTypes.addAll(DBHandler.getInstance().getOperativeHseq());
+            itemTypes.addAll(dbHandler.getOperativeHseq());
             ArrayList<OperativeTemplate> temp = new ArrayList<>();
             if (recipients != null) {
                 for (String key : recipients) {
@@ -300,10 +318,10 @@ public class ListActivity extends ThemeBaseActivity
         ArrayList<HashMap<String, String>> itemTypes = adapter.getSelectedKeywords();
         if (itemTypes == null || itemTypes.isEmpty()) {
 
-            ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submissionId, uploadId, repeatId);
+            ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionId, uploadId, repeatId);
             if (answers != null && !answers.isEmpty()) {
                 for (Answer a : answers) {
-                    DBHandler.getInstance().removeAnswer(a);
+                    dbHandler.removeAnswer(a);
                 }
             }
             finish();
@@ -334,14 +352,14 @@ public class ListActivity extends ThemeBaseActivity
 
         ArrayList<Answer> answers;
         if(!TextUtils.isEmpty(uploadId) && uploadId.equalsIgnoreCase("additionalOperatives")){
-            answers = DBHandler.getInstance().getRepeatedMultiArrayAnswers(submissionId, uploadId, repeatId, repeatCount);
+            answers = dbHandler.getRepeatedMultiArrayAnswers(submissionId, uploadId, repeatId, repeatCount);
         }else{
-            answers = DBHandler.getInstance().getRepeatedAnswers(submissionId, uploadId, repeatId);;
+            answers = dbHandler.getRepeatedAnswers(submissionId, uploadId, repeatId);;
         }
 
             if (answers != null && !answers.isEmpty()) {
                 for (Answer a : answers) {
-                    DBHandler.getInstance().removeAnswer(a);
+                    dbHandler.removeAnswer(a);
                 }
             }
 
@@ -364,9 +382,9 @@ public class ListActivity extends ThemeBaseActivity
         Answer answer;
 
         if(!TextUtils.isEmpty(uploadID) && uploadID.equalsIgnoreCase("additionalOperatives")){
-            answer = DBHandler.getInstance().getAnswer(submissionID, uploadID, repeatID, repeatCounter , arrayRepeatCounter);
+            answer = dbHandler.getAnswer(submissionID, uploadID, repeatID, repeatCounter , arrayRepeatCounter);
         }else{
-            answer = DBHandler.getInstance().getAnswer(submissionID, uploadID,
+            answer = dbHandler.getAnswer(submissionID, uploadID,
                     repeatID, repeatCounter);
         }
 
@@ -377,7 +395,7 @@ public class ListActivity extends ThemeBaseActivity
         answer.setAnswer(value);
         answer.setDisplayAnswer(displayText);
         answer.setIsMultiList(isMultiList);
-        DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+        dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
     }
 
     @Override

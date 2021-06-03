@@ -476,9 +476,11 @@ public class ConnectionHelper {
         ArrayList<Answer> signatures = new ArrayList<>();
 
         requestMap.put("submissionId", uniqueId);
+        boolean isSubJob = false;
 
         if(!TextUtils.isEmpty(submission.getJsonFileName()) &&
                 (submission.getJsonFileName().startsWith("sub_job_"))){
+            isSubJob = true;
             requestMap.put("submittedDateTime", submission.getDate());
             if(submission.getJsonFileName().equalsIgnoreCase("sub_job_log_measure.json")){
                 requestMap.put("dateLogged", submission.getDate());
@@ -519,6 +521,9 @@ public class ConnectionHelper {
                     String repeatId = answer.getRepeatID();
                     String uploadId = answer.getUploadID();
                     if (!TextUtils.isEmpty(uploadId) && uploadId.equalsIgnoreCase("userIds")) {
+                        containsUserIds = true;
+                    }
+                    if (isSubJob && isBookOn && !TextUtils.isEmpty(uploadId) && uploadId.equalsIgnoreCase("operativeUserIds")) {
                         containsUserIds = true;
                     }
 
@@ -630,7 +635,11 @@ public class ConnectionHelper {
         }
 
         if (isBookOn && !containsUserIds) {
-            requestMap.put("userIds", new ArrayList<>());
+            if(isSubJob){
+                requestMap.put("operativeUserIds", new ArrayList<>());
+            }else{
+                requestMap.put("userIds", new ArrayList<>());
+            }
         }
 
         if(TextUtils.isEmpty(photoEndPoint)){

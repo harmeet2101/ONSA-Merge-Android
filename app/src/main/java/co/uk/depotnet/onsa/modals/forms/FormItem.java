@@ -700,6 +700,15 @@ public class FormItem implements Parcelable {
         }
     }
 
+    public void setPhotoTitle(String title) {
+        this.title = title;
+        if (photos != null) {
+            for (int i = 0 ; i < photos.size() ;i++) {
+                photos.get(i).setTitle(title+(i+1));
+            }
+        }
+    }
+
     public void setSignatureUrl(String signatureUrl) {
         this.signatureUrl = signatureUrl;
     }

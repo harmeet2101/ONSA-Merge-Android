@@ -49,9 +49,11 @@ public class Job implements Parcelable, DropDownItem {
     private JobTasks siteActivityTasks;
     private ArrayList<BaseTask> subJobSiteActivityTasks;
     private ArrayList<RecordReturnReason> recordReturnReasons;
+    private ArrayList<DCRReasons> dcrReasons;
     private int jobTypeId;
     private String subJobNumber;
     private String gangId;
+    private int rateIssueNumber;
 
     public Job() {
 
@@ -99,6 +101,13 @@ public class Job implements Parcelable, DropDownItem {
         jobTypeId = cursor.getInt(cursor.getColumnIndex(DBTable.jobTypeId));
         subJobNumber = cursor.getString(cursor.getColumnIndex(DBTable.subJobNumber));
         gangId = cursor.getString(cursor.getColumnIndex(DBTable.gangId));
+        rateIssueNumber = cursor.getInt(cursor.getColumnIndex(DBTable.rateIssueNumber));
+
+        dcrReasons = DBHandler.getInstance().getDCRReason(jobId);
+    }
+
+    public boolean hasDCR(){
+        return dcrReasons != null && !dcrReasons.isEmpty();
     }
 
     protected Job(Parcel in) {
@@ -138,9 +147,11 @@ public class Job implements Parcelable, DropDownItem {
         siteActivityTasks = in.readParcelable(JobTasks.class.getClassLoader());
         subJobSiteActivityTasks = in.createTypedArrayList(BaseTask.CREATOR);
         recordReturnReasons = in.createTypedArrayList(RecordReturnReason.CREATOR);
+        dcrReasons = in.createTypedArrayList(DCRReasons.CREATOR);
         jobTypeId = in.readInt();
         subJobNumber = in.readString();
         gangId = in.readString();
+        rateIssueNumber = in.readInt();
     }
 
     @Override
@@ -181,9 +192,11 @@ public class Job implements Parcelable, DropDownItem {
         dest.writeParcelable(siteActivityTasks, flags);
         dest.writeTypedList(subJobSiteActivityTasks);
         dest.writeTypedList(recordReturnReasons);
+        dest.writeTypedList(dcrReasons);
         dest.writeInt(jobTypeId);
         dest.writeString(subJobNumber);
         dest.writeString(gangId);
+        dest.writeInt(rateIssueNumber);
     }
 
     @Override
@@ -277,6 +290,14 @@ public class Job implements Parcelable, DropDownItem {
 
     public void setlocationAddress(String locationAddress) {
         this.locationAddress = locationAddress;
+    }
+
+    public int getRateIssueNumber() {
+        return rateIssueNumber;
+    }
+
+    public void setRateIssueNumber(int rateIssueNumber) {
+        this.rateIssueNumber = rateIssueNumber;
     }
 
     public String getlocationAddress() {
@@ -531,6 +552,7 @@ public class Job implements Parcelable, DropDownItem {
         cv.put(DBTable.hasRecordReturns, this.hasRecordReturns);
         cv.put(DBTable.isSiteClear, this.isSiteClear);
         cv.put(DBTable.hasRFNA, this.hasRFNA);
+        cv.put(DBTable.rateIssueNumber, this.rateIssueNumber);
 
         if (a75Groups != null && !a75Groups.isEmpty()) {
             for (A75Groups a : a75Groups) {
@@ -552,6 +574,13 @@ public class Job implements Parcelable, DropDownItem {
                 a.setJobId(jobId);
                 a.setSubJobTask(true);
                 dbHandler.replaceData(BaseTask.DBTable.NAME, a.toContentValues());
+            }
+        }
+
+        if(hasDCR()){
+            for (DCRReasons a : dcrReasons) {
+                a.setJobId(jobId);
+                dbHandler.replaceData(DCRReasons.DBTable.NAME, a.toContentValues());
             }
         }
 
@@ -606,6 +635,7 @@ public class Job implements Parcelable, DropDownItem {
         public static final String jobTypeId = "jobTypeId";
         public static final String subJobNumber = "subJobNumber";
         public static final String gangId = "gangId";
+        public static final String rateIssueNumber = "rateIssueNumber";
     }
 
     @Override

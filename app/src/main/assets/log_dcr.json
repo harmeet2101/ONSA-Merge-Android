@@ -13,7 +13,7 @@
           "type": "dropdown",
           "uploadId": "dcrReasonCode",
           "title": "Select Reason Code",
-          "key": "dcrReasonCodes",
+          "key": "DCRReasons",
           "optional": false
         },
         {

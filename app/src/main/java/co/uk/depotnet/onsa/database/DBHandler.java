@@ -20,6 +20,7 @@ import java.util.Set;
 
 import co.uk.depotnet.onsa.listeners.DropDownItem;
 import co.uk.depotnet.onsa.modals.A75Groups;
+import co.uk.depotnet.onsa.modals.DCRReasons;
 import co.uk.depotnet.onsa.modals.Document;
 import co.uk.depotnet.onsa.modals.Feature;
 import co.uk.depotnet.onsa.modals.ItemType;
@@ -744,10 +745,10 @@ public class DBHandler {
         return workItems;
     }
 
-    public ArrayList<WorkItem> getWorkItem(String type, String contractNumber, String orderBy) {
+    public ArrayList<WorkItem> getWorkItem(String type, String contractNumber, int revisionNo, String orderBy) {
 
-        String selection = WorkItem.DBTable.type + " = ? AND " + WorkItem.DBTable.contractNumber + " = ?";
-        String[] selectionArgs = new String[]{String.valueOf(type), contractNumber};
+        String selection = WorkItem.DBTable.type + " = ? AND " + WorkItem.DBTable.contractNumber + " = ? AND " + WorkItem.DBTable.revisionNo + " = ?";
+        String[] selectionArgs = new String[]{String.valueOf(type), contractNumber , String.valueOf(revisionNo)};
 
         Cursor cursor = db.query(WorkItem.DBTable.NAME,
                 null, selection, selectionArgs,
@@ -1096,6 +1097,24 @@ public class DBHandler {
         }
         cursor.close();
         return a75Groups;
+    }
+    public ArrayList<DCRReasons> getDCRReason(String jobId) {
+        ArrayList<DCRReasons> dcrReasons = new ArrayList<>();
+        String selection = DCRReasons.DBTable.jobId + " = ?";
+        String[] selectionArgs = new String[]{String.valueOf(jobId)};
+
+        Cursor cursor = db.query(DCRReasons.DBTable.NAME,
+                null, selection, selectionArgs,
+                null, null, DCRReasons.DBTable.value + " ASC");
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                dcrReasons.add(new DCRReasons(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return dcrReasons;
     }
     public ArrayList<RecordReturnReason> getRecordReturnReasons(String jobId) {
         ArrayList<RecordReturnReason> recordReturnReasons = new ArrayList<>();
