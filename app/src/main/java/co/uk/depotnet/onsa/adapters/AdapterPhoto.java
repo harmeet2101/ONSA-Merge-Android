@@ -121,8 +121,9 @@ public class AdapterPhoto extends RecyclerView.Adapter<AdapterPhoto.ViewHolder> 
         return size >= 1 ? size-1 : 0;
     }
 
-    public void update(){
+    public void update(FormItem formItem){
         this.items.clear();
+        this.formItem = formItem;
         this.items.addAll(DBHandler.getInstance().getPhotos(submissionID , formItem.getPhotoId() , formItem.getTitle() , repeatCounter));
         if(!this.items.isEmpty()){
             for(int i = 0 ;i < items.size() ; i++){
@@ -130,5 +131,6 @@ public class AdapterPhoto extends RecyclerView.Adapter<AdapterPhoto.ViewHolder> 
             }
             this.items.add(new Answer());
         }
+        notifyDataSetChanged();
     }
 }

@@ -188,7 +188,7 @@ public class CameraActivity extends AppCompatActivity implements
         Camera c = null;
         try {
             c = Camera.open();
-            if(c== null){
+            if (c == null) {
                 return Camera.open(0);
             }
         } catch (Exception e) {
@@ -538,7 +538,7 @@ public class CameraActivity extends AppCompatActivity implements
 
     private void checkAndStart() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-               startCameraPreview();
+            startCameraPreview();
         } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -583,7 +583,7 @@ public class CameraActivity extends AppCompatActivity implements
                 camera = Camera.open();
             if (camera == null) {
                 return Camera.open(0);
-            }else{
+            } else {
                 return camera;
             }
 
@@ -609,12 +609,15 @@ public class CameraActivity extends AppCompatActivity implements
     private void takePicture() {
         if (!isVideoModeOn) {
             if (camera != null) {
-                btnTakePic.setVisibility(View.GONE);
-                btnGallery.setVisibility(View.GONE);
-                btnVideo.setVisibility(View.GONE);
-                camera.takePicture(null, null, null, pictureCallback);
-                btnTakePic.setImageResource(R.drawable.btn_drawable_camer);
-
+                try {
+                    btnTakePic.setVisibility(View.GONE);
+                    btnGallery.setVisibility(View.GONE);
+                    btnVideo.setVisibility(View.GONE);
+                    camera.takePicture(null, null, null, pictureCallback);
+                    btnTakePic.setImageResource(R.drawable.btn_drawable_camer);
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                }
             }
         } else {
             btnTakePic.setImageResource(R.drawable.btn_drawable_video_press);
@@ -860,7 +863,7 @@ public class CameraActivity extends AppCompatActivity implements
                         permissionRationale);
             }
         } else {
-            mFusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY , null)
+            mFusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
                     .addOnSuccessListener(location -> {
                         if (location != null) {
                             listener.onSuccess(location);

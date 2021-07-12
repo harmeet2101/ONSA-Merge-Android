@@ -12,7 +12,7 @@
           "uploadId": "jobEtonSiteId",
           "key":"noticeId",
           "title": "Select Notice",
-          "optional": true
+          "optional": false
         },
         {
           "type": "dropdown",

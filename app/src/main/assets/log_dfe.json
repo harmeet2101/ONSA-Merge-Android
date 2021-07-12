@@ -76,7 +76,7 @@
         {
           "type": "photo",
           "title": "Log DFE",
-          "photoSize": 1,
+          "photoSize": 10,
           "photoRequired": 1,
           "photoId": "5"
         }

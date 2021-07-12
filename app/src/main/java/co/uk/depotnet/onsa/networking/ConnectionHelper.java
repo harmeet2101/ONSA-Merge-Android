@@ -849,7 +849,11 @@ public class ConnectionHelper {
         Gson gson = new GsonBuilder().serializeNulls().create();
         ArrayList<Answer> answersinspections = dbHandler.getAnswers(submission.getID());//Utils.newInspectionSubmission
         ArrayList<Answer> answersQuestions = dbHandler.getRepeatedQuestionAnswers(submission.getID(), null, "questions");
-
+        Answer inspectionAnswer = DBHandler.getInstance().getAnswer(submission.getID() , "inspectionId" ,null , 0);
+        String inspectionName = "Take Photo";
+        if(inspectionAnswer != null && !TextUtils.isEmpty(inspectionAnswer.getDisplayAnswer())) {
+            inspectionName = inspectionAnswer.getDisplayAnswer();
+        }
         String uniqueId = UUID.randomUUID().toString();
         Map<String, Object> requestMap = new HashMap<>();
         //requestMap.put("submissionId", uniqueId);
@@ -878,7 +882,7 @@ public class ConnectionHelper {
                             requestMap.put("latitude", ans);
                         } else if (uploadId.equals("longitude")) {
                             requestMap.put("longitude", ans);
-                        }else if (uploadId.equals("estimateNo")) {
+                        }else if (uploadId.equals("estimateNo") && !requestMap.containsKey("jobId")) {
                             if(ans!= null) {
                                 Job job = dbHandler.getJobByEstimate(String.valueOf(ans));
                                 if(job != null) {
@@ -956,7 +960,7 @@ public class ConnectionHelper {
             }
             //Slg Questions Photo
             ArrayList<PhotoResponse> questionPhotos = new ArrayList<>();
-            ArrayList<Answer> questionsphotos = dbHandler.getAnswerPic(submission.getID(), answer.getUploadID(), "Slg Questions Photo");
+            ArrayList<Answer> questionsphotos = dbHandler.getAnswerPic(submission.getID(), answer.getUploadID(), inspectionName);
             for (int k = 0; k < questionsphotos.size(); k++) {
                 Answer answerqu = questionsphotos.get(k);
                 PhotoResponse photoResponse = createPhotoRequest(answerqu);
@@ -973,7 +977,7 @@ public class ConnectionHelper {
         requestMap.put("questions", questions); //questions arraylist
 
         ArrayList<PhotoResponse> slgphotorespons = new ArrayList<>();
-        ArrayList<Answer> answerphots = dbHandler.getAnswerPic(submission.getID(), "fileBytes", "Slg Inspection Photo");
+        ArrayList<Answer> answerphots = dbHandler.getAnswerPic(submission.getID(), "fileBytes", "Take Photo");
         for (int k = 0; k < answerphots.size(); k++) {
             PhotoResponse photoResponse = createPhotoRequest(answerphots.get(k));
             if (photoResponse != null) {
@@ -1164,7 +1168,7 @@ public class ConnectionHelper {
 
         }
 
-        if (dialog != null) {
+        if (dialog != null && !fm.isStateSaved()) {
             dialog.dismiss();
         }
 

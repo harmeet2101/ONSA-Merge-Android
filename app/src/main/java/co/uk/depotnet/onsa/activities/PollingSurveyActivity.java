@@ -159,7 +159,7 @@ public class PollingSurveyActivity extends AppCompatActivity
         showProgressBar();
         new Thread(() -> {
             String url = "app/jobs/{jobId}/poling-surveys";
-            String photoUrl = "app/jobs/{jobId}/poling-surveys";
+            String photoUrl = "app/jobs/{jobId}/photos";
 
             if(job != null && job.isSubJob()){
                 url = "app/subjob/{jobId}/poling-survey";

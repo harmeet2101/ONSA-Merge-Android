@@ -222,7 +222,9 @@ public class FragmentQueue extends Fragment implements OfflineQueueAdapter.Queue
                     }
                 }).setNegative(getString(R.string.delete), (dialog12, i) -> {
                     dialog12.dismiss();
-                    submissions.remove(position);
+                    if(submissions.size() > position) {
+                        submissions.remove(position);
+                    }
                     DBHandler.getInstance().removeAnswers(submission);
                     adapter.notifyDataSetChanged();
                 }).build();

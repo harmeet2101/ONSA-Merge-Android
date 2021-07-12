@@ -103,7 +103,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public ForkFormAdapter(Context context, Submission submission,
                            FormItem parentFormItem, int repeatCount,
-                           FormAdapterListener listener , String themeColor , ArrayList<String> recipients) {
+                           FormAdapterListener listener, String themeColor, ArrayList<String> recipients) {
         this.context = context;
         this.parentFormItem = parentFormItem;
         this.submission = submission;
@@ -127,7 +127,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         int forkPosition;
         boolean ifPosDFEAdded = false;
         boolean ifNegDFEAdded = false;
-        
+
         ArrayList<FormItem> listItems = new ArrayList<>();
         for (int c = 0; c < inflatedItems.size(); c++) {
             FormItem item = inflatedItems.get(c);
@@ -152,8 +152,8 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
                 formItems.addAll(forkPosition, listItems);
 
-            }else if (!ifPosDFEAdded && item.getFormType() == FormItem.TYPE_ADD_POS_DFE) {
-                forkPosition = formItems.size()-1;
+            } else if (!ifPosDFEAdded && item.getFormType() == FormItem.TYPE_ADD_POS_DFE) {
+                forkPosition = formItems.size() - 1;
                 ifPosDFEAdded = true;
                 listItems.clear();
                 ArrayList<String> fields = item.getFields();
@@ -171,8 +171,8 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         formItems.addAll(forkPosition, listItems);
                     }
                 }
-            }else if (!ifNegDFEAdded && item.getFormType() == FormItem.TYPE_ADD_NEG_DFE) {
-                forkPosition = formItems.size()-1;
+            } else if (!ifNegDFEAdded && item.getFormType() == FormItem.TYPE_ADD_NEG_DFE) {
+                forkPosition = formItems.size() - 1;
                 ifNegDFEAdded = true;
                 listItems.clear();
                 ArrayList<String> fields = item.getFields();
@@ -219,7 +219,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         listItems.add(qItem);
                     }
                 }
-                formItems.addAll(forkPosition+1, listItems);
+                formItems.addAll(forkPosition + 1, listItems);
                 break;
             }
         }
@@ -400,10 +400,10 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
-        if(answer == null){
-            if(submission.getJsonFileName().equalsIgnoreCase("timesheet_log_hours.json")){
-                Answer selectedDate = dbHandler.getAnswer(submissionID , "selected_date" , null , 0);
-                if(selectedDate != null){
+        if (answer == null) {
+            if (submission.getJsonFileName().equalsIgnoreCase("timesheet_log_hours.json")) {
+                Answer selectedDate = dbHandler.getAnswer(submissionID, "selected_date", null, 0);
+                if (selectedDate != null) {
                     answer = new Answer(submissionID, formItem.getUploadId(),
                             formItem.getRepeatId(), repeatCount);
                     answer.setAnswer(selectedDate.getAnswer());
@@ -431,15 +431,15 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 myCalendar.set(Calendar.MONTH, monthOfYear);
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-                String date1 = Utils.formatDate(myCalendar.getTime() , "yyyy-MM-dd'T'HH:mm:ss");
-                String displayDate = Utils.formatDate(myCalendar.getTime() , "dd/MM/yyyy");
+                String date1 = Utils.formatDate(myCalendar.getTime(), "yyyy-MM-dd'T'HH:mm:ss");
+                String displayDate = Utils.formatDate(myCalendar.getTime(), "dd/MM/yyyy");
                 holder.txtDate.setText(displayDate);
 
                 Answer answer1 = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                         formItem.getRepeatId(), repeatCount);
 
                 if (answer1 == null) {
-                    answer1 = new Answer(submissionID, formItem.getUploadId() , formItem.getRepeatId() , repeatCount , date1 , displayDate);
+                    answer1 = new Answer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount, date1, displayDate);
                 }
 
                 dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
@@ -449,7 +449,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     formItem.getRepeatId(), repeatCount);
             if (answer1 != null && !TextUtils.isEmpty(answer1.getAnswer())) {
                 String value = answer1.getAnswer();
-                Date selectedDate = Utils.parseDate(value , "yyyy-MM-dd'T'HH:mm:ss");
+                Date selectedDate = Utils.parseDate(value, "yyyy-MM-dd'T'HH:mm:ss");
                 if (selectedDate != null) {
                     myCalendar.setTime(selectedDate);
                 }
@@ -481,7 +481,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.txtTime.setOnClickListener(v -> {
             final Calendar myCalendar = Calendar.getInstance();
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-            if(answer != null && !TextUtils.isEmpty(answer.getAnswer())){
+            if (answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
                 try {
                     Date date = sdf.parse(answer.getAnswer());
                     myCalendar.setTime(date);
@@ -510,7 +510,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 answer12.setRepeatID(formItem.getRepeatId());
                 answer12.setRepeatCount(repeatCount);
 
-                if(submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")){
+                if (submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")) {
 //                    TimeSheetHour timeSheetHour = parentFormItem.getTimeSheetHour();
 //                    if(timeSheetHour != null){
 //                        if(formItem.getUploadId().equalsIgnoreCase("timeFrom")){
@@ -674,8 +674,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 holder.txtTitle.setText(answerItemId.getDisplayAnswer());
             }
         }
-        if (docname!=null)
-        {
+        if (docname != null) {
             String value = docname.getAnswer();
             if (!TextUtils.isEmpty(value)) {
                 //Toast.makeText(context, ""+value, Toast.LENGTH_SHORT).show();
@@ -709,6 +708,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.view.setOnClickListener(v -> listener.openForkFragment(formItem, submissionID, formItem.getRepeatCount()));
 
     }
+
     private void bindBRIEFINGTEXTHolder(Briefingtextholder holder, final int position) {
         final FormItem formItem = formItems.get(position);
         Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
@@ -846,7 +846,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 || (formItem.getNaEnables() != null && !formItem.getNaEnables().isEmpty());
     }
 
-    public void reInflateItems(boolean isNotified){
+    public void reInflateItems(boolean isNotified) {
         this.formItems.clear();
 
         for (int i = 0; i < originalItems.size(); i++) {
@@ -893,17 +893,17 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         if (formItem.getFormType() == FormItem.TYPE_DROPDOWN) {
             String uploadId = formItem.getUploadId();
-            if (!TextUtils.isEmpty(submission.getJsonFileName()) && (submission.getJsonFileName().equalsIgnoreCase("timesheet_log_hours.json") || submission.getJsonFileName().equalsIgnoreCase("timesheet_edit_log_hours.json") )
+            if (!TextUtils.isEmpty(submission.getJsonFileName()) && (submission.getJsonFileName().equalsIgnoreCase("timesheet_log_hours.json") || submission.getJsonFileName().equalsIgnoreCase("timesheet_edit_log_hours.json"))
                     && !TextUtils.isEmpty(uploadId) && uploadId.equalsIgnoreCase("timeTypeActivityId")) {
                 TimeTypeActivity timeTypeActivity = dbHandler.getTimeTypeActivity(value);
-                if(timeTypeActivity != null){
+                if (timeTypeActivity != null) {
                     String text = timeTypeActivity.getDisplayItem();
                     if (text != null) {
                         if (text.equalsIgnoreCase("Working")) {
                             toBeAdded.addAll(enableItems);
-                        }else if (text.equalsIgnoreCase("Briefing") || text.equalsIgnoreCase("Travel")) {
+                        } else if (text.equalsIgnoreCase("Briefing") || text.equalsIgnoreCase("Travel")) {
                             toBeAdded.addAll(falseEnableItems);
-                        }else /*if (text.equalsIgnoreCase("Lunch") || text.equalsIgnoreCase("Admin")
+                        } else /*if (text.equalsIgnoreCase("Lunch") || text.equalsIgnoreCase("Admin")
                                 || text.equalsIgnoreCase("Vehicle check")|| text.equalsIgnoreCase("Annual Leave"))*/ {
                             toBeAdded.addAll(naEnableItems);
                         }
@@ -913,19 +913,18 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             } else if (enableItems != null) {
                 toBeAdded.addAll(enableItems);
             }
-        }else
-        if(value.equalsIgnoreCase("1") || value.equalsIgnoreCase("true")){
-            if(enableItems!= null && !enableItems.isEmpty()){
+        } else if (value.equalsIgnoreCase("1") || value.equalsIgnoreCase("true")) {
+            if (enableItems != null && !enableItems.isEmpty()) {
                 toBeAdded.addAll(enableItems);
             }
 
-        }else if(value.equalsIgnoreCase("2") || value.equalsIgnoreCase("false")){
-            if(falseEnableItems!= null && !falseEnableItems.isEmpty()){
+        } else if (value.equalsIgnoreCase("2") || value.equalsIgnoreCase("false")) {
+            if (falseEnableItems != null && !falseEnableItems.isEmpty()) {
                 toBeAdded.addAll(falseEnableItems);
             }
 
-        }else if(value.equalsIgnoreCase("3")){
-            if(naEnableItems!= null && !naEnableItems.isEmpty()){
+        } else if (value.equalsIgnoreCase("3")) {
+            if (naEnableItems != null && !naEnableItems.isEmpty()) {
                 toBeAdded.addAll(naEnableItems);
             }
         }
@@ -1106,12 +1105,10 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.view.setBackground(redBG);
         }
 
-
         holder.view.setOnClickListener(view -> {
-
-            Answer timeSheetHourIds = dbHandler.getAnswer(submissionID , "timeSheetHoursId" ,"timesheetHours" , repeatCount);
-            if(timeSheetHourIds != null){
-                listener.showErrorDialog("Error" , "Operatives can not be selected for recorded hours." , false);
+            Answer timeSheetHourIds = dbHandler.getAnswer(submissionID, "timeSheetHoursId", "timesheetHours", repeatCount);
+            if (timeSheetHourIds != null) {
+                listener.showErrorDialog("Error", "Operatives can not be selected for recorded hours.", false);
             }
             String repeatId = formItem.getRepeatId();
             String uploadId = formItem.getUploadId();
@@ -1137,35 +1134,35 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 if (formItem.getKey().equalsIgnoreCase(Job.DBTable.NAME)) {
                     items.addAll(dbHandler.getJobs());
-                }else if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.riskAssessmentRiskElementTypes)) {
+                } else if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.riskAssessmentRiskElementTypes)) {
                     items.addAll(dbHandler.getRiskElementType(formItem.getKey()));
-                }else if (formItem.getKey().equalsIgnoreCase(MeasureItems.DBTable.NAME)) {
+                } else if (formItem.getKey().equalsIgnoreCase(MeasureItems.DBTable.NAME)) {
                     items.addAll(dbHandler.getMeasures());
-                }else if (formItem.getKey().equalsIgnoreCase(TimeTypeActivity.DBTable.NAME)) {
+                } else if (formItem.getKey().equalsIgnoreCase(TimeTypeActivity.DBTable.NAME)) {
                     items.addAll(dbHandler.getTimeTypeActivities());
-                }else if (formItem.getKey().equalsIgnoreCase(MenSplit.DBTable.NAME)) {
+                } else if (formItem.getKey().equalsIgnoreCase(MenSplit.DBTable.NAME)) {
                     items.addAll(dbHandler.getMenSplit());
-                }else {
+                } else {
                     items.addAll(dbHandler.getItemTypes(formItem.getKey()));
                 }
 
                 final DropdownMenu dropdownMenu = DropdownMenu.newInstance(items);
                 dropdownMenu.setListener(position1 -> {
                     holder.txtValue.setText(items.get(position1).getDisplayItem());
-                    if(formItem.getUploadId().equalsIgnoreCase("timeTypeActivityId")){
+                    if (formItem.getUploadId().equalsIgnoreCase("timeTypeActivityId")) {
                         Answer timeTypeName = dbHandler.getAnswer(submissionID, "timeTypeName",
                                 formItem.getRepeatId(), repeatCount);
                         if (timeTypeName == null) {
-                            timeTypeName = new Answer(submissionID, "timeTypeName" , formItem.getRepeatId(), repeatCount);
+                            timeTypeName = new Answer(submissionID, "timeTypeName", formItem.getRepeatId(), repeatCount);
 
                         }
                         timeTypeName.setShouldUpload(false);
                         String displayAnswer = items.get(position1).getDisplayItem();
                         String type = "SHRINKAGE";
-                        if(displayAnswer.equalsIgnoreCase("Working") || displayAnswer.equalsIgnoreCase("Travel")){
+                        if (displayAnswer.equalsIgnoreCase("Working") || displayAnswer.equalsIgnoreCase("Travel")) {
                             type = "ON TASK";
-                        }else if(displayAnswer.equalsIgnoreCase("Briefing") || displayAnswer.equalsIgnoreCase("Admin") ||
-                                displayAnswer.equalsIgnoreCase("Vehicle check") || displayAnswer.equalsIgnoreCase("Lunch")){
+                        } else if (displayAnswer.equalsIgnoreCase("Briefing") || displayAnswer.equalsIgnoreCase("Admin") ||
+                                displayAnswer.equalsIgnoreCase("Vehicle check") || displayAnswer.equalsIgnoreCase("Lunch")) {
                             type = "OFF TASK";
                         }
                         timeTypeName.setAnswer(type);
@@ -1250,8 +1247,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.recyclerView.setAdapter(holder.adapterPhoto);
         }
 
-        holder.adapterPhoto.update();
-        holder.adapterPhoto.notifyDataSetChanged();
+        holder.adapterPhoto.update(formItem);
         holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload), formItem.getPhotos().size(), formItem.getPhotoRequired()));
         if (holder.adapterPhoto.getPhotosTaken() == 0) {
             holder.recyclerView.setVisibility(View.GONE);
@@ -1297,9 +1293,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         rC = answers.get(i).getRepeatCount();
                     }
                 }
-
             }
-
             rC = rC + 1;
             listener.openForkFragment(formItem, submissionID, rC);
         });
@@ -1320,8 +1314,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         holder.view.setOnClickListener(view -> listener.openSignature(formItem, submissionID, repeatCount));
-        if (themeColor!=null && !themeColor.isEmpty())
-        {
+        if (themeColor != null && !themeColor.isEmpty()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 holder.btnClear.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(themeColor)));
             }
@@ -1346,13 +1339,13 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         Answer normalTime = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
 
-        if(normalTime != null && !TextUtils.isEmpty(normalTime.getAnswer())){
+        if (normalTime != null && !TextUtils.isEmpty(normalTime.getAnswer())) {
             holder.txtNormalTime.setText(normalTime.getDisplayAnswer());
             normalTimeInMinutes = CommonUtils.parseInt(normalTime.getAnswer());
         }
 
         Answer overTime = DBHandler.getInstance().getAnswer(submissionID, "overtimeMinutes", formItem.getRepeatId(), repeatCount);
-        if(overTime != null && !TextUtils.isEmpty(overTime.getAnswer())){
+        if (overTime != null && !TextUtils.isEmpty(overTime.getAnswer())) {
             holder.txtOverTime.setText(overTime.getDisplayAnswer());
             overTimeInMinutes = CommonUtils.parseInt(overTime.getAnswer());
 
@@ -1367,7 +1360,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             Answer normalTime2 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(),
                     formItem.getRepeatId(), repeatCount);
 
-            if(normalTime2 != null && !TextUtils.isEmpty(normalTime2.getAnswer())){
+            if (normalTime2 != null && !TextUtils.isEmpty(normalTime2.getAnswer())) {
                 normalTimeMins = CommonUtils.parseInt(normalTime2.getAnswer());
             }
 
@@ -1375,7 +1368,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
 
                 if (answer1 == null) {
-                    answer1 = new Answer(submissionID, formItem.getUploadId() , formItem.getRepeatId() , repeatCount);
+                    answer1 = new Answer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
                 }
 
                 answer1.setAnswer(String.valueOf(timeInMinutes));
@@ -1385,7 +1378,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 int totalTime = CommonUtils.parseInt(answer1.getAnswer());
 
                 Answer overTime1 = DBHandler.getInstance().getAnswer(submissionID, "overtimeMinutes", formItem.getRepeatId(), repeatCount);
-                if(overTime1 != null && !TextUtils.isEmpty(overTime1.getAnswer())){
+                if (overTime1 != null && !TextUtils.isEmpty(overTime1.getAnswer())) {
                     totalTime += CommonUtils.parseInt(overTime1.getAnswer());
                 }
                 holder.txtNormalTime.setText(displayValue);
@@ -1397,14 +1390,14 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.txtOverTime.setOnClickListener(v -> {
             int overTimeMins = 0;
             Answer overTime2 = DBHandler.getInstance().getAnswer(submissionID, "overtimeMinutes", formItem.getRepeatId(), repeatCount);
-            if(overTime2 != null && !TextUtils.isEmpty(overTime2.getAnswer())){
+            if (overTime2 != null && !TextUtils.isEmpty(overTime2.getAnswer())) {
                 overTimeMins = CommonUtils.parseInt(overTime2.getAnswer());
             }
             new HourPickerDialog.Builder(context).setListener((timeInMinutes, displayValue) -> {
                 Answer answer1 = DBHandler.getInstance().getAnswer(submissionID, "overtimeMinutes", formItem.getRepeatId(), repeatCount);
 
                 if (answer1 == null) {
-                    answer1 = new Answer(submissionID, "overtimeMinutes" , formItem.getRepeatId() , repeatCount);
+                    answer1 = new Answer(submissionID, "overtimeMinutes", formItem.getRepeatId(), repeatCount);
                 }
 
                 answer1.setAnswer(String.valueOf(timeInMinutes));
@@ -1414,7 +1407,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 int totalTime = CommonUtils.parseInt(answer1.getAnswer());
 
                 Answer normalTime1 = DBHandler.getInstance().getAnswer(submissionID, formItem.getUploadId(), formItem.getRepeatId(), repeatCount);
-                if(normalTime1 != null && !TextUtils.isEmpty(normalTime1.getAnswer())){
+                if (normalTime1 != null && !TextUtils.isEmpty(normalTime1.getAnswer())) {
                     totalTime += CommonUtils.parseInt(normalTime1.getAnswer());
                 }
                 holder.txtOverTime.setText(displayValue);
@@ -1443,6 +1436,25 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         int missingCount = 0;
         for (int c = 0; c < formItems.size(); c++) {
             FormItem item = formItems.get(c);
+
+            if (submission.getJsonFileName().contains("log_measure.json")
+                    && !TextUtils.isEmpty(item.getUploadId())
+                    && item.getUploadId().equalsIgnoreCase("comments")) {
+                Answer answer = dbHandler.getAnswer(submissionID,
+                        item.getUploadId(), item.getRepeatId(), repeatCount);
+                if (!TextUtils.isEmpty(answer.getAnswer())) {
+                    try {
+                        int commentSize = answer.getAnswer().length();
+                        if (commentSize > 150) {
+                            missingCount++;
+                            listener.showValidationDialog("Validation Error", "Please provide maximum 150 character for comment field");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
             if (!item.isOptional() && item.getUploadId() != null) {
                 Answer answer = dbHandler.getAnswer(submissionID,
                         item.getUploadId(), item.getRepeatId(), repeatCount);
@@ -1469,19 +1481,17 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                         listener.showValidationDialog("Validation Error", "Please enter correct quantity");
                                     }
                                     //validation check for same item
-                                    else if (answers!=null && answers.size()>1) {
-                                            for (Answer A1 : answers)
-                                            {
-                                                List<Answer> subanswers = answers.subList(answers.indexOf(A1) + 1, answers.size());
-                                                for (Answer A2 : subanswers) {
-                                                    if (A1.getAnswer().equalsIgnoreCase(A2.getAnswer()))
-                                                    {
-                                                        missingCount++;
-                                                        listener.showValidationDialog("Validation Error", "Please select different workitem!");
-                                                    }
+                                    else if (answers != null && answers.size() > 1) {
+                                        for (Answer A1 : answers) {
+                                            List<Answer> subanswers = answers.subList(answers.indexOf(A1) + 1, answers.size());
+                                            for (Answer A2 : subanswers) {
+                                                if (A1.getAnswer().equalsIgnoreCase(A2.getAnswer())) {
+                                                    missingCount++;
+                                                    listener.showValidationDialog("Validation Error", "Please select different workitem!");
                                                 }
                                             }
                                         }
+                                    }
                                 }
                             }
 
@@ -1489,7 +1499,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             e.printStackTrace();
                         }
                     }
-                }else if (!TextUtils.isEmpty(item.getRepeatId()) && item.getRepeatId().equalsIgnoreCase("negItems")) {
+                } else if (!TextUtils.isEmpty(item.getRepeatId()) && item.getRepeatId().equalsIgnoreCase("negItems")) {
                     if (!TextUtils.isEmpty(item.getUploadId()) && item.getUploadId().equalsIgnoreCase("quantity")) {
                         if (!TextUtils.isEmpty(answer.getAnswer())) {
                             try {
@@ -1497,25 +1507,41 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                 if (qty < 0) {
                                     qty = -1 * qty;
                                 }
-                                Answer code = dbHandler.getAnswer(submissionID,
-                                        "itemId", "negItems", repeatCount);
-                                if (code != null && !TextUtils.isEmpty(code.getAnswer())) {
-                                    JobWorkItem workItem = dbHandler.getJobWorkItem(submission.getJobID(), code.getAnswer());
-                                    if (workItem != null) {
-                                        if (qty > workItem.getAvailableToMeasureQuantity()) {
-                                            missingCount++;
-                                            listener.showValidationDialog("Validation Error", "Please enter correct quantity");
+
+                                if (qty == 0) {
+                                    missingCount++;
+                                    listener.showValidationDialog("Validation Error", "Please enter quantity other than 0");
+                                } else {
+                                    String uploadId = "itemCode";
+                                    Answer code = dbHandler.getAnswer(submissionID,
+                                            uploadId, "negItems", repeatCount);
+                                    if (code == null) {
+                                        uploadId = "itemId";
+                                        code = dbHandler.getAnswer(submissionID,
+                                                uploadId, "negItems", repeatCount);
+                                    }
+                                    if (code != null && !TextUtils.isEmpty(code.getAnswer())) {
+                                        JobWorkItem workItem;
+                                        if (uploadId.equalsIgnoreCase("itemCode")) {
+                                            workItem = dbHandler.getJobWorkItemByItemCode(submission.getJobID(), code.getAnswer());
+                                        } else {
+                                            workItem = dbHandler.getJobWorkItem(submission.getJobID(), code.getAnswer());
+                                        }
+
+                                        if (workItem != null) {
+                                            if (qty > workItem.getAvailableToMeasureQuantity()) {
+                                                missingCount++;
+                                                listener.showValidationDialog("Validation Error", "Please enter correct quantity");
+                                            }
                                         }
                                     }
-
                                 }
-
                             } catch (Exception e) {
-
                             }
                         }
                     }
                 }
+
             }
         }
 
@@ -1539,8 +1565,7 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
 
-    private void openDatePicker(){
-
+    private void openDatePicker() {
 
 //        ArrayList<EventDay> eventDays = new ArrayList<>();
 //        Calendar calendar = Calendar.getInstance();

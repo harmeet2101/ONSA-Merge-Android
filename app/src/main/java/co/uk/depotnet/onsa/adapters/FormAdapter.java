@@ -1112,19 +1112,19 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     formItem.getRepeatCount());
             if (answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
                 if (uploadId.equalsIgnoreCase("cones")) {
-                    task.setCones(Float.parseFloat(answer.getAnswer()));
+                    task.setCones(parseFloat(answer.getAnswer()));
                 } else if (uploadId.equalsIgnoreCase("barriers")) {
-                    task.setBarriers(Float.parseFloat(answer.getAnswer()));
+                    task.setBarriers(parseFloat(answer.getAnswer()));
                 } else if (uploadId.equalsIgnoreCase("chpt8")) {
-                    task.setChpt8(Float.parseFloat(answer.getAnswer()));
+                    task.setChpt8(parseFloat(answer.getAnswer()));
                 } else if (uploadId.equalsIgnoreCase("fwBoards")) {
-                    task.setFwBoards(Float.parseFloat(answer.getAnswer()));
+                    task.setFwBoards(parseFloat(answer.getAnswer()));
                 } else if (uploadId.equalsIgnoreCase("bags")) {
-                    task.setBags(Float.parseFloat(answer.getAnswer()));
+                    task.setBags(parseFloat(answer.getAnswer()));
                 } else if (uploadId.equalsIgnoreCase("sand")) {
-                    task.setSand(Float.parseFloat(answer.getAnswer()));
+                    task.setSand(parseFloat(answer.getAnswer()));
                 } else if (uploadId.equalsIgnoreCase("stone")) {
-                    task.setStone(Float.parseFloat(answer.getAnswer()));
+                    task.setStone(parseFloat(answer.getAnswer()));
                 }
             }
         }
@@ -1336,22 +1336,38 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     task.setMaterialTypeId(answer.getAnswer());
                     task.setMaterialTypeName(answer.getDisplayAnswer());
                 } else if (uploadId.equalsIgnoreCase("length")) {
-                    task.setLength(Float.parseFloat(answer.getAnswer()));
+                    task.setLength(parseFloat(answer.getAnswer()));
                 } else if (uploadId.equalsIgnoreCase("width")) {
-                    task.setWidth(Float.parseFloat(answer.getAnswer()));
+                    task.setWidth(parseFloat(answer.getAnswer()));
                 } else if (uploadId.equalsIgnoreCase("depth")) {
-                    task.setDepth(Float.parseFloat(answer.getAnswer()));
+                    task.setDepth(parseFloat(answer.getAnswer()));
                 }
             }
         }
     }
+
+    private float parseFloat(String value){
+        if(TextUtils.isEmpty(value)){
+            return 0;
+        }
+
+        try{
+            return Float.parseFloat(value);
+        }catch (Exception e){
+            return 0;
+        }
+    }
+
+    private boolean isSubJob(){
+        return job != null && job.isSubJob();
+    };
 
 
     private void bindLogMeasureItemHolder(@NonNull final LogMeasureItemHolder holder, int position) {
         final FormItem formItem = formItems.get(position);
         ArrayList<String> fields = formItem.getFields();
         int counter = 0;
-        if(job.isSubJob()){
+        if(isSubJob()){
             counter = 1;
         }
 
@@ -2961,8 +2977,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             holder.recyclerView.setAdapter(holder.adapterPhoto);
         }
 
-        holder.adapterPhoto.update();
-        holder.adapterPhoto.notifyDataSetChanged();
+        holder.adapterPhoto.update(formItem);
         holder.txtTitle.setText(String.format(context.getString(R.string.photo_upload), formItem.getPhotos().size(), formItem.getPhotoRequired()));
         if (holder.adapterPhoto.getPhotosTaken() == 0) {
             holder.recyclerView.setVisibility(View.GONE);
@@ -3533,7 +3548,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (answer1 == null) {
                 answer1 = new Answer(submissionID, formItem.getUploadId());
             }
-            boolean isNumber = job.isSubJob() && (submission.getJsonFileName().equalsIgnoreCase("poling_job_data.json")
+            boolean isNumber = isSubJob() && (submission.getJsonFileName().equalsIgnoreCase("poling_job_data.json")
             || submission.getJsonFileName().equalsIgnoreCase("poling_fluidity_task.json")
             || submission.getJsonFileName().equalsIgnoreCase("sub_job_poling_solution.json")
             || submission.getJsonFileName().equalsIgnoreCase("poling_asset_data.json")
@@ -3574,7 +3589,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answer12 = new Answer(submissionID, formItem.getUploadId());
             }
 
-            boolean isNumber = job.isSubJob() && (submission.getJsonFileName().equalsIgnoreCase("poling_job_data.json")
+            boolean isNumber = isSubJob() && (submission.getJsonFileName().equalsIgnoreCase("poling_job_data.json")
                     || submission.getJsonFileName().equalsIgnoreCase("poling_fluidity_task.json")
                     || submission.getJsonFileName().equalsIgnoreCase("sub_job_poling_solution.json")
                     || submission.getJsonFileName().equalsIgnoreCase("poling_asset_data.json")
@@ -3827,7 +3842,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void addTasksAt(final FormItem item, final int position, final String type) {
         if (selectableTasks != null && !selectableTasks.isEmpty()) {
-            if(job.isSubJob()){
+            if(isSubJob()){
                 initSubTasks(new ArrayList<>(selectableTasks), position, type, item.getFormType());
             }else {
                 initTasks(new ArrayList<>(selectableTasks), position, type, item.getFormType());
@@ -3839,8 +3854,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (formType == FormItem.TYPE_TASK_LOG_REINSTATEMENT || formType == FormItem.TYPE_TASK_LOG_MUCKAWAY
                 || formType == FormItem.TYPE_TASK_LOG_BACKFILL
                 || formType == FormItem.TYPE_TASK_LOG_SERVICE || formType == FormItem.TYPE_TASK_SITE_CLEAR) {
-            ArrayList<BaseTask> tasks = dbHandler.getTaskItems(submission.getJobID(), item.getTaskId(), job.isSubJob()? 1 : 0);
-            if(job.isSubJob()) {
+            ArrayList<BaseTask> tasks = dbHandler.getTaskItems(submission.getJobID(), item.getTaskId(), isSubJob()? 1 : 0);
+            if(isSubJob()) {
                 initSubTasks(new ArrayList<>(tasks), position, type, item.getFormType());
             } else{
                 initTasks(new ArrayList<>(tasks), position, type, item.getFormType());
@@ -4368,7 +4383,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     answerjobID = new Answer(submissionID, "jobId");
                 }
                 answerjobID.setAnswer(jobEstimate.getJobId());
-                answerjobID.setDisplayAnswer(jobEstimate.getJobId());
+                answerjobID.setDisplayAnswer(jobEstimate.getJobRef());
                 answerjobID.setRepeatCount(0);
                 dbHandler.replaceData(Answer.DBTable.NAME, answerjobID.toContentValues());
             }

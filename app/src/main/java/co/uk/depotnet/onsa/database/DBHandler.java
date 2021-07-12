@@ -726,6 +726,24 @@ public class DBHandler {
         return workItem;
     }
 
+    public JobWorkItem getJobWorkItemByItemCode(String jobId, String itemCode) {
+
+        String selection = JobWorkItem.DBTable.jobId + " = ? AND " + JobWorkItem.DBTable.itemCode + " = ?";
+        String[] selectionArgs = new String[]{String.valueOf(jobId), itemCode};
+        JobWorkItem workItem = null;
+        Cursor cursor = db.query(JobWorkItem.DBTable.NAME,
+                null, selection, selectionArgs,
+                null, null,
+                JobWorkItem.DBTable.itemCode + " ASC");
+
+
+        if (cursor.moveToFirst()) {
+            workItem = new JobWorkItem(cursor);
+        }
+        cursor.close();
+        return workItem;
+    }
+
     public ArrayList<WorkItem> getWorkItem(String type, String orderBy) {
 
         String selection = WorkItem.DBTable.type + " = ?";
