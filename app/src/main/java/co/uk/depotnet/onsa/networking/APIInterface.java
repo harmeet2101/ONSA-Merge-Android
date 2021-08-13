@@ -1,6 +1,8 @@
 package co.uk.depotnet.onsa.networking;
 
+import co.uk.depotnet.onsa.modals.AppDFEItems;
 import co.uk.depotnet.onsa.modals.Disclaimer;
+import co.uk.depotnet.onsa.modals.WorkItem;
 import co.uk.depotnet.onsa.modals.actions.ActionResponse;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsDocModal;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsDocument;
@@ -58,6 +60,9 @@ public interface APIInterface {
     @PUT("your-account/activate-mfa")
     Call<ActiveMfa> activeMFA();
 
+    @POST("signout/{jwtId}")
+    Call<Void> signOut(@Path("jwtId") String jwtId);
+
     @POST("reset-password")
     Call<User> resetPassword(@Body ResetPassword resetPassword);
 
@@ -67,8 +72,8 @@ public interface APIInterface {
     @GET("app/jobs")
     Call<JobResponse> getJobList();
 
-    @GET("app/dataset")
-    Call<DatasetResponse> getDataSet();
+    @GET("app/getdfeitems/contractnumber/{contract}/rateissuenumber/{rateissuenumber}")
+    Call<AppDFEItems> getDfeItems(@Path("contract") String contractID , @Path("rateissuenumber") int rateIssueNumber );
 
     @GET("appstores/dataset")
     Call<StoreDataset> getStoreDataSet();

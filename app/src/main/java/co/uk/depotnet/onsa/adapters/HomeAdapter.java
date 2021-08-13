@@ -132,10 +132,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             holder.llBtnQualityCheck.setOnClickListener(view -> listener.onQualityCheck(holder.job));
         }
 
-
-
-
-
+        if(holder.job.getSiteTasksCount() > 0){
+            holder.llBtnSiteClear.setVisibility(View.GONE);
+//            holder.llBtnSiteClear.setOnClickListener(view -> listener.openSiteClear(holder.job));
+        }else{
+            holder.llBtnSiteClear.setVisibility(View.GONE);
+        }
 
         holder.llBtnJobDeatils.setOnClickListener(view -> listener.openJobDetail(holder.job));
 
@@ -145,6 +147,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
 
         holder.llBtnRiskAssessment.setOnClickListener(view -> listener.openRiskAssessment(holder.job));
+
 
         holder.llBtnVisitorAttendance.setOnClickListener(view -> listener.openVisitorAttendance(holder.job));
         holder.llBtnPhotoGallery.setOnClickListener(view -> listener.openPhotoGallery(holder.job));
@@ -210,6 +213,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         private final LinearLayout llBtnWorkLog;
         private final LinearLayout llBtnJobPack;
         private final LinearLayout llBtnRiskAssessment;
+        private final LinearLayout llBtnSiteClear;
         private final LinearLayout llBtnQualityCheck;
         private final LinearLayout llBtnLogStores;
         private final LinearLayout llBtnVisitorAttendance;
@@ -232,6 +236,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             llBtnJobPack = view.findViewById(R.id.ll_btn_job_pack);
             llBtnSurvey = view.findViewById(R.id.ll_btn_survey);
             llBtnRiskAssessment = view.findViewById(R.id.ll_btn_risk_assessment);
+            llBtnSiteClear = view.findViewById(R.id.ll_btn_site_clear);
             llBtnQualityCheck = view.findViewById(R.id.ll_btn_quality_check);
             llBtnLogStores = view.findViewById(R.id.ll_btn_log_stores);
             llBtnVisitorAttendance = view.findViewById(R.id.ll_btn_visitor_attendance);

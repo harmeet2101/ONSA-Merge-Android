@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import co.uk.depotnet.onsa.BuildConfig;
+import co.uk.depotnet.onsa.modals.AppDFEItems;
 import co.uk.depotnet.onsa.modals.Disclaimer;
+import co.uk.depotnet.onsa.modals.WorkItem;
 import co.uk.depotnet.onsa.modals.actions.ActionResponse;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsDocModal;
 import co.uk.depotnet.onsa.modals.briefings.BriefingsDocument;
@@ -74,6 +76,11 @@ public class APICalls {
         return apiInterface.activeMFA();
     }
 
+    public static Call<Void> signOut(String jwtId , String authToken){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.signOut(jwtId);
+    }
+
     public static Call<User> resetPassword(ResetPassword resetPassword){
         APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
         return apiInterface.resetPassword(resetPassword);
@@ -120,6 +127,11 @@ public class APICalls {
     public static Call<JobResponse> getJobList(String authToken){
         APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
         return apiInterface.getJobList();
+    }
+
+    public static Call<AppDFEItems> getDfeItems(String authToken, String contractID , int raisedIssueNumber){
+        APIInterface apiInterface = APIClient.createService(APIInterface.class , authToken);
+        return apiInterface.getDfeItems(contractID , raisedIssueNumber);
     }
 
     public static Call<DataReceipts> getReceipts(String authToken){

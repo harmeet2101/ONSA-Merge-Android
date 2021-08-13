@@ -315,5 +315,6 @@
     <string name="over_time">Over Time</string>
     <string name="total_hours">Total Hours</string>
     <string name="cancle">Cancel</string>
+    <string name="site_clear">Site Clear</string>
 
 </resources>

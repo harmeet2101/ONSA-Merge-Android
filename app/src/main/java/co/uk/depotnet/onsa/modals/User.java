@@ -288,6 +288,7 @@ public class User implements Parcelable {
         cv.put(DBTable.userId, this.userId);
 
         cv.put(DBTable.token, this.token);
+        cv.put(DBTable.tokenId, this.tokenId);
 
         cv.put(DBTable.foreName, this.foreName);
         cv.put(DBTable.isDisclaimerAccepted, this.isDisclaimerAccepted);

@@ -24,7 +24,7 @@
         },
         {
           "type": "photo",
-          "title": "Service/Material Photo",
+          "title": "Service Material Photo",
           "photoSize": 10,
           "photoRequired": 3,
           "photoId": "120"

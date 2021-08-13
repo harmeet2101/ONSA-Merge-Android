@@ -40,6 +40,7 @@ public class LoginActivity extends AppCompatActivity
     private EditText etUserName;
     private EditText etPassword;
     private LinearLayout llUiBlocker;
+    private DBHandler dbHandler;
     
     private Callback<ActiveMfa> mfaCallback = new Callback<ActiveMfa>() {
         @Override
@@ -80,11 +81,11 @@ public class LoginActivity extends AppCompatActivity
         ItemType itemType3 = new ItemType("Reinstatement" , "TaskType" , "5");
         ItemType itemType4 = new ItemType("Backfill" , "TaskType" , "4");
 
-        DBHandler.getInstance().replaceData(ItemType.DBTable.NAME , itemType.toContentValues());
-        DBHandler.getInstance().replaceData(ItemType.DBTable.NAME , itemType1.toContentValues());
-        DBHandler.getInstance().replaceData(ItemType.DBTable.NAME , itemType2.toContentValues());
-        DBHandler.getInstance().replaceData(ItemType.DBTable.NAME , itemType3.toContentValues());
-        DBHandler.getInstance().replaceData(ItemType.DBTable.NAME , itemType4.toContentValues());
+        dbHandler.replaceData(ItemType.DBTable.NAME , itemType.toContentValues());
+        dbHandler.replaceData(ItemType.DBTable.NAME , itemType1.toContentValues());
+        dbHandler.replaceData(ItemType.DBTable.NAME , itemType2.toContentValues());
+        dbHandler.replaceData(ItemType.DBTable.NAME , itemType3.toContentValues());
+        dbHandler.replaceData(ItemType.DBTable.NAME , itemType4.toContentValues());
     }
 
     private Callback<User> loginCallback = new Callback<User>() {
@@ -98,11 +99,13 @@ public class LoginActivity extends AppCompatActivity
 
             if (response.isSuccessful()) {
                 User user = response.body();
-
                 if (user != null && !TextUtils.isEmpty(user.getuserId())) {
-                    DBHandler.getInstance().clearTable(User.DBTable.NAME);
+                    if(!isSameUserLoggedIn(user)){
+                        CommonUtils.clearAppData(dbHandler);
+                    }
+//                    dbHandler.clearTable(User.DBTable.NAME);
                     user.setLoggedIn(true);
-                    DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
+                    dbHandler.replaceData(User.DBTable.NAME, user.toContentValues());
                     AppPreferences.putString("UserName" , etUserName.getText().toString().trim());
                     AppPreferences.putString("UserPassword" , etPassword.getText().toString().trim());
 
@@ -172,6 +175,8 @@ public class LoginActivity extends AppCompatActivity
         txtVersionCode.setText(String.format("version %s", BuildConfig.VERSION_NAME));
         findViewById(R.id.btn_login).setOnClickListener(LoginActivity.this);
         findViewById(R.id.txt_btn_forgot_password).setOnClickListener(LoginActivity.this);
+
+        this.dbHandler = DBHandler.getInstance(this);
     }
 
     @Override
@@ -226,7 +231,7 @@ public class LoginActivity extends AppCompatActivity
             UserRequest userRequest = new UserRequest(etUserName.getText().toString().trim(),
                     etPassword.getText().toString().trim());
 
-            User user = DBHandler.getInstance().getUser();
+            User user = dbHandler.getUser();
             String token = null;
             if(user != null){
                 token = user.gettoken();
@@ -252,4 +257,18 @@ public class LoginActivity extends AppCompatActivity
         }
         return true;
     }
+
+    private boolean isSameUserLoggedIn(User user){
+        if(user == null || TextUtils.isEmpty(user.getuserId())){
+            return false;
+        }
+        User lastUser = dbHandler.getUser();
+        if(lastUser == null || TextUtils.isEmpty(lastUser.getuserId())) {
+            return false;
+        }
+
+        return lastUser.getuserId().equalsIgnoreCase(user.getuserId());
+
+    }
+
 }

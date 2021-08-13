@@ -17,7 +17,7 @@ public class DatasetResponse implements Parcelable {
     private ArrayList<ItemType> aerialCables;
     private ArrayList<ItemType> photoTypes;
     private ArrayList<ItemType> bookOperatives;
-    private ArrayList<WorkItem> workItems;
+//    private ArrayList<WorkItem> workItems;
 //    private ArrayList<ItemType> dcrReasonCodes;
     private ArrayList<ItemType> roadTypes;
     private ArrayList<ItemType> engCompOutcomes;
@@ -25,7 +25,7 @@ public class DatasetResponse implements Parcelable {
     private ArrayList<ItemType> speedLimits;
     private ArrayList<ItemType> abandonReasons;
     private ArrayList<ItemType> surfaceTypes;
-    private ArrayList<WorkItem> dfeWorkItems;
+//    private ArrayList<WorkItem> dfeWorkItems;
     private ArrayList<ItemType> stayTypes;
     private ArrayList<KitBagDocument> kitbagFolders;
     private ArrayList<ItemType> materialTypes;
@@ -49,7 +49,7 @@ public class DatasetResponse implements Parcelable {
         aerialCables = in.createTypedArrayList(ItemType.CREATOR);
         photoTypes = in.createTypedArrayList(ItemType.CREATOR);
         bookOperatives = in.createTypedArrayList(ItemType.CREATOR);
-        workItems = in.createTypedArrayList(WorkItem.CREATOR);
+//        workItems = in.createTypedArrayList(WorkItem.CREATOR);
 //        dcrReasonCodes = in.createTypedArrayList(ItemType.CREATOR);
         roadTypes = in.createTypedArrayList(ItemType.CREATOR);
         engCompOutcomes = in.createTypedArrayList(ItemType.CREATOR);
@@ -57,7 +57,7 @@ public class DatasetResponse implements Parcelable {
         speedLimits = in.createTypedArrayList(ItemType.CREATOR);
         abandonReasons = in.createTypedArrayList(ItemType.CREATOR);
         surfaceTypes = in.createTypedArrayList(ItemType.CREATOR);
-        dfeWorkItems = in.createTypedArrayList(WorkItem.CREATOR);
+//        dfeWorkItems = in.createTypedArrayList(WorkItem.CREATOR);
         stayTypes = in.createTypedArrayList(ItemType.CREATOR);
         kitbagFolders = in.createTypedArrayList(KitBagDocument.CREATOR);
         materialTypes = in.createTypedArrayList(ItemType.CREATOR);
@@ -82,7 +82,7 @@ public class DatasetResponse implements Parcelable {
         dest.writeTypedList(aerialCables);
         dest.writeTypedList(photoTypes);
         dest.writeTypedList(bookOperatives);
-        dest.writeTypedList(workItems);
+//        dest.writeTypedList(workItems);
 //        dest.writeTypedList(dcrReasonCodes);
         dest.writeTypedList(roadTypes);
         dest.writeTypedList(engCompOutcomes);
@@ -90,7 +90,7 @@ public class DatasetResponse implements Parcelable {
         dest.writeTypedList(speedLimits);
         dest.writeTypedList(abandonReasons);
         dest.writeTypedList(surfaceTypes);
-        dest.writeTypedList(dfeWorkItems);
+//        dest.writeTypedList(dfeWorkItems);
         dest.writeTypedList(stayTypes);
         dest.writeTypedList(kitbagFolders);
         dest.writeTypedList(materialTypes);
@@ -147,9 +147,9 @@ public class DatasetResponse implements Parcelable {
         }
 
 
-        if (this.workItems != null && !this.workItems.isEmpty()) {
-            dbHandler.replaceDataDFEWorkItems(dfeWorkItems, DBTable.workItems);
-        }
+//        if (this.workItems != null && !this.workItems.isEmpty()) {
+//            dbHandler.replaceDataDFEWorkItems(workItems, DBTable.workItems);
+//        }
 //        if (this.dcrReasonCodes != null && !this.dcrReasonCodes.isEmpty()) {
 //            dbHandler.replaceItemTypes(dcrReasonCodes, DBTable.dcrReasonCodes);
 //        }
@@ -183,11 +183,11 @@ public class DatasetResponse implements Parcelable {
         }
 
 
-        if (this.dfeWorkItems != null && !this.dfeWorkItems.isEmpty()) {
-
-            dbHandler.replaceDataDFEWorkItems(dfeWorkItems, DatasetResponse.DBTable.dfeWorkItems);
-
-        }
+//        if (this.dfeWorkItems != null && !this.dfeWorkItems.isEmpty()) {
+//
+//            dbHandler.replaceDataDFEWorkItems(dfeWorkItems, DatasetResponse.DBTable.dfeWorkItems);
+//
+//        }
 
 
         if (this.stayTypes != null && !this.stayTypes.isEmpty()) {

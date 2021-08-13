@@ -47,7 +47,7 @@ public class DisclaimerActivity extends AppCompatActivity
     private Button btnDecline;
     private User user;
     private int apiCounter;
-
+    private DBHandler dbHandler;
 
     public void startWelcomeActivity() {
         hideProgressBar();
@@ -122,6 +122,8 @@ public class DisclaimerActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disclaimer);
 
+        this.dbHandler = DBHandler.getInstance(this);
+        this.user = dbHandler.getUser();
         llUiBlocker = findViewById(R.id.ll_ui_blocker);
         txtDisclaimer = findViewById(R.id.txt_disclaimer);
         imgDisclaimer = findViewById(R.id.img_disclaimer);
@@ -132,7 +134,7 @@ public class DisclaimerActivity extends AppCompatActivity
 
         btnAccept.setVisibility(View.GONE);
         btnDecline.setVisibility(View.GONE);
-        user = DBHandler.getInstance().getUser();
+
         showProgressBar();
         if(CommonUtils.isNetworkAvailable(this)){
 
@@ -178,7 +180,7 @@ public class DisclaimerActivity extends AppCompatActivity
 
     private void onAccept() {
         user.setDisclaimerAccepted(true);
-        DBHandler.getInstance().replaceData(User.DBTable.NAME, user.toContentValues());
+        dbHandler.replaceData(User.DBTable.NAME, user.toContentValues());
         startWelcomeActivity();
     }
 
@@ -198,20 +200,14 @@ public class DisclaimerActivity extends AppCompatActivity
                         featureResult.toContentValues();
                     }
                 }
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
-                Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
-                Constants.isTimeSheetEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_TIMESHEET);
-                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
+                CommonUtils.activeFeatures(dbHandler);
                 showButtons();
             }
 
             @Override
             public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
                 apiCounter++;
-                Constants.isStoreEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_STORE);
-                Constants.isHSEQEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_HSEQ);
-                Constants.isTimeSheetEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_TIMESHEET);
-                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
+                CommonUtils.activeFeatures(dbHandler);
                 showButtons();
             }
         });

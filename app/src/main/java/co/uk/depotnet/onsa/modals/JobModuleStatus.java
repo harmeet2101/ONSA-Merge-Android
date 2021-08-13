@@ -85,6 +85,9 @@ public class JobModuleStatus implements Parcelable {
         return selectedDate;
     }
 
+    public void setSelectedDate(String selectedDate) {
+        this.selectedDate = selectedDate;
+    }
 
     public void setSubmissionId(long submissionId) {
         this.submissionId = submissionId;

@@ -106,6 +106,19 @@ public class Job implements Parcelable, DropDownItem {
         dcrReasons = DBHandler.getInstance().getDCRReason(jobId);
     }
 
+    public int getSiteTasksCount(){
+        if(isSubJob() && subJobSiteActivityTasks!= null){
+            return subJobSiteActivityTasks.size();
+        }
+
+        if(!isSubJob() && siteActivityTasks!= null){
+            return siteActivityTasks.getCount();
+        }
+
+        return 0;
+    }
+
+
     public boolean hasDCR(){
         return dcrReasons != null && !dcrReasons.isEmpty();
     }

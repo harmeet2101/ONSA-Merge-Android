@@ -195,9 +195,6 @@ public class VerificationActivity extends AppCompatActivity {
         verificationRequest.setRememberMe(true);
         verificationRequest.setCode(otp);
 
-
-
-
         showProgressBar();
 
         CallUtils.enqueueWithRetry(APICalls.verify2FAChallenge(verificationRequest , user.gettoken()),new Callback<User>() {

@@ -27,7 +27,6 @@ import co.uk.depotnet.onsa.adapters.AdapterWorkLog;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.listeners.OnItemClickListener;
 import co.uk.depotnet.onsa.modals.Job;
-import co.uk.depotnet.onsa.modals.JobModuleStatus;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.WorkLog;
 import co.uk.depotnet.onsa.modals.forms.Submission;
@@ -60,49 +59,59 @@ public class WorkLogActivity extends AppCompatActivity
     private RelativeLayout rlWarning;
     private RecyclerView recyclerView;
     private LinearLayout llUiBlocker;
-    private Button btnRiskAssessment;
-    private TextView tv_riskAssessment_heading;
     private Job job;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+    private String today;
+    private DBHandler dbHandler;
+    private String riskAssessmentTitle;
+    private boolean isSubJob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_work_log);
+        this.dbHandler = DBHandler.getInstance(this);
+        this.today = sdf.format(new Date());
+        user = dbHandler.getUser();
 
         Intent intent = getIntent();
-        user = DBHandler.getInstance().getUser();
         jobID = intent.getStringExtra(ARG_JOB_ID);
         jobReferenceNumber = intent.getStringExtra(ARG_JOB_REFERENCE_NUMBER);
-        job = DBHandler.getInstance().getJob(jobID);
+        job = dbHandler.getJob(jobID);
+        this.isSubJob = job!=null && job.isSubJob();
+
         TextView txtToolbarTitle = findViewById(R.id.txt_toolbar_title);
-        if(job.isSubJob()){
+        if(isSubJob){
             txtToolbarTitle.setText(String.format("Work Log: %s-S%s", job.getestimateNumber(), job.getSubJobNumber()));
         }else{
             txtToolbarTitle.setText(String.format("Work Log: %s", job.getestimateNumber()));
         }
 
+
+        this.riskAssessmentTitle = getRiskAssessmentTitle();
+
         llUiBlocker = findViewById(R.id.ll_ui_blocker);
 
         findViewById(R.id.btn_img_cancel).setOnClickListener(this);
         findViewById(R.id.btn_risk_assessment).setOnClickListener(this);
-        btnRiskAssessment = findViewById(R.id.btn_risk_assessment);
-        tv_riskAssessment_heading = findViewById(R.id.tv_risk_assessment_heading);
+        Button btnRiskAssessment = findViewById(R.id.btn_risk_assessment);
+        TextView tv_riskAssessment_heading = findViewById(R.id.tv_risk_assessment_heading);
         recyclerView = findViewById(R.id.recycler_view);
         rlWarning = findViewById(R.id.rl_warning);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         VerticalSpaceItemDecoration itemDecoration = new VerticalSpaceItemDecoration(20);
         recyclerView.addItemDecoration(itemDecoration);
-        String fileName = "work_log.json";
-        if(job.isSubJob()){
-            fileName = "sub_job_work_log.json";
-        }
+
+        String prefix = isSubJob ? "sub_job_":"";
+        String fileName = prefix+"work_log.json";
         workLogs = JsonReader.loadFormJSON(this, WorkLog.class, fileName);
-        String prefix = job.isSubJob()?"sub_job_":"";
+
         if (!user.isReinstatement()) {
             for (int i = 0; i < workLogs.size(); i++) {
                 if (workLogs.get(i).getJson().equalsIgnoreCase(prefix+"log_reinstatement.json")) {
                     workLogs.remove(i);
+                    break;
                 }
             }
         }
@@ -111,6 +120,7 @@ public class WorkLogActivity extends AppCompatActivity
             for (int i = 0; i < workLogs.size(); i++) {
                 if (workLogs.get(i).getJson().equalsIgnoreCase(prefix+"log_back_fill.json")) {
                     workLogs.remove(i);
+                    break;
                 }
             }
         }
@@ -119,6 +129,7 @@ public class WorkLogActivity extends AppCompatActivity
             for (int i = 0; i < workLogs.size(); i++) {
                 if (workLogs.get(i).getJson().equalsIgnoreCase(prefix+"log_site_clear.json")) {
                     workLogs.remove(i);
+                    break;
                 }
             }
         }
@@ -127,6 +138,7 @@ public class WorkLogActivity extends AppCompatActivity
             for (int i = 0; i < workLogs.size(); i++) {
                 if (workLogs.get(i).getJson().equalsIgnoreCase("log_muckaway.json")) {
                     workLogs.remove(i);
+                    break;
                 }
             }
         }
@@ -135,19 +147,22 @@ public class WorkLogActivity extends AppCompatActivity
             for (int i = 0; i < workLogs.size(); i++) {
                 if (workLogs.get(i).getJson().equalsIgnoreCase(prefix+"service_material.json")) {
                     workLogs.remove(i);
+                    break;
                 }
             }
         }
 
-        if (job.isSubJob()) {
+        if (isSubJob) {
             for (int i = 0; i < workLogs.size(); i++) {
                 if (workLogs.get(i).getJson().equalsIgnoreCase("rfna.json")) {
                     workLogs.remove(i);
+                    break;
                 }
             }
             for (int i = 0; i < workLogs.size(); i++) {
                 if (workLogs.get(i).getJson().equalsIgnoreCase("record_return.json")) {
                     workLogs.remove(i);
+                    break;
                 }
             }
         }
@@ -156,12 +171,24 @@ public class WorkLogActivity extends AppCompatActivity
             for (int i = 0; i < workLogs.size(); i++) {
                 if (workLogs.get(i).getJson().equalsIgnoreCase("request_task.json")) {
                     workLogs.remove(i);
+                    break;
                 }
             }
         }
 
         adapter = new AdapterWorkLog(this, workLogs, this, jobID);
         recyclerView.setAdapter(adapter);
+
+        if (job.getRiskAssessmentTypeId() == 2) {
+            btnRiskAssessment.setText(R.string.go_to_hoist_risk_assessment);
+            tv_riskAssessment_heading.setText(R.string.wraning_hoist_risk_assessment);
+        } else if (job.getRiskAssessmentTypeId() == 3) {
+            btnRiskAssessment.setText(R.string.poling_ra);
+            tv_riskAssessment_heading.setText(R.string.wraning_polling_risk_assessment);
+        }else{
+            btnRiskAssessment.setText(R.string.go_to_risk_assessment);
+            tv_riskAssessment_heading.setText(R.string.wraning_risk_assessment);
+        }
 
     }
 
@@ -170,12 +197,12 @@ public class WorkLogActivity extends AppCompatActivity
         if (TextUtils.isEmpty(book_on_date)) {
             return false;
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+
         Date date;
         Date currentDate;
         try {
             date = sdf.parse(book_on_date);
-            currentDate = sdf.parse(sdf.format(new Date()));
+            currentDate = sdf.parse(today);
         } catch (ParseException e) {
             return false;
         }
@@ -191,43 +218,27 @@ public class WorkLogActivity extends AppCompatActivity
         super.onResume();
 
         for (WorkLog w : workLogs) {
-            w.setStatus(DBHandler.getInstance().getJobModuleStatus(jobID,
-                    w.getTitle()));
+            w.setStatus(dbHandler.getJobModuleStatus(jobID,
+                    w.getTitle() , today));
         }
-
-        String title = "Risk Assessment";
-        if (job.getRiskAssessmentTypeId() == 2) {
-            title = "Hoist Only Risk Assessment";
-            btnRiskAssessment.setText(R.string.go_to_hoist_risk_assessment);
-            tv_riskAssessment_heading.setText(R.string.wraning_hoist_risk_assessment);
-        } else if (job.getRiskAssessmentTypeId() == 3) {
-            title = "Poling Risk Assessment";
-            btnRiskAssessment.setText(R.string.poling_ra);
-            tv_riskAssessment_heading.setText(R.string.wraning_polling_risk_assessment);
-        }else{
-            btnRiskAssessment.setText(R.string.go_to_risk_assessment);
-            tv_riskAssessment_heading.setText(R.string.wraning_risk_assessment);
-        }
-
 
         boolean status =
-                DBHandler.getInstance().getJobModuleStatus(jobID, title);
+                dbHandler.getJobModuleStatus(jobID, riskAssessmentTitle , today);
 //        status = true;
         if (status) {
             recyclerView.setVisibility(View.VISIBLE);
             rlWarning.setVisibility(View.GONE);
             boolean isBookOn = isBookOn();
+            workLogs.get(0).setStatus(false);
             if (isBookOn) {
-                workLogs.get(0).setStatus(false);
-                if(job.isSubJob()){
+                if(isSubJob){
                     workLogs.get(0).setJson("sub_job_book_off.json");
                 }else {
                     workLogs.get(0).setJson("book_off.json");
                 }
                 workLogs.get(0).setTitle("Book Off");
             } else {
-                workLogs.get(0).setStatus(false);
-                if(job.isSubJob()) {
+                if(isSubJob) {
                     workLogs.get(0).setJson("sub_job_book_on.json");
                 }else{
                     workLogs.get(0).setJson("book_on.json");
@@ -244,37 +255,42 @@ public class WorkLogActivity extends AppCompatActivity
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_img_cancel:
-                finish();
-                break;
-            case R.id.btn_risk_assessment:
-                openRiskAssessment();
-                break;
+        if(view.getId() == R.id.btn_img_cancel){
+            finish();
+        }else if(view.getId() == R.id.btn_risk_assessment){
+            openRiskAssessment();
         }
+    }
+
+    private String getRiskAssessmentTitle(){
+        String title = "Risk Assessment";
+        if (job.getRiskAssessmentTypeId() == 2) {
+            title = "Hoist Only Risk Assessment";
+        } else if (job.getRiskAssessmentTypeId() == 3) {
+            title = "Poling Risk Assessment";
+        }
+        return title;
+    }
+
+    private String getRiskAssessmentJson(){
+        String jsonFileName;
+        if (job.getRiskAssessmentTypeId() == 2) {
+            jsonFileName = "hoist_risk_assessment.json";
+        } else if (job.getRiskAssessmentTypeId() == 3) {
+            jsonFileName = "poling_risk_assessment.json";
+        } else {
+            jsonFileName = isSubJob ? "sub_job_risk_assessment.json" : "risk_assessment.json";
+        }
+        return jsonFileName;
     }
 
     public void openRiskAssessment() {
 
-        String jsonFileName = "";
-        String title = "";
-
-        if (job.getRiskAssessmentTypeId() == 2) {
-            jsonFileName = "hoist_risk_assessment.json";
-            title = "Hoist Only Risk Assessment";
-        } else if (job.getRiskAssessmentTypeId() == 3) {
-            jsonFileName = "poling_risk_assessment.json";
-            title = "Poling Risk Assessment";
-        }else{
-            jsonFileName = "risk_assessment.json";
-            if(job.isSubJob()){
-                jsonFileName = "sub_job_risk_assessment.json";
-            }
-            title = "Risk Assessment";
-        }
+        String jsonFileName = getRiskAssessmentJson();
+        String title = getRiskAssessmentTitle();
 
         Submission submission = new Submission(jsonFileName, title, job.getjobId());
-        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
 
         Intent intent = new Intent(this, FormActivity.class);
@@ -321,7 +337,7 @@ public class WorkLogActivity extends AppCompatActivity
             startActivity(intent);
         } else {
             Submission submission = new Submission(jsonName, workLog.getTitle(), jobID);
-            long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+            long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
             submission.setId(submissionID);
             Intent intent = new Intent(this, FormActivity.class);
             intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
@@ -332,7 +348,7 @@ public class WorkLogActivity extends AppCompatActivity
     private void openLogMeasure(WorkLog workLog) {
         if (!CommonUtils.isNetworkAvailable(WorkLogActivity.this)) {
             Submission submission = new Submission(workLog.getJson(), workLog.getTitle(), jobID);
-            long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+            long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
             submission.setId(submissionID);
             Intent intent = new Intent(this, FormActivity.class);
             intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
@@ -367,7 +383,7 @@ public class WorkLogActivity extends AppCompatActivity
                             if (measureItemResponse != null) {
                                 measureItemResponse.toContentValues();
                                 Submission submission = new Submission(workLog.getJson(), workLog.getTitle(), jobID);
-                                long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+                                long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
                                 submission.setId(submissionID);
                                 Intent intent = new Intent(WorkLogActivity.this, FormActivity.class);
                                 intent.putExtra(FormActivity.ARG_SUBMISSION, submission);

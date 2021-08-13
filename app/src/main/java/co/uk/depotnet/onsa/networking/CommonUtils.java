@@ -16,6 +16,7 @@ import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.modals.ItemType;
 import co.uk.depotnet.onsa.modals.User;
+import co.uk.depotnet.onsa.utils.AppPreferences;
 
 public class CommonUtils {
 
@@ -129,6 +130,18 @@ public class CommonUtils {
             }
         }
         return "Monday";
+    }
+
+    public static void clearAppData(DBHandler dbHandler){
+        dbHandler.resetDatabase();
+        AppPreferences.clear();
+    }
+
+    public static void activeFeatures(DBHandler dbHandler){
+        Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
+        Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
+        Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
+        Constants.isIncidentEnabled = dbHandler.isFeatureActive(Constants.FEATURE_INCIDENT);
     }
 
 }

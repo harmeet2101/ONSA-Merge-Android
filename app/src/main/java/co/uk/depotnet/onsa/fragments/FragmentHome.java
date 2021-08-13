@@ -444,6 +444,16 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         startActivity(intent);
     }
 
+    @Override
+    public void openSiteClear(Job job) {
+        Submission submission = new Submission("job_site_clear.json", "Site Clear", job.getjobId());
+        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        submission.setId(submissionID);
+        Intent intent = new Intent(context, FormActivity.class);
+        intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
+        startActivity(intent);
+    }
+
     public void search(String keyword) {
 
         if (keyword == null || keyword.isEmpty()) {
@@ -566,8 +576,6 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         } else {
             adapter.notifyDataSetChanged();
         }
-
-
     }
 
     private Date getDate(String strDate, SimpleDateFormat sdf, boolean isStartDate) {

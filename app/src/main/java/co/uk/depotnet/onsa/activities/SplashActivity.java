@@ -12,8 +12,6 @@ import com.microsoft.appcenter.crashes.Crashes;
 
 import androidx.annotation.NonNull;
 
-import java.net.SocketTimeoutException;
-
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.RefreshDatasetService;
@@ -78,10 +76,7 @@ public class SplashActivity extends BaseActivity {
 
             dbHandler.replaceData(User.DBTable.NAME, user.toContentValues());
             if (!CommonUtils.isNetworkAvailable(SplashActivity.this)) {
-                Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
-                Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
-                Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
-                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
+                CommonUtils.activeFeatures(dbHandler);
                 intent = new Intent(SplashActivity.this, WelcomeActivity.class);
                 startActivity(intent);
                 finish();
@@ -104,7 +99,6 @@ public class SplashActivity extends BaseActivity {
         CallUtils.enqueueWithRetry(APICalls.featureResultCall(user.gettoken()), new Callback<FeatureResult>() {
             @Override
             public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
-                System.out.println("test navin onResponse");
                 if (CommonUtils.onTokenExpired(SplashActivity.this, response.code())) {
                     return;
                 }
@@ -116,42 +110,16 @@ public class SplashActivity extends BaseActivity {
                     }
                 }
 
-                Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
-                Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
-                Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
-                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
+                CommonUtils.activeFeatures(dbHandler);
                 startWelcomeActivity();
             }
 
             @Override
             public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
-                System.out.println("test navin onFail");
-                Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
-                Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
-                Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
-                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
+                CommonUtils.activeFeatures(dbHandler);
                 startWelcomeActivity();
             }
         });
-//        APICalls.featureResultCall(user.gettoken()).enqueue(new Callback<FeatureResult>() {
-//            @Override
-//            public void onResponse(@NonNull Call<FeatureResult> call, @NonNull Response<FeatureResult> response) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(@NonNull Call<FeatureResult> call, @NonNull Throwable t) {
-//                if(t instanceof SocketTimeoutException){
-//                    call.clone().enqueue(this);
-//                    return;
-//                }
-//                Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
-//                Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
-//                Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
-//                Constants.isIncidentEnabled = DBHandler.getInstance().isFeatureActive(Constants.FEATURE_INCIDENT);
-//                startWelcomeActivity();
-//            }
-//        });
     }
 
 

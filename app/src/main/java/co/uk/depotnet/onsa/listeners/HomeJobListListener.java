@@ -18,4 +18,6 @@ public interface HomeJobListListener {
     void openAddNotes(Job job);
     void onLogStores(Job job);
     void openRequestTask(Job job);
+
+    void openSiteClear(Job job);
 }

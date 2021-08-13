@@ -6,6 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import android.text.TextUtils;
 import android.util.Base64;
 import android.view.View;
@@ -20,11 +23,19 @@ import com.bumptech.glide.Glide;
 import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.fragments.FragmentQueue;
 import co.uk.depotnet.onsa.modals.User;
+import co.uk.depotnet.onsa.modals.httprequests.ActiveMfa;
+import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.networking.Constants;
 import co.uk.depotnet.onsa.utils.AppPreferences;
 
 import co.uk.depotnet.onsa.views.ContactBottomSheet;
+import co.uk.depotnet.onsa.views.MaterialAlertDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -32,13 +43,16 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private LinearLayout llCompetencies;
     private User user;
     private ProgressBar progressBar;
+    private DBHandler dbHandler;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        this.dbHandler = DBHandler.getInstance(this);
+        user = dbHandler.getUser();
 
-        user = DBHandler.getInstance().getUser();
+
         llCompetencies = findViewById(R.id.ll_competencies);
         imgQrCode = findViewById(R.id.img_qr_code);
         TextView txtUserName = findViewById(R.id.txt_user_name);
@@ -88,7 +102,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 contactSupport();
                 break;
             case R.id.btn_logout:
-                logout();
+//                logout();
+                callLogout();
                 break;
             case R.id.btn_user_profile:
                 callUserProfile();
@@ -153,14 +168,48 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private void logout(){
         showProgressBar();
-        AppPreferences.clear();
+//        AppPreferences.clear();
+//        dbHandler.resetDatabase();
+
         user.setLoggedIn(false);
-        DBHandler.getInstance().replaceData(User.DBTable.NAME , user.toContentValues());
-        DBHandler.getInstance().resetDatabase();
+        dbHandler.replaceData(User.DBTable.NAME , user.toContentValues());
+//        CommonUtils.clearAppData(dbHandler);
+
         hideProgressBar();
         Intent intent = new Intent(this , LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    private void callLogout(){
+        if(!CommonUtils.isNetworkAvailable(this)){
+            showErrorDialog("Network Error" , "Internet not available. Please check your internet connection.");
+            return;
+        }
+
+        showProgressBar();
+        APICalls.signOut(user.getTokenId() , user.gettoken()).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+
+                hideProgressBar();
+                if(CommonUtils.onTokenExpired(SettingsActivity.this , response.code())){
+                    return;
+                }
+
+                if(response.isSuccessful()){
+                    logout();
+                    return;
+                }
+                showErrorDialog("Logout Error" , "Some error during logout. Please try again!");
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                hideProgressBar();
+                showErrorDialog("Logout Error" , "Some error during logout. Please try again!");
+            }
+        });
     }
 
     private void hideProgressBar() {
@@ -172,5 +221,20 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         progressBar.setVisibility(View.VISIBLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void showErrorDialog(String title, String message) {
+
+        if(getSupportFragmentManager().isStateSaved()){
+            return;
+        }
+        MaterialAlertDialog dialog = new MaterialAlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositive(getString(R.string.ok), (dialog1, i) -> dialog1.dismiss())
+                .build();
+
+        dialog.setCancelable(false);
+        dialog.show(getSupportFragmentManager(), "_ERROR_DIALOG");
     }
 }

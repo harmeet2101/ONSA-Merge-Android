@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "uk.co.depotnet.onsa.store.mapgroup.uat",
+  "variantName": "processStore_uat_mapgroupResources",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "versionCode": 124,
+      "versionName": "3.0.4",
+      "outputFile": "app-store_uat_mapgroup.apk"
+    }
+  ]
+}

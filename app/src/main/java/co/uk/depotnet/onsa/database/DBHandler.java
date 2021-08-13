@@ -258,6 +258,7 @@ public class DBHandler {
     public void resetDatabase() {
         try {
             String[] tables = {
+                    User.DBTable.NAME,
                     Job.DBTable.NAME,
                     JobWorkItem.DBTable.NAME,
                     Note.DBTable.NAME,
@@ -289,7 +290,10 @@ public class DBHandler {
                     PhotoComments.DBTable.NAME,
                     TimeSheet.DBTable.NAME,
                     TimeSheetHour.DBTable.NAME,
-                    TimeTypeActivity.DBTable.NAME
+                    TimeTypeActivity.DBTable.NAME,
+                    Submission.DBTable.NAME,
+                    Answer.DBTable.NAME,
+                    Feature.DBTable.NAME
 
             };
 
@@ -882,6 +886,31 @@ public class DBHandler {
             return false;
         }
 
+
+        JobModuleStatus jobModuleStatus = new JobModuleStatus(cursor);
+        cursor.close();
+        return jobModuleStatus.isStatus();
+    }
+
+
+    public boolean getJobModuleStatus(String jobId, String moduleName, String date) {
+        String selection = JobModuleStatus.DBTable.JobId + " = ? AND "
+                + JobModuleStatus.DBTable.ModuleName + " = ? AND "
+                + JobModuleStatus.DBTable.selectedDate + " = ?";
+        String[] selectionArgs = new String[]{jobId, moduleName , date};
+
+        Cursor cursor = db.query(JobModuleStatus.DBTable.NAME,
+                null, selection, selectionArgs,
+                null, null, JobModuleStatus.DBTable.JobId + " ASC");
+
+        if (cursor == null) {
+            return false;
+        }
+
+        if (!cursor.moveToFirst()) {
+            cursor.close();
+            return false;
+        }
 
         JobModuleStatus jobModuleStatus = new JobModuleStatus(cursor);
         cursor.close();
@@ -1553,7 +1582,7 @@ public class DBHandler {
                 }else if(type == Constants.TYPE_ID_MUCKAWAY){
                     value += "MuckAway, ";
                 }else if(type == Constants.TYPE_ID_SERVICE_MATERAL){
-                    value += "Service Matereal Drop Off, ";
+                    value += "Service Material Drop Off, ";
                 }else if(type == Constants.TYPE_ID_SITE_CLEAR){
                     value += "Site Clear, ";
                 }else if(type == Constants.TYPE_ID_REINSTATEMENT){

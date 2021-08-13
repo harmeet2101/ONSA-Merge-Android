@@ -306,6 +306,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             jobModuleStatus.setJobId(jobID);
             jobModuleStatus.setModuleName(submission.getJsonFileName());
             jobModuleStatus.setSubmissionId(submission.getID());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            jobModuleStatus.setSelectedDate(sdf.format(new Date()));
             DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
                     jobModuleStatus.toContentValues());
             ((Activity) context).finish();
@@ -365,6 +367,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         jobModuleStatus.setJobId(jobID);
         jobModuleStatus.setModuleName(submission.getTitle());
         jobModuleStatus.setSubmissionId(submission.getID());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        jobModuleStatus.setSelectedDate(sdf.format(new Date()));
         DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
                 jobModuleStatus.toContentValues());
     }
@@ -433,6 +437,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                             jobModuleStatus.setStatus(true);
                             jobModuleStatus.setJobId(jobID);
                             jobModuleStatus.setModuleName(formTitle);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                            jobModuleStatus.setSelectedDate(sdf.format(new Date()));
                             DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
                                     jobModuleStatus.toContentValues());
                         }
@@ -484,6 +490,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         jobModuleStatus.setStatus(true);
         jobModuleStatus.setJobId(jobID);
         jobModuleStatus.setModuleName(formTitle);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        jobModuleStatus.setSelectedDate(sdf.format(new Date()));
         DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
                 jobModuleStatus.toContentValues());
 
@@ -682,6 +690,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     status.setJobId(jobID);
                     status.setModuleName("Ready For Next Activity");
                     status.setSubmissionId(submission.getID());
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                    status.setSelectedDate(sdf.format(new Date()));
                     DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
                             status.toContentValues());
 
@@ -691,10 +701,13 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             if (response != null && response.isSuccessful()) {
                 DBHandler.getInstance().removeAnswers(submission);
             }
+
             JobModuleStatus jobModuleStatus = new JobModuleStatus();
             jobModuleStatus.setStatus(true);
             jobModuleStatus.setJobId(jobID);
             jobModuleStatus.setModuleName(formTitle);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            jobModuleStatus.setSelectedDate(sdf.format(new Date()));
             DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
                     jobModuleStatus.toContentValues());
 

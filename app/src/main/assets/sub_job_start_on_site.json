@@ -15,7 +15,7 @@
           "uploadId": "noticeId",
           "key":"noticeId",
           "title": "Select Notice",
-          "optional": true
+          "optional": false
         },
 
         {

@@ -125,4 +125,28 @@ public class JobTasks implements Parcelable {
     public void setJobId(String jobId) {
         this.jobId = jobId;
     }
+
+    public int getCount() {
+        int count = 0;
+        if(serviceMaterialDropTasks != null && !serviceMaterialDropTasks.isEmpty()){
+            count+= serviceMaterialDropTasks.size();
+        }
+
+        if(muckawayTasks != null && !muckawayTasks.isEmpty()){
+            count+= muckawayTasks.size();
+        }
+
+        if(backfillTasks != null && !backfillTasks.isEmpty()){
+            count+= backfillTasks.size();
+        }
+
+        if(reinstatementTasks != null && !reinstatementTasks.isEmpty()){
+            count+= reinstatementTasks.size();
+        }
+
+        if(siteClearanceTasks != null && !siteClearanceTasks.isEmpty()){
+            count+= siteClearanceTasks.size();
+        }
+        return count;
+    }
 }

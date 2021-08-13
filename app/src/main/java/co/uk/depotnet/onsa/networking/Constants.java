@@ -19,6 +19,4 @@ public class Constants {
     public static final int TYPE_ID_REINSTATEMENT = 5;
     public static final int TYPE_ID_SITE_CLEAR = 6;
 
-    //WApr174v
-//sygfj23y
 }
