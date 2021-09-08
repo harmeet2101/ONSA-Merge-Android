@@ -32,13 +32,14 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
     private boolean hasRecordReturns;
     private boolean rfnaNotRequired;
     private boolean isSubJob;
+    private Job job;
 
     public AdapterWorkLog(WorkLogActivity context, ArrayList<WorkLog> items, OnItemClickListener<WorkLog> listener, String jobID) {
         this.context = context;
         this.items = items;
         this.listener = listener;
         this.jobID=jobID;
-        Job job = DBHandler.getInstance().getJob(jobID);
+        job = DBHandler.getInstance().getJob(jobID);
         hasRFNA = job!=null && job.hasRFNA();
         isSubJob = job!= null && job.isSubJob();
         hasRecordReturns = job!=null && job.hasRecordReturns();
@@ -111,6 +112,8 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
             }
         }
 
+
+
         holder.txtTitle.setText(workLog.getTitle());
 
         ArrayList<BaseTask> baseTasks = DBHandler.getInstance().getTaskItems(jobID , workLog.getTaskId() , isSubJob?1 : 0);
@@ -126,7 +129,17 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
             holder.txtCount.setText(String.valueOf(baseTasks.size()));
         }
 
+        if(jsonName.contains("job_site_clear.json") || jsonName.contains("job_site_clear_unscheduled.json")){
+            if(isSiteClearEnable()){
+                holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.white));
+            }else{
+                holder.rlParent.setBackgroundColor(context.getResources().getColor(R.color.btn_gray));
+            }
+        }
+
         holder.view.setOnClickListener(view -> {
+
+
 
             if(holder.getAdapterPosition() != 0 && (!isBookOn || (!jsonName.contains("start_on_site.json") && !isStartOnSite())) ) {
                 return;
@@ -144,7 +157,11 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
                 return;
             }
 
-            if(workLog.isIndicatorVisible() && baseTasks.isEmpty()){
+            if(!(jsonName.equalsIgnoreCase("job_site_clear.json") || jsonName.equalsIgnoreCase("job_site_clear_unscheduled.json")) &&workLog.isIndicatorVisible() && baseTasks.isEmpty()){
+                return;
+            }
+
+            if((jsonName.equalsIgnoreCase("job_site_clear.json") || jsonName.equalsIgnoreCase("job_site_clear_unscheduled.json")) && !isSiteClearEnable()){
                 return;
             }
             listener.onItemClick(workLog, holder.getAdapterPosition());
@@ -176,6 +193,10 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
 
     private boolean isStartOnSite(){
         return isBookOn && DBHandler.getInstance().getJobModuleStatus(jobID , "Start on Site");
+    }
+
+    private boolean isSiteClearEnable(){
+        return isStartOnSite() && !DBHandler.getInstance().isScheduledTasksOtherThenSiteClear(job.getjobId());
     }
 
     private boolean isRFNAEnable(){

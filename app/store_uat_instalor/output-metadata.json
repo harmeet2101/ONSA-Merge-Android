@@ -10,8 +10,8 @@
     {
       "type": "SINGLE",
       "filters": [],
-      "versionCode": 124,
-      "versionName": "3.0.4",
+      "versionCode": 136,
+      "versionName": "3.1.6",
       "outputFile": "app-store_uat_instalor.apk"
     }
   ]

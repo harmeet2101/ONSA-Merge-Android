@@ -15,6 +15,7 @@
     <color name="black">#000000</color>
     <color name="txt_color_dark">#232324</color>
     <color name="txt_color_light_grey">#626262</color>
+    <color name="txt_color_fed_grey">#a2a2a2</color>
 
     <color name="btn_pressed">#8848AD83</color>
     <color name="btn_unpressed">#48AD83</color>

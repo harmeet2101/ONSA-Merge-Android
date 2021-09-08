@@ -34,6 +34,7 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
@@ -65,7 +66,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -86,6 +86,7 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
@@ -117,7 +118,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
 
         </LinearLayout>
@@ -133,15 +133,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
+
                 android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
-                    app:srcCompat="@drawable/ic_riskassessment" />
+                    app:srcCompat="@drawable/ic_rs_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -169,7 +171,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -189,6 +190,7 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
@@ -220,7 +222,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -240,6 +241,7 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
@@ -271,7 +273,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -294,6 +295,7 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
@@ -325,7 +327,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -345,6 +346,7 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
@@ -377,7 +379,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -398,6 +399,7 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
@@ -430,7 +432,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -450,6 +451,7 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
@@ -481,7 +483,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -502,6 +503,7 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
@@ -533,7 +535,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -553,6 +554,7 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
                     android:background="@drawable/img_bg_circle"
                     android:padding="@dimen/_4sdp"
                     app:tint="@color/white"
@@ -584,7 +586,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -623,6 +624,7 @@
                     <ImageView
                         android:layout_width="@dimen/_20sdp"
                         android:layout_height="@dimen/_20sdp"
+                        android:layout_marginStart="@dimen/_2sdp"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:padding="@dimen/_4sdp"
@@ -635,7 +637,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:layout_marginBottom="@dimen/_2sdp"
                 android:background="@color/txt_color_light_grey" />
         </LinearLayout>
 
@@ -649,6 +650,7 @@
             <ImageView
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
+                android:layout_marginStart="@dimen/_2sdp"
                 android:background="@drawable/img_bg_circle"
                 android:padding="@dimen/_4sdp"
                 app:tint="@color/white"

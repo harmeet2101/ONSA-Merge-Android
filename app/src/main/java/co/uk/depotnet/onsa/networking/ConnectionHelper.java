@@ -79,6 +79,10 @@ public class ConnectionHelper {
                 .build();
         gson = new Gson();
         this.dbHandler = DBHandler.getInstance();
+
+        
+
+
     }
 
     private User refreshToken(UserRequest userRequest) {
@@ -603,6 +607,9 @@ public class ConnectionHelper {
         boolean isSubJobPresite = false;
 
         if(!TextUtils.isEmpty(jsonFileName)){
+            if(jsonFileName.equalsIgnoreCase("job_site_clear.json") || jsonFileName.equalsIgnoreCase("job_site_clear_unscheduled.json")) {
+                requestMap = updateJobSiteclear(requestMap);
+            }else
             if(jsonFileName.equalsIgnoreCase("sub_job_pre_site_survey.json")) {
                 requestMap = updateSubJobPresite(requestMap);
                 isSubJobPresite = true;
@@ -1491,6 +1498,38 @@ public class ConnectionHelper {
         return requestMap;
     }
 
+    private Map<String , Object> updateJobSiteclear(Map<String , Object> requestMap){
+        ArrayList<String> completedSiteActivityTaskIds = new ArrayList<>();
+        if(requestMap.containsKey("amendment")){
+            ArrayList<HashMap<String , Object>> amendment = (ArrayList<HashMap<String, Object>>) requestMap.get("amendment");
+            if(amendment!= null){
+                for(int i = 0 ; i < amendment.size() ; i++){
+                    HashMap<String , Object> obj = amendment.get(i);
+                    if(obj!= null){
+                        if(!TextUtils.isEmpty((String) obj.get("siteActivityTaskId"))) {
+                            completedSiteActivityTaskIds.add((String) obj.get("siteActivityTaskId"));
+                        }
+                        obj.put("siteActivityType" , 6);
+                    }
+                }
+            }
+        }else{
+            ArrayList<HashMap<String , Object>> amendment = new ArrayList<>();
+            HashMap<String , Object> obj = new HashMap<>();
+            obj.put("siteActivityType" , 6);
+            amendment.add(obj);
+            requestMap.put("amendment" , amendment);
+        }
+
+        requestMap.put("completedSiteActivityTaskIds" , completedSiteActivityTaskIds);
+        if(requestMap.containsKey("amendment")) {
+            requestMap.put("amendments", requestMap.remove("amendment"));
+        }
+
+
+
+        return requestMap;
+    }
     private Map<String , Object> updateSubJobPresite(Map<String , Object> requestMap){
 
         if(!requestMap.containsKey("locationDetailsCorrect")){

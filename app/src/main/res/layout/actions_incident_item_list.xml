@@ -255,7 +255,7 @@
                 android:id="@+id/divactions1"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_1sdp"
-                android:layout_below="@+id/tv_Cannot_Rectify"
+                android:layout_below="@id/tv_cannot_rectify"
                 android:layout_margin="@dimen/_8sdp"
                 android:background="@color/txt_color_light_grey"
                 android:visibility="gone" />

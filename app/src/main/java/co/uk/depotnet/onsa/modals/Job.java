@@ -119,6 +119,8 @@ public class Job implements Parcelable, DropDownItem {
     }
 
 
+
+
     public boolean hasDCR(){
         return dcrReasons != null && !dcrReasons.isEmpty();
     }

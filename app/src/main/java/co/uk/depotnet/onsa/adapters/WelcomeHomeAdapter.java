@@ -72,9 +72,10 @@ public class WelcomeHomeAdapter extends RecyclerView.Adapter<WelcomeHomeAdapter.
     public void onBindViewHolder(@NonNull WelcomeHomeAdapter.HomeHolder holder, int position) {
         WelcomeHomeModal welcomeHomeModal = items.get(position);
         holder.mText.setText(welcomeHomeModal.getWH_title());
-        Glide.with(context)
-                .load(welcomeHomeModal.getWH_icon())
-                .into(holder.mImage);
+//        Glide.with(context)
+//                .load(welcomeHomeModal.getWH_icon())
+//                .into(holder.mImage);
+        holder.mImage.setImageResource(welcomeHomeModal.getWH_icon());
         holder.mCardview.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), welcomeHomeModal.getWH_color()));
         holder.view.setOnClickListener(v -> listener.onItemClick(welcomeHomeModal.getWH_id()));
     }

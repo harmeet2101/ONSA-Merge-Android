@@ -84,6 +84,7 @@ import co.uk.depotnet.onsa.formholders.RepeatItemHolder;
 import co.uk.depotnet.onsa.formholders.RiskElementHolder;
 import co.uk.depotnet.onsa.formholders.ShortTextHolder;
 import co.uk.depotnet.onsa.formholders.SignatureHolder;
+import co.uk.depotnet.onsa.formholders.SiteClearHolder;
 import co.uk.depotnet.onsa.formholders.StockItemHolder;
 import co.uk.depotnet.onsa.formholders.StopWatchHolder;
 import co.uk.depotnet.onsa.formholders.StoreHolder;
@@ -266,6 +267,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         boolean isLogMeasureAdded = false;
         boolean isDigMeasureAdded = false;
         boolean isLogHoursAdded = false;
+        boolean isSiteClearAdded = false;
         int repeatCount;
         ArrayList<FormItem> listItems = new ArrayList<>();
         for (int c = 0; c < inflatedItems.size(); c++) {
@@ -391,6 +393,25 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         formItems.addAll(c, toBeAdded);
                     }
                 }
+            }else if (!isSiteClearAdded && item.getFormType() == FormItem.TYPE_ADD_SITE_CLEAR) {
+                isSiteClearAdded = true;
+                ArrayList<String> fields = item.getFields();
+                if (fields != null && !fields.isEmpty()) {
+                    ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submissionID, fields.get(0), item.getRepeatId());
+
+                    ArrayList<FormItem> toBeAdded = new ArrayList<>();
+                    if (answers != null && !answers.isEmpty()) {
+                        for (int i = 0; i < answers.size(); i++) {
+                            FormItem qItem = new FormItem("list_site_clear_item", "", "", item.getRepeatId(), true);
+                            qItem.setFields(fields);
+                            qItem.setRepeatCount(answers.get(i).getRepeatCount());
+                            qItem.setDialogItems(item.getDialogItems());
+                            toBeAdded.add(qItem);
+                        }
+
+                        formItems.addAll(c, toBeAdded);
+                    }
+                }
             }
         }
         notifyDataSetChanged();
@@ -500,6 +521,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_ADD_DIG_MEASURE:
             case FormItem.TYPE_ADD_LOG_HOURS:
             case FormItem.TYPE_OPEN_LOG_HOURS:
+            case FormItem.TYPE_ADD_SITE_CLEAR:
                 return new ForkCardHolder(LayoutInflater.from(context).inflate(R.layout.item_fork_card, viewGroup, false));
             case FormItem.TYPE_CALENDER:
             case FormItem.TYPE_ITEM_WEEK_COMMENCING:
@@ -536,6 +558,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_TASK_LOG_SERVICE_ITEM:
             case FormItem.TYPE_TASK_SITE_CLEAR_ITEM:
                 return new LogServiceHolder(LayoutInflater.from(context).inflate(R.layout.item_service_material, viewGroup, false));
+            case FormItem.TYPE_LIST_SITE_CLEAR_ITEM:
+                return new SiteClearHolder(LayoutInflater.from(context).inflate(R.layout.item_list_site_clear, viewGroup, false));
             case FormItem.TYPE_SIGN_BRIEFING:
                 return new BriefingSignHolder(LayoutInflater.from(context).inflate(R.layout.item_briefing_signs, viewGroup, false));
             case FormItem.TYPE_TV_BRIEFING_TEXT:
@@ -629,6 +653,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             case FormItem.TYPE_ADD_LOG_MEASURE:
             case FormItem.TYPE_ADD_DIG_MEASURE:
             case FormItem.TYPE_ADD_LOG_HOURS:
+            case FormItem.TYPE_ADD_SITE_CLEAR:
                 bindForkCard((ForkCardHolder) holder, position);
                 break;
             case FormItem.TYPE_OPEN_LOG_HOURS:
@@ -692,8 +717,13 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 bindMuckAwayHolder((LogMuckAwayHolder) holder, position);
                 break;
             case FormItem.TYPE_TASK_LOG_SERVICE_ITEM:
-            case FormItem.TYPE_TASK_SITE_CLEAR_ITEM:
                 bindServiceMaterialHolder((LogServiceHolder) holder, position);
+                break;
+            case FormItem.TYPE_TASK_SITE_CLEAR_ITEM:
+                bindSiteClearScheduledHolder((LogServiceHolder) holder, position);
+                break;
+            case FormItem.TYPE_LIST_SITE_CLEAR_ITEM:
+                bindSiteClearItemHolder((SiteClearHolder) holder, position);
                 break;
             case FormItem.TYPE_SIGN_BRIEFING:
                 bindBRIEFINGSignHolder((BriefingSignHolder) holder, position);
@@ -1151,6 +1181,112 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 saveTaskAnswers();
             });
         }
+
+    }
+
+    private void bindSiteClearScheduledHolder(LogServiceHolder holder, int position) {
+        holder.llBtnCheck.setVisibility(View.GONE);
+        final FormItem formItem = formItems.get(position);
+        final BaseTask task = formItem.getTask();
+        ArrayList<FormItem> fiLists = formItem.getDialogItems();
+        if (fiLists == null || fiLists.isEmpty()) {
+            return;
+        }
+        for (FormItem fi : fiLists) {
+            String uploadId = fi.getUploadId();
+
+            Answer answer = dbHandler.getAnswer(submissionID,
+                    uploadId, fi.getRepeatId(),
+                    formItem.getRepeatCount());
+            if (answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
+                if (uploadId.equalsIgnoreCase("cones")) {
+                    task.setCones(parseFloat(answer.getAnswer()));
+                } else if (uploadId.equalsIgnoreCase("barriers")) {
+                    task.setBarriers(parseFloat(answer.getAnswer()));
+                } else if (uploadId.equalsIgnoreCase("chpt8")) {
+                    task.setChpt8(parseFloat(answer.getAnswer()));
+                } else if (uploadId.equalsIgnoreCase("fwBoards")) {
+                    task.setFwBoards(parseFloat(answer.getAnswer()));
+                } else if (uploadId.equalsIgnoreCase("bags")) {
+                    task.setBags(parseFloat(answer.getAnswer()));
+                } else if (uploadId.equalsIgnoreCase("sand")) {
+                    task.setSand(parseFloat(answer.getAnswer()));
+                } else if (uploadId.equalsIgnoreCase("stone")) {
+                    task.setStone(parseFloat(answer.getAnswer()));
+                }
+            }
+        }
+
+        holder.txtCones.setText("Cones: " + task.getCones());
+        holder.txtBarriers.setText("Barriers: " + task.getBarriers());
+        holder.txtChpt8.setText("Chpt8: " + task.getChpt8());
+        holder.txtFwBoards.setText("FwBoards: " + task.getFwBoards());
+        holder.txtBags.setText("Bags: " + task.getBags());
+        holder.txtSand.setText("Sand: " + task.getSand());
+        holder.txtStone.setText("Stone: " + task.getStone());
+
+
+        holder.txtComment.setText(task.getComments());
+
+        holder.llBtnEdit.setOnClickListener(view -> listener.openTaskAmendment(formItem, submissionID, formItem.getRepeatCount()));
+
+//        if (task.isSelectable()) {
+//            holder.imgBtnCheck.setSelected(task.isSelected());
+//            holder.llBtnCheck.setVisibility(View.VISIBLE);
+//            holder.imgBtnCheck.setOnClickListener(view -> {
+//                view.setSelected(!view.isSelected());
+//                task.setSelected(view.isSelected());
+//                saveTaskAnswers();
+//            });
+//        }
+
+    }
+
+    private void bindSiteClearItemHolder(SiteClearHolder holder, int position) {
+
+        final FormItem formItem = formItems.get(position);
+
+        ArrayList<String> fields = formItem.getFields();
+        if (fields == null || fields.isEmpty()) {
+            return;
+        }
+        for (String uploadId : fields) {
+
+
+            Answer answer = dbHandler.getAnswer(submissionID,
+                    uploadId, formItem.getRepeatId(),
+                    formItem.getRepeatCount());
+            if (answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
+                if (uploadId.equalsIgnoreCase("cones")) {
+                    holder.txtCones.setText("Cones: " + answer.getAnswer());
+                } else if (uploadId.equalsIgnoreCase("barriers")) {
+                    holder.txtBarriers.setText("Barriers: " + answer.getAnswer());
+                } else if (uploadId.equalsIgnoreCase("chpt8")) {
+                    holder.txtChpt8.setText("Chpt8: " + answer.getAnswer());
+                } else if (uploadId.equalsIgnoreCase("fwBoards")) {
+                    holder.txtFwBoards.setText("FwBoards: " + answer.getAnswer());
+                } else if (uploadId.equalsIgnoreCase("bags")) {
+                    holder.txtBags.setText("Bags: " + answer.getAnswer());
+                } else if (uploadId.equalsIgnoreCase("sand")) {
+                    holder.txtSand.setText("Sand: " + answer.getAnswer());
+                } else if (uploadId.equalsIgnoreCase("stone")) {
+                    holder.txtStone.setText("Stone: " + answer.getAnswer());
+                }
+            }
+        }
+
+        holder.llBtnEdit.setOnClickListener(view -> listener.openTaskAmendment(formItem, submissionID, formItem.getRepeatCount()));
+        holder.llBtnDelete.setOnClickListener(view -> {
+
+            for (String field : fields) {
+                Answer rateId1 = dbHandler.getAnswer(submissionID, field, formItem.getRepeatId(), formItem.getRepeatCount());
+                if (rateId1 != null) {
+                    dbHandler.removeAnswer(rateId1);
+                }
+            }
+
+            reInflateItems(true);
+        });
 
     }
 
@@ -3865,7 +4001,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void initTasks(List<BaseTask> tasks, final int position, final String type, final int formType) {
         selectableTasks.clear();
-        if (tasks == null || tasks.isEmpty()) {
+        if (!submission.getJsonFileName().equalsIgnoreCase("job_site_clear.json") && (tasks == null || tasks.isEmpty())) {
             listener.showErrorDialog("Error", "Site Activity task not found.", true);
             return;
         }
@@ -3947,7 +4083,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void initSubTasks(List<BaseTask> tasks, final int position, final String type, final int formType) {
         selectableTasks.clear();
-        if (tasks == null || tasks.isEmpty()) {
+        if (!submission.getJsonFileName().equalsIgnoreCase("job_site_clear.json") && (tasks == null || tasks.isEmpty())) {
             listener.showErrorDialog("Error", "Site Activity task not found.", true);
             return;
         }
@@ -4237,6 +4373,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             missingCount++;
                         }
                     }
+                }else if (item.getFormType() == FormItem.TYPE_ADD_SITE_CLEAR) {
+
                 } else if (item.getFormType() == FormItem.TYPE_TOTAL_WORKED_HOURS) {
                     Answer answer = dbHandler.getAnswer(submissionID, item.getUploadId(), item.getRepeatId(), repeatCount);
                     if (answer == null || TextUtils.isEmpty(answer.getAnswer()) || answer.getAnswer().equalsIgnoreCase("0h0m")) {

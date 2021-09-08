@@ -446,7 +446,11 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
     @Override
     public void openSiteClear(Job job) {
-        Submission submission = new Submission("job_site_clear.json", "Site Clear", job.getjobId());
+        String json = "job_site_clear.json";
+        if(job.getSiteTasksCount() == 0){
+            json = "job_site_clear_unscheduled.json";
+        }
+        Submission submission = new Submission(json, "Site Clear", job.getjobId());
         long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);

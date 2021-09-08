@@ -39,8 +39,10 @@ public class LogServiceHolder extends RecyclerView.ViewHolder {
         this.txtStone = itemView.findViewById(R.id.txt_stone);
 
         this.txtComment = itemView.findViewById(R.id.txt_comments);
+
         this.imgBtnCheck = itemView.findViewById(R.id.img_btn_check);
         this.llBtnEdit = itemView.findViewById(R.id.ll_btn_edit);
         this.llBtnCheck = itemView.findViewById(R.id.ll_btn_check);
     }
+
 }

@@ -1594,6 +1594,38 @@ public class DBHandler {
         return value;
     }
 
+    public boolean isScheduledTasksOtherThenSiteClear(String jobID){
+
+        String whereClause = null;
+        String[] whereArgs = null;
+        String[] columns = new String[]{BaseTask.DBTable.siteActivityTypeId};
+
+        whereClause = BaseTask.DBTable.jobId + " = ?";
+        whereArgs = new String[]{jobID};
+        boolean isSiteClearAvail = false;
+
+        Cursor cursor = db.query(true, BaseTask.DBTable.NAME , columns , whereClause , whereArgs , null,null , BaseTask.DBTable.siteActivityTypeId+" ASC", "100");
+        if (cursor.moveToFirst()) {
+            do {
+                int type = cursor.getInt(cursor.getColumnIndex(BaseTask.DBTable.siteActivityTypeId));
+                if(type == Constants.TYPE_ID_BACKFILL){
+                    return true;
+                }else if(type == Constants.TYPE_ID_MUCKAWAY){
+                    return true;
+                }else if(type == Constants.TYPE_ID_SERVICE_MATERAL){
+                    return true;
+                }else if(type == Constants.TYPE_ID_REINSTATEMENT){
+                    return true;
+                }else if(type == Constants.TYPE_ID_SITE_CLEAR){
+                    isSiteClearAvail = true;
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return false;
+    }
+
     public void deleteBaseTasks(String jobID, int taskId , int isSubJob) {
         String whereClause = null;
         String[] whereArgs = null;

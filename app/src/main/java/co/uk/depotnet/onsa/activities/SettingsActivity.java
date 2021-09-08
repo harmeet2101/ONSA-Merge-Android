@@ -102,8 +102,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 contactSupport();
                 break;
             case R.id.btn_logout:
-//                logout();
-                callLogout();
+                logout();
+//                callLogout();
                 break;
             case R.id.btn_user_profile:
                 callUserProfile();

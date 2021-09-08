@@ -86,6 +86,8 @@ public class FormItem implements Parcelable {
     public static final int TYPE_ET_TIME_SHEET_HOURS = 76;
     public static final int TYPE_OPEN_LOG_HOURS = 77;
     public static final int TYPE_ITEM_DAY = 78;
+    public static final int TYPE_ADD_SITE_CLEAR = 79;
+    public static final int TYPE_LIST_SITE_CLEAR_ITEM = 80;
 
 
     private String type;
@@ -607,7 +609,7 @@ public class FormItem implements Parcelable {
         } else if (type.equalsIgnoreCase("task_list_site_clear")) {
             return TYPE_TASK_LOG_SERVICE;
         } else if (type.equalsIgnoreCase("task_list_site_clear_item")) {
-            return TYPE_TASK_LOG_SERVICE_ITEM;
+            return TYPE_TASK_SITE_CLEAR_ITEM;
         } else if (type.equalsIgnoreCase("yes_no_tooltip")) {
             return TYPE_YES_NO_tooltip;
         } else if (type.equalsIgnoreCase("yes_no_na_tooltip")) {
@@ -644,6 +646,10 @@ public class FormItem implements Parcelable {
             return TYPE_OPEN_LOG_HOURS;
         }else if (type.equalsIgnoreCase("day_view")) {
             return TYPE_ITEM_DAY;
+        }else if (type.equalsIgnoreCase("add_site_clear")) {
+            return TYPE_ADD_SITE_CLEAR;
+        }else if (type.equalsIgnoreCase("list_site_clear_item")) {
+            return TYPE_LIST_SITE_CLEAR_ITEM;
         }
 //        else if (type.equalsIgnoreCase("day_log_hours_item")) {
 //            return TYPE_ITEM_DAY_LOG_HOURS;

@@ -1,0 +1,103 @@
+{
+  "title": "Site Clear",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Site Clear",
+      "index": 0,
+      "url": "app/jobs/{jobId}/log-site-clear",
+      "photoUrl": "app/jobs/{jobId}/photos",
+      "upload": true,
+      "items": [
+        {
+          "type": "yes_no",
+          "uploadId": "isSiteClear",
+          "title": "Is Site Clear",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "reinstatementTypeId",
+          "key": "reinstatementTypes",
+          "title": "Reinstatement Type",
+          "optional": false
+        },
+        {
+          "type": "add_site_clear",
+          "uploadId": "add_site_clear",
+          "repeatId": "amendment",
+          "title": "Add Site Clear",
+          "optional": true,
+          "fields": [
+            "cones","barriers","chpt8","fwBoards" , "bags" , "sand" ,
+            "stone"
+          ],
+          "dialogItems": [
+            {
+              "type": "number",
+              "uploadId": "cones",
+              "repeatId": "amendment",
+              "title": "Cones",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "barriers",
+              "repeatId": "amendment",
+              "title": "Barriers",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "chpt8",
+              "repeatId": "amendment",
+              "title": "Chpt8",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "fwBoards",
+              "repeatId": "amendment",
+              "title": "FwBoards",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "bags",
+              "repeatId": "amendment",
+              "title": "Bags",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "sand",
+              "repeatId": "amendment",
+              "title": "Sand",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "stone",
+              "repeatId": "amendment",
+              "title": "Stone",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comments",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Site Clear",
+          "photoSize": 1,
+          "photoRequired": 20,
+          "photoId": "87"
+        }
+      ]
+    }
+  ]
+}

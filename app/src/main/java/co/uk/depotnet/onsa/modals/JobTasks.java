@@ -149,4 +149,32 @@ public class JobTasks implements Parcelable {
         }
         return count;
     }
+
+    public int getCountOtherThenSiteClearence() {
+        int count = 0;
+        if(serviceMaterialDropTasks != null && !serviceMaterialDropTasks.isEmpty()){
+            count+= serviceMaterialDropTasks.size();
+        }
+
+        if(muckawayTasks != null && !muckawayTasks.isEmpty()){
+            count+= muckawayTasks.size();
+        }
+
+        if(backfillTasks != null && !backfillTasks.isEmpty()){
+            count+= backfillTasks.size();
+        }
+
+        if(reinstatementTasks != null && !reinstatementTasks.isEmpty()){
+            count+= reinstatementTasks.size();
+        }
+
+        return count;
+    }
+
+    public int getSiteClearanceTasksCount(){
+        if(siteClearanceTasks == null ){
+            return 0;
+        }
+        return siteClearanceTasks.size();
+    }
 }

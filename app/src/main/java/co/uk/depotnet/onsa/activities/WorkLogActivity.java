@@ -134,6 +134,16 @@ public class WorkLogActivity extends AppCompatActivity
             }
         }
 
+
+            for (int i = 0; i < workLogs.size(); i++) {
+                if (workLogs.get(i).getJson().equalsIgnoreCase("job_site_clear.json")) {
+                    if(job.getSiteTasksCount() == 0){
+                        workLogs.get(i).setJson("job_site_clear_unscheduled.json");
+                    }
+                }
+            }
+
+
         if (!user.isMuckaway()) {
             for (int i = 0; i < workLogs.size(); i++) {
                 if (workLogs.get(i).getJson().equalsIgnoreCase("log_muckaway.json")) {

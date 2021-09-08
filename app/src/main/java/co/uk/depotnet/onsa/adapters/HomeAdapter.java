@@ -132,11 +132,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             holder.llBtnQualityCheck.setOnClickListener(view -> listener.onQualityCheck(holder.job));
         }
 
-        if(holder.job.getSiteTasksCount() > 0){
-            holder.llBtnSiteClear.setVisibility(View.GONE);
-//            holder.llBtnSiteClear.setOnClickListener(view -> listener.openSiteClear(holder.job));
+        if(DBHandler.getInstance().isScheduledTasksOtherThenSiteClear(holder.job.getjobId())){
+//            holder.llBtnSiteClear.setVisibility(View.GONE);
+            holder.llBtnSiteClear.setBackgroundResource(R.color.txt_color_fed_grey);
+            holder.llBtnSiteClear.setOnClickListener(null);
         }else{
-            holder.llBtnSiteClear.setVisibility(View.GONE);
+//            holder.llBtnSiteClear.setVisibility(View.VISIBLE);
+            holder.llBtnSiteClear.setBackgroundResource(R.color.bg_white);
+            holder.llBtnSiteClear.setOnClickListener(view -> listener.openSiteClear(holder.job));
         }
 
         holder.llBtnJobDeatils.setOnClickListener(view -> listener.openJobDetail(holder.job));

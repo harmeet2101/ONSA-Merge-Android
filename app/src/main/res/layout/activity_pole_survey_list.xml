@@ -52,7 +52,7 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/btn_submit"
+        android:layout_above="@id/btn_add_new_survey"
         android:layout_below="@id/txt_unsubmitted"
         android:layout_marginLeft="@dimen/_12sdp"
         android:layout_marginTop="@dimen/_12sdp"

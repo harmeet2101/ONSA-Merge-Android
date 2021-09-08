@@ -5,7 +5,7 @@
     {
       "title": "Site Clear",
       "index": 0,
-      "url": "app/jobs/{jobId}/site-clear",
+      "url": "app/jobs/{jobId}/log-site-clear",
       "photoUrl": "app/jobs/{jobId}/photos",
       "upload": true,
       "items": [
@@ -30,7 +30,7 @@
         },
         {
           "type": "et_long_text",
-          "uploadId": "comment",
+          "uploadId": "comments",
           "title": "Comments",
           "optional": true
         },
