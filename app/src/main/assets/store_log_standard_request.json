@@ -17,10 +17,19 @@
           "optional": false,
           "enables": [
             {
+              "type": "dropdown",
+              "uploadId": "estimateNumber",
+              "key": "Job",
+              "isMultiSelection": false,
+              "isConcatDisplayText": false,
+              "title": "Estimate",
+              "optional": false
+            },
+            {
               "type": "add_store_item",
               "uploadId": "",
               "repeatId": "Items",
-              "fields": ["StaStockItemId" , "StaId" , "Quantity"],
+              "fields": [ "StaStockItemId" , "StaId" , "Quantity"],
               "listItemType": "stock_item",
               "isStoackLevelCheck": false,
               "isMultiSelection": true,

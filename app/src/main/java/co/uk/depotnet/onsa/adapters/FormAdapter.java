@@ -4001,17 +4001,18 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void initTasks(List<BaseTask> tasks, final int position, final String type, final int formType) {
         selectableTasks.clear();
-        if (!submission.getJsonFileName().equalsIgnoreCase("job_site_clear.json") && (tasks == null || tasks.isEmpty())) {
+        if (!submission.getJsonFileName().equalsIgnoreCase("sub_job_job_site_clear.json") && (tasks == null || tasks.isEmpty())) {
             listener.showErrorDialog("Error", "Site Activity task not found.", true);
             return;
         }
 
         ArrayList<FormItem> list = new ArrayList<>();
         ArrayList<Answer> answers = dbHandler.getMultiAnswers(submissionID, "completedSiteActivityTaskIds", repeatCount);
+
+
         for (int i = 0; i < tasks.size(); i++) {
             BaseTask task = tasks.get(i);
             selectableTasks.add(task);
-
             FormItem formItem = new FormItem(type, task, true);
             formItem.setRepeatCount(i);
             list.add(formItem);

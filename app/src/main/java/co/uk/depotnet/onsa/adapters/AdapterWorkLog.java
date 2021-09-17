@@ -157,11 +157,17 @@ public class AdapterWorkLog extends RecyclerView.Adapter<AdapterWorkLog.ViewHold
                 return;
             }
 
-            if(!(jsonName.equalsIgnoreCase("job_site_clear.json") || jsonName.equalsIgnoreCase("job_site_clear_unscheduled.json")) &&workLog.isIndicatorVisible() && baseTasks.isEmpty()){
+            if(!(jsonName.equalsIgnoreCase("job_site_clear.json") ||
+                    jsonName.equalsIgnoreCase("job_site_clear_unscheduled.json")
+                    || jsonName.equalsIgnoreCase("sub_job_job_site_clear.json")
+                    || jsonName.equalsIgnoreCase("sub_job_job_site_clear_unscheduled.json")) && workLog.isIndicatorVisible() && baseTasks.isEmpty()){
                 return;
             }
 
-            if((jsonName.equalsIgnoreCase("job_site_clear.json") || jsonName.equalsIgnoreCase("job_site_clear_unscheduled.json")) && !isSiteClearEnable()){
+            if((jsonName.equalsIgnoreCase("job_site_clear.json") ||
+                    jsonName.equalsIgnoreCase("job_site_clear_unscheduled.json")
+                    || jsonName.equalsIgnoreCase("sub_job_job_site_clear.json")
+                    || jsonName.equalsIgnoreCase("sub_job_job_site_clear_unscheduled.json")) && !isSiteClearEnable()){
                 return;
             }
             listener.onItemClick(workLog, holder.getAdapterPosition());

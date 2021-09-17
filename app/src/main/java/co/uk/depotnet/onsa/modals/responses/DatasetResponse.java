@@ -22,6 +22,7 @@ public class DatasetResponse implements Parcelable {
     private ArrayList<ItemType> roadTypes;
     private ArrayList<ItemType> engCompOutcomes;
     private ArrayList<ItemType> reinstatementTypes;
+    private ArrayList<ItemType> subJobReinstatementTypes;
     private ArrayList<ItemType> speedLimits;
     private ArrayList<ItemType> abandonReasons;
     private ArrayList<ItemType> surfaceTypes;
@@ -54,6 +55,7 @@ public class DatasetResponse implements Parcelable {
         roadTypes = in.createTypedArrayList(ItemType.CREATOR);
         engCompOutcomes = in.createTypedArrayList(ItemType.CREATOR);
         reinstatementTypes = in.createTypedArrayList(ItemType.CREATOR);
+        subJobReinstatementTypes = in.createTypedArrayList(ItemType.CREATOR);
         speedLimits = in.createTypedArrayList(ItemType.CREATOR);
         abandonReasons = in.createTypedArrayList(ItemType.CREATOR);
         surfaceTypes = in.createTypedArrayList(ItemType.CREATOR);
@@ -87,6 +89,7 @@ public class DatasetResponse implements Parcelable {
         dest.writeTypedList(roadTypes);
         dest.writeTypedList(engCompOutcomes);
         dest.writeTypedList(reinstatementTypes);
+        dest.writeTypedList(subJobReinstatementTypes);
         dest.writeTypedList(speedLimits);
         dest.writeTypedList(abandonReasons);
         dest.writeTypedList(surfaceTypes);
@@ -165,6 +168,10 @@ public class DatasetResponse implements Parcelable {
 
         if (this.reinstatementTypes != null && !this.reinstatementTypes.isEmpty()) {
             dbHandler.replaceItemTypes(reinstatementTypes, DBTable.reinstatementTypes);
+        }
+
+        if (this.subJobReinstatementTypes != null && !this.subJobReinstatementTypes.isEmpty()) {
+            dbHandler.replaceItemTypes(subJobReinstatementTypes, DBTable.subJobReinstatementTypes);
         }
 
 
@@ -276,6 +283,7 @@ public class DatasetResponse implements Parcelable {
         public static final String roadTypes = "roadTypes";
         public static final String engCompOutcomes = "engCompOutcomes";
         public static final String reinstatementTypes = "reinstatementTypes";
+        public static final String subJobReinstatementTypes = "subJobReinstatementTypes";
         public static final String speedLimits = "speedLimits";
         public static final String abandonReasons = "abandonReasons";
         public static final String surfaceTypes = "surfaceTypes";

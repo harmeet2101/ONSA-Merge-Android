@@ -9,6 +9,15 @@
       "upload": true,
       "items": [
         {
+          "type": "dropdown",
+          "uploadId": "estimateNumber",
+          "key": "Job",
+          "isMultiSelection": false,
+          "isConcatDisplayText": false,
+          "title": "Estimate",
+          "optional": false
+        },
+        {
           "type": "et_long_text",
           "uploadId": "RequestComments",
           "title": "Request Comment:",

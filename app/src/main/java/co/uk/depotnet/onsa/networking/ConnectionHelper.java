@@ -609,8 +609,9 @@ public class ConnectionHelper {
         if(!TextUtils.isEmpty(jsonFileName)){
             if(jsonFileName.equalsIgnoreCase("job_site_clear.json") || jsonFileName.equalsIgnoreCase("job_site_clear_unscheduled.json")) {
                 requestMap = updateJobSiteclear(requestMap);
-            }else
-            if(jsonFileName.equalsIgnoreCase("sub_job_pre_site_survey.json")) {
+            }else if(jsonFileName.equalsIgnoreCase("sub_job_job_site_clear.json") || jsonFileName.equalsIgnoreCase("sub_job_job_site_clear_unscheduled.json")) {
+                requestMap = updateSubJobSiteclear(requestMap);
+            }else if(jsonFileName.equalsIgnoreCase("sub_job_pre_site_survey.json")) {
                 requestMap = updateSubJobPresite(requestMap);
                 isSubJobPresite = true;
             }if(jsonFileName.equalsIgnoreCase("good_2_go.json")) {
@@ -1517,6 +1518,13 @@ public class ConnectionHelper {
             ArrayList<HashMap<String , Object>> amendment = new ArrayList<>();
             HashMap<String , Object> obj = new HashMap<>();
             obj.put("siteActivityType" , 6);
+            obj.put("cones" , 0);
+            obj.put("barriers" , 0);
+            obj.put("chpt8" , 0);
+            obj.put("fwBoards" , 0);
+            obj.put("bags" , 0);
+            obj.put("sand" , 0);
+            obj.put("stone" , 0);
             amendment.add(obj);
             requestMap.put("amendment" , amendment);
         }
@@ -1530,6 +1538,61 @@ public class ConnectionHelper {
 
         return requestMap;
     }
+
+    private Map<String , Object> updateSubJobSiteclear(Map<String , Object> requestMap){
+        String gangId = (String) requestMap.get("gangId");
+        requestMap.remove("");
+        if(requestMap.containsKey("tasks")){
+            ArrayList<HashMap<String , Object>> amendment = (ArrayList<HashMap<String, Object>>) requestMap.get("tasks");
+            if(amendment!= null){
+                for(int i = 0 ; i < amendment.size() ; i++){
+                    HashMap<String , Object> obj = amendment.get(i);
+                    if(obj!= null){
+                        obj.put("comments" , requestMap.get("comments"));
+                        obj.put("isSiteClear" , requestMap.get("isSiteClear"));
+                        obj.put("siteActivityReinstatementTypeId" , requestMap.get("siteActivityReinstatementTypeId"));
+                        obj.put("siteActivityTypeId" , 6);
+                        obj.put("submittedbygangId" , gangId);
+                    }
+                }
+            }
+        }else if(requestMap.containsKey("amendment")){
+            ArrayList<HashMap<String , Object>> amendment = (ArrayList<HashMap<String, Object>>) requestMap.get("amendment");
+            if(amendment!= null){
+                for(int i = 0 ; i < amendment.size() ; i++){
+                    HashMap<String , Object> obj = amendment.get(i);
+                    if(obj!= null){
+                        obj.put("comments" , requestMap.get("comments"));
+                        obj.put("isSiteClear" , requestMap.get("isSiteClear"));
+                        obj.put("siteActivityReinstatementTypeId" , requestMap.get("siteActivityReinstatementTypeId"));
+                        obj.put("siteActivityTypeId" , 6);
+                        obj.put("submittedbygangId" , gangId);
+                    }
+                }
+            }
+            requestMap.put("tasks", requestMap.remove("amendment"));
+        }else {
+            ArrayList<HashMap<String , Object>> amendment = new ArrayList<>();
+            HashMap<String , Object> obj = new HashMap<>();
+            obj.put("siteActivityTypeId" , 6);
+            obj.put("cones" , 0);
+            obj.put("barriers" , 0);
+            obj.put("chpt8" , 0);
+            obj.put("fwBoards" , 0);
+            obj.put("bags" , 0);
+            obj.put("sand" , 0);
+            obj.put("stone" , 0);
+            obj.put("comments" , requestMap.get("comments"));
+            obj.put("isSiteClear" , requestMap.get("isSiteClear"));
+            obj.put("siteActivityReinstatementTypeId" , requestMap.get("siteActivityReinstatementTypeId"));
+            obj.put("submittedbygangId" , gangId);
+            amendment.add(obj);
+            requestMap.put("tasks" , amendment);
+        }
+        return requestMap;
+    }
+
+
     private Map<String , Object> updateSubJobPresite(Map<String , Object> requestMap){
 
         if(!requestMap.containsKey("locationDetailsCorrect")){

@@ -5,8 +5,8 @@
     {
       "title": "Site Clear",
       "index": 0,
-      "url": "app/jobs/{jobId}/log-site-clear",
-      "photoUrl": "app/jobs/{jobId}/photos",
+      "url": "app/subjob/{jobId}/complete-site-activity-tasks",
+      "photoUrl": "app/subjob/{jobId}/photo",
       "upload": true,
       "items": [
         {
@@ -17,8 +17,8 @@
         },
         {
           "type": "dropdown",
-          "uploadId": "reinstatementTypeId",
-          "key": "reinstatementTypes",
+          "uploadId": "siteActivityReinstatementTypeId",
+          "key": "subJobReinstatementTypes",
           "title": "Reinstatement Type",
           "optional": false
         },

@@ -74,7 +74,7 @@
   },
   {
     "title": "Site Clear",
-    "json": "sub_job_log_site_clear.json",
+    "json": "sub_job_job_site_clear.json",
     "isIndicatorVisible": true,
     "taskId": 6,
     "status": false
