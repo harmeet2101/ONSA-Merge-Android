@@ -101,9 +101,7 @@ public class CommonUtils {
                 if(dayName.equalsIgnoreCase("tuesday")){
                     return Calendar.TUESDAY;
                 }
-                if(dayName.equalsIgnoreCase("wednesday")){
-                    return Calendar.WEDNESDAY;
-                }
+                if(dayName.equalsIgnoreCase("wednesday"))
                 if(dayName.equalsIgnoreCase("thursday")){
                     return Calendar.THURSDAY;
                 }

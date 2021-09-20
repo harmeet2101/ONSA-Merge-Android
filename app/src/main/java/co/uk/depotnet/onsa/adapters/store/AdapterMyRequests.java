@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.store.RequestItemsFragment;
 import co.uk.depotnet.onsa.listeners.FragmentActionListener;
+import co.uk.depotnet.onsa.modals.KitBagDocument;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.store.MyRequest;
 import co.uk.depotnet.onsa.networking.APICalls;
@@ -69,6 +71,12 @@ public class AdapterMyRequests extends RecyclerView.Adapter<AdapterMyRequests.Vi
         holder.txtRequestDate.setText(String.format("Request Date: %s", getDate(requestDate)));
         holder.txtTimeSent.setText(String.format("Sent Time: %s", getTime(requestDate)));
         holder.txtNoOfItems.setText(String.format("Number of Items: %d", holder.item.getitemCount()));
+        if(TextUtils.isEmpty(holder.item.getReferenceNumber())){
+            holder.txtEstimate.setText(String.format("Reference No.: %s", "N/A"));
+        }else {
+            holder.txtEstimate.setText(String.format("Reference No.: %s", holder.item.getReferenceNumber()));
+        }
+
         holder.txtComment.setText(String.format("Comment: %s", holder.item.getrequestComments()));
         holder.txtRequestStatus.setText(String.format("Request Status: %s", holder.item.getrequestStatusName()));
 
@@ -168,6 +176,7 @@ public class AdapterMyRequests extends RecyclerView.Adapter<AdapterMyRequests.Vi
         final LinearLayout llCheckYourReceipt;
         final Button btnView;
         public MyRequest item;
+        public TextView txtEstimate;
 
         public ViewHolder(View view) {
             super(view);
@@ -177,6 +186,7 @@ public class AdapterMyRequests extends RecyclerView.Adapter<AdapterMyRequests.Vi
             txtNoOfItems =  view.findViewById(R.id.txt_number_of_items);
             txtComment =  view.findViewById(R.id.txt_comment);
             txtRequestStatus =  view.findViewById(R.id.txt_request_status);
+            txtEstimate =  view.findViewById(R.id.txt_reference_number);
             imgCancel =  view.findViewById(R.id.btn_img_cancel);
             llCheckYourReceipt =  view.findViewById(R.id.ll_check_your_receipt);
             btnView =  view.findViewById(R.id.btn_view);

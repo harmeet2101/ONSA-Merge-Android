@@ -10,19 +10,6 @@ import java.util.ArrayList;
 import co.uk.depotnet.onsa.database.DBHandler;
 
 public class MyRequest implements Parcelable {
-    public static final Creator<MyRequest> CREATOR = new Creator<MyRequest>() {
-        @Override
-        public MyRequest createFromParcel(Parcel in) {
-            return new MyRequest(in);
-        }
-
-        @Override
-        public MyRequest[] newArray(int size) {
-            return new MyRequest[size];
-
-        }
-
-    };
     private String createdByUserId;
     private String rejectionComments;
     private String requestComments;
@@ -40,36 +27,11 @@ public class MyRequest implements Parcelable {
     private String requestedByName;
     private String approvedByName;
     private String warehouseStaName;
+    private String referenceNumber;
     private String rejectedByName;
     private String rejectedByUserId;
     private int age;
     private ArrayList<RequestItem> items;
-
-    protected MyRequest(Parcel in) {
-        createdByUserId = in.readString();
-        rejectionComments = in.readString();
-        requestComments = in.readString();
-        approvalComments = in.readString();
-        userId = in.readString();
-        rejectedDate = in.readString();
-        approvedByUserId = in.readString();
-        itemCount = in.readInt();
-        approvedDate = in.readString();
-        staId = in.readString();
-        createdDate = in.readString();
-        requestStatusName = in.readString();
-        requestId = in.readString();
-        requestStatusId = in.readString();
-        requestedByName = in.readString();
-        approvedByName = in.readString();
-        warehouseStaName = in.readString();
-        rejectedByName = in.readString();
-        rejectedByUserId = in.readString();
-        age = in.readInt();
-        items = in.createTypedArrayList(RequestItem.CREATOR);
-
-
-    }
 
     public MyRequest(Cursor cursor) {
         createdByUserId = cursor.getString(cursor.getColumnIndex(DBTable.createdByUserId));
@@ -91,12 +53,81 @@ public class MyRequest implements Parcelable {
         warehouseStaName = cursor.getString(cursor.getColumnIndex(DBTable.warehouseStaName));
         rejectedByName = cursor.getString(cursor.getColumnIndex(DBTable.rejectedByName));
         rejectedByUserId = cursor.getString(cursor.getColumnIndex(DBTable.rejectedByUserId));
+        referenceNumber = cursor.getString(cursor.getColumnIndex(DBTable.referenceNumber));
         age = cursor.getInt(cursor.getColumnIndex(DBTable.age));
 
         items = DBHandler.getInstance().getRequestItems(requestId);
 
 
     }
+
+    protected MyRequest(Parcel in) {
+        createdByUserId = in.readString();
+        rejectionComments = in.readString();
+        requestComments = in.readString();
+        approvalComments = in.readString();
+        userId = in.readString();
+        rejectedDate = in.readString();
+        approvedByUserId = in.readString();
+        itemCount = in.readInt();
+        approvedDate = in.readString();
+        staId = in.readString();
+        createdDate = in.readString();
+        requestStatusName = in.readString();
+        requestId = in.readString();
+        requestStatusId = in.readString();
+        requestedByName = in.readString();
+        approvedByName = in.readString();
+        warehouseStaName = in.readString();
+        referenceNumber = in.readString();
+        rejectedByName = in.readString();
+        rejectedByUserId = in.readString();
+        age = in.readInt();
+        items = in.createTypedArrayList(RequestItem.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(createdByUserId);
+        dest.writeString(rejectionComments);
+        dest.writeString(requestComments);
+        dest.writeString(approvalComments);
+        dest.writeString(userId);
+        dest.writeString(rejectedDate);
+        dest.writeString(approvedByUserId);
+        dest.writeInt(itemCount);
+        dest.writeString(approvedDate);
+        dest.writeString(staId);
+        dest.writeString(createdDate);
+        dest.writeString(requestStatusName);
+        dest.writeString(requestId);
+        dest.writeString(requestStatusId);
+        dest.writeString(requestedByName);
+        dest.writeString(approvedByName);
+        dest.writeString(warehouseStaName);
+        dest.writeString(referenceNumber);
+        dest.writeString(rejectedByName);
+        dest.writeString(rejectedByUserId);
+        dest.writeInt(age);
+        dest.writeTypedList(items);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<MyRequest> CREATOR = new Creator<MyRequest>() {
+        @Override
+        public MyRequest createFromParcel(Parcel in) {
+            return new MyRequest(in);
+        }
+
+        @Override
+        public MyRequest[] newArray(int size) {
+            return new MyRequest[size];
+        }
+    };
 
     public void setcreatedByUserId(String createdByUserId) {
         this.createdByUserId = createdByUserId;
@@ -258,43 +289,20 @@ public class MyRequest implements Parcelable {
         return this.age;
     }
 
+    public String getReferenceNumber() {
+        return referenceNumber;
+    }
+
+    public void setReferenceNumber(String referenceNumber) {
+        this.referenceNumber = referenceNumber;
+    }
+
     public ArrayList<RequestItem> getItems() {
         return items;
     }
 
     public void setItems(ArrayList<RequestItem> items) {
         this.items = items;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(createdByUserId);
-        parcel.writeString(rejectionComments);
-        parcel.writeString(requestComments);
-        parcel.writeString(approvalComments);
-        parcel.writeString(userId);
-        parcel.writeString(rejectedDate);
-        parcel.writeString(approvedByUserId);
-        parcel.writeInt(itemCount);
-        parcel.writeString(approvedDate);
-        parcel.writeString(staId);
-        parcel.writeString(createdDate);
-        parcel.writeString(requestStatusName);
-        parcel.writeString(requestId);
-        parcel.writeString(requestStatusId);
-        parcel.writeString(requestedByName);
-        parcel.writeString(approvedByName);
-        parcel.writeString(warehouseStaName);
-        parcel.writeString(rejectedByName);
-        parcel.writeString(rejectedByUserId);
-        parcel.writeInt(age);
-        parcel.writeTypedList(items);
-
     }
 
     public ContentValues toContentValues() {
@@ -336,6 +344,7 @@ public class MyRequest implements Parcelable {
         cv.put(DBTable.warehouseStaName, this.warehouseStaName);
 
         cv.put(DBTable.rejectedByName, this.rejectedByName);
+        cv.put(DBTable.referenceNumber, this.referenceNumber);
 
         cv.put(DBTable.rejectedByUserId, this.rejectedByUserId);
 
@@ -372,6 +381,7 @@ public class MyRequest implements Parcelable {
         public static final String warehouseStaName = "warehouseStaName";
         public static final String rejectedByName = "rejectedByName";
         public static final String rejectedByUserId = "rejectedByUserId";
+        public static final String referenceNumber = "referenceNumber";
         public static final String age = "age";
         public static final String items = "RequestItem";
 
