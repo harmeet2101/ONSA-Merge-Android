@@ -660,7 +660,12 @@ public class Job implements Parcelable, DropDownItem {
 
     @Override
     public String getDisplayItem() {
+        if(isSubJob()){
+            return String.format("%s-S%s", estimateNumber, subJobNumber);
+        }
+
         return estimateNumber;
+
     }
 
     public String getGangId() {

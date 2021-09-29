@@ -99,6 +99,7 @@
               "repeatId": "measures",
               "title": "Comments",
               "hint": "Comments",
+              "textLimit": "500",
               "optional": true
             },
             {

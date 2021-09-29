@@ -18,12 +18,12 @@
           "enables": [
             {
               "type": "dropdown",
-              "uploadId": "estimateNumber",
-              "key": "Job",
+              "uploadId": "jobId",
+              "key": "NormalJobs",
               "isMultiSelection": false,
               "isConcatDisplayText": false,
               "title": "Estimate",
-              "optional": false
+              "optional": true
             },
             {
               "type": "add_store_item",

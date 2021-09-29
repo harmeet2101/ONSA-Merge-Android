@@ -533,6 +533,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 if (JobId != null) {
                     submission.setJobID(JobId.getAnswer());
                     jsonObject.addProperty("JobId", JobId.getAnswer());
+                }else{
+                    jsonObject.addProperty("JobId", submission.getJobID());
                 }
 
                 Answer StaId = DBHandler.getInstance().getAnswer(submission.getID(), "StaId", "Items", items.getRepeatCount());

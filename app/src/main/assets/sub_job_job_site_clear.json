@@ -37,8 +37,8 @@
         {
           "type": "photo",
           "title": "Site Clear",
-          "photoSize": 1,
-          "photoRequired": 20,
+          "photoSize": 20,
+          "photoRequired": 1,
           "photoId": "118"
         }
       ]

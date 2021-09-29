@@ -10,12 +10,12 @@
       "items": [
         {
           "type": "dropdown",
-          "uploadId": "estimateNumber",
-          "key": "Job",
+          "uploadId": "jobId",
+          "key": "NormalJobs",
           "isMultiSelection": false,
           "isConcatDisplayText": false,
           "title": "Estimate",
-          "optional": false
+          "optional": true
         },
         {
           "type": "et_long_text",

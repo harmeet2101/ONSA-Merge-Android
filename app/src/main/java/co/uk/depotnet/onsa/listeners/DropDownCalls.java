@@ -65,6 +65,9 @@ public class DropDownCalls {
             }else if (formItem.getKey().equalsIgnoreCase(Job.DBTable.NAME)) {
                 isDependOnDatasetEndpoint = false;
                 items.addAll(dbHandler.getJobs());
+            }else if (formItem.getKey().equalsIgnoreCase("NormalJobs")) {
+                isDependOnDatasetEndpoint = false;
+                items.addAll(dbHandler.getNormalJobsOnly());
             } else if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.dfeWorkItems)) {
                 items.addAll(dbHandler.getWorkItem(DatasetResponse.DBTable.dfeWorkItems,
                         WorkItem.DBTable.itemCode));

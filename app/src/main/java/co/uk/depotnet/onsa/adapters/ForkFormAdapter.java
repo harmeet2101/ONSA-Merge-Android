@@ -14,6 +14,7 @@ import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Build;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -727,6 +728,12 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.editText.setHint(formItem.getHint());
         holder.editText.setText("");
 
+        if(formItem.getTextLimit() > 0){
+            holder.editText.setFilters(new InputFilter[] {new InputFilter.LengthFilter(formItem.getTextLimit())});
+        }
+
+
+
         Answer answer = dbHandler.getAnswer(submissionID, formItem.getUploadId(),
                 formItem.getRepeatId(), repeatCount);
         if (answer != null) {
@@ -1134,6 +1141,8 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 if (formItem.getKey().equalsIgnoreCase(Job.DBTable.NAME)) {
                     items.addAll(dbHandler.getJobs());
+                }if (formItem.getKey().equalsIgnoreCase("NormalJobs")) {
+                    items.addAll(dbHandler.getNormalJobsOnly());
                 } else if (formItem.getKey().equalsIgnoreCase(DatasetResponse.DBTable.riskAssessmentRiskElementTypes)) {
                     items.addAll(dbHandler.getRiskElementType(formItem.getKey()));
                 } else if (formItem.getKey().equalsIgnoreCase(MeasureItems.DBTable.NAME)) {

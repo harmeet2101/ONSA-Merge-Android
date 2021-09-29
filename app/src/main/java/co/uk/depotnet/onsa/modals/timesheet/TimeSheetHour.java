@@ -260,6 +260,8 @@ public class TimeSheetHour implements Parcelable{
         return timeTypeName+"_"+jobId+"_"+dateWorked;
     }
 
+
+
     public String getHourKey(){
         return getUniqueKey()+"_"+getTimeTypeActivityId()+"_"+getTimesheetHoursId();
     }

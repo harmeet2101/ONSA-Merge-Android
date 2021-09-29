@@ -206,6 +206,23 @@ public class DBHandler {
         return jobs;
     }
 
+    public List<Job> getNormalJobsOnly() {
+        ArrayList<Job> jobs = new ArrayList<>();
+        String whereClause = Job.DBTable.jobTypeId + " != ?";
+        String[] whereArgs = new String[]{String.valueOf(2)};
+        Cursor cursor = db.query(Job.DBTable.NAME, null, whereClause,
+                whereArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                Job job = new Job(cursor);
+                jobs.add(job);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return jobs;
+    }
+
     public Job getJob(String jobId) {
         String whereClause = Job.DBTable.jobId + " = ? ";
         String[] whereArgs = new String[]{jobId};

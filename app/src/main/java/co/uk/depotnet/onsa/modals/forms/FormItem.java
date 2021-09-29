@@ -120,6 +120,7 @@ public class FormItem implements Parcelable {
     private int stopWork;
     private String listItemType;
     private boolean isStoackLevelCheck;
+    private int textLimit;
 
     private MyStore myStore;
     private int myStoreQuantity;
@@ -201,6 +202,7 @@ public class FormItem implements Parcelable {
         stopWork = in.readInt();
         listItemType = in.readString();
         isStoackLevelCheck = in.readByte() != 0;
+        textLimit = in.readInt();
         myStore = in.readParcelable(MyStore.class.getClassLoader());
         myStoreQuantity = in.readInt();
         taskId = in.readInt();
@@ -243,6 +245,7 @@ public class FormItem implements Parcelable {
         dest.writeInt(stopWork);
         dest.writeString(listItemType);
         dest.writeByte((byte) (isStoackLevelCheck ? 1 : 0));
+        dest.writeInt(textLimit);
         dest.writeParcelable(myStore, flags);
         dest.writeInt(myStoreQuantity);
         dest.writeInt(taskId);
@@ -487,6 +490,10 @@ public class FormItem implements Parcelable {
 
     public void setSignatureFormat(String signatureFormat) {
         this.signatureFormat = signatureFormat;
+    }
+
+    public int getTextLimit() {
+        return textLimit;
     }
 
     public boolean isOverTimeVisible() {

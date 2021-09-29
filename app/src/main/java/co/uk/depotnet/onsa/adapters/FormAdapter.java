@@ -3468,7 +3468,12 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                 && formItem.getUploadId().equalsIgnoreCase("userIds")) {
                             answer1.setIsMultiList(1);
                         }
-                        answer1.setAnswer(items.get(position1).getUploadValue());
+
+//                        if(!TextUtils.isEmpty(submission.getJsonFileName()) && (submission.getJsonFileName().equalsIgnoreCase("store_log_request_multi.json") || submission.getJsonFileName().equalsIgnoreCase("store_log_standard_request.json")) && formItem.getUploadId().equalsIgnoreCase("estimateNumber")){
+//                            answer.setAnswer(items.get(position1).getDisplayItem());
+//                        }else {
+                            answer1.setAnswer(items.get(position1).getUploadValue());
+//                        }
                         answer1.setDisplayAnswer(items.get(position1).getDisplayItem());
                         answer1.setRepeatID(formItem.getRepeatId());
                         answer1.setRepeatCount(repeatCount);
