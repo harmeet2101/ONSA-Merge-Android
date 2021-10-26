@@ -79,10 +79,6 @@ public class ConnectionHelper {
                 .build();
         gson = new Gson();
         this.dbHandler = DBHandler.getInstance();
-
-        
-
-
     }
 
     private User refreshToken(UserRequest userRequest) {
@@ -491,11 +487,12 @@ public class ConnectionHelper {
             }
         }
 
-
-        requestMap.put("submittedDate", submission.getDate());
-        requestMap.put("dateTaken", submission.getDate());
-        requestMap.put("latitude", submission.getLatitude());
-        requestMap.put("longitude", submission.getLongitude());
+        if(!isSubJob) {
+            requestMap.put("submittedDate", submission.getDate());
+            requestMap.put("dateTaken", submission.getDate());
+            requestMap.put("latitude", submission.getLatitude());
+            requestMap.put("longitude", submission.getLongitude());
+        }
 
 
         boolean isBookOn = !TextUtils.isEmpty(endPoint) && (endPoint.contains("book-on") || endPoint.contains("book-off"));
@@ -606,6 +603,7 @@ public class ConnectionHelper {
 
         boolean isSubJobPresite = false;
 
+
         if(!TextUtils.isEmpty(jsonFileName)){
             if(jsonFileName.equalsIgnoreCase("job_site_clear.json") || jsonFileName.equalsIgnoreCase("job_site_clear_unscheduled.json")) {
                 requestMap = updateJobSiteclear(requestMap);
@@ -648,6 +646,31 @@ public class ConnectionHelper {
             }else{
                 requestMap.put("userIds", new ArrayList<>());
             }
+        }
+
+        if(jsonFileName.contains("job_site_clear")){
+//            Answer answer = dbHandler.getAnswer(submission.getID() , "isRaiseATask" , null , 0);
+//            if(answer != null &&
+//                    !TextUtils.isEmpty(answer.getAnswer()) &&
+//                    answer.getAnswer().equalsIgnoreCase("true")){
+//
+//            }
+
+            if(requestMap.containsKey("raiseTasks")){
+                ArrayList<HashMap<String , Object>> raisTask = (ArrayList<HashMap<String, Object>>) requestMap.get("raiseTasks");
+                requestMap.remove("raiseTasks");
+                if(raisTask != null && !raisTask.isEmpty()){
+                    HashMap<String , Object> map = raisTask.get(0);
+                    String jsonSubmission = gson.toJson(map);
+                    RequestBody body = RequestBody.create(JSON, jsonSubmission);
+                    Response response = performJSONNetworking(body, BuildConfig.BASE_URL+"app/jobs/"+submission.getJobID()+"/request-task");
+                    if (response == null || !response.isSuccessful()) {
+                        return response;
+                    }
+                }
+            }
+
+
         }
 
         if(TextUtils.isEmpty(photoEndPoint)){

@@ -107,7 +107,7 @@
             android:layout_marginBottom="@dimen/_4sdp"
             android:background="@drawable/btn_camera_bg"
             android:padding="@dimen/_6sdp"
-            android:tint="@color/depotnet_color"
+            app:tint="@color/depotnet_color"
             app:srcCompat="@drawable/ic_gallery" />
 
         <ImageView
@@ -120,7 +120,8 @@
             android:layout_marginBottom="@dimen/_4sdp"
             android:background="@drawable/btn_camera_bg"
             android:padding="@dimen/_6sdp"
-            android:tint="@color/depotnet_color"
+            android:visibility="gone"
+            app:tint="@color/depotnet_color"
             app:srcCompat="@drawable/ic_baseline_camera_alt" />
         <LinearLayout
             android:layout_width="match_parent"

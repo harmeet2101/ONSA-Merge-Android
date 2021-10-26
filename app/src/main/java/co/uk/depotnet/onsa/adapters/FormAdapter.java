@@ -3709,6 +3709,11 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             answer1.setRepeatID(formItem.getRepeatId());
             answer1.setRepeatCount(repeatCount);
             dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+
+            if(submission.getJsonFileName().contains("job_site_clear")) {
+                manageSiteClear(answer1);
+            }
+
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
@@ -3746,10 +3751,20 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 answer12.setAnswer("false");
             }
 
+
             answer12.setRepeatID(formItem.getRepeatId());
             answer12.setRepeatCount(repeatCount);
 
             dbHandler.replaceData(Answer.DBTable.NAME, answer12.toContentValues());
+
+            if(submission.getJsonFileName().equalsIgnoreCase("risk_assessment.json") && formItem.getUploadId().equalsIgnoreCase("writtenAuthority")){
+                listener.goToScreen(0);
+            }
+
+            if(submission.getJsonFileName().contains("job_site_clear")) {
+                manageSiteClear(answer12);
+            }
+
             if (needToBeNotified(formItem)) {
                 reInflateItems(true);
             }
@@ -3761,6 +3776,33 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         });
 
+    }
+
+    public void manageSiteClear(Answer answer){
+        if(!isSubJob()) {
+            screen.setUrl("app/jobs/{jobId}/log-site-clear");
+            screen.setPhotoUrl("app/jobs/{jobId}/photos");
+            screen.setUpload(true);
+        }else{
+            screen.setUrl("app/subjob/{jobId}/complete-site-activity-tasks");
+            screen.setPhotoUrl("app/subjob/{jobId}/photo");
+            screen.setUpload(true);
+        }
+        boolean isShowSubmitButton = true;
+        if(answer != null && answer.getUploadID().equalsIgnoreCase("isSiteClear")  && !TextUtils.isEmpty(answer.getAnswer()) && answer.getAnswer().equalsIgnoreCase("true")){
+            Answer raiseATask = dbHandler.getAnswer(submissionID, "isRaiseATask" , null , 0);
+            if(raiseATask != null){
+                dbHandler.removeAnswer(raiseATask);
+            }
+        }
+
+        if(answer != null && answer.getUploadID().equalsIgnoreCase("isRaiseATask") && !TextUtils.isEmpty(answer.getAnswer()) && answer.getAnswer().equalsIgnoreCase("true")){
+                screen.setUrl(null);
+                screen.setPhotoUrl(null);
+                screen.setUpload(false);
+            isShowSubmitButton = false;
+        }
+        listener.showSubmitButton(isShowSubmitButton);
     }
 
     private boolean needToBeNotified(FormItem formItem) {
@@ -3834,7 +3876,7 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         String jsonFileName = submission.getJsonFileName();
         if (item.getFormType() == FormItem.TYPE_DROPDOWN) {
             String uploadId = item.getUploadId();
-            if (!TextUtils.isEmpty(jsonFileName) && jsonFileName.equalsIgnoreCase("request_task.json")
+            if (!TextUtils.isEmpty(jsonFileName) && (jsonFileName.equalsIgnoreCase("request_task.json") || jsonFileName.contains("job_site_clear.json"))
                     && !TextUtils.isEmpty(uploadId) && uploadId.equalsIgnoreCase("siteActivityTypeId")) {
                 if (value != null) {
                     if (value.equalsIgnoreCase("1") || value.equalsIgnoreCase("6")) {

@@ -36,7 +36,10 @@ public class WelcomeHomeAdapter extends RecyclerView.Adapter<WelcomeHomeAdapter.
         this.listener = listener;
         items = new ArrayList<>();
         User user = DBHandler.getInstance(context).getUser();
-        items.add(new WelcomeHomeModal(1, "My Work", R.drawable.ic_my_work, R.color.ColorMyWork));
+        if(Constants.isMyJobEnabled){
+            items.add(new WelcomeHomeModal(1, "My Work", R.drawable.ic_my_work, R.color.ColorMyWork));
+        }
+
 
         if (Constants.isHSEQEnabled) {
             items.add(new WelcomeHomeModal(2, "HSEQ", R.drawable.ic_hseq, R.color.ColorHseq));

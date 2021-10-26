@@ -14,4 +14,6 @@ public interface FromActivityListener {
     void showProgressBar();
     void hideProgressBar();
     void showBtnContainer(boolean isVisible);
+
+    void manageSiteClearScreen(boolean b);
 }

@@ -61,6 +61,21 @@ public class Utils {
         return image;
     }
 
+    public static File createVideoFile(Context context) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.UK).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        String storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() +
+                "/onsa_store/Videos";
+        File dir = new File(storageDir);
+//        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        File image = File.createTempFile(imageFileName, ".mp4", dir);
+
+        return image;
+    }
+
 
     public static File saveSignature(Context context ,Bitmap bmp , String format) {
 

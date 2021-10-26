@@ -95,7 +95,7 @@ public class LoginActivity extends AppCompatActivity
             String errorMessage = "Please try again.";
             String errorTitle = "Login Unsuccessful";
 
-            createItemTypes();
+
 
             if (response.isSuccessful()) {
                 User user = response.body();
@@ -103,6 +103,7 @@ public class LoginActivity extends AppCompatActivity
                     if(!isSameUserLoggedIn(user)){
                         CommonUtils.clearAppData(dbHandler);
                     }
+                    createItemTypes();
 //                    dbHandler.clearTable(User.DBTable.NAME);
                     user.setLoggedIn(true);
                     dbHandler.replaceData(User.DBTable.NAME, user.toContentValues());

@@ -104,6 +104,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     private ArrayList<ItemType> jobTags;
     private Date selectedDate;
     private boolean isRefreshing;
+    private DBHandler dbHandler;
 
 
     public static FragmentHome newInstance() {
@@ -117,7 +118,8 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user = DBHandler.getInstance().getUser();
+        this.dbHandler = DBHandler.getInstance(context);
+        user = dbHandler.getUser();
         originalJobs = new ArrayList<>();
         jobs = new ArrayList<>();
 
@@ -405,7 +407,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             jsonFileName = "sub_job_visitor_attendance.json";
         }
         Submission submission = new Submission(jsonFileName, "", job.getjobId());
-        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
@@ -419,7 +421,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             jsonFileName = "sub_job_take_photo.json";
         }
         Submission submission = new Submission(jsonFileName, "Take Photo or Video", job.getjobId());
-        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
@@ -437,7 +439,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     @Override
     public void onQualityCheck(Job job) {
         Submission submission = new Submission("quality_check.json", "Quality Check", job.getjobId());
-        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
@@ -452,7 +454,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             json = prefix+"job_site_clear_unscheduled.json";
         }
         Submission submission = new Submission(json, "Site Clear", job.getjobId());
-        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
@@ -645,7 +647,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
         if(!CommonUtils.isNetworkAvailable(context)){
             getJobsFromDb();
             if(Constants.isStoreEnabled) {
-                int count = DBHandler.getInstance().getReceipts().size() + DBHandler.getInstance().getMyRequest().size();
+                int count = dbHandler.getReceipts().size() + dbHandler.getMyRequest().size();
                 listener.setReceiptsBadge(String.valueOf(count));
             }
             return;
@@ -669,13 +671,13 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                     return;
                 }
                 if (response.isSuccessful()) {
-                    DBHandler.getInstance().resetJobs();
+                    dbHandler.resetJobs();
                     JobResponse jobResponse = response.body();
                         if (jobResponse != null){
                             List<Job> jobs = jobResponse.getJobs();
                         if (jobs != null && !jobs.isEmpty()) {
                             for (Job j : jobs) {
-                                DBHandler.getInstance().replaceData(Job.DBTable.NAME, j.toContentValues());
+                                dbHandler.replaceData(Job.DBTable.NAME, j.toContentValues());
                             }
                         }
                     }
@@ -697,7 +699,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             refreshLayout.setRefreshing(false);
             listener.hideProgressBar();
             if(Constants.isStoreEnabled) {
-                int count = DBHandler.getInstance().getReceipts().size() + DBHandler.getInstance().getMyRequest().size();
+                int count = dbHandler.getReceipts().size() + dbHandler.getMyRequest().size();
                 listener.setReceiptsBadge(String.valueOf(count));
             }
     }
@@ -706,7 +708,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
 
 
     private void getJobsFromDb() {
-        List<Job> jobs = DBHandler.getInstance().getJobs();
+        List<Job> jobs = dbHandler.getJobs();
         FragmentHome.this.originalJobs.clear();
         FragmentHome.this.jobs.clear();
         if (!jobs.isEmpty()) {
@@ -724,7 +726,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
             jsonFileName = "add_notes.json";
         }
         Submission submission = new Submission(jsonFileName, "Add Notes", job.getjobId());
-        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
@@ -818,13 +820,13 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     }
 
     private void startLogStoreFrom(Job job){
-        if(DBHandler.getInstance().getMyStores().isEmpty()){
+        if(dbHandler.getMyStores().isEmpty()){
             Toast.makeText(context , "No Stores found for this job" , Toast.LENGTH_SHORT).show();
             return;
         }
         String jsonFileName = "log_store.json";
         Submission submission = new Submission(jsonFileName, "", job.getjobId());
-        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
@@ -854,7 +856,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                 }
 
                 if (response.isSuccessful()) {
-                    DBHandler.getInstance().resetMyStores();//to reset my store
+                    dbHandler.resetMyStores();//to reset my store
                     DataMyStores dataMyStores = response.body();
                     if (dataMyStores != null) {
                         dataMyStores.toContentValues();
@@ -940,7 +942,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
                     }
 
                 } else {
-                    DBHandler.getInstance().removeJob(jobID);
+                    dbHandler.removeJob(jobID);
                     getJobsFromDb();
                 }
                 showErrorDialog(title, message);
@@ -952,7 +954,7 @@ public class FragmentHome extends Fragment implements HomeJobListListener,
     public void openRequestTask(Job job) {
         String jsonFileName = "request_task.json";
         Submission submission = new Submission(jsonFileName, "Request Task", job.getjobId());
-        long submissionID = DBHandler.getInstance().insertData(Submission.DBTable.NAME, submission.toContentValues());
+        long submissionID = dbHandler.insertData(Submission.DBTable.NAME, submission.toContentValues());
         submission.setId(submissionID);
         Intent intent = new Intent(context, FormActivity.class);
         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);

@@ -238,5 +238,13 @@ public class ForkFormFragment extends Fragment implements FormAdapterListener {
         dialogFragment.show(getChildFragmentManager() , dialogFragment.toString());
     }
 
+    @Override
+    public void goToScreen(int index) {
+        listener.goToNextScreen(index);
+    }
 
+    @Override
+    public void showSubmitButton(boolean isShowSubmitButton) {
+
+    }
 }

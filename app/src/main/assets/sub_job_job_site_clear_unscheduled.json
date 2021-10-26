@@ -13,7 +13,15 @@
           "type": "yes_no",
           "uploadId": "isSiteClear",
           "title": "Is Site Clear",
-          "optional": false
+          "optional": false,
+          "falseEnables": [
+            {
+              "type": "yes_no",
+              "uploadId": "isRaiseATask",
+              "title": "Do You want to raise a Task",
+              "optional": false
+            }
+          ]
         },
         {
           "type": "dropdown",
@@ -29,7 +37,12 @@
           "title": "Add Site Clear",
           "optional": true,
           "fields": [
-            "cones","barriers","chpt8","fwBoards" , "bags" , "sand" ,
+            "cones",
+            "barriers",
+            "chpt8",
+            "fwBoards",
+            "bags",
+            "sand",
             "stone"
           ],
           "dialogItems": [
@@ -96,6 +109,135 @@
           "photoSize": 20,
           "photoRequired": 1,
           "photoId": "118"
+        }
+      ]
+    },
+    {
+      "title": "Request Task",
+      "index": 1,
+      "url": "app/subjob/{jobId}/complete-site-activity-tasks",
+      "photoUrl": "app/subjob/{jobId}/photo",
+      "upload": true,
+      "items": [
+        {
+          "type": "calender",
+          "uploadId": "dateTaken",
+          "repeatId": "raiseTasks",
+          "title": "Requested For",
+          "hint": "Select Date",
+          "optional": true
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "siteActivityTypeId",
+          "repeatId": "raiseTasks",
+          "key": "TaskType",
+          "title": "Task Type",
+          "optional": false,
+          "enables": [
+            {
+              "type": "number",
+              "uploadId": "cones",
+              "repeatId": "raiseTasks",
+              "title": "Cones",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "barriers",
+              "repeatId": "raiseTasks",
+              "title": "Barriers",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "chpt8",
+              "repeatId": "raiseTasks",
+              "title": "Chpt8",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "fwBoards",
+              "repeatId": "raiseTasks",
+              "title": "FwBoards",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "bags",
+              "repeatId": "raiseTasks",
+              "title": "Bags",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "sand",
+              "repeatId": "raiseTasks",
+              "title": "Sand",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "stone",
+              "repeatId": "raiseTasks",
+              "title": "Stone",
+              "optional": false
+            }
+          ],
+          "falseEnables": [
+            {
+              "type": "dropdown",
+              "uploadId": "surfaceTypeId",
+              "repeatId": "raiseTasks",
+              "key": "surfaceTypes",
+              "title": "Surface Types",
+              "optional": false
+            },
+            {
+              "type": "dropdown",
+              "uploadId": "materialTypeId",
+              "repeatId": "raiseTasks",
+              "key": "materialTypes",
+              "title": "Material Types",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "Length",
+              "repeatId": "raiseTasks",
+              "title": "Length (m)",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "Width",
+              "repeatId": "raiseTasks",
+              "title": "Width (m)",
+              "optional": false
+            },
+            {
+              "type": "number",
+              "uploadId": "Depth",
+              "repeatId": "raiseTasks",
+              "title": "Depth (m)",
+              "optional": false
+            }
+          ]
+        },
+        {
+          "type": "et_long_text",
+          "uploadId": "comments",
+          "repeatId": "raiseTasks",
+          "title": "Comments",
+          "optional": true
+        },
+        {
+          "type": "photo",
+          "title": "Request Task",
+          "photoSize": 20,
+          "photoRequired": 3,
+          "photoId": "122"
         }
       ]
     }

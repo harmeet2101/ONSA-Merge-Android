@@ -2,6 +2,7 @@ package co.uk.depotnet.onsa.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -10,8 +11,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -68,7 +67,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -82,6 +80,7 @@ import co.uk.depotnet.onsa.listeners.LocationPermissionListener;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
 import co.uk.depotnet.onsa.modals.forms.Photo;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.PathUtil;
 import co.uk.depotnet.onsa.utils.Utils;
 import co.uk.depotnet.onsa.views.CameraView;
@@ -94,20 +93,22 @@ public class CameraActivity extends AppCompatActivity implements
     public static final String BACK_STACK_TAG = CameraActivity.class.getName();
     public static final int PICK_IMAGE_REQUEST = 1001;
     public static final int PICK_MODIFY_IMAGE = 1002;
+    public static final int PERMISSION_ACTIVITY_REQUEST = 1003;
     public static final String ARG_SUBMISSION_ID = "_arg_submission_id";
     public static final String ARG_FORM_ITEM = "_arg_form_item";
     public static final String ARG_REPEAT = "_arg_repeat";
     public static final String ARG_COLOR = "color";
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
-    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 0;
-    private static final int MY_PERMISSIONS_LOCATION = 10;
-    private static final int INTENT_PERMISSION = 1000;
+    private static final int MY_PERMISSIONS_REQUEST_VIDEO = 9;
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 10;
+    private static final int MY_PERMISSIONS_LOCATION = 11;
+    private static final int MY_PERMISSIONS_REQUEST_GALLERY = 12;
     private static String fileVideoPath = "";
-    long count = 0;
-    Timer timer;
-    double latitude;
-    double longitude;
+    private long count = 0;
+    private Timer timer;
+    private double latitude = -1000;
+    private double longitude = -1000;
     private Camera camera;
     private CameraView cameraView;
     private MediaRecorder mediaRecorder;
@@ -131,6 +132,9 @@ public class CameraActivity extends AppCompatActivity implements
     private TextView tvTimer;
     private boolean isVideoModeOn;
     private String themeColor;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private boolean isPermissionSettingRequested;
+    private DBHandler dbHandler;
 
     private SimpleTarget target = new SimpleTarget<BitmapDrawable>() {
 
@@ -154,13 +158,13 @@ public class CameraActivity extends AppCompatActivity implements
                 }
 
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    restartCamera();
+                    restartCamera(false);
                     adapter.notifyDataSetChanged();
                 });
             }
         }
     };
-    private FusedLocationProviderClient mFusedLocationClient;
+
 
 
     private static File getOutputMediaFile(int type) {
@@ -177,6 +181,13 @@ public class CameraActivity extends AppCompatActivity implements
         } else if (type == MEDIA_TYPE_VIDEO) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
                     "VID_" + timeStamp + ".mp4");
+            if(!mediaFile.exists()){
+                try {
+                    mediaFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         } else {
             return null;
         }
@@ -196,7 +207,7 @@ public class CameraActivity extends AppCompatActivity implements
         return c;
     }
 
-    private void restartCamera() {
+    private void restartCamera(boolean shouldCheckPermission) {
         if (camera != null) {
             releaseCameraAndPreview();
             releaseMediaRecorder();       // if you are using MediaRecorder, release it first
@@ -206,14 +217,14 @@ public class CameraActivity extends AppCompatActivity implements
             frameLayoutCamera.removeView(cameraView);
             cameraView = null;
         }
-        startCameraPreview();
+        startCameraPreview(shouldCheckPermission);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-
+        this.dbHandler = DBHandler.getInstance(this);
         Intent intent = getIntent();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         formItem = intent.getParcelableExtra(ARG_FORM_ITEM);
@@ -258,7 +269,7 @@ public class CameraActivity extends AppCompatActivity implements
             }
 
             if (pictureFile == null) {
-                restartCamera();
+                restartCamera(false);
                 return;
             }
 
@@ -266,18 +277,19 @@ public class CameraActivity extends AppCompatActivity implements
                 changeOrientation(data, pictureFile.getAbsolutePath());
                 setPicture(pictureFile.getPath());
             } catch (Exception e) {
-                restartCamera();
+                restartCamera(false);
                 e.printStackTrace();
             }
         };
+
+        checkCameraPermission(true);
     }
 
     private void initPhotos() {
         this.photos = formItem.getPhotos();
         answers = new ArrayList<>();
-
-
-        answers.addAll(DBHandler.getInstance().getPhotos(submissionID, String.valueOf(formItem.getPhotoId()),
+        
+        answers.addAll(dbHandler.getPhotos(submissionID, String.valueOf(formItem.getPhotoId()),
                 formItem.getTitle(), repeatCount));
         for (int i = 0; i < answers.size(); i++) {
             photos.get(i).setUrl(answers.get(i).getAnswer());
@@ -302,49 +314,30 @@ public class CameraActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(View view) {
-
-        switch (view.getId()) {
-            case R.id.btn_done: {
+        long id = view.getId();
+        if(id == R.id.btn_done){
+            Intent intent = new Intent();
+            setResult(RESULT_OK, intent);
+            finish();
+        }else if(id == R.id.btn_img_cancel){
+            btnCancel.setVisibility(View.GONE);
+            if (camera != null) {
                 Intent intent = new Intent();
-                setResult(RESULT_OK, intent);
+                setResult(RESULT_CANCELED, intent);
                 finish();
-                break;
             }
-            case R.id.btn_img_cancel: {
-                btnCancel.setVisibility(View.GONE);
-                if (camera != null) {
-                    Intent intent = new Intent();
-                    setResult(RESULT_CANCELED, intent);
-                    finish();
-                }
-                break;
-            }
-            case R.id.img_btn_camera:
-                takePicture();
-                break;
-            case R.id.img_btn_gallery:
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    openGallery();
-                } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                        == PackageManager.PERMISSION_GRANTED &&
-                        ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                == PackageManager.PERMISSION_GRANTED &&
-                        ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                                == PackageManager.PERMISSION_GRANTED) {
-                    openGallery();
-                } else {
-                    requestPermissions(
-                            new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO},
-                            MY_PERMISSIONS_REQUEST_CAMERA);
-                }
-                break;
-            case R.id.img_btn_video:
-                isVideoModeOn = !isVideoModeOn;
-                btnVideo.setImageResource(isVideoModeOn ? R.drawable.ic_baseline_videocam :
-                        R.drawable.ic_baseline_camera_alt);
-                break;
+        }else if(id == R.id.img_btn_gallery){
+            checkGalleryPermission();
+        }else if(id == R.id.img_btn_camera){
+            takePicture();
+        }else if(id == R.id.img_btn_video){
+            checkVideoPermissions();
         }
+
+
     }
+
+
 
     @Override
     public void notifyImage(Answer photo, int position) {
@@ -441,7 +434,7 @@ public class CameraActivity extends AppCompatActivity implements
 
         Photo photoTaken = photos.get(currentIndex);
 
-        Answer answer = DBHandler.getInstance().getPhoto(submissionID, String.valueOf(formItem.getPhotoId()),
+        Answer answer = dbHandler.getPhoto(submissionID, String.valueOf(formItem.getPhotoId()),
                 repeatCount, photos.get(currentIndex).getTitle());
 
         if (answer == null) {
@@ -463,7 +456,7 @@ public class CameraActivity extends AppCompatActivity implements
         }
         answer.setLatitude(latitude);
         answer.setLongitude(longitude);
-        DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+        dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
         lastPhotoPath = picturePath;
 
         RequestOptions myOptions = new RequestOptions()
@@ -489,7 +482,7 @@ public class CameraActivity extends AppCompatActivity implements
             }
         }
 
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, String.valueOf(photoTaken.getPhoto_id()),
+        Answer answer = dbHandler.getAnswer(submissionID, String.valueOf(photoTaken.getPhoto_id()),
                 repeatCount, photoTaken.getTitle());
 
         if (answer == null) {
@@ -504,53 +497,17 @@ public class CameraActivity extends AppCompatActivity implements
         answer.setLongitude(longitude);
         photoTaken.setIsVideo(true);
 
-        long id = DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+        long id = dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
         lastPhotoPath = picturePath;
-
         adapter.notifyDataSetChanged();
     }
+
+
 
     @Override
     public void onResume() {
         super.onResume();
-        checkLocation();
-        bindLocation();
-    }
-
-    private void checkLocation() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            checkAndStart();
-        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
-            //  startCameraPreview();
-            checkAndStart();
-        } else {
-            if (!isLocationPermissionFirstTime) {
-                isLocationPermissionFirstTime = true;
-                requestPermissions(
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                        MY_PERMISSIONS_LOCATION);
-            }
-        }
-    }
-
-    private void checkAndStart() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            startCameraPreview();
-        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                        == PackageManager.PERMISSION_GRANTED) {
-            startCameraPreview();
-        } else {
-            requestPermissions(
-                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO},
-                    MY_PERMISSIONS_REQUEST_CAMERA);
-        }
+        checkCameraPermission(false);
     }
 
     @Override
@@ -568,7 +525,8 @@ public class CameraActivity extends AppCompatActivity implements
         }
     }
 
-    private void startCameraPreview() {
+    private void startCameraPreview(boolean shouldCheckPermission) {
+        checkLocation(shouldCheckPermission);
         btnCancel.setVisibility(View.GONE);
         CameraOpenTask camOpen = new CameraOpenTask();
         camOpen.execute();
@@ -663,12 +621,77 @@ public class CameraActivity extends AppCompatActivity implements
         }
     }
 
+    private void checkGalleryPermission(){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            openGallery();
+        }else{
+            String permissionRationale = getString(R.string.location_default_permission_rationale);
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    permissionRationale , MY_PERMISSIONS_REQUEST_GALLERY);
+//            requestPermissions(
+//                    new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE},
+//                    MY_PERMISSIONS_REQUEST_GALLERY);
+        }
+    }
+
+    private void checkLocation(boolean shouldCheckPermission){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                ContextCompat.checkSelfPermission(this , Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            String permissionRationale = getString(R.string.location_default_permission_rationale);
+            if(shouldCheckPermission) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        permissionRationale, MY_PERMISSIONS_LOCATION);
+            }
+            return;
+        }
+
+        if(latitude == -1000 || longitude == -1000) {
+            bindLocation();
+        }
+    }
+
+    private void checkCameraPermission(boolean shouldRequestPermission){
+        isPermissionSettingRequested = false;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) && ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+            startCameraPreview(shouldRequestPermission);
+        }else{
+            if(shouldRequestPermission) {
+                String permissionRationale = getString(R.string.location_default_permission_rationale);
+                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        permissionRationale, MY_PERMISSIONS_REQUEST_CAMERA);
+            }
+        }
+    }
+
+    public void checkVideoPermissions(){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) && ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED) {
+            startVideo();
+        }else{
+            String permissionRationale = getString(R.string.location_default_permission_rationale);
+            requestPermissions(new String[]{Manifest.permission.CAMERA , Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO},
+                    permissionRationale , MY_PERMISSIONS_REQUEST_CAMERA);
+        }
+    }
+
+    private void startVideo(){
+        isVideoModeOn = !isVideoModeOn;
+        btnVideo.setImageResource(isVideoModeOn ? R.drawable.ic_baseline_videocam :
+                R.drawable.ic_baseline_camera_alt);
+    }
+
     private void openGallery() {
         btnTakePic.setVisibility(View.GONE);
         btnGallery.setVisibility(View.GONE);
         btnVideo.setVisibility(View.GONE);
         Intent intent = new Intent();
         intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
@@ -677,60 +700,92 @@ public class CameraActivity extends AppCompatActivity implements
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_CAMERA:
+            case MY_PERMISSIONS_REQUEST_GALLERY:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openGallery();
+                }else{
+                    showPermissionDialog();
+                }
+                break;
+            case MY_PERMISSIONS_REQUEST_CAMERA: {
                 boolean isPermissionGranted = true;
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    Toast.makeText(this, "Camera permission not granted!",
-                            Toast.LENGTH_SHORT).show();
                     isPermissionGranted = false;
                 }
 
                 if (grantResults.length > 1
                         && grantResults[1] == PackageManager.PERMISSION_DENIED) {
-                    Toast.makeText(this, "Save photo permission not granted!",
-                            Toast.LENGTH_SHORT).show();
                     isPermissionGranted = false;
                 }
 
                 if (isPermissionGranted) {
-                    startCameraPreview();
+                    startCameraPreview(true);
+                }else{
+                    showPermissionDialog();
                 }
                 break;
-
-            case MY_PERMISSIONS_LOCATION:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED &&
-                            ContextCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                                    != PackageManager.PERMISSION_GRANTED) {
-
-                    }
-                } else {
-                    android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(CameraActivity.this, R.style.DialogTheme)
-                            .setTitle(getString(R.string.permission_denied))
-                            .setMessage(getString(R.string.permissions_location_failure))
-                            .setPositiveButton(getString(R.string.permissions_settings), (dialogInterface, i) -> {
-                                Intent intent = new Intent();
-                                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", (CameraActivity.this).getApplication().getPackageName(), null);
-                                intent.setData(uri);
-
-                                startActivity(intent);
-                                dialogInterface.dismiss();
-                            })
-                            .setNegativeButton(getString(R.string.generic_cancel), (dialogInterface, i) -> {
-                                isLocationPermissionFirstTime = false;
-                                dialogInterface.dismiss();
-                                checkLocation();
-                            });
-                    dialog.show();
+            }
+            case MY_PERMISSIONS_REQUEST_VIDEO: {
+                boolean isPermissionGranted = true;
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                    isPermissionGranted = false;
                 }
-                startCameraPreview();
+
+                if (grantResults.length > 1
+                        && grantResults[1] == PackageManager.PERMISSION_DENIED) {
+                    isPermissionGranted = false;
+                }
+
+                if (grantResults.length > 2
+                        && grantResults[2] == PackageManager.PERMISSION_DENIED) {
+                    isPermissionGranted = false;
+                }
+
+                if (isPermissionGranted) {
+                    startVideo();
+                }else{
+                    showPermissionDialog();
+                }
+                break;
+            }
+            case MY_PERMISSIONS_LOCATION:
+                if(grantResults.length > 0) {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        bindLocation();
+                    } else {
+                        showPermissionDialog();
+                    }
+                }
                 break;
 
         }
+    }
+
+
+    private void showPermissionDialog(){
+        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(CameraActivity.this, R.style.DialogTheme)
+                .setTitle(getString(R.string.permission_denied))
+                .setMessage(getString(R.string.permissions_location_failure))
+                .setPositiveButton(getString(R.string.permissions_settings), (dialogInterface, i) -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", (CameraActivity.this).getApplication().getPackageName(), null);
+                    intent.setData(uri);
+                    startActivityForResult(intent , PERMISSION_ACTIVITY_REQUEST);
+                    dialogInterface.dismiss();
+                    finish();
+                })
+                .setNegativeButton(getString(R.string.generic_cancel), (dialogInterface, i) -> {
+//                    isLocationPermissionFirstTime = false;
+                    isPermissionSettingRequested = true;
+                    dialogInterface.dismiss();
+                    finish();
+                });
+        dialog.show();
     }
 
     @Override
@@ -740,11 +795,25 @@ public class CameraActivity extends AppCompatActivity implements
         btnTakePic.setVisibility(View.VISIBLE);
         btnVideo.setVisibility(View.VISIBLE);
         if (resultCode == Activity.RESULT_OK && requestCode == PICK_IMAGE_REQUEST) {
-            Uri uri = data.getData();
-            if (uri != null) {
-                String path = PathUtil.getPath(this, uri);
-                setPicture(path);
+            if (data.getClipData() != null) {
+                ClipData mClipData = data.getClipData();
+                int cout = mClipData.getItemCount();
+                for (int i = 0; i < cout; i++) {
+                    // adding imageuri in array
+                    Uri uri = data.getClipData().getItemAt(i).getUri();
+                    if (uri != null) {
+                        String path = PathUtil.getPath(this, uri);
+                        setPicture(path);
+                    }
+                }
+            } else {
+                Uri uri = data.getData();
+                if (uri != null) {
+                    String path = PathUtil.getPath(this, uri);
+                    setPicture(path);
+                }
             }
+
         } else if (resultCode == Activity.RESULT_OK && requestCode == PICK_MODIFY_IMAGE) {
             Answer photo = data.getParcelableExtra("photo");
             int position = data.getIntExtra("position", 0);
@@ -761,108 +830,43 @@ public class CameraActivity extends AppCompatActivity implements
         finish();
     }
 
-
-    public void onRemove(Photo photo) {
-        photo.setUrl(null);
-        Answer answer = DBHandler.getInstance().getAnswer(submissionID, String.valueOf(photo.getPhoto_id()),
-                repeatCount, photo.getTitle());
-        if (answer != null) {
-            DBHandler.getInstance().removeAnswer(answer);
-        }
-    }
-
-
-    public void onclickItem(int position, View view) {
-        if (photos == null || photos.isEmpty()) {
+    public void requestPermissions(@NonNull final String[] permissions, String permissionRequestRationale , int requestCode) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return;
         }
 
-        Photo p = photos.get(position);
-        String photoUrl = p.getUrl();
-        if (TextUtils.isEmpty(photoUrl)) {
-            return;
-        }
-        if (p.isVideo()) {
-            Intent videoIntent = new Intent(CameraActivity.this, VideoActivity.class);
-            videoIntent.putExtra("photos", p);
-            startActivity(videoIntent);
-        } else {
-            Intent photoIntenet = new Intent(CameraActivity.this, EditImageActivity.class);
-            photoIntenet.putExtra("photos", p);
-            photoIntenet.setAction(Intent.ACTION_GET_CONTENT);
-            photoIntenet.putExtra("POSITION", position);
-            startActivityForResult(photoIntenet, PICK_MODIFY_IMAGE);
-            // startActivity(videoIntent);
-        }
-    }
+        ArrayList<String> failedPermissions = new ArrayList<>();
 
-    public void requestPermissions(@NonNull final String[] permissions, String permissionRequestRationale) {
-        boolean permissionFailure = false;
-        boolean shouldShowRationale = false;
+//        boolean shouldShowRationale = false;
         for (String permission : permissions) {
             int checkResult = ContextCompat.checkSelfPermission(CameraActivity.this, permission);
             if (checkResult != PackageManager.PERMISSION_GRANTED) {
-                shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(CameraActivity.this, permission);
-                permissionFailure = true;
+                failedPermissions.add(permission);
                 break;
             }
         }
 
-        if (!permissionFailure) {
+        if (!failedPermissions.isEmpty()) {
+            String fP[] = new String[failedPermissions.size()];
+            fP = failedPermissions.toArray(fP);
+            requestPermissions(fP, requestCode);
+
+        } else {
             int[] permissionGrant = new int[permissions.length];
             for (int i = 0; i < permissions.length; i++) {
                 permissionGrant[i] = PackageManager.PERMISSION_GRANTED;
             }
-            onRequestPermissionsResult(INTENT_PERMISSION, permissions, permissionGrant);
-        } else {
-
-
-            if (shouldShowRationale && permissionRequestRationale != null) {
-                AlertDialog.Builder dialog = new AlertDialog.Builder(CameraActivity.this, R.style.DialogTheme)
-                        .setTitle(getString(R.string.permission_request_title))
-                        .setMessage(permissionRequestRationale)
-                        .setPositiveButton(getString(R.string.permission_continue), (dialog1, which) -> {
-                            dialog1.dismiss();
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                                startCameraPreview();
-                            } else {
-                                requestPermissions(permissions, INTENT_PERMISSION);
-                            }
-                        })
-                        .setNegativeButton(getString(android.R.string.cancel), (dialog12, which) -> {
-                            dialog12.dismiss();
-                            checkAndStart();
-                        });
-                dialog.show();
-            } else {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    startCameraPreview();
-                } else {
-                    requestPermissions(permissions, INTENT_PERMISSION);
-                }
-            }
+            onRequestPermissionsResult(requestCode, permissions, permissionGrant);
         }
+
     }
 
-    boolean isLocationPermissionFirstTime;
 
     @Override
     public void getLocation(final LocationListener listener) {
-        if (ContextCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(CameraActivity.this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
 
-            //ask user to grant permission
-            String permissionRationale = getString(R.string.location_default_permission_rationale);
-            if (!isLocationPermissionFirstTime) {
-                isLocationPermissionFirstTime = true;
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_COARSE_LOCATION},
-                        permissionRationale);
-            }
-        } else {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ContextCompat.checkSelfPermission(CameraActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED){
             mFusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
                     .addOnSuccessListener(location -> {
                         if (location != null) {
@@ -924,7 +928,7 @@ public class CameraActivity extends AppCompatActivity implements
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         mFusedLocationClient.requestLocationUpdates(locationRequest,
@@ -975,7 +979,20 @@ public class CameraActivity extends AppCompatActivity implements
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
         mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
         mediaRecorder.setOrientationHint(90);
-        mediaRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
+
+        File filePath = null;
+        try {
+            filePath = Utils.createVideoFile(this);
+        }catch (Exception e){
+
+        }
+
+
+        if (filePath == null) {
+            return false;
+        }
+        fileVideoPath = filePath.getAbsolutePath();
+        mediaRecorder.setOutputFile(filePath.getAbsolutePath());
         mediaRecorder.setPreviewDisplay(cameraView.getHolder().getSurface());
         try {
             mediaRecorder.prepare();
@@ -1054,7 +1071,6 @@ public class CameraActivity extends AppCompatActivity implements
             }
             btnTakePic.setVisibility(View.VISIBLE);
             btnGallery.setVisibility(View.VISIBLE);
-
             if (!photos.get(0).getTitle().equalsIgnoreCase("Take Photo or Video"))
                 btnVideo.setVisibility(View.GONE);
             else

@@ -159,7 +159,7 @@
     <string name="btn_filter">FILTER</string>
     <string name="location_default_permission_rationale">Onsa would like to access your location.</string>
     <string name="permission_denied">Permission Denied</string>
-    <string name="permissions_location_failure">Unfortunately, we cannot continue because you         have denied a required permission.\\n\\nTo enable, please allow permission         to Storage in the settings to continue.</string>
+    <string name="permissions_location_failure">Unfortunately, we cannot continue because you have denied a required permission. To enable, please allow permission to Storage in the settings to continue.</string>
     <string name="permissions_settings">Settings</string>
     <string name="generic_cancel">Cancel</string>
     <string name="permission_request_title">Permission Required</string>

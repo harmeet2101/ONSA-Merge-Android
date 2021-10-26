@@ -7,8 +7,8 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         // as per client requirement keeping all store same version of build
-        versionCode 147
-        versionName "3.2.7"
+        versionCode 149
+        versionName "3.3.0"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -22,15 +22,15 @@ android {
     // signin key - onsa_store@1234
     buildTypes {
 
-        debug {
-            initWith debug
-            //android.defaultConfig.versionName "2.2.2"
-            //android.defaultConfig.versionCode 51
-            applicationIdSuffix ".features.hseq.dev"
-            buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
-            resValue "string", "app_name", "Onsa BAU Dev"
-            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-        }
+//        debug {
+//            initWith debug
+//            //android.defaultConfig.versionName "2.2.2"
+//            //android.defaultConfig.versionCode 51
+//            applicationIdSuffix ".features.hseq.dev"
+//            buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
+//            resValue "string", "app_name", "Onsa BAU Dev"
+//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+//        }
 
         /*subjob {
             initWith debug
@@ -152,6 +152,30 @@ android {
 //            applicationIdSuffix ".store.lightsource"
 //            buildConfigField("String", "BASE_URL", '"https://onsa-lightsource-api.depotnet.co.uk/"')
 //            resValue "string", "app_name", "Lightsource Onsa"
+//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+//        }
+
+        store_uat_lipsum {
+            initWith debug
+            applicationIdSuffix ".store.ipsum.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-onsa-ipsum-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "Ipsum-UAT"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }
+
+//        store_uat_iti {
+//            initWith debug
+//            applicationIdSuffix ".store.iti.uat"
+//            buildConfigField("String", "BASE_URL", '"https://uat-onsa-iti-api.depotnet.co.uk/"')
+//            resValue "string", "app_name", "ITI-UAT"
+//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+//        }
+
+//        store_uat_kieraw {
+//            initWith debug
+//            applicationIdSuffix ".store.kieraw.uat"
+//            buildConfigField("String", "BASE_URL", '"https://uat-stores-kieraw-api.depotnet.co.uk/"')
+//            resValue "string", "app_name", "KierAW-UAT"
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
     }

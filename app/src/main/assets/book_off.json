@@ -9,7 +9,6 @@
       "photoUrl":"app/jobs/{jobId}/photos",
       "upload": true,
       "items": [
-
         {
           "type": "txt_bold_head",
           "title": "Book off for the day to say you are finishing",

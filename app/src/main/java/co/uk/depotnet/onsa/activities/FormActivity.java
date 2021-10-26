@@ -145,13 +145,16 @@ public class FormActivity extends ThemeBaseActivity implements
             dateUploadId = "visitedDateTime";
         }
 
-        Answer dateUpload = dbHandler.getAnswer(submission.getID(), dateUploadId, null, 0);
-        if(dateUpload == null) {
-             dateUpload = new Answer(submission.getID(), dateUploadId, null, 0);
+        if(!dateUploadId.isEmpty()) {
+
+            Answer dateUpload = dbHandler.getAnswer(submission.getID(), dateUploadId, null, 0);
+            if (dateUpload == null) {
+                dateUpload = new Answer(submission.getID(), dateUploadId, null, 0);
+            }
+            dateUpload.setAnswer(submission.getDate());
+            dateUpload.setDisplayAnswer(submission.getDate());
+            dbHandler.replaceData(Answer.DBTable.NAME, dateUpload.toContentValues());
         }
-        dateUpload.setAnswer(submission.getDate());
-        dateUpload.setDisplayAnswer(submission.getDate());
-        dbHandler.replaceData(Answer.DBTable.NAME , dateUpload.toContentValues());
 
     }
 
@@ -312,6 +315,10 @@ public class FormActivity extends ThemeBaseActivity implements
         addFragment(FormFragment.newInstance(submission, form.getScreens().get(0), form.getTitle(), 0, repeatCount, form.getThemeColor() ,schedule != null , recipients));
     }
 
+    @Override
+    public void manageSiteClearScreen(boolean b) {
+
+    }
 
     private void addScheduleData(Form form) {
         if (form == null) {

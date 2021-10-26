@@ -126,6 +126,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     private boolean isScheduledInspection;
     private ArrayList<String> recipients;
     private FusedLocationProviderClient mFusedLocationClient;
+    private DBHandler dbHandler;
 
 
     public static FormFragment newInstance(Submission submission,
@@ -150,6 +151,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dbHandler = DBHandler.getInstance(context);
         Bundle args = getArguments();
         if (args != null) {
             submission = args.getParcelable(ARG_SUBMISSION);
@@ -186,20 +188,54 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         if (repeatCount != -1) {
             formAdapter.setRepeatCount(repeatCount);
         }
+
+
+    }
+
+    public void manageSiteClear(){
+        Job job = dbHandler.getJob(jobID);
+        if(job != null && job.isSubJob()) {
+            screen.setUrl("app/jobs/{jobId}/log-site-clear");
+            screen.setPhotoUrl("app/jobs/{jobId}/photos");
+            screen.setUpload(true);
+        }else{
+            screen.setUrl("app/subjob/{jobId}/complete-site-activity-tasks");
+            screen.setPhotoUrl("app/subjob/{jobId}/photo");
+            screen.setUpload(true);
+        }
+        boolean isShowSubmitButton = true;
+
+        Answer answer = dbHandler.getAnswer(submission.getID() , "isSiteClear" , null , 0);
+        if(answer != null  && !TextUtils.isEmpty(answer.getAnswer()) && answer.getAnswer().equalsIgnoreCase("true")){
+            Answer raiseATask = dbHandler.getAnswer(submission.getID(), "isRaiseATask" , null , 0);
+            if(raiseATask != null){
+                dbHandler.removeAnswer(raiseATask);
+            }
+        }
+
+        answer = dbHandler.getAnswer(submission.getID() , "isRaiseATask" , null , 0);
+
+        if(answer != null && !TextUtils.isEmpty(answer.getAnswer()) && answer.getAnswer().equalsIgnoreCase("true")){
+            screen.setUrl(null);
+            screen.setPhotoUrl(null);
+            screen.setUpload(false);
+            isShowSubmitButton = false;
+        }
+        showSubmitButton(isShowSubmitButton);
     }
 
     private boolean isRFNAEnable() {
 
-        Job job = DBHandler.getInstance().getJob(jobID);
+        Job job = dbHandler.getJob(jobID);
         boolean hasRFNA = job != null && job.hasRFNA();
 
         return !hasRFNA &&
-                DBHandler.getInstance().getJobModuleStatus(jobID, "Start on Site") &&
-                !DBHandler.getInstance().getJobModuleStatus(jobID, "Eng Comp");
+                dbHandler.getJobModuleStatus(jobID, "Start on Site") &&
+                !dbHandler.getJobModuleStatus(jobID, "Eng Comp");
     }
 
     private int getChamberCount() {
-        Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "noOfChambers",
+        Answer answer = dbHandler.getAnswer(submission.getID(), "noOfChambers",
                 null, 0);
         if (answer == null) {
             return 0;
@@ -236,6 +272,9 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         recyclerView.setHasFixedSize(true);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(formAdapter);
+        if(submission.getJsonFileName().contains("job_site_clear") && screen.getIndex() == 0) {
+            manageSiteClear();
+        }
         return rootView;
     }
 
@@ -255,7 +294,6 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         listener.onScreenChange(screen);
         formAdapter.reInflateItems(true);
         formAdapter.notifyDataSetChanged();
-
     }
 
 
@@ -272,17 +310,27 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         formAdapter.removeUnnecessaryTasks();
         String url = screen.getUrl();
         if (screen.isUpload() && !TextUtils.isEmpty(url)) {
+//            if (submission.getJsonFileName().contains("job_site_clear")) {
+//                Answer answer = dbHandler.getAnswer(submission.getID() , "isRaiseATask" , null , 0);
+//                if(answer != null &&
+//                        !TextUtils.isEmpty(answer.getAnswer()) &&
+//                        answer.getAnswer().equalsIgnoreCase("true")){
+//                    submitSiteClear();
+//                }
+//                return;
+//            }
             if (url.equalsIgnoreCase("appstores/logtojob")) {
                 sendLogJobRequest();
                 return;
             }
+
             if (submission.getJsonFileName().equalsIgnoreCase("timesheet_submit_timesheet.json")) {
                 sendToServer();
                 return;
             }
 
             if (screen.isUpload() && submission.getJsonFileName().equalsIgnoreCase("schedule_inspection.json")) {
-                Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "estimateNo" , null , 0);
+                Answer answer = dbHandler.getAnswer(submission.getID() , "estimateNo" , null , 0);
                 if(answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
                     getEstimateOperative(answer.getAnswer(), 2 , true);
                 }else{
@@ -308,7 +356,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             jobModuleStatus.setSubmissionId(submission.getID());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
             jobModuleStatus.setSelectedDate(sdf.format(new Date()));
-            DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+            dbHandler.replaceData(JobModuleStatus.DBTable.NAME,
                     jobModuleStatus.toContentValues());
             ((Activity) context).finish();
         } else if (submission.getJsonFileName().equalsIgnoreCase("poling_asset_data.json")) {
@@ -317,7 +365,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             startActivityForResult(intent, ASSET_DATA_RESULT);
         } else if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json") &&
                 screen.getIndex() == 0) {
-            Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "canOverheadGangComplete",
+            Answer answer = dbHandler.getAnswer(submission.getID(), "canOverheadGangComplete",
                     null, 0);
             if (answer != null && (answer.getAnswer().equals("false") || answer.getAnswer().equals("2"))) {
                 listener.goToNextScreen(38);
@@ -326,7 +374,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             }
         } else if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json") &&
                 screen.getIndex() == 1) {
-            Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "isAPolingSolutionRequired",
+            Answer answer = dbHandler.getAnswer(submission.getID(), "isAPolingSolutionRequired",
                     null, 0);
             if (answer != null && (answer.getAnswer().equals("false") || answer.getAnswer().equals("2"))) {
                 listener.goToNextScreen(6);
@@ -337,7 +385,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
 
         } else if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json") &&
                 screen.getIndex() == 7) {
-            Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "isAerialCableRequired",
+            Answer answer = dbHandler.getAnswer(submission.getID(), "isAerialCableRequired",
                     null, 0);
             if (answer != null && (answer.getAnswer().equals("false") || answer.getAnswer().equals("2"))) {
                 listener.goToNextScreen(10);
@@ -348,7 +396,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         } else if (submission.getJsonFileName().equalsIgnoreCase("good_2_go.json") &&
                 screen.getIndex() == 11) {
 
-            Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "areDropwiresRequired",
+            Answer answer = dbHandler.getAnswer(submission.getID(), "areDropwiresRequired",
                     null, 0);
             if (answer != null && (answer.getAnswer().equals("false") || answer.getAnswer().equals("2"))) {
                 listener.goToNextScreen(15);
@@ -361,6 +409,21 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
 
     }
 
+    private void submitSiteClear() {
+        Answer answer = dbHandler.getAnswer(submission.getID() , "isRaiseATask" , null , 0);
+        if(answer != null &&
+                !TextUtils.isEmpty(answer.getAnswer()) &&
+                answer.getAnswer().equalsIgnoreCase("true")){
+            return;
+        }
+
+        sendToServer();
+    }
+
+    public void goToScreen(int screenIndex){
+        listener.goToNextScreen(screenIndex);
+    }
+
     private void setJobModuleStatus(Submission submission) {
         JobModuleStatus jobModuleStatus = new JobModuleStatus();
         jobModuleStatus.setStatus(true);
@@ -369,7 +432,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         jobModuleStatus.setSubmissionId(submission.getID());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         jobModuleStatus.setSelectedDate(sdf.format(new Date()));
-        DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+        dbHandler.replaceData(JobModuleStatus.DBTable.NAME,
                 jobModuleStatus.toContentValues());
     }
 
@@ -390,7 +453,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         if (!CommonUtils.isNetworkAvailable(context)) {
             String title = "Submission Error";
             String message = "Internet connection is not available. Please check your internet connection.";
-            DBHandler.getInstance().setSubmissionQueued(submission);
+            dbHandler.setSubmissionQueued(submission);
             showErrorDialog(title, message, false);
             return;
         }
@@ -412,7 +475,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 answer.setRepeatID(null);
                 answer.setRepeatCount(0);
 
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
 
                 Answer qty = new Answer(submission.getID(), "Quantity");
                 qty.setDisplayAnswer(String.valueOf(items.getquantity()));
@@ -421,7 +484,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 qty.setRepeatCount(0);
 
 
-                DBHandler.getInstance().replaceData(Answer.DBTable.NAME, qty.toContentValues());
+                dbHandler.replaceData(Answer.DBTable.NAME, qty.toContentValues());
 
 
                 final Response response = new ConnectionHelper(context).
@@ -432,19 +495,19 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 if (response != null) {
                     if (response.isSuccessful()) {
                         if (i == count - 1) {
-                            DBHandler.getInstance().removeAnswers(submission);
+                            dbHandler.removeAnswers(submission);
                             JobModuleStatus jobModuleStatus = new JobModuleStatus();
                             jobModuleStatus.setStatus(true);
                             jobModuleStatus.setJobId(jobID);
                             jobModuleStatus.setModuleName(formTitle);
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
                             jobModuleStatus.setSelectedDate(sdf.format(new Date()));
-                            DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+                            dbHandler.replaceData(JobModuleStatus.DBTable.NAME,
                                     jobModuleStatus.toContentValues());
                         }
                     }
-                    DBHandler.getInstance().removeAnswer(answer);
-                    DBHandler.getInstance().removeAnswer(qty);
+                    dbHandler.removeAnswer(answer);
+                    dbHandler.removeAnswer(qty);
                 }
                 if (i == count - 1) {
                     handler.post(() -> {
@@ -492,20 +555,20 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         jobModuleStatus.setModuleName(formTitle);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         jobModuleStatus.setSelectedDate(sdf.format(new Date()));
-        DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+        dbHandler.replaceData(JobModuleStatus.DBTable.NAME,
                 jobModuleStatus.toContentValues());
 
         if (!CommonUtils.isNetworkAvailable(context)) {
             String title = "Submission Error";
             String message = "Internet connection is not available. Please check your internet connection.";
-            DBHandler.getInstance().setSubmissionQueued(submission);
+            dbHandler.setSubmissionQueued(submission);
             showErrorDialog(title, message, false);
             return;
         }
 
         listener.showProgressBar();
         new Thread(() -> {
-            ArrayList<Answer> allanswers = DBHandler.getInstance().getAnswers(submission.getID());
+            ArrayList<Answer> allanswers = dbHandler.getAnswers(submission.getID());
             ArrayList<Answer> photos = new ArrayList<>();
 
             for (int i = 0; i < allanswers.size(); i++) {
@@ -514,7 +577,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 }
             }
 
-            ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submission.getID(), "StaStockItemId", "Items");
+            ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submission.getID(), "StaStockItemId", "Items");
             int count = answers.size();
 
             String uniqueId = UUID.randomUUID().toString();
@@ -524,12 +587,12 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 jsonObject.addProperty("submissionId", uniqueId);
                 jsonObject.addProperty("StaStockItemId", items.getAnswer());
 
-                Answer qty = DBHandler.getInstance().getAnswer(submission.getID(), "Quantity", "Items", items.getRepeatCount());
+                Answer qty = dbHandler.getAnswer(submission.getID(), "Quantity", "Items", items.getRepeatCount());
                 if (qty != null) {
                     jsonObject.addProperty("Quantity", qty.getAnswer());
                 }
 
-                Answer JobId = DBHandler.getInstance().getAnswer(submission.getID(), "JobId", null, 0);
+                Answer JobId = dbHandler.getAnswer(submission.getID(), "JobId", null, 0);
                 if (JobId != null) {
                     submission.setJobID(JobId.getAnswer());
                     jsonObject.addProperty("JobId", JobId.getAnswer());
@@ -537,12 +600,12 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     jsonObject.addProperty("JobId", submission.getJobID());
                 }
 
-                Answer StaId = DBHandler.getInstance().getAnswer(submission.getID(), "StaId", "Items", items.getRepeatCount());
+                Answer StaId = dbHandler.getAnswer(submission.getID(), "StaId", "Items", items.getRepeatCount());
                 if (StaId != null) {
                     jsonObject.addProperty("StaId", StaId.getAnswer());
                 }
 
-                Answer Comments = DBHandler.getInstance().getAnswer(submission.getID(), "Comments", null, 0);
+                Answer Comments = dbHandler.getAnswer(submission.getID(), "Comments", null, 0);
                 if (Comments != null) {
                     jsonObject.addProperty("Comments", Comments.getAnswer());
                 }
@@ -555,7 +618,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     String photoUrl = screen.getPhotoUrl();
                     photoUrl = photoUrl.replace("{jobId}", submission.getJobID());
                     new ConnectionHelper(context).uploadPhotos(photos, uniqueId, photoUrl, getChildFragmentManager(), "");
-                    DBHandler.getInstance().removeAnswers(submission);
+                    dbHandler.removeAnswers(submission);
                 }
 
 
@@ -643,7 +706,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         if (!CommonUtils.isNetworkAvailable(context)) {
             String title = "Submission Error";
             String message = "Internet connection is not available. Please check your internet connection. Your request is submitted in Queue.";
-            DBHandler.getInstance().setSubmissionQueued(submission);
+            dbHandler.setSubmissionQueued(submission);
             setJobModuleStatus(submission);
             setBookOffOnStatus();
             setTimeSheetBookOffOnStatus();
@@ -678,13 +741,13 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             }
 
             if (response == null || !response.isSuccessful()) {
-                DBHandler.getInstance().setSubmissionQueued(submission);
+                dbHandler.setSubmissionQueued(submission);
             }
 
             setBookOffOnStatus();
             setTimeSheetBookOffOnStatus();
             if (submission.getJsonFileName().equalsIgnoreCase("finish_on_site.json")) {
-                Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "rfna", null, 0);
+                Answer answer = dbHandler.getAnswer(submission.getID(), "rfna", null, 0);
                 if (answer != null && !TextUtils.isEmpty(answer.getAnswer()) && answer.getAnswer().equalsIgnoreCase("true")) {
                     new ConnectionHelper(context).sendRfna(submission);
                     JobModuleStatus status = new JobModuleStatus();
@@ -694,14 +757,14 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     status.setSubmissionId(submission.getID());
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
                     status.setSelectedDate(sdf.format(new Date()));
-                    DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+                    dbHandler.replaceData(JobModuleStatus.DBTable.NAME,
                             status.toContentValues());
 
                 }
             }
 
             if (response != null && response.isSuccessful()) {
-                DBHandler.getInstance().removeAnswers(submission);
+                dbHandler.removeAnswers(submission);
             }
 
             JobModuleStatus jobModuleStatus = new JobModuleStatus();
@@ -710,7 +773,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             jobModuleStatus.setModuleName(formTitle);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
             jobModuleStatus.setSelectedDate(sdf.format(new Date()));
-            DBHandler.getInstance().replaceData(JobModuleStatus.DBTable.NAME,
+            dbHandler.replaceData(JobModuleStatus.DBTable.NAME,
                     jobModuleStatus.toContentValues());
 
             Response finalResponse = response;
@@ -759,7 +822,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         if (!CommonUtils.validateToken(context)) {
             return;
         }
-        User user = DBHandler.getInstance().getUser();
+        User user = dbHandler.getUser();
         listener.showProgressBar();
         CallUtils.enqueueWithRetry(APICalls.getJobList(user.gettoken()) , new Callback<JobResponse>() {
             @Override
@@ -770,10 +833,10 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 }
                 if (response.isSuccessful() && response.body() != null) {
                     List<Job> jobs = response.body().getJobs();
-                    DBHandler.getInstance().resetJobs();
+                    dbHandler.resetJobs();
                     if (jobs != null && !jobs.isEmpty()) {
                         for (Job j : jobs) {
-                            DBHandler.getInstance().replaceData(Job.DBTable.NAME, j.toContentValues());
+                            dbHandler.replaceData(Job.DBTable.NAME, j.toContentValues());
                         }
                     }
                 }
@@ -845,7 +908,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                 startActivityForResult(intent, STORE_DETAIL_REQUEST);
             } else if (requestCode == STORE_DETAIL_REQUEST) {
 
-                ArrayList<Answer> answers = DBHandler.getInstance().getRepeatedAnswers(submission.getID(), "StaStockItemId", "Items");
+                ArrayList<Answer> answers = dbHandler.getRepeatedAnswers(submission.getID(), "StaStockItemId", "Items");
                 if (answers != null) {
                     String stockItemId = data.getStringExtra("stockItemId");
                     int count = answers.size();
@@ -858,7 +921,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     }
 
 
-                    Answer answer = DBHandler.getInstance().getAnswer(submission.getID(), "StaStockItemId",
+                    Answer answer = dbHandler.getAnswer(submission.getID(), "StaStockItemId",
                             "Items", count);
                     if (answer == null || TextUtils.isEmpty(answer.getAnswer())) {
                         answer = new Answer(submission.getID(), "StaStockItemId");
@@ -868,10 +931,10 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     answer.setRepeatCount(count);
                     answer.setRepeatID("Items");
 
-                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, answer.toContentValues());
+                    dbHandler.replaceData(Answer.DBTable.NAME, answer.toContentValues());
 
 
-                    Answer Quantity = DBHandler.getInstance().getAnswer(submission.getID(), "Quantity",
+                    Answer Quantity = dbHandler.getAnswer(submission.getID(), "Quantity",
                             "Items", count);
                     if (Quantity == null || TextUtils.isEmpty(Quantity.getAnswer())) {
                         Quantity = new Answer(submission.getID(), "Quantity");
@@ -880,10 +943,10 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     Quantity.setRepeatCount(count);
                     Quantity.setRepeatID("Items");
 
-                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, Quantity.toContentValues());
+                    dbHandler.replaceData(Answer.DBTable.NAME, Quantity.toContentValues());
 
 
-                    Answer StaId = DBHandler.getInstance().getAnswer(submission.getID(), "StaId",
+                    Answer StaId = dbHandler.getAnswer(submission.getID(), "StaId",
                             "Items", count);
                     if (StaId == null) {
                         StaId = new Answer(submission.getID(), "StaId");
@@ -892,14 +955,14 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     StaId.setRepeatCount(count);
                     StaId.setAnswer(data.getStringExtra("StaId"));
 
-                    ItemType itemType = DBHandler.getInstance().getItemType(StoreDataset.DBTable.stas, data.getStringExtra("StaId"));
+                    ItemType itemType = dbHandler.getItemType(StoreDataset.DBTable.stas, data.getStringExtra("StaId"));
                     if (itemType != null) {
                         StaId.setDisplayAnswer(itemType.getDisplayItem());
                     }
-                    DBHandler.getInstance().replaceData(Answer.DBTable.NAME, StaId.toContentValues());
+                    dbHandler.replaceData(Answer.DBTable.NAME, StaId.toContentValues());
                 }
             } else if (requestCode == 10001) {
-                Answer answer = DBHandler.getInstance().getAnswer(submission.getID() , "weekCommencing", null , 0);
+                Answer answer = dbHandler.getAnswer(submission.getID() , "weekCommencing", null , 0);
                 if(answer != null && !TextUtils.isEmpty(answer.getAnswer())) {
                     getTimeSheetHours(answer.getAnswer());
                 }
@@ -914,7 +977,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         }
 
         showProgressBar();
-        User user = DBHandler.getInstance().getUser();
+        User user = dbHandler.getUser();
 
         CallUtils.enqueueWithRetry(APICalls.getTimesheetHours(user.gettoken() , weekCommencing), new Callback<TimeSheetHours>() {
             @Override
@@ -1145,7 +1208,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             return;
         }
         listener.showProgressBar();
-        CallUtils.enqueueWithRetry(APICalls.GetJobEstimateDetail(estno, DBHandler.getInstance().getUser().gettoken()),new Callback<JobEstimate>() {
+        CallUtils.enqueueWithRetry(APICalls.GetJobEstimateDetail(estno, dbHandler.getUser().gettoken()),new Callback<JobEstimate>() {
             @Override
             public void onResponse(@NonNull Call<JobEstimate> call, @NonNull retrofit2.Response<JobEstimate> response) {
                 if (CommonUtils.onTokenExpired(context, response.code())) {
@@ -1179,11 +1242,11 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
     private void getInsQue() {
         listener.showProgressBar();
         String latestTemplateVersionId = submission.getJobID();
-        ArrayList<Answer> answersinspections = DBHandler.getInstance().getAnswers(submission.getID());
+        ArrayList<Answer> answersinspections = dbHandler.getAnswers(submission.getID());
         for (int c = 0; c < answersinspections.size(); c++) {
             Answer answer = answersinspections.get(c);
             if (!TextUtils.isEmpty(answer.getUploadID()) && answer.getUploadID().equalsIgnoreCase("inspectionId")) {
-                latestTemplateVersionId = DBHandler.getInstance().getLatestInspectionTemplateId(answer.getAnswer());
+                latestTemplateVersionId = dbHandler.getLatestInspectionTemplateId(answer.getAnswer());
             }
         }
         String finalLatestTemplateVersionId = latestTemplateVersionId;
@@ -1192,7 +1255,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
             showValidationDialog("Start Inspection  Error", "Internet connection is not available. Please check your internet connection.");
             return;
         }
-        User user = DBHandler.getInstance().getUser();
+        User user = dbHandler.getUser();
         CallUtils.enqueueWithRetry(APICalls.GetInspectionToolTipList(finalLatestTemplateVersionId, user.gettoken()),new Callback<ArrayList<ToolTipModel>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<ToolTipModel>> call, @NonNull retrofit2.Response<ArrayList<ToolTipModel>> response) {
@@ -1205,7 +1268,7 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                         AppPreferences.setTheme(1);
                         String jsonFileName = "slg_inspection.json";
                         submission.setJsonFile(jsonFileName);
-                        long submissionID = DBHandler.getInstance().replaceData(Submission.DBTable.NAME, submission.toContentValues());
+                        long submissionID = dbHandler.replaceData(Submission.DBTable.NAME, submission.toContentValues());
                         submission.setJobID(finalLatestTemplateVersionId); // for tempplate
                         Intent intent = new Intent(context, FormActivity.class);
                         intent.putExtra(FormActivity.ARG_SUBMISSION, submission);
@@ -1233,4 +1296,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
         dialogFragment.show(getChildFragmentManager() , dialogFragment.toString());
     }
 
+    @Override
+    public void showSubmitButton(boolean isShowSubmitButton) {
+        listener.onScreenChange(screen);
+    }
 }

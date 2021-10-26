@@ -4,10 +4,12 @@ package co.uk.depotnet.onsa.networking;
 public class Constants {
 
     public final static String IS_BOOK_ON = "is_book_on";
+    public static boolean isMyJobEnabled;
     public static boolean isStoreEnabled;
     public static boolean isHSEQEnabled;
     public static boolean isTimeSheetEnabled;
     public static boolean isIncidentEnabled;
+    public static final String FEATURE_JOB_MANAGEMENT = "Job Management";
     public static final String FEATURE_STORE = "Stores";
     public static final String FEATURE_HSEQ = "HSEQ";
     public static final String FEATURE_TIMESHEET = "Timesheets";

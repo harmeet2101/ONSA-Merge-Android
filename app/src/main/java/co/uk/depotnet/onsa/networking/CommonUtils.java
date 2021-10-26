@@ -136,6 +136,7 @@ public class CommonUtils {
     }
 
     public static void activeFeatures(DBHandler dbHandler){
+        Constants.isMyJobEnabled = dbHandler.isFeatureActive(Constants.FEATURE_JOB_MANAGEMENT);
         Constants.isStoreEnabled = dbHandler.isFeatureActive(Constants.FEATURE_STORE);
         Constants.isHSEQEnabled = dbHandler.isFeatureActive(Constants.FEATURE_HSEQ);
         Constants.isTimeSheetEnabled = dbHandler.isFeatureActive(Constants.FEATURE_TIMESHEET);
