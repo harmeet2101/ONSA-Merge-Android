@@ -8,7 +8,7 @@ android {
         targetSdkVersion 30
         // as per client requirement keeping all store same version of build
         versionCode 149
-        versionName "3.3.0"
+        versionName "3.3.1"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -63,13 +63,13 @@ android {
 
         // all flavoured types with dev build version no
 
-//        store_uat_kier {
-//          initWith debug
-//          applicationIdSuffix ".store.kier.uat"
-//          buildConfigField("String", "BASE_URL", '"https://uat-onsa-kier-api.depotnet.co.uk/"')
-//          resValue "string", "app_name", "KIER-ONSA-STORE-UAT"
-//          project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+        /*store_uat_kier {
+          initWith debug
+          applicationIdSuffix ".store.kier.uat"
+          buildConfigField("String", "BASE_URL", '"https://uat-onsa-kier-api.depotnet.co.uk/"')
+          resValue "string", "app_name", "KIER-ONSA-STORE-UAT"
+          project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }*/
 
 //        store_live_kier {
 //            initWith debug
@@ -171,13 +171,13 @@ android {
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
 
-//        store_uat_kieraw {
-//            initWith debug
-//            applicationIdSuffix ".store.kieraw.uat"
-//            buildConfigField("String", "BASE_URL", '"https://uat-stores-kieraw-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "KierAW-UAT"
-//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+        store_uat_kieraw {
+            initWith debug
+            applicationIdSuffix ".store.kieraw.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-stores-kieraw-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "KierAW-UAT"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }
     }
 
     lintOptions {

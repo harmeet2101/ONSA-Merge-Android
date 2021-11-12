@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.activities.CurrentStoreActivity;
 import co.uk.depotnet.onsa.activities.FormActivity;
@@ -63,6 +64,10 @@ public class FragmentStore extends Fragment implements
         view.findViewById(R.id.rl_receipts).setOnClickListener(this);
         view.findViewById(R.id.rl_my_request).setOnClickListener(this);
         view.findViewById(R.id.btn_img_cancel).setOnClickListener(v -> ((Activity)context).onBackPressed());
+
+        if(BuildConfig.BUILD_TYPE=="store_uat_kieraw"){
+            ((TextView)view.findViewById(R.id.txt_toolbar_title)).setText("STORE");
+        }
 
         txtReceiptNoti = view.findViewById(R.id.txt_receipt_notification);
         txtRequestNoti = view.findViewById(R.id.txt_request_notification);
