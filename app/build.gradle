@@ -22,15 +22,15 @@ android {
     // signin key - onsa_store@1234
     buildTypes {
 
-//        debug {
-//            initWith debug
-//            //android.defaultConfig.versionName "2.2.2"
-//            //android.defaultConfig.versionCode 51
-//            applicationIdSuffix ".features.hseq.dev"
-//            buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "Onsa BAU Dev"
-//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+        debug {
+            initWith debug
+            //android.defaultConfig.versionName "2.2.2"
+            //android.defaultConfig.versionCode 51
+            applicationIdSuffix ".features.hseq.dev"
+            buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "Onsa BAU Dev"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }
 
         /*subjob {
             initWith debug
@@ -79,13 +79,13 @@ android {
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
 
-//        store_uat_mjq {
-//            initWith debug
-//            applicationIdSuffix ".store.mjq.uat"
-//            buildConfigField("String", "BASE_URL", '"https://uat-onsa-mjq-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "MJQ-ONSA-STORE-UAT"
-//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+        /*store_uat_mjq {
+            initWith debug
+            applicationIdSuffix ".store.mjq.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-onsa-mjq-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "MJQ-ONSA-STORE-UAT"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }*/
 
 //        store_live_mjq {
 //            initWith debug
@@ -96,13 +96,13 @@ android {
 //        }
 
 
-//        store_uat_mapgroup {
-//            initWith debug
-//            applicationIdSuffix ".store.mapgroup.uat"
-//            buildConfigField("String", "BASE_URL", '"https://uat-onsa-mapgroup-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "MAP Group-Onsa-UAT"
-//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+        /*store_uat_mapgroup {
+            initWith debug
+            applicationIdSuffix ".store.mapgroup.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-onsa-mapgroup-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "MAP Group-Onsa-UAT"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }*/
 
 //        store_live_mapgroup {
 //            initWith debug
@@ -112,13 +112,13 @@ android {
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
 
-//        store_uat_instalor {
-//            initWith debug
-//            applicationIdSuffix ".store.instalor.uat"
-//            buildConfigField("String", "BASE_URL", '"https://uat-onsa-instalor-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "InstalOr-Onsa-UAT"
-//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+       /* store_uat_instalor {
+            initWith debug
+            applicationIdSuffix ".store.instalor.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-onsa-instalor-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "InstalOr-Onsa-UAT"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }*/
 
 //        store_live_instalor_mdm {
 //            initWith debug
@@ -138,13 +138,13 @@ android {
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
 
-//        store_uat_lightsource {
-//            initWith debug
-//            applicationIdSuffix ".store.lightsource.uat"
-//            buildConfigField("String", "BASE_URL", '"https://uat-onsa-lightsource-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "Lightsource-UAT"
-//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+        /*store_uat_lightsource {
+            initWith debug
+            applicationIdSuffix ".store.lightsource.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-onsa-lightsource-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "Lightsource-UAT"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }*/
 
         //as client confirm to use same base url for live and uat for lightsource
 //        store_live_lightsource {
@@ -155,13 +155,13 @@ android {
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
 
-        store_uat_lipsum {
+        /*store_uat_lipsum {
             initWith debug
             applicationIdSuffix ".store.ipsum.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-ipsum-api.depotnet.co.uk/"')
             resValue "string", "app_name", "Ipsum-UAT"
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-        }
+        }*/
 
 //        store_uat_iti {
 //            initWith debug
@@ -171,13 +171,13 @@ android {
 //            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
 //        }
 
-        store_uat_kieraw {
+        /*store_uat_kieraw {
             initWith debug
             applicationIdSuffix ".store.kieraw.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-stores-kieraw-api.depotnet.co.uk/"')
             resValue "string", "app_name", "KierAW-UAT"
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-        }
+        }*/
     }
 
     lintOptions {

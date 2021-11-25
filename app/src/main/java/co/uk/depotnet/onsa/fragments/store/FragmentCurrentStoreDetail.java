@@ -145,7 +145,8 @@ public class FragmentCurrentStoreDetail extends Fragment implements View.OnClick
                 openFormActivity("store_log_request_multi.json", "Request");
                 break;
             case R.id.ll_btn_transfer:
-                openFormActivity("store_log_transfer.json", "Transfer");
+                openFormActivity(DBHandler.getInstance().getUser().isStoresManager()?"store_log_transfer_store_manager.json":
+                        "store_log_transfer.json", "Transfer");
                 break;
             case R.id.btn_img_cancel:
                 ((Activity)context).onBackPressed();

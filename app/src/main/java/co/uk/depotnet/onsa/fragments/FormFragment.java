@@ -939,7 +939,8 @@ public class FormFragment extends Fragment implements FormAdapterListener, OnCha
                     if (Quantity == null || TextUtils.isEmpty(Quantity.getAnswer())) {
                         Quantity = new Answer(submission.getID(), "Quantity");
                     }
-                    Quantity.setAnswer(String.valueOf(data.getIntExtra("stock_quantity", 0)));
+                    Double stockQty = data.getDoubleExtra("stock_quantity", 0);
+                    Quantity.setAnswer(String.valueOf(stockQty.intValue()));
                     Quantity.setRepeatCount(count);
                     Quantity.setRepeatID("Items");
 

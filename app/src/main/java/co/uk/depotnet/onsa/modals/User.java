@@ -43,6 +43,7 @@ public class User implements Parcelable {
     private boolean siteClear;
     private boolean completeTimesheets;
     private String qrCodeBase64;
+    private boolean isStoresManager;
 
     public void setTwoFactorMandatory(boolean twoFactorMandatory) {
         this.twoFactorMandatory = twoFactorMandatory;
@@ -71,6 +72,7 @@ public class User implements Parcelable {
         siteClear = in.readInt() == 1;
         completeTimesheets = in.readInt() == 1;
         qrCodeBase64 = in.readString();
+        isStoresManager =in.readInt()==1;
     }
 
     public User(Cursor cursor) {
@@ -100,6 +102,7 @@ public class User implements Parcelable {
         siteClear = cursor.getInt(cursor.getColumnIndex(DBTable.siteClear)) == 1;
         completeTimesheets = cursor.getInt(cursor.getColumnIndex(DBTable.completeTimesheets)) == 1;
         qrCodeBase64 = cursor.getString(cursor.getColumnIndex(DBTable.qrCodeBase64));
+        isStoresManager = cursor.getInt(cursor.getColumnIndex(DBTable.isStoresManager)) == 1;
 
     }
 
@@ -235,6 +238,14 @@ public class User implements Parcelable {
         isDisclaimerAccepted = disclaimerAccepted;
     }
 
+    public boolean isStoresManager() {
+        return isStoresManager;
+    }
+
+    public void setStoresManager(boolean storesManager) {
+        isStoresManager = storesManager;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -264,6 +275,7 @@ public class User implements Parcelable {
         dest.writeInt(siteClear ? 1 : 0);
         dest.writeInt(completeTimesheets ? 1 : 0);
         dest.writeString(qrCodeBase64);
+        dest.writeInt(isStoresManager ? 1 : 0);
     }
 
     public ContentValues toContentValues() {
@@ -304,6 +316,7 @@ public class User implements Parcelable {
         cv.put(DBTable.siteClear, this.siteClear);
         cv.put(DBTable.completeTimesheets, this.completeTimesheets);
         cv.put(DBTable.qrCodeBase64, this.qrCodeBase64);
+        cv.put(DBTable.isStoresManager, this.isStoresManager);
 
         return cv;
     }
@@ -332,6 +345,7 @@ public class User implements Parcelable {
         public static final String siteClear = "siteClear";
         public static final String completeTimesheets = "completeTimesheets";
         public static final String qrCodeBase64 = "qrCodeBase64";
+        public static final String isStoresManager = "isStoresManager";
 
     }
 }

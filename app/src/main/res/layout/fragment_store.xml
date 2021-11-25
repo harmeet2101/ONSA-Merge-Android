@@ -75,6 +75,38 @@
    </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/rl_goods_in"
+        android:layout_width="match_parent"
+        android:padding="@dimen/_8sdp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:layout_margin="@dimen/_4sdp"
+        android:gravity="center_vertical"
+        android:background="@drawable/et_background">
+
+        <ImageView
+            android:id="@+id/img_goods_in"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            app:srcCompat="@drawable/ic_goods_out"
+            app:tint="@color/depotnet_color"/>
+
+        <TextView
+            android:layout_toRightOf="@+id/img_goods_in"
+            android:layout_toEndOf="@+id/img_goods_in"
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginLeft="@dimen/_8sdp"
+            android:layout_marginEnd="@dimen/_8sdp"
+            android:layout_marginRight="@dimen/_8sdp"
+            android:text="@string/goods_in"
+            android:textColor="@color/txt_color_dark"
+            android:textSize="@dimen/_10sdp" />
+    </RelativeLayout>
+    <RelativeLayout
         android:id="@+id/rl_goods_out"
         android:layout_width="match_parent"
         android:padding="@dimen/_8sdp"

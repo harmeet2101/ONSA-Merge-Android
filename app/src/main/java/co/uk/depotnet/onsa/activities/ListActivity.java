@@ -137,7 +137,9 @@ public class ListActivity extends ThemeBaseActivity
             getOperativeHseqItem();
         } else if (keyItemType.equalsIgnoreCase(TimesheetOperative.DBTable.NAME)) {
             getTimeSheetOperatives();
-        } else {
+        } else if(keyItemType.equalsIgnoreCase("TransferTypeId")){
+
+        }else {
             ArrayList<ItemType> itemTypes = dbHandler.getItemTypes(keyItemType);
             for (ItemType w :
                     itemTypes) {

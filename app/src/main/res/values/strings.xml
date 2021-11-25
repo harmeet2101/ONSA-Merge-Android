@@ -194,6 +194,7 @@
     <string name="my_current_store">My Current Stores</string>
     <string name="current_stores">Current Stores</string>
     <string name="goods_out">Goods Out</string>
+    <string name="goods_in">Goods In</string>
     <string name="reciepts">Reciepts</string>
     <string name="my_requests">My Requests</string>
 

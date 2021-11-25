@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -31,11 +32,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import co.uk.depotnet.onsa.database.DBHandler;
 import co.uk.depotnet.onsa.fragments.FragmentKitBag;
 import co.uk.depotnet.onsa.fragments.FragmentQueue;
 import co.uk.depotnet.onsa.listeners.GetFetchListener;
 import co.uk.depotnet.onsa.modals.Job;
 import co.uk.depotnet.onsa.modals.responses.JobResponse;
+import co.uk.depotnet.onsa.modals.store.DataMyStores;
 import co.uk.depotnet.onsa.networking.CallUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -127,6 +130,8 @@ public class WelcomeActivity extends BaseActivity implements
             public void onFailure(@NonNull Call<ArrayList<NotifyModel>> call, @NonNull Throwable t) {
             }
         });
+
+        getCurrentStoreList();
     }
 
     private void getJobs() {
@@ -157,6 +162,42 @@ public class WelcomeActivity extends BaseActivity implements
 
             @Override
             public void onFailure(@NonNull Call<JobResponse> call, @NonNull Throwable t) {
+
+            }
+        });
+    }
+
+    private void getCurrentStoreList() {
+
+        if (!CommonUtils.isNetworkAvailable(WelcomeActivity.this)) {
+
+            return;
+        }
+        if(!CommonUtils.validateToken(WelcomeActivity.this)){
+            return;
+        }
+        CallUtils.enqueueWithRetry(APICalls.getMyStore(user.gettoken()),new Callback<DataMyStores>() {
+
+
+            @Override
+            public void onResponse(@NonNull Call<DataMyStores> call,
+                                   @NonNull Response<DataMyStores> response) {
+
+                if(CommonUtils.onTokenExpired(WelcomeActivity.this , response.code())){
+                    return;
+                }
+
+                if (response.isSuccessful()) {
+                    DBHandler.getInstance().resetMyStores();//to reset my store
+                    DataMyStores dataMyStores = response.body();
+                    if (dataMyStores != null) {
+                        dataMyStores.toContentValues();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DataMyStores> call, @NonNull Throwable t) {
 
             }
         });

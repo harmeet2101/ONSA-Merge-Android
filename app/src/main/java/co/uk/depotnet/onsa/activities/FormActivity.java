@@ -470,7 +470,7 @@ public class FormActivity extends ThemeBaseActivity implements
 
         for (String key : keys) {
             if (!key.endsWith("_qty")) {
-                FormItem fi = new FormItem("current_store", "", "StaStockItemId", repeatId, false);
+                FormItem fi = new FormItem("current_store", "", user.isStoresManager()?"stockItemId":"StaStockItemId", repeatId, false);
                 storeItems.add(fi);
                 fi.setMyStore((MyStore) map.get(key));
                 fi.setMyStoreQuantity((Integer) map.get(key + "_qty"));

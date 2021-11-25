@@ -16,7 +16,7 @@
         android:layout_marginBottom="@dimen/_4sdp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:context=".fragments.FormFragment"
-        tools:listitem="@layout/item_yes_no"/>
+        tools:listitem="@layout/item_yes_no" />
 
     <LinearLayout
         android:id="@+id/ll_btn_container"

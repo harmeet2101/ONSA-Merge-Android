@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -404,5 +405,6 @@ public class AdapterStore extends RecyclerView.Adapter<AdapterStore.ViewHolder> 
         this.originalItems.addAll(stores);
         this.items.addAll(originalItems);
         notifyDataSetChanged();
+        Log.e(AdapterStore.class.getSimpleName(),""+items.size());
     }
 }

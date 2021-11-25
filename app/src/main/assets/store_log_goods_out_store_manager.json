@@ -1,0 +1,21 @@
+{
+  "title": "Goods Out",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Goods Out",
+      "index": 0,
+      "url":"appstores/loggoodsout",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "ToUserId",
+          "key": "operatives",
+          "title": "To Operative",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

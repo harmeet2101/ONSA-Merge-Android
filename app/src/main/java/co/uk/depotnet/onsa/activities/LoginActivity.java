@@ -213,14 +213,6 @@ public class LoginActivity extends AppCompatActivity
     private void login() {
         showProgressBar();
 
-//      etUserName.setText("kimtest1");
-//      etPassword.setText("Whistle1!");
-//      etUserName.setText("harriet.abbott");
-//      etPassword.setText("Testing2!");
-//        etUserName.setText("AidanApp");
-//        etPassword.setText("Testing1!");
-//        etUserName.setText("sam1");
-//        etPassword.setText("PopPop247!");
         if(!CommonUtils.isNetworkAvailable(LoginActivity.this)){
             hideProgressBar();
             ErrorDialog dialog = new ErrorDialog(LoginActivity.this , "Please check your Internet connection","Error");

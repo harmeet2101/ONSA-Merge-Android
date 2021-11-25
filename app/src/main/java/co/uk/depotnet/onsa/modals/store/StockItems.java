@@ -301,6 +301,8 @@ public class StockItems implements Parcelable, DropDownItem {
         return this.getstockItemId();
     }
 
+
+
     public static class DBTable {
         public static final String NAME = "StockItems";
         public static final String departmentName = "departmentName";

@@ -293,7 +293,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         formItems.addAll(forkPosition, listItems);
                     }
                 }
-            } else if (!ifPosDFEAdded && item.getFormType() == FormItem.TYPE_ADD_POS_DFE) {
+            }
+            else if (!ifPosDFEAdded && item.getFormType() == FormItem.TYPE_ADD_POS_DFE) {
                 forkPosition = formItems.size() - 1;
                 ifPosDFEAdded = true;
                 listItems.clear();
@@ -312,7 +313,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         formItems.addAll(forkPosition, listItems);
                     }
                 }
-            } else if (!ifNegDFEAdded && item.getFormType() == FormItem.TYPE_ADD_NEG_DFE) {
+            }
+            else if (!ifNegDFEAdded && item.getFormType() == FormItem.TYPE_ADD_NEG_DFE) {
                 forkPosition = formItems.size() - 1;
                 ifNegDFEAdded = true;
                 listItems.clear();
@@ -331,7 +333,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         formItems.addAll(forkPosition, listItems);
                     }
                 }
-            } else if (!isLogMeasureAdded && item.getFormType() == FormItem.TYPE_ADD_LOG_MEASURE) {
+            }
+            else if (!isLogMeasureAdded && item.getFormType() == FormItem.TYPE_ADD_LOG_MEASURE) {
                 isLogMeasureAdded = true;
                 ArrayList<String> fields = item.getFields();
                 if (fields != null && !fields.isEmpty()) {
@@ -351,7 +354,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     }
 
                 }
-            } else if (!isDigMeasureAdded && item.getFormType() == FormItem.TYPE_ADD_DIG_MEASURE) {
+            }
+            else if (!isDigMeasureAdded && item.getFormType() == FormItem.TYPE_ADD_DIG_MEASURE) {
 
 
                 isDigMeasureAdded = true;
@@ -374,7 +378,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
                 }
-            } else if (!isLogHoursAdded && item.getFormType() == FormItem.TYPE_ADD_LOG_HOURS) {
+            }
+            else if (!isLogHoursAdded && item.getFormType() == FormItem.TYPE_ADD_LOG_HOURS) {
                 isLogHoursAdded = true;
                 ArrayList<String> fields = item.getFields();
                 if (fields != null && !fields.isEmpty()) {
@@ -393,7 +398,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         formItems.addAll(c, toBeAdded);
                     }
                 }
-            }else if (!isSiteClearAdded && item.getFormType() == FormItem.TYPE_ADD_SITE_CLEAR) {
+            }
+            else if (!isSiteClearAdded && item.getFormType() == FormItem.TYPE_ADD_SITE_CLEAR) {
                 isSiteClearAdded = true;
                 ArrayList<String> fields = item.getFields();
                 if (fields != null && !fields.isEmpty()) {
@@ -1819,7 +1825,8 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.view.setOnClickListener(view -> {
             Intent intent;
-            if (submission.getJsonFileName().equalsIgnoreCase("log_store.json")) {
+            if (submission.getJsonFileName().equalsIgnoreCase("log_store.json") ||
+                    submission.getJsonFileName().equalsIgnoreCase("store_standard_goods_in.json")) {
                 intent = new Intent(context, ListStoreItemActivity.class);
             } else {
                 intent = new Intent(context, ListStockItemActivity.class);
@@ -1902,54 +1909,58 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             return;
         }
 
+        User user = dbHandler.getUser();
+
         holder.txtDescription.setText(store.getdescription());
         holder.txtUnit.setText(store.getunitName());
         holder.txtQuantity.setText(String.valueOf(store.getquantity()));
         holder.txtNumber.setText(String.valueOf(formItem.getMyStoreQuantity()));
 
-        Answer staStockItemId = dbHandler.getAnswer(submissionID, "StaStockItemId",
-                formItem.getRepeatId(), formItem.getRepeatCount());
+        if(!user.isStoresManager()){
+            Answer ans = dbHandler.getAnswer(submissionID, "StaStockItemId",
+                    formItem.getRepeatId(), formItem.getRepeatCount());
 
-        if (staStockItemId == null) {
+            if (ans == null) {
 
-            staStockItemId = new Answer(submissionID, "StaStockItemId");
+                ans = new Answer(submissionID, "StaStockItemId");
 
+            }
+
+            ans.setAnswer(store.getStaStockItemId());
+            ans.setDisplayAnswer("");
+            ans.setRepeatID(formItem.getRepeatId());
+            ans.setRepeatCount(formItem.getRepeatCount());
+
+            dbHandler.replaceData(Answer.DBTable.NAME, ans.toContentValues());
+
+            Answer Quantity = dbHandler.getAnswer(submissionID, "Quantity",
+                    formItem.getRepeatId(), formItem.getRepeatCount());
+            if (Quantity == null) {
+                Quantity = new Answer(submissionID, "Quantity");
+            }
+
+            Quantity.setAnswer(String.valueOf(formItem.getMyStoreQuantity()));
+            Quantity.setDisplayAnswer("");
+            Quantity.setRepeatID(formItem.getRepeatId());
+            Quantity.setRepeatCount(formItem.getRepeatCount());
+
+            dbHandler.replaceData(Answer.DBTable.NAME, Quantity.toContentValues());
+
+            Answer StaId = dbHandler.getAnswer(submissionID, "StaId",
+                    formItem.getRepeatId(), formItem.getRepeatCount());
+            if (StaId == null) {
+
+                StaId = new Answer(submissionID, "StaId");
+
+            }
+
+            StaId.setAnswer(store.getstaId());
+            StaId.setDisplayAnswer("");
+            StaId.setRepeatID(formItem.getRepeatId());
+            StaId.setRepeatCount(formItem.getRepeatCount());
+
+            dbHandler.replaceData(Answer.DBTable.NAME, StaId.toContentValues());
         }
-
-        staStockItemId.setAnswer(store.getStaStockItemId());
-        staStockItemId.setDisplayAnswer("");
-        staStockItemId.setRepeatID(formItem.getRepeatId());
-        staStockItemId.setRepeatCount(formItem.getRepeatCount());
-
-        dbHandler.replaceData(Answer.DBTable.NAME, staStockItemId.toContentValues());
-
-        Answer Quantity = dbHandler.getAnswer(submissionID, "Quantity",
-                formItem.getRepeatId(), formItem.getRepeatCount());
-        if (Quantity == null) {
-            Quantity = new Answer(submissionID, "Quantity");
-        }
-
-        Quantity.setAnswer(String.valueOf(formItem.getMyStoreQuantity()));
-        Quantity.setDisplayAnswer("");
-        Quantity.setRepeatID(formItem.getRepeatId());
-        Quantity.setRepeatCount(formItem.getRepeatCount());
-
-        dbHandler.replaceData(Answer.DBTable.NAME, Quantity.toContentValues());
-
-        Answer StaId = dbHandler.getAnswer(submissionID, "StaId",
-                formItem.getRepeatId(), formItem.getRepeatCount());
-        if (StaId == null) {
-
-            StaId = new Answer(submissionID, "StaId");
-
-        }
-
-        StaId.setAnswer(store.getstaId());
-        StaId.setDisplayAnswer("");
-        StaId.setRepeatID(formItem.getRepeatId());
-        StaId.setRepeatCount(formItem.getRepeatCount());
-
-        dbHandler.replaceData(Answer.DBTable.NAME, StaId.toContentValues());
 
 
     }
@@ -3478,6 +3489,13 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         answer1.setRepeatID(formItem.getRepeatId());
                         answer1.setRepeatCount(repeatCount);
                         dbHandler.replaceData(Answer.DBTable.NAME, answer1.toContentValues());
+
+                        if(items.get(position1).getUploadValue()=="STA"){
+                            updateDataSetForTransfers("STA");
+                        }else if(items.get(position1).getUploadValue()=="MTA"){
+                            updateDataSetForTransfers("MTA");
+                        }
+
                         if (needToBeNotified(formItem)) {
                             reInflateItems(true);
                         }
@@ -3493,6 +3511,82 @@ public class FormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
     }
 
+    private void updateDataSetForTransfers(String type){
+
+        switch (type){
+            case "STA":{
+
+                screen.setUrl("appstores/logtransfer/sta");
+                screen.getItems().get(2).setKey("stas");
+                screen.getItems().get(3).setKey("stas");
+                screen.getItems().get(2).setUploadId("fromStaId");
+                screen.getItems().get(3).setUploadId("toStaId");
+                formItems.get(0).setUploadId("stockItemId");
+                updateTransferDataSource("STA",screen.getItems().get(0));
+            }
+            break;
+            case "MTA":{
+                screen.setUrl("appstores/logtransfer");
+                screen.getItems().get(2).setKey("operatives");
+                screen.getItems().get(3).setKey("operatives");
+                screen.getItems().get(2).setUploadId("fromUserId");
+                screen.getItems().get(3).setUploadId("toUserId");
+                formItems.get(0).setUploadId("staStockItemId");
+
+                updateTransferDataSource("MTA",screen.getItems().get(0));
+            }
+            break;
+        }
+
+      //  notifyDataSetChanged();
+    }
+
+    private void updateTransferDataSource(String type, FormItem formItem){
+
+        Answer ans = dbHandler.getAnswer(submissionID, type.equalsIgnoreCase("STA")?"stockItemId":"staStockItemId",
+                formItem.getRepeatId(), formItem.getRepeatCount());
+
+        if (ans == null) {
+
+            ans = new Answer(submissionID, type.equalsIgnoreCase("STA")?"stockItemId":"staStockItemId");
+
+        }
+
+        ans.setAnswer(type.equalsIgnoreCase("STA")?formItem.getMyStore().getstockItemId():formItem.getMyStore().getStaStockItemId());
+        ans.setDisplayAnswer("");
+        ans.setRepeatID(formItem.getRepeatId());
+        ans.setRepeatCount(formItem.getRepeatCount());
+
+        dbHandler.replaceData(Answer.DBTable.NAME, ans.toContentValues());
+
+        Answer Quantity = dbHandler.getAnswer(submissionID, "Quantity",
+                formItem.getRepeatId(), formItem.getRepeatCount());
+        if (Quantity == null) {
+            Quantity = new Answer(submissionID, "Quantity");
+        }
+
+        Quantity.setAnswer(String.valueOf(formItem.getMyStoreQuantity()));
+        Quantity.setDisplayAnswer("");
+        Quantity.setRepeatID(formItem.getRepeatId());
+        Quantity.setRepeatCount(formItem.getRepeatCount());
+
+        dbHandler.replaceData(Answer.DBTable.NAME, Quantity.toContentValues());
+
+        Answer StaId = dbHandler.getAnswer(submissionID, "StaId",
+                formItem.getRepeatId(), formItem.getRepeatCount());
+        if (StaId == null) {
+
+            StaId = new Answer(submissionID, "StaId");
+
+        }
+
+        StaId.setAnswer(formItem.getMyStore().getstaId());
+        StaId.setDisplayAnswer("");
+        StaId.setRepeatID(formItem.getRepeatId());
+        StaId.setRepeatCount(formItem.getRepeatCount());
+
+        dbHandler.replaceData(Answer.DBTable.NAME, StaId.toContentValues());
+    }
 
     private void bindDialogScreen(final DropDownHolder holder, int position) {
         final FormItem formItem = formItems.get(position);

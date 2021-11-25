@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.dialogs.JWTErrorDialog;
 import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.store.StockItems;
 import co.uk.depotnet.onsa.networking.APICalls;
@@ -131,10 +130,12 @@ public class StoreDetailActivity extends AppCompatActivity implements View.OnCli
                     }
 
                     if(value == 0){
+                        Toast.makeText(getApplicationContext(),"Entered QTY can't be "+value,Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     if(value > store.getStockLevelUnit()){
+                        Toast.makeText(getApplicationContext(),"Entered QTY can't be greater than Stock Level",Toast.LENGTH_SHORT).show();
                         return;
                     }
 

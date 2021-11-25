@@ -1,0 +1,50 @@
+{
+  "title": "Goods In",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Goods In",
+      "index": 0,
+      "url":"appstores/loggoodsin",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "userId",
+          "key": "operatives",
+          "title": "From MTA (Operative)",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "StaId",
+          "repeatId": "Items",
+          "key": "stas",
+          "title": "To STA (Warehouse)",
+          "optional": false,
+          "enables": [
+            {
+              "type": "bar_code",
+              "uploadId": "",
+              "title": "Scan an item to check out or search an item or batch",
+              "optional": true
+            },
+            {
+              "type": "add_store_item",
+              "uploadId": "",
+              "repeatId": "Items",
+              "fields": ["StaStockItemId" , "StaId" , "Quantity"],
+              "listItemType": "stock_item",
+              "isStoackLevelCheck": true,
+              "isMultiSelection": true,
+              "title": "Store Item",
+              "optional": false
+            }
+          ]
+
+        }
+
+      ]
+    }
+  ]
+}

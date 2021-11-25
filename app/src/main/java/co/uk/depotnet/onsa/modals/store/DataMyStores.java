@@ -2,12 +2,17 @@ package co.uk.depotnet.onsa.modals.store;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 import co.uk.depotnet.onsa.database.DBHandler;
 
 public class DataMyStores implements Parcelable {
+
+    public ArrayList<MyStore> getData() {
+        return data;
+    }
 
     ArrayList<MyStore> data;
 
@@ -40,7 +45,8 @@ public class DataMyStores implements Parcelable {
     public void toContentValues(){
         if(data != null && !data.isEmpty()){
             for (MyStore r:data) {
-                DBHandler.getInstance().replaceData(MyStore.DBTable.NAME , r.toContentValues());
+                long id = DBHandler.getInstance().replaceData(MyStore.DBTable.NAME , r.toContentValues());
+                Log.e(DataMyStores.class.getSimpleName(),""+id);
             }
         }
     }

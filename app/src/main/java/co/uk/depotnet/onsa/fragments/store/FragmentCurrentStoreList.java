@@ -130,7 +130,13 @@ public class FragmentCurrentStoreList extends Fragment
         view.findViewById(R.id.btn_add).setOnClickListener(this);
 
         txtToolbarTitle = view.findViewById(R.id.txt_toolbar_title);
-        view.findViewById(R.id.btn_txt_request).setOnClickListener(this);
+        View requestButton = view.findViewById(R.id.btn_txt_request);
+        if(user!=null && user.isStoresManager()){
+            requestButton.setVisibility(View.GONE);
+        }else
+            requestButton.setVisibility(View.VISIBLE);
+
+        requestButton.setOnClickListener(this);
         view.findViewById(R.id.btn_txt_goods_in).setOnClickListener(this);
         view.findViewById(R.id.btn_txt_transfer).setOnClickListener(this);
         view.findViewById(R.id.btn_txt_issue).setOnClickListener(this);
@@ -244,10 +250,10 @@ public class FragmentCurrentStoreList extends Fragment
                 openFormActivity("store_log_request_multi.json", "Request");
                 break;
             case R.id.btn_txt_goods_in:
-                openFormActivity("store_log_goods_in.json", "Goods In");
+                openFormActivity(user.isStoresManager()?"store_log_goods_in_store_manager.json":"store_log_goods_in.json", "Goods In");
                 break;
             case R.id.btn_txt_transfer:
-                openFormActivity("store_log_transfer.json", "Transfer");
+                openFormActivity(user.isStoresManager()?"store_log_transfer_store_manager.json":"store_log_transfer.json", "Transfer");
                 break;
             case R.id.btn_txt_issue:
                 HashMap<String, Object> map = adapter.getSelectedItems();
@@ -255,10 +261,10 @@ public class FragmentCurrentStoreList extends Fragment
                     showErrorDialog("Validation Error" , "Issues can be raised at one item at a time.");
                     return;
                 }
-                openFormActivity("store_log_issue.json", "Issue");
+                openFormActivity(user.isStoresManager()?"store_log_issue_store_manager.json":"store_log_issue.json", "Issue");
                 break;
             case R.id.btn_txt_goods_out:
-                openFormActivity("store_log_goods_out.json", "Goods Out");
+                openFormActivity(user.isStoresManager()?"store_log_goods_out_store_manager.json":"store_log_goods_out.json", "Goods Out");
                 break;
             case R.id.btn_txt_estimate:
                 openFormActivity("store_log_estimate.json", "Estimate");

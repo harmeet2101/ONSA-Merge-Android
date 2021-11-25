@@ -475,7 +475,9 @@ public class ConnectionHelper {
         ArrayList<Answer> photosToUpload = new ArrayList<>();
         ArrayList<Answer> signatures = new ArrayList<>();
 
+        if(!jsonFileName.equalsIgnoreCase("store_standard_goods_in.json"))
         requestMap.put("submissionId", uniqueId);
+
         boolean isSubJob = false;
 
         if(!TextUtils.isEmpty(submission.getJsonFileName()) &&
@@ -487,7 +489,7 @@ public class ConnectionHelper {
             }
         }
 
-        if(!isSubJob) {
+        if(!isSubJob && !jsonFileName.equalsIgnoreCase("store_standard_goods_in.json")) {
             requestMap.put("submittedDate", submission.getDate());
             requestMap.put("dateTaken", submission.getDate());
             requestMap.put("latitude", submission.getLatitude());

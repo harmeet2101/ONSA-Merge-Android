@@ -163,4 +163,10 @@ public class AdapterStoreListItem extends
     public EditText getFocusedEditText() {
         return focusedEditText;
     }
+
+
+    public void updateDataSource(ArrayList<MyStore> items){
+        this.items = items;
+        notifyDataSetChanged();
+    }
 }

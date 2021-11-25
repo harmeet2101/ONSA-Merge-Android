@@ -4,14 +4,18 @@ import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -21,17 +25,26 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.AdapterStoreListItem;
 import co.uk.depotnet.onsa.database.DBHandler;
+import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
+import co.uk.depotnet.onsa.modals.store.DataMyStores;
 import co.uk.depotnet.onsa.modals.store.MyStore;
 import co.uk.depotnet.onsa.modals.store.StockItems;
+import co.uk.depotnet.onsa.networking.APICalls;
+import co.uk.depotnet.onsa.networking.CallUtils;
+import co.uk.depotnet.onsa.networking.CommonUtils;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 import co.uk.depotnet.onsa.views.MaterialAlertDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ListStoreItemActivity extends AppCompatActivity {
 
@@ -68,6 +81,9 @@ public class ListStoreItemActivity extends AppCompatActivity {
         Answer staId = DBHandler.getInstance().
                 getAnswer(submissionId, "StaId", repeatId, 0);
 
+        Answer mtaId = DBHandler.getInstance().
+                getAnswer(submissionId, "userId", null, 0);
+
 
 
         if (staStockItemIds != null && !staStockItemIds.isEmpty()) {
@@ -86,11 +102,12 @@ public class ListStoreItemActivity extends AppCompatActivity {
 
 
         if (staId != null && !TextUtils.isEmpty(staId.getAnswer())) {
-            items = DBHandler.getInstance().getMyStoresByStaId(staId.getAnswer());
+            items = DBHandler.getInstance().getMyStoresByStaId(staId.getAnswer(),mtaId.getAnswer());
         } else {
             items = DBHandler.getInstance().getMyStores();
         }
 
+        getCurrentStoreList();
 
         adapter = new AdapterStoreListItem(this, items, selectedValues, true);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -384,6 +401,66 @@ public class ListStoreItemActivity extends AppCompatActivity {
                 }
             }
         }*/
+    }
+
+
+
+    private void getCurrentStoreList() {
+
+        User user = DBHandler.getInstance().getUser();
+        if (!CommonUtils.isNetworkAvailable(ListStoreItemActivity.this)) {
+
+            return;
+        }
+        if(!CommonUtils.validateToken(ListStoreItemActivity.this)){
+            return;
+        }
+        showProgressBar();
+        CallUtils.enqueueWithRetry(APICalls.getMyStore(user.gettoken()),new Callback<DataMyStores>() {
+
+
+            @Override
+            public void onResponse(@NonNull Call<DataMyStores> call,
+                                   @NonNull Response<DataMyStores> response) {
+
+                if(CommonUtils.onTokenExpired(ListStoreItemActivity.this , response.code())){
+                    return;
+                }
+
+                if (response.isSuccessful()) {
+
+                    DBHandler.getInstance().resetMyStores();         //to reset my store
+                    DataMyStores dataMyStores = response.body();
+                    if (dataMyStores != null) {
+                        dataMyStores.toContentValues();
+                    }
+                    Answer staId = DBHandler.getInstance().
+                            getAnswer(submissionId, "StaId", repeatId, 0);
+
+                    Answer mtaId = DBHandler.getInstance().
+                            getAnswer(submissionId, "userId", null, 0);
+
+                    List<MyStore> myStoreList = new ArrayList<>();
+
+                    for (int i =0;i<dataMyStores.getData().size();i++){
+
+                        if(staId.getAnswer().equalsIgnoreCase(dataMyStores.getData().get(i).getstaId())
+                                &&mtaId.getAnswer().equalsIgnoreCase(dataMyStores.getData().get(i).getuserId())){
+                            myStoreList.add(dataMyStores.getData().get(i));
+                        }
+                    }
+
+                    adapter.updateDataSource((ArrayList<MyStore>) myStoreList);
+                }
+                hideProgressBar();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DataMyStores> call, @NonNull Throwable t) {
+
+                hideProgressBar();
+            }
+        });
     }
 
 }

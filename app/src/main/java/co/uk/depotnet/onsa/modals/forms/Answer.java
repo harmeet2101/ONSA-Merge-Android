@@ -193,6 +193,10 @@ public class Answer implements Parcelable {
         return uploadID;
     }
 
+    public void setUploadID(String uploadID) {
+        this.uploadID = uploadID;
+    }
+
     public String getRepeatID() {
         return repeatID;
 

@@ -1,0 +1,36 @@
+{
+  "title": "Transfer",
+  "isProgressVisible": false,
+  "screens": [
+    {
+      "title": "Transfer",
+      "index": 0,
+      "url":"appstores/logtransfer/sta",
+      "upload": true,
+      "items": [
+        {
+          "type": "dropdown",
+          "uploadId": "transferTypeId",
+          "keyItemType": "TransferTypeId",
+          "key": "TransferType",
+          "title": "Transfer Type",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "fromStaId",
+          "key": "na",
+          "title": "From",
+          "optional": false
+        },
+        {
+          "type": "dropdown",
+          "uploadId": "toStaId",
+          "key": "na",
+          "title": "To",
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

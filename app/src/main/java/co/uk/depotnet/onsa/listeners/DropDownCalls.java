@@ -14,6 +14,7 @@ import co.uk.depotnet.onsa.modals.JobWorkItem;
 import co.uk.depotnet.onsa.modals.MeasureItems;
 import co.uk.depotnet.onsa.modals.MenSplit;
 import co.uk.depotnet.onsa.modals.RecordReturnReason;
+import co.uk.depotnet.onsa.modals.TransferTypes;
 import co.uk.depotnet.onsa.modals.WorkItem;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
@@ -144,7 +145,13 @@ public class DropDownCalls {
 
                 ArrayList<IncidentSeverity> incidentSeverities = DBHandler.getInstance().getIncidentSeverities();
                 items.addAll(incidentSeverities);
-            } else {
+            } else if (formItem.getKey().equalsIgnoreCase("TransferType")){
+
+                ArrayList<TransferTypes> transferTypes = new ArrayList<>();
+                transferTypes.add(new TransferTypes("STA","STA"));
+                transferTypes.add(new TransferTypes("MTA","MTA"));
+                items.addAll(transferTypes);
+            }else {
                 items.addAll(dbHandler.getItemTypes(formItem.getKey()));
             }
 

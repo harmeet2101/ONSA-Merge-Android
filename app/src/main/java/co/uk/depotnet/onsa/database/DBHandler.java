@@ -1263,10 +1263,11 @@ public class DBHandler {
         return myStore;
     }
 
-    public ArrayList<MyStore> getMyStoresByStaId(String staId) {
+    public ArrayList<MyStore> getMyStoresByStaId(String staId,String mtaId) {
         ArrayList<MyStore> myStores = new ArrayList<>();
-        String selection = MyStore.DBTable.staId + " = ?";
-        String[] selectionArgs = new String[]{staId};
+        String selection = MyStore.DBTable.staId + " = ? AND " + MyStore.DBTable.userId + " = ?";
+        //String selection = MyStore.DBTable.staId + " = ?";
+        String[] selectionArgs = new String[]{staId,mtaId};
 
         Cursor cursor = db.query(MyStore.DBTable.NAME,
                 null, selection, selectionArgs,

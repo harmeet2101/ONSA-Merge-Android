@@ -35,6 +35,7 @@ public class FragmentStore extends Fragment implements
     private FragmentActionListener listener;
     private TextView txtRequestNoti;
     private TextView txtReceiptNoti;
+    private View goodsInLayout;
     private boolean isRequestDataFetched;
     private User user;
     private DBHandler dbHandler;
@@ -61,6 +62,8 @@ public class FragmentStore extends Fragment implements
 
         view.findViewById(R.id.rl_my_current_store).setOnClickListener(this);
         view.findViewById(R.id.rl_goods_out).setOnClickListener(this);
+        goodsInLayout = view.findViewById(R.id.rl_goods_in);
+        goodsInLayout.setOnClickListener(this);
         view.findViewById(R.id.rl_receipts).setOnClickListener(this);
         view.findViewById(R.id.rl_my_request).setOnClickListener(this);
         view.findViewById(R.id.btn_img_cancel).setOnClickListener(v -> ((Activity)context).onBackPressed());
@@ -68,6 +71,11 @@ public class FragmentStore extends Fragment implements
         if(BuildConfig.BUILD_TYPE=="store_uat_kieraw"){
             ((TextView)view.findViewById(R.id.txt_toolbar_title)).setText("STORE");
         }
+
+        if(user!=null && user.isStoresManager()){
+            goodsInLayout.setVisibility(View.VISIBLE);
+        }else
+            goodsInLayout.setVisibility(View.GONE);
 
         txtReceiptNoti = view.findViewById(R.id.txt_receipt_notification);
         txtRequestNoti = view.findViewById(R.id.txt_request_notification);
@@ -195,8 +203,12 @@ public class FragmentStore extends Fragment implements
             case R.id.rl_my_current_store:
                 startActivity(new Intent(context , CurrentStoreActivity.class));
                 break;
+            case R.id.rl_goods_in:
+                openFormActivity("store_standard_goods_in.json","Goods In");
+                break;
             case R.id.rl_goods_out:
-                openFormActivity("store_standard_goods_out.json","Goods out");
+                openFormActivity(user.isStoresManager()? "store_standard_goods_out_store_manager.json"
+                        :"store_standard_goods_out.json","Goods out");
                 break;
             case R.id.rl_receipts:
                 listener.addFragment(ReceiptsFragment.newInstance() , false);

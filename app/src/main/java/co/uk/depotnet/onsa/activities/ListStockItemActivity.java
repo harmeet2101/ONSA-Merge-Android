@@ -14,8 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -26,20 +24,14 @@ import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import co.uk.depotnet.onsa.BuildConfig;
 import co.uk.depotnet.onsa.R;
 import co.uk.depotnet.onsa.adapters.store.AdapterStockListItem;
 import co.uk.depotnet.onsa.database.DBHandler;
-import co.uk.depotnet.onsa.modals.User;
 import co.uk.depotnet.onsa.modals.forms.Answer;
 import co.uk.depotnet.onsa.modals.forms.FormItem;
 import co.uk.depotnet.onsa.modals.store.StockItems;
-import co.uk.depotnet.onsa.modals.store.StockLevel;
-import co.uk.depotnet.onsa.networking.ConnectionHelper;
-import co.uk.depotnet.onsa.networking.Constants;
 import co.uk.depotnet.onsa.utils.VerticalSpaceItemDecoration;
 import co.uk.depotnet.onsa.views.MaterialAlertDialog;
-import okhttp3.ResponseBody;
 
 public class ListStockItemActivity extends AppCompatActivity {
 
