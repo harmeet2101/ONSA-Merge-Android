@@ -36,6 +36,7 @@ public class FragmentStore extends Fragment implements
     private TextView txtRequestNoti;
     private TextView txtReceiptNoti;
     private View goodsInLayout;
+    private View currentStoresLayout;
     private boolean isRequestDataFetched;
     private User user;
     private DBHandler dbHandler;
@@ -63,7 +64,9 @@ public class FragmentStore extends Fragment implements
         view.findViewById(R.id.rl_my_current_store).setOnClickListener(this);
         view.findViewById(R.id.rl_goods_out).setOnClickListener(this);
         goodsInLayout = view.findViewById(R.id.rl_goods_in);
+        currentStoresLayout = view.findViewById(R.id.rl_my_current_store);
         goodsInLayout.setOnClickListener(this);
+        currentStoresLayout.setOnClickListener(this);
         view.findViewById(R.id.rl_receipts).setOnClickListener(this);
         view.findViewById(R.id.rl_my_request).setOnClickListener(this);
         view.findViewById(R.id.btn_img_cancel).setOnClickListener(v -> ((Activity)context).onBackPressed());
@@ -74,9 +77,11 @@ public class FragmentStore extends Fragment implements
 
         if(user!=null && user.isStoresManager()){
             goodsInLayout.setVisibility(View.VISIBLE);
-        }else
+            currentStoresLayout.setVisibility(View.GONE);
+        }else {
             goodsInLayout.setVisibility(View.GONE);
-
+            currentStoresLayout.setVisibility(View.VISIBLE);
+        }
         txtReceiptNoti = view.findViewById(R.id.txt_receipt_notification);
         txtRequestNoti = view.findViewById(R.id.txt_request_notification);
 

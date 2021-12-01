@@ -41,6 +41,7 @@ public class StockItems implements Parcelable, DropDownItem {
     private String type;
     private String reference;
     private int stockLevelUnit;
+    private int stockLevel;
 
     protected StockItems(Parcel in) {
         departmentName = in.readString();
@@ -62,6 +63,7 @@ public class StockItems implements Parcelable, DropDownItem {
         type = in.readString();
         reference = in.readString();
         stockLevelUnit = in.readInt();
+        stockLevel = in.readInt();
     }
 
     public StockItems(Cursor cursor) {
@@ -84,6 +86,7 @@ public class StockItems implements Parcelable, DropDownItem {
         type = cursor.getString(cursor.getColumnIndex(DBTable.type));
         reference = cursor.getString(cursor.getColumnIndex(DBTable.reference));
         stockLevelUnit = cursor.getInt(cursor.getColumnIndex(DBTable.stockLevelUnit));
+        stockLevel = cursor.getInt(cursor.getColumnIndex(DBTable.stockLevel));
     }
 
     public void setdepartmentName(String departmentName) {
@@ -231,6 +234,14 @@ public class StockItems implements Parcelable, DropDownItem {
         this.reference = reference;
     }
 
+    public int getStockLevel() {
+        return stockLevel;
+    }
+
+    public void setStockLevel(int stockLevel) {
+        this.stockLevel = stockLevel;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -257,6 +268,7 @@ public class StockItems implements Parcelable, DropDownItem {
         parcel.writeString(type);
         parcel.writeString(reference);
         parcel.writeInt(stockLevelUnit);
+        parcel.writeInt(stockLevel);
     }
 
     public ContentValues toContentValues() {
@@ -280,6 +292,7 @@ public class StockItems implements Parcelable, DropDownItem {
         cv.put(DBTable.type, this.type);
         cv.put(DBTable.reference, this.reference);
         cv.put(DBTable.stockLevelUnit, this.stockLevelUnit);
+        cv.put(DBTable.stockLevel, this.stockLevel);
         return cv;
     }
 
@@ -324,5 +337,6 @@ public class StockItems implements Parcelable, DropDownItem {
         public static final String type = "type";
         public static final String reference = "reference";
         public static final String stockLevelUnit = "stockLevelUnit";
+        public static final String stockLevel = "stockLevel";
     }
 }

@@ -10,7 +10,7 @@
       "items": [
         {
           "type": "dropdown",
-          "uploadId": "ToUserId",
+          "uploadId": "userId",
           "key": "operatives",
           "title": "From MTA (Operative)",
           "optional": false

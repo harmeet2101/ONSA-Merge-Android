@@ -47,12 +47,12 @@
             android:id="@+id/txt_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/_4sdp"
-            android:layout_marginEnd="@dimen/_4sdp"
-            android:gravity="center_vertical"
-            android:layout_toLeftOf="@id/txt_quantity"
-            android:layout_toStartOf="@id/txt_quantity"
             android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginRight="@dimen/_4sdp"
+            android:layout_toStartOf="@id/txt_quantity"
+            android:layout_toLeftOf="@id/txt_quantity"
+            android:gravity="center_vertical"
             android:textColor="@color/txt_color_dark"
             android:textSize="@dimen/_12sdp" />
 

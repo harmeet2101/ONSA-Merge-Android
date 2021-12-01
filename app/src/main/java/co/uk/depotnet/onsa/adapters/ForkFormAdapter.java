@@ -1451,12 +1451,12 @@ public class ForkFormAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     && item.getUploadId().equalsIgnoreCase("comments")) {
                 Answer answer = dbHandler.getAnswer(submissionID,
                         item.getUploadId(), item.getRepeatId(), repeatCount);
-                if (!TextUtils.isEmpty(answer.getAnswer())) {
+                if (answer!=null && !TextUtils.isEmpty(answer.getAnswer())) {
                     try {
                         int commentSize = answer.getAnswer().length();
-                        if (commentSize > 150) {
+                        if (commentSize > 500) {
                             missingCount++;
-                            listener.showValidationDialog("Validation Error", "Please provide maximum 150 character for comment field");
+                            listener.showValidationDialog("Validation Error", "Please provide maximum 500 character for comment field");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();

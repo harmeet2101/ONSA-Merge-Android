@@ -91,7 +91,7 @@ public class StoreDetailActivity extends AppCompatActivity implements View.OnCli
         txtUnit.setText(String.valueOf(store.getunit()));
         txtUnitType.setText(store.getunitName());
         txtWarehouse.setText(store.getWarehouseStaName());
-        txtStockLevel.setText(String.valueOf(store.getStockLevelUnit()));
+        txtStockLevel.setText(String.valueOf(store.getStockLevel()));
     }
 
 
@@ -134,7 +134,7 @@ public class StoreDetailActivity extends AppCompatActivity implements View.OnCli
                         return;
                     }
 
-                    if(value > store.getStockLevelUnit()){
+                    if(value > store.getStockLevel()){
                         Toast.makeText(getApplicationContext(),"Entered QTY can't be greater than Stock Level",Toast.LENGTH_SHORT).show();
                         return;
                     }

@@ -3,16 +3,27 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/activity_actions.xml" value="0.25416666666666665" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/activity_form.xml" value="0.25416666666666665" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/activity_login.xml" value="0.25416666666666665" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/activity_splash.xml" value="0.25416666666666665" />
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/activity_work_log.xml" value="0.25416666666666665" />
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/briefings_doc_items.xml" value="0.25416666666666665" />
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/dropdown_edittext.xml" value="0.25416666666666665" />
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/editshare_comment.xml" value="0.25416666666666665" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/fragment_current_store_list.xml" value="0.25416666666666665" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/fragment_from.xml" value="0.25416666666666665" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/fragment_store.xml" value="0.264" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/fragment_store_detail.xml" value="0.25416666666666665" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/fragment_welcome_home.xml" value="0.25416666666666665" />
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/item_et_long_text.xml" value="0.25416666666666665" />
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/item_et_short_text.xml" value="0.25416666666666665" />
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/item_et_timesheet_hours.xml" value="0.25416666666666665" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/item_form_current_store.xml" value="0.25416666666666665" />
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/item_log_measure.xml" value="0.25416666666666665" />
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/item_log_measure_repeated.xml" value="0.2" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/item_repeat.xml" value="0.25416666666666665" />
+        <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/item_view_measure.xml" value="0.25416666666666665" />
         <entry key="..\:/Office_work/Android/onsa-bau/ONSA-Merge-Android/app/src/main/res/layout/popup_dropdown.xml" value="0.25416666666666665" />
       </map>
     </option>
