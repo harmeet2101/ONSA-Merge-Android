@@ -22,7 +22,7 @@ android {
     // signin key - onsa_store@1234
     buildTypes {
 
-        /*debug {
+        debug {
             initWith debug
             //android.defaultConfig.versionName "2.2.2"
             //android.defaultConfig.versionCode 51
@@ -30,7 +30,7 @@ android {
             buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
             resValue "string", "app_name", "Onsa BAU Dev"
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-        }*/
+        }
 
         /*subjob {
             initWith debug
@@ -96,13 +96,13 @@ android {
         }*/
 
 
-        store_uat_mapgroup {
+        /*store_uat_mapgroup {
             initWith debug
             applicationIdSuffix ".store.mapgroup.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-mapgroup-api.depotnet.co.uk/"')
             resValue "string", "app_name", "MAP Group-Onsa-UAT"
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-        }
+        }*/
 
         /*store_live_mapgroup {
             initWith debug
@@ -112,7 +112,7 @@ android {
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
 
-       /* store_uat_instalor {
+        /*store_uat_instalor {
             initWith debug
             applicationIdSuffix ".store.instalor.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-instalor-api.depotnet.co.uk/"')
