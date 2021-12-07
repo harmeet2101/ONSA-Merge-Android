@@ -8,7 +8,7 @@ android {
         targetSdkVersion 30
         // as per client requirement keeping all store same version of build
         versionCode 149
-        versionName "3.3.2"
+        versionName "1.0.0"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -42,24 +42,24 @@ android {
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
 
-//        uat {
-//            initWith debug
-//            //android.defaultConfig.versionName "2.2.2"
-//            //android.defaultConfig.versionCode 51
-//            applicationIdSuffix ".features.hseq.uat"
-//            buildConfigField("String", "BASE_URL", '"https://uat-onsa-acme-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "Onsa-HSEQ-uat"
-//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+        /*uat {
+            initWith debug
+            //android.defaultConfig.versionName "2.2.2"
+            //android.defaultConfig.versionCode 51
+            applicationIdSuffix ".features.hseq.uat"
+            buildConfigField("String", "BASE_URL", '"https://uat-onsa-acme-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "Onsa-HSEQ-uat"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }*/
 
-//        release {
-//            initWith debug
-//            applicationIdSuffix ".features.hseq.dev"
-//            buildConfigField("String", "BASE_URL", '"https://dev-onsa-feature-api.depotnet.co.uk/"')
-////            buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "Onsa-HSEQ-dev"
-//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+       /* release {
+            initWith debug
+            applicationIdSuffix ".features.hseq.dev"
+            buildConfigField("String", "BASE_URL", '"https://dev-onsa-feature-api.depotnet.co.uk/"')
+            buildConfigField("String", "BASE_URL", '"https://dev-onsa-acme-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "Onsa-HSEQ-dev"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }*/
 
         // all flavoured types with dev build version no
 
@@ -71,7 +71,7 @@ android {
           project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
 
-        /*store_live_kier {
+       /* store_live_kier {
             initWith debug
             applicationIdSuffix ".store.kier.live"
             buildConfigField("String", "BASE_URL", '"https://onsa-kier-api.depotnet.co.uk/"')
@@ -87,7 +87,7 @@ android {
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
 
-        /*store_live_mjq {
+       /* store_live_mjq {
             initWith debug
             applicationIdSuffix ".store.mjq"
             buildConfigField("String", "BASE_URL", '"https://onsa-mjq-api.depotnet.co.uk/"')
@@ -104,7 +104,7 @@ android {
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
 
-        /*store_live_mapgroup {
+      /*  store_live_mapgroup {
             initWith debug
             applicationIdSuffix ".store.mapgroup"
             buildConfigField("String", "BASE_URL", '"https://onsa-mapgroup-api.depotnet.co.uk/"')
@@ -112,7 +112,7 @@ android {
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
 
-        /*store_uat_instalor {
+       /* store_uat_instalor {
             initWith debug
             applicationIdSuffix ".store.instalor.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-instalor-api.depotnet.co.uk/"')
@@ -120,14 +120,14 @@ android {
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
 
-//        store_live_instalor_mdm {
-//            initWith debug
-//            debuggable false
-//            applicationIdSuffix ".store.instalor.live"
-//            buildConfigField("String", "BASE_URL", '"https://onsa-instalor-api.depotnet.co.uk/"')
-//            resValue "string", "app_name", "InstalOr Onsa"
-//            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
-//        }
+       /* store_live_instalor_mdm {
+            initWith debug
+            debuggable false
+            applicationIdSuffix ".store.instalor.live"
+            buildConfigField("String", "BASE_URL", '"https://onsa-instalor-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "InstalOr Onsa"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }*/
 
         /*store_live_instalor {
             initWith debug
@@ -138,7 +138,7 @@ android {
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
 
-        /*store_uat_lightsource {
+       /* store_uat_lightsource {
             initWith debug
             applicationIdSuffix ".store.lightsource.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-onsa-lightsource-api.depotnet.co.uk/"')
@@ -147,7 +147,7 @@ android {
         }*/
 
         //as client confirm to use same base url for live and uat for lightsource
-       /* store_live_lightsource {
+        /*store_live_lightsource {
             initWith debug
             applicationIdSuffix ".store.lightsource"
             buildConfigField("String", "BASE_URL", '"https://onsa-lightsource-api.depotnet.co.uk/"')
@@ -171,12 +171,29 @@ android {
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
 
+        store_live_iti {
+            initWith debug
+            applicationIdSuffix ".store.iti.live"
+            buildConfigField("String", "BASE_URL", '"https://onsa-iti-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "ITI"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }
+
         /*store_uat_kieraw {
             initWith debug
             debuggable false
             applicationIdSuffix ".store.kieraw.uat"
             buildConfigField("String", "BASE_URL", '"https://uat-stores-kieraw-api.depotnet.co.uk/"')
             resValue "string", "app_name", "KierAW-UAT"
+            project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
+        }*/
+
+        /*store_live_kier {
+            initWith debug
+            debuggable false
+            applicationIdSuffix ".store.kieraw.live"
+            buildConfigField("String", "BASE_URL", '"https://stores-kieraw-api.depotnet.co.uk/"')
+            resValue "string", "app_name", "KierAW"
             project.ext.set("archivesBaseName", rootProject.getName() + "-" + defaultConfig.versionName)
         }*/
     }

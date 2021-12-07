@@ -143,7 +143,7 @@ public class StoreDetailActivity extends AppCompatActivity implements View.OnCli
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("stock_quantity", value);
                     resultIntent.putExtra("StaId", getIntent().getStringExtra("StaId"));
-                    resultIntent.putExtra("stockItemId", store.getstockItemId());
+                    resultIntent.putExtra("stockItemId", store.getStaStockItemId());
                     setResult(RESULT_OK, resultIntent);
                     finish();
 
